@@ -49,7 +49,7 @@ const NewsPage = () => {
             onValueChange={handleFilterBySchool}
             disabled={isSchoolsLoading}
           >
-            <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 rounded leading-tight focus:outline-none focus:bg-white focus:border-[#C8102E]">
+            <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 rounded leading-tight focus:outline-none focus:bg-white focus:border-[#0B213E]">
               <SelectValue placeholder="Select a school" />
             </SelectTrigger>
             <SelectContent>
@@ -94,7 +94,7 @@ const NewsPage = () => {
             {hasMore && (
               <Button 
                 variant="ghost" 
-                className="w-full py-3 text-sm text-[#C8102E] font-medium"
+                className="w-full py-3 text-sm text-[#0B213E] font-medium"
                 onClick={loadMore}
               >
                 Load More News

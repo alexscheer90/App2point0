@@ -148,8 +148,8 @@ const PodcastPage = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
-          <span className="text-[#C8102E]">MAC</span> Sports Connection
+        <h1 className="text-2xl font-bold mb-4 style={{ color: MAC_NAVY }}">
+          <span className="style={{ color: MAC_GREEN }}">MAC</span> Sports Connection
         </h1>
         
         <div className="space-y-4">
@@ -167,8 +167,8 @@ const PodcastPage = () => {
   if (error) {
     return (
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
-          <span className="text-[#C8102E]">MAC</span> Sports Connection
+        <h1 className="text-2xl font-bold mb-4 style={{ color: MAC_NAVY }}">
+          <span className="style={{ color: MAC_GREEN }}">MAC</span> Sports Connection
         </h1>
         
         <Card className="p-6 text-center">
@@ -193,19 +193,19 @@ const PodcastPage = () => {
         <TabsList className="w-full mb-4" style={{ backgroundColor: MAC_NAVY }}>
           <TabsTrigger 
             value="episodes" 
-            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-green-500"
           >
             Episodes
           </TabsTrigger>
           <TabsTrigger 
             value="about"
-            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-green-500"
           >
             About
           </TabsTrigger>
           <TabsTrigger 
             value="subscribe"
-            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-green-500"
           >
             Subscribe
           </TabsTrigger>
