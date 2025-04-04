@@ -132,7 +132,18 @@ const SchoolProfile = () => {
       <Card className="mb-4">
         <CardHeader 
           className="pb-2"
-          style={{ backgroundColor: school.primaryColor, color: school.secondaryColor }}
+          style={{ 
+            backgroundColor: 
+              school.id === "buffalo" || 
+              school.id === "easternmichigan" || 
+              school.id === "centralmichigan" ? 
+                "white" : school.primaryColor, 
+            color: 
+              school.id === "buffalo" || 
+              school.id === "easternmichigan" || 
+              school.id === "centralmichigan" ? 
+                school.primaryColor : school.secondaryColor 
+          }}
         >
           <div className="flex items-center">
             <div 
@@ -145,7 +156,13 @@ const SchoolProfile = () => {
               <CardTitle className="text-xl">{school.name}</CardTitle>
               <CardDescription 
                 className="font-semibold"
-                style={{ color: school.secondaryColor }}
+                style={{ 
+                  color: 
+                    school.id === "buffalo" || 
+                    school.id === "easternmichigan" || 
+                    school.id === "centralmichigan" ? 
+                      school.primaryColor : school.secondaryColor 
+                }}
               >
                 {school.mascot}
               </CardDescription>
