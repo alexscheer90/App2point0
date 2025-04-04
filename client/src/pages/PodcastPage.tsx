@@ -418,9 +418,7 @@ const PodcastPage = () => {
             
             <p className="mb-4 text-gray-700">
               {info?.description || 
-                `MAC Sports Connection is your ultimate source for Mid-American Conference sports coverage.
-                Each week, our hosts dive deep into football, basketball, and all MAC sports with game recaps,
-                previews, interviews with coaches and players, and expert analysis.`}
+                `The Podcast Voices of the MAC, Alex and Graham dive into the Mid-American Conference with this weekly show, bringing you scores, analysis, news and more!`}
             </p>
             
             <div>
