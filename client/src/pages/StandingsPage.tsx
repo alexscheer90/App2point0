@@ -2,22 +2,29 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SportSelector from "../components/SportSelector";
 import StandingsTable from "../components/StandingsTable";
-import { useStandings } from "../hooks/useStandings";
+import { useStandings, useMacSports } from "../hooks/useStandings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Sport } from "@shared/schema";
 
 const StandingsPage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("football");
   
   const { data: standings, isLoading: isStandingsLoading } = useStandings(selectedSport);
-  const { data: favoriteSchoolData } = useQuery({
+  const { data: sports } = useMacSports();
+  const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
+    select: (data) => data || { favoriteSchool: null }
   });
   
   const handleChangeSport = (sportId: string) => {
     setSelectedSport(sportId);
   };
   
-  const sportName = selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
+  // Find the sport and format its display name
+  const selectedSportObj = sports?.find((sport: Sport) => sport.id === selectedSport);
+  const sportName = selectedSportObj 
+    ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
+    : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
   
   return (
     <div className="py-4">
@@ -37,7 +44,7 @@ const StandingsPage = () => {
           <StandingsTable 
             sport={selectedSport}
             entries={standings}
-            favoriteSchoolId={favoriteSchoolData?.favoriteSchool}
+            favoriteSchoolId={favoriteSchoolData?.favoriteSchool || null}
           />
         ) : (
           <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200">

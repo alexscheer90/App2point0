@@ -47,6 +47,7 @@ export const sportSchema = z.object({
   id: z.string(),
   name: z.string(),
   gender: z.enum(["men", "women", "mixed"]),
+  officialUrl: z.string().optional(),
 });
 
 export const gameStatusSchema = z.enum(["scheduled", "live", "final", "postponed", "cancelled"]);

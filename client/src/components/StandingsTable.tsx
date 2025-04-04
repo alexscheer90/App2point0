@@ -58,14 +58,26 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                   <tr key={entry.schoolId} className={`hover:bg-gray-50 ${isFavorite ? 'bg-yellow-50' : ''}`}>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div 
-                          className="w-6 h-6 mr-2 rounded-full flex items-center justify-center" 
-                          style={{ backgroundColor: school.primaryColor }}
-                        >
-                          <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
-                            {school.shortName.charAt(0)}
-                          </span>
-                        </div>
+                        {school.logoUrl ? (
+                          // When logo is available
+                          <div className="w-6 h-6 mr-2 flex items-center justify-center">
+                            <img 
+                              src={school.logoUrl} 
+                              alt={`${school.name} logo`} 
+                              className="max-h-full max-w-full object-contain" 
+                            />
+                          </div>
+                        ) : (
+                          // Fallback to circular initial when no logo
+                          <div 
+                            className="w-6 h-6 mr-2 rounded-full flex items-center justify-center" 
+                            style={{ backgroundColor: school.primaryColor }}
+                          >
+                            <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
+                              {school.shortName.charAt(0)}
+                            </span>
+                          </div>
+                        )}
                         <span className="text-sm font-medium text-gray-900">{school.name}</span>
                       </div>
                     </td>
