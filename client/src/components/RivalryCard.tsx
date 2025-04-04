@@ -22,12 +22,12 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
     const { team1Wins, team2Wins, team3Wins = 0, ties } = rivalry.series;
     
     if (isThreeWayRivalry) {
-      return `Overall: ${team1.name.split(' ').pop()} (${team1Wins}), ${team2.name.split(' ').pop()} (${team2Wins}), ${team3!.name.split(' ').pop()} (${team3Wins})`;
+      return `Overall: ${team1.shortName} (${team1Wins}), ${team2.shortName} (${team2Wins}), ${team3!.shortName} (${team3Wins})`;
     } else {
       if (team1Wins > team2Wins) {
-        return `${team1.name.split(' ').pop()} leads ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
+        return `${team1.shortName} leads ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
       } else if (team2Wins > team1Wins) {
-        return `${team2.name.split(' ').pop()} leads ${team2Wins}-${team1Wins}${ties > 0 ? `-${ties}` : ''}`;
+        return `${team2.shortName} leads ${team2Wins}-${team1Wins}${ties > 0 ? `-${ties}` : ''}`;
       } else {
         return `Series tied ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
       }
@@ -53,8 +53,8 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
           }}
         ></div>
       )}
-      <span className="font-semibold text-sm">{team.name.split(' ').pop()}</span>
-      <span className="text-xs text-muted-foreground truncate max-w-24">{team.mascot}</span>
+      <span className="font-semibold text-sm truncate max-w-28">{team.shortName}</span>
+      <span className="text-xs text-muted-foreground truncate max-w-28">{team.mascot}</span>
     </div>
   );
 
