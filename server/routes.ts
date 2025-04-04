@@ -162,16 +162,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Server fetching RSS from: ${url}`);
       
+      // Special handling for Ball State - they have a non-standard feed format
+      const isBallState = url.includes('ballstatesports.com');
+      
       // Make the request to the school website with automatic redirect following
       const response = await axios.get(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'application/rss+xml, application/xml, text/xml, */*'
         },
         maxRedirects: 5, // Allow up to 5 redirects
         validateStatus: function (status) {
           return status >= 200 && status < 400; // Accept 2xx and 3xx status codes
-        }
+        },
+        // For Ball State, don't transform the response to avoid XML parsing issues
+        transformResponse: isBallState ? [(data) => data] : axios.defaults.transformResponse
       });
+      
+      // Extra logging for Ball State feed
+      if (isBallState) {
+        console.log(`Ball State RSS response type: ${typeof response.data}`);
+        console.log(`Ball State RSS starts with: ${response.data.substring(0, 100)}`);
+      }
       
       // Set the appropriate content type for XML
       res.set('Content-Type', 'application/xml');

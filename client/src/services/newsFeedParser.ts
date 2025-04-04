@@ -35,28 +35,74 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
   try {
     console.log("Parsing XML feed for school:", schoolId);
     
-    // Create a mock item to show in development if parsing fails
+    // Create appropriate mock items for the school if parsing fails
     // This ensures we always have some content to show
-    const mockItems: NewsItem[] = [
-      {
-        id: `${schoolId}-mock1`,
-        schoolId,
-        title: "Toledo Rockets Win Big in Conference Showdown",
-        summary: "The Toledo Rockets dominated their conference rivals in an impressive display of teamwork and skill.",
-        publishedAt: new Date().toISOString(),
-        url: "https://utrockets.com",
-        imageUrl: "https://static.gozips.com/images/2023/2/16/WBB_TOR_PREVIEW_2.jpg"
-      },
-      {
-        id: `${schoolId}-mock2`,
-        schoolId,
-        title: "Rocket Football Prepares for Season Opener",
-        summary: "Coach Jason Candle discusses the team's preparation for their upcoming game against rival Bowling Green.",
-        publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-        url: "https://utrockets.com",
-        imageUrl: "https://static.gozips.com/images/logos/toledo.png"
-      }
-    ];
+    let mockItems: NewsItem[];
+    
+    if (schoolId === 'ballstate') {
+      mockItems = [
+        {
+          id: `${schoolId}-mock1`,
+          schoolId,
+          title: "Ball State Announces New Athletics Director",
+          summary: "Ball State University has appointed a new athletics director who brings years of experience and a vision for the future of Cardinals athletics.",
+          publishedAt: new Date().toISOString(),
+          url: "https://ballstatesports.com",
+          imageUrl: "https://ballstatesports.com/images/logos/site/site.png"
+        },
+        {
+          id: `${schoolId}-mock2`,
+          schoolId,
+          title: "Cardinals Basketball Prepares for Season Opener",
+          summary: "The Ball State Cardinals basketball team is gearing up for their season opener against a tough non-conference opponent.",
+          publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+          url: "https://ballstatesports.com",
+          imageUrl: "https://ballstatesports.com/images/logos/site/site.png"
+        }
+      ];
+    } else if (schoolId === 'toledo') {
+      mockItems = [
+        {
+          id: `${schoolId}-mock1`,
+          schoolId,
+          title: "Toledo Rockets Win Big in Conference Showdown",
+          summary: "The Toledo Rockets dominated their conference rivals in an impressive display of teamwork and skill.",
+          publishedAt: new Date().toISOString(),
+          url: "https://utrockets.com",
+          imageUrl: "https://static.gozips.com/images/logos/toledo.png"
+        },
+        {
+          id: `${schoolId}-mock2`,
+          schoolId,
+          title: "Rocket Football Prepares for Season Opener",
+          summary: "Coach Jason Candle discusses the team's preparation for their upcoming game against rival Bowling Green.",
+          publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+          url: "https://utrockets.com",
+          imageUrl: "https://static.gozips.com/images/logos/toledo.png"
+        }
+      ];
+    } else {
+      mockItems = [
+        {
+          id: `${schoolId}-mock1`,
+          schoolId,
+          title: "MAC Sports News Update",
+          summary: "Latest news and updates from around the Mid-American Conference.",
+          publishedAt: new Date().toISOString(),
+          url: "https://getsomemaction.com",
+          imageUrl: "https://getsomemaction.com/images/logos/mac-logo.png"
+        },
+        {
+          id: `${schoolId}-mock2`,
+          schoolId,
+          title: "MAC Championship Preview",
+          summary: "A look ahead to the upcoming MAC Championship games across all sports.",
+          publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+          url: "https://getsomemaction.com",
+          imageUrl: "https://getsomemaction.com/images/logos/mac-logo.png"
+        }
+      ];
+    }
     
     try {
       // Sometimes the RSS feed returns HTML instead of XML, so we'll check for that
@@ -72,34 +118,52 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
       
       const items: NewsItem[] = [];
   
+      // Debug the XML structure
+      if (schoolId === 'ballstate') {
+        console.log("Ball State XML structure debug:");
+        console.log("Number of item elements:", $('item').length);
+        
+        // Extract the first item element to debug its structure
+        const firstItem = $('item').first();
+        if (firstItem.length > 0) {
+          console.log("First item structure:", {
+            tagName: firstItem.prop('tagName'),
+            title: firstItem.find('title').text(),
+            link: firstItem.find('link').text(),
+            hasDescription: firstItem.find('description').length > 0,
+            descriptionLength: firstItem.find('description').text().length
+          });
+        }
+      }
+      
       // Find all RSS items/entries
       $('item, entry').each((i, element) => {
         try {
-          const title = $(element).find('title').text().trim();
+          const el = $(element);
+          const title = el.find('title').text().trim();
           
           if (!title) {
             console.warn("Found item without title, skipping");
             return; // Skip items without title
           }
           
-          // Try different ways to get the link
-          let link = $(element).find('link').text().trim();
-          if (!link) {
-            const linkWithAttr = $(element).find('link[href]').attr('href');
-            if (linkWithAttr) {
-              link = linkWithAttr;
+          // Get link - Ball State has a different structure
+          let link = '';
+          if (schoolId === 'ballstate') {
+            // Direct child text node for 'link'
+            link = el.children('link').text().trim();
+          } else {
+            link = el.find('link').text().trim();
+            // Try for link with href attribute if text node is empty
+            if (!link) {
+              const linkWithAttr = el.find('link[href]').attr('href');
+              if (linkWithAttr) {
+                link = linkWithAttr;
+              }
             }
           }
           
-          // Special handling for Ball State feed which has link as direct child node text
-          if (!link && schoolId === 'ballstate') {
-            const linkNode = $(element).children('link').first();
-            if (linkNode.length > 0) {
-              link = linkNode.text().trim();
-            }
-          }
-          
-          // If we still don't have a link, create a default one based on schoolId
+          // If we still don't have a link, use a default based on schoolId
           if (!link) {
             if (schoolId === 'ballstate') {
               link = `https://ballstatesports.com/`;
@@ -110,12 +174,23 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
             }
           }
           
-          const pubDate = $(element).find('pubDate, published').text().trim();
+          // Get publication date
+          const pubDate = el.find('pubDate, published').text().trim();
           
-          // Try different ways to get the description
-          let description = $(element).find('description').text().trim();
-          if (!description) {
-            description = $(element).find('content\\:encoded, content, summary').text().trim();
+          // Try to get description/content
+          let description = '';
+          
+          // Ball State puts description in CDATA
+          if (schoolId === 'ballstate') {
+            // Get raw description with CDATA
+            description = el.find('description').html() || '';
+            // Remove CDATA tags if present
+            description = description.replace(/^<!\[CDATA\[|\]\]>$/g, '');
+          } else {
+            description = el.find('description').text().trim();
+            if (!description) {
+              description = el.find('content\\:encoded, content, summary').text().trim();
+            }
           }
           
           console.log(`Processing news item: "${title.substring(0, 30)}..."`);
@@ -124,21 +199,26 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
           let imageUrl: string | undefined = undefined;
           if (description) {
             try {
-              // Handle CDATA sections in description
-              const cleanDescription = description.replace(/^<!\[CDATA\[|\]\]>$/g, '');
-              const descriptionHtml = cheerio.load(cleanDescription);
+              // Load the description as HTML
+              const descriptionHtml = cheerio.load(description);
               const img = descriptionHtml('img').first();
               if (img.length > 0) {
                 imageUrl = img.attr('src');
+                // Fix relative URLs
+                if (imageUrl && !imageUrl.startsWith('http')) {
+                  if (schoolId === 'ballstate') {
+                    imageUrl = `https://ballstatesports.com${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+                  }
+                }
               }
             } catch (descError) {
-              console.warn("Could not parse HTML in description");
+              console.warn("Could not parse HTML in description", descError);
             }
           }
           
           // Also check for media:content or enclosure tags for images
           if (!imageUrl) {
-            const mediaContent = $(element).find('media\\:content[medium="image"], media\\:thumbnail, enclosure[type^="image"]');
+            const mediaContent = el.find('media\\:content[medium="image"], media\\:thumbnail, enclosure[type^="image"]');
             if (mediaContent.length > 0) {
               imageUrl = mediaContent.attr('url') || mediaContent.attr('src');
             }
@@ -158,9 +238,7 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
           // Clean up HTML from the description to use as summary
           let summary = "No description available.";
           if (description) {
-            // Handle CDATA sections
-            const cleanDescription = description.replace(/^<!\[CDATA\[|\]\]>$/g, '');
-            summary = cleanDescription.replace(/<\/?[^>]+(>|$)/g, " ").trim(); // Remove HTML tags
+            summary = description.replace(/<\/?[^>]+(>|$)/g, " ").trim(); // Remove HTML tags
           }
           
           // Create a unique ID
@@ -193,6 +271,7 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
           console.log(`Successfully parsed news item: "${title.substring(0, 30)}..." for ${schoolId}`);
         } catch (itemError) {
           console.error("Error parsing individual RSS item", itemError);
+          console.error(itemError);
         }
       });
   
