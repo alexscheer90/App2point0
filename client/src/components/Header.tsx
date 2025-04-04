@@ -96,14 +96,12 @@ interface TabLinkProps {
 
 const TabLink = ({ to, active, children }: TabLinkProps) => {
   return (
-    <Link href={to}>
-      <a className={`px-3 py-2 text-sm font-semibold focus:outline-none ${
-        active 
-          ? "text-[#C8102E] border-b-2 border-[#C8102E]" 
-          : "text-gray-600 hover:text-gray-800"
-      }`}>
-        {children}
-      </a>
+    <Link href={to} className={`px-3 py-2 text-sm font-semibold focus:outline-none ${
+      active 
+        ? "text-[#C8102E] border-b-2 border-[#C8102E]" 
+        : "text-gray-600 hover:text-gray-800"
+    }`}>
+      {children}
     </Link>
   );
 };
