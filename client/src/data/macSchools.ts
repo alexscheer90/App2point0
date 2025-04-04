@@ -29,7 +29,7 @@ export const macSchools: School[] = [
   {
     id: "ballstate",
     name: "Ball State",
-    shortName: "BSU",
+    shortName: "Ball St",
     mascot: "Cardinals",
     primaryColor: "#BA0C2F",
     secondaryColor: "#FFFFFF",
@@ -84,7 +84,7 @@ export const macSchools: School[] = [
   {
     id: "kentstate",
     name: "Kent State",
-    shortName: "Kent",
+    shortName: "Kent St",
     mascot: "Golden Flashes",
     primaryColor: "#002664",
     secondaryColor: "#EAAB00",
