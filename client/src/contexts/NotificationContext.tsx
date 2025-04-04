@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useCallback, useState } from 'react';
 import { Game, NewsItem } from '@shared/schema';
 import { useNotifications } from '../hooks/useNotifications';
 import { webSocketService } from '../services/webSocketService';
@@ -15,7 +15,7 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { hasPermission, isNotificationEnabled } = useNotifications();
-  const [favoriteSchoolId, setFavoriteSchoolId] = React.useState<string | null>(null);
+  const [favoriteSchoolId, setFavoriteSchoolId] = useState<string | null>(null);
 
   // Load favorite school
   useEffect(() => {

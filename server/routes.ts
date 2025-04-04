@@ -288,8 +288,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     // Send a welcome message
     ws.send(JSON.stringify({ 
-      type: 'INFO', 
-      data: { message: 'Connected to Mobile #MACtion WebSocket server' } 
+      type: 'info', 
+      payload: { message: 'Connected to Mobile #MACtion WebSocket server' } 
     }));
   });
 
