@@ -5,6 +5,7 @@ import StandingsTable from "../components/StandingsTable";
 import { useStandings, useMacSports } from "../hooks/useStandings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sport } from "@shared/schema";
+import macLogo from "@assets/IMG_0693.png";
 
 const StandingsPage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("football");
@@ -35,17 +36,28 @@ const StandingsPage = () => {
         />
       </div>
       
-      <div className="px-4">
-        <h2 className="font-bold text-lg mb-3">{sportName} Standings</h2>
+      <div className="px-4 relative">
+        {/* MAC Logo in top right corner */}
+        <div className="absolute top-0 right-0 w-20 h-20 md:w-24 md:h-24 opacity-90">
+          <img 
+            src={macLogo} 
+            alt="MAC Conference Logo" 
+            className="w-full h-full object-contain"
+          />
+        </div>
+        
+        <h2 className="font-bold text-xl mb-3">{sportName} Standings</h2>
         
         {isStandingsLoading ? (
           <Skeleton className="w-full h-96" />
         ) : standings && standings.length > 0 ? (
-          <StandingsTable 
-            sport={selectedSport}
-            entries={standings}
-            favoriteSchoolId={favoriteSchoolData?.favoriteSchool || null}
-          />
+          <div className="relative">
+            <StandingsTable 
+              sport={selectedSport}
+              entries={standings}
+              favoriteSchoolId={favoriteSchoolData?.favoriteSchool || null}
+            />
+          </div>
         ) : (
           <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200">
             <p className="text-gray-500">No standings data available for {sportName}.</p>
