@@ -17,15 +17,14 @@ import { useToast } from '@/hooks/use-toast';
 // Import podcast logo
 import podcastLogoImg from '../assets/msc-podcast-logo.png';
 
-// Podcast categories
-const podcastCategories = [
-  "All Episodes", "Football", "Basketball", "Olympic Sports", "Interviews"
-];
+// MAC colors for consistent theme
+const MAC_NAVY = "#0C2340";
+const MAC_RED = "#C8102E";
 
 const PodcastPage = () => {
   const { toast } = useToast();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [activeCategory, setActiveCategory] = useState("All Episodes");
+  // No longer using categories
   const [playingEpisode, setPlayingEpisode] = useState<string | null>(null);
   const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -287,22 +286,7 @@ const PodcastPage = () => {
             </div>
           )}
           
-          {/* Episode Categories */}
-          <div className="mb-4 overflow-x-auto">
-            <div className="flex gap-2">
-              {podcastCategories.map(category => (
-                <Button
-                  key={category}
-                  variant={activeCategory === category ? "default" : "outline"}
-                  size="sm"
-                  className={activeCategory === category ? "bg-[#C8102E]" : ""}
-                  onClick={() => setActiveCategory(category)}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-          </div>
+
           
           {/* Episode List */}
           <div className="space-y-3">
@@ -390,7 +374,7 @@ const PodcastPage = () => {
               ))
             ) : (
               <Card className="p-6 text-center">
-                <p className="text-gray-500">No episodes available in this category.</p>
+                <p className="text-gray-500">No episodes available.</p>
               </Card>
             )}
           </div>
