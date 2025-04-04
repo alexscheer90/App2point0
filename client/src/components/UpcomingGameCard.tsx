@@ -2,6 +2,7 @@ import { Game } from "@shared/schema";
 import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import { format } from "date-fns";
+import ShareButton from "./ShareButton";
 
 interface UpcomingGameCardProps {
   game: Game;
@@ -43,11 +44,34 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
     formattedDate = `${format(gameDate, "MMM d")}, ${formattedDate}`;
   }
   
+  // Create a share URL for the game
+  const shareUrl = `/games/${game.id}`;
+  
+  // Create share content
+  const readableDate = format(gameDate, "MMMM d, yyyy 'at' h:mm a");
+  const shareTitle = `${homeTeam.name} vs ${awayTeam.name} - ${readableDate}`;
+  const description = `Don't miss this upcoming ${sport.name} matchup on Mobile #MACtion!`;
+  
+  const handleShareClick = (e: React.MouseEvent) => {
+    // Stop propagation to prevent any parent onClick from firing
+    e.stopPropagation();
+  };
+  
   return (
     <div className="bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200">
-      <div className="bg-gray-100 text-xs font-semibold px-3 py-1 flex justify-between">
+      <div className="bg-gray-100 text-xs font-semibold px-3 py-1 flex justify-between items-center">
         <span>{sport.name} • {sport.gender !== "mixed" ? sport.gender.charAt(0).toUpperCase() + sport.gender.slice(1) : "Mixed"}</span>
-        <span>{formattedDate}</span>
+        <div className="flex items-center space-x-2">
+          <span>{formattedDate}</span>
+          <div onClick={handleShareClick}>
+            <ShareButton 
+              url={shareUrl}
+              title={shareTitle}
+              description={description}
+              compact={true}
+            />
+          </div>
+        </div>
       </div>
       <div className="p-3">
         <div className="flex justify-between items-center mb-2">
@@ -62,8 +86,13 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
             </div>
             <span className="font-semibold text-sm">{homeTeam.name}</span>
           </div>
+          {game.isRivalryGame && (
+            <span className="text-xs font-semibold text-[#C8102E] flex items-center">
+              <span className="inline-block mr-1">🏆</span> Rivalry Game
+            </span>
+          )}
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <div 
               className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
@@ -76,10 +105,28 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
             <span className="font-semibold text-sm">{awayTeam.name}</span>
           </div>
         </div>
+        
+        <div className="flex justify-end pt-2 border-t border-gray-100 mt-2">
+          <div onClick={handleShareClick} className="hidden md:block">
+            <ShareButton 
+              url={shareUrl}
+              title={shareTitle}
+              description={description}
+            />
+          </div>
+        </div>
       </div>
       {game.venue && (
-        <div className="bg-gray-100 text-xs px-3 py-2">
+        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
           <span>{game.venue}</span>
+          <div onClick={handleShareClick} className="hidden md:block">
+            <ShareButton 
+              url={shareUrl}
+              title={shareTitle}
+              description={description}
+              compact={true}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import { NewsItem as NewsItemType } from "@shared/schema";
 import { useMacSchools } from "../hooks/useSchool";
 import { formatDistanceToNow } from "date-fns";
+import ShareButton from "./ShareButton";
 
 interface NewsItemProps {
   news: NewsItemType;
@@ -33,6 +34,14 @@ const NewsItem = ({ news, onClick }: NewsItemProps) => {
   
   const timeAgo = formatDistanceToNow(new Date(news.publishedAt), { addSuffix: true });
   
+  // Create a share URL for the news item
+  const shareUrl = `/news/${news.id}`;
+  
+  const handleShareClick = (e: React.MouseEvent) => {
+    // Stop propagation to prevent the parent onClick from firing
+    e.stopPropagation();
+  };
+  
   return (
     <div 
       className="bg-white rounded-lg shadow-sm p-4 mb-3 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
@@ -56,16 +65,27 @@ const NewsItem = ({ news, onClick }: NewsItemProps) => {
           </div>
         )}
         <div className="flex-1">
-          <div className="flex items-center mb-1">
-            <div 
-              className="w-4 h-4 rounded-full mr-1 flex items-center justify-center"
-              style={{ backgroundColor: school.primaryColor }}
-            >
-              <span className="text-[0.5rem] font-bold" style={{ color: school.secondaryColor }}>
-                {school.shortName.charAt(0)}
-              </span>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center">
+              <div 
+                className="w-4 h-4 rounded-full mr-1 flex items-center justify-center"
+                style={{ backgroundColor: school.primaryColor }}
+              >
+                <span className="text-[0.5rem] font-bold" style={{ color: school.secondaryColor }}>
+                  {school.shortName.charAt(0)}
+                </span>
+              </div>
+              <span className="text-xs text-gray-600">{school.name} • {timeAgo}</span>
             </div>
-            <span className="text-xs text-gray-600">{school.name} • {timeAgo}</span>
+            
+            <div onClick={handleShareClick}>
+              <ShareButton 
+                url={shareUrl}
+                title={`${news.title} - Mobile #MACtion`}
+                description={news.summary}
+                compact={true}
+              />
+            </div>
           </div>
           <h3 className="font-semibold text-sm mb-1">{news.title}</h3>
           <p className="text-xs text-gray-600 line-clamp-2">{news.summary}</p>

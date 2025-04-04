@@ -1,6 +1,8 @@
 import { Game } from "@shared/schema";
 import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
+import ShareButton from "./ShareButton";
+import { format } from "date-fns";
 
 interface GameScoreCardProps {
   game: Game;
@@ -28,14 +30,50 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     return null;
   }
   
+  // Create a share URL for the game
+  const shareUrl = `/games/${game.id}`;
+  
+  // Create a share title based on the game status
+  let shareTitle = '';
+  let description = '';
+  
+  if (game.status === 'final') {
+    shareTitle = `Final: ${homeTeam.name} ${game.homeTeamScore}, ${awayTeam.name} ${game.awayTeamScore}`;
+    description = `Check out the final score of this ${sport.name} game from Mobile #MACtion!`;
+  } else if (game.status === 'live') {
+    shareTitle = `LIVE: ${homeTeam.name} ${game.homeTeamScore}, ${awayTeam.name} ${game.awayTeamScore}`;
+    description = `Watch this ${sport.name} game live on Mobile #MACtion!`;
+  } else {
+    const gameDate = game.startTime ? format(new Date(game.startTime), 'MMM d, yyyy') : '';
+    shareTitle = `${homeTeam.name} vs ${awayTeam.name} - ${gameDate}`;
+    description = `Don't miss this upcoming ${sport.name} matchup on Mobile #MACtion!`;
+  }
+  
+  const handleShareClick = (e: React.MouseEvent) => {
+    // Stop propagation to prevent any parent onClick from firing
+    e.stopPropagation();
+  };
+  
   return (
     <div className="bg-white rounded-lg shadow-md mb-3 overflow-hidden border border-gray-200">
       <div className="bg-[#0C2340] text-white text-xs font-semibold px-3 py-1 flex justify-between">
         <span>{sport.name} • {sport.gender !== "mixed" ? sport.gender.charAt(0).toUpperCase() + sport.gender.slice(1) : "Mixed"}</span>
-        <span className="flex items-center">
-          <span className="w-2 h-2 rounded-full bg-[#28A745] mr-1 animate-pulse"></span>
-          LIVE • {game.period || ""}
-        </span>
+        <div className="flex items-center space-x-2">
+          {game.status === 'live' && (
+            <span className="flex items-center">
+              <span className="w-2 h-2 rounded-full bg-[#28A745] mr-1 animate-pulse"></span>
+              LIVE • {game.period || ""}
+            </span>
+          )}
+          <div onClick={handleShareClick}>
+            <ShareButton 
+              url={shareUrl}
+              title={shareTitle}
+              description={description}
+              compact={true}
+            />
+          </div>
+        </div>
       </div>
       <div className="p-3">
         <div className="flex justify-between items-center mb-2">
@@ -68,8 +106,28 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
         </div>
       </div>
       {game.situation && (
-        <div className="bg-gray-100 text-xs px-3 py-2">
+        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
           <span>{game.situation}</span>
+          <div onClick={handleShareClick} className="hidden md:block">
+            <ShareButton 
+              url={shareUrl}
+              title={shareTitle}
+              description={description}
+              compact={true}
+            />
+          </div>
+        </div>
+      )}
+      {!game.situation && (
+        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-end">
+          <div onClick={handleShareClick} className="hidden md:block">
+            <ShareButton 
+              url={shareUrl}
+              title={shareTitle}
+              description={description}
+              compact={true}
+            />
+          </div>
         </div>
       )}
     </div>
