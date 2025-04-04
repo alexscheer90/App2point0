@@ -44,7 +44,7 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
         )}
       </div>
       <div className="p-3 text-center">
-        <h3 className="font-bold">{school.name}</h3>
+        <h3 className="font-bold italic">{school.name}</h3>
         <p className="text-xs text-gray-600">{school.mascot}</p>
       </div>
     </Link>

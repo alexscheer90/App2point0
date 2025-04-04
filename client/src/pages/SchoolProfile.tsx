@@ -114,7 +114,7 @@ const SchoolProfile = () => {
         return emuLogo;
       case "kentstate":
         return kentStateLogo;
-      case "miami":
+      case "miamioh": // Fixed Miami school ID
         return miamiLogo;
       case "northernillinois":
         return niuLogo;
@@ -195,11 +195,10 @@ const SchoolProfile = () => {
         >
           <div className="flex items-center">
             <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center mr-3 overflow-hidden"
+              className="w-16 h-16 flex items-center justify-center mr-3 overflow-hidden"
               style={{ 
-                backgroundColor: school.secondaryColor,
-                border: `2px solid ${school.secondaryColor}`,
-                padding: getSchoolLogo(school.id) ? "2px" : "0"
+                backgroundColor: "transparent",
+                padding: "0"
               }}
             >
               {getSchoolLogo(school.id) ? (
@@ -215,7 +214,7 @@ const SchoolProfile = () => {
               )}
             </div>
             <div>
-              <CardTitle className="text-xl">{school.name}</CardTitle>
+              <CardTitle className="text-xl italic">{school.name}</CardTitle>
               <CardDescription 
                 className="font-semibold"
                 style={{ 
@@ -570,11 +569,10 @@ const SchoolProfile = () => {
               
               <div className="flex items-center mb-3">
                 <div 
-                  className="w-5 h-5 mr-2 rounded-full flex items-center justify-center overflow-hidden"
+                  className="w-6 h-6 mr-2 flex items-center justify-center overflow-hidden"
                   style={{ 
-                    backgroundColor: school.primaryColor,
-                    border: `1px solid ${school.secondaryColor}`,
-                    padding: getSchoolLogo(school.id) ? "1px" : "0"
+                    backgroundColor: "transparent",
+                    padding: "0"
                   }}
                 >
                   {getSchoolLogo(school.id) ? (
@@ -590,7 +588,7 @@ const SchoolProfile = () => {
                   )}
                 </div>
                 <span className="text-xs text-gray-600">
-                  {school.name} • {new Date(selectedNews.publishedAt).toLocaleDateString()}
+                  <span className="italic">{school.name}</span> • {new Date(selectedNews.publishedAt).toLocaleDateString()}
                 </span>
               </div>
               
