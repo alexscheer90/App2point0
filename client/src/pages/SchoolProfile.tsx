@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic } from "lucide-react";
+import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause } from "lucide-react";
 import { useSchool } from "../hooks/useSchool";
 import { useSchoolGames } from "../hooks/useScores";
 import { useSchoolNews } from "../hooks/useNews";

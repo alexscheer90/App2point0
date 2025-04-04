@@ -1,3 +1,4 @@
+import React from 'react';
 import { StandingsEntry } from "@shared/schema";
 import { useMacSchools } from "../hooks/useSchool";
 import { ScrollArea } from "@/components/ui/scroll-area";
