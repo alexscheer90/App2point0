@@ -1,6 +1,7 @@
-import { Search, Bell } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import NotificationBell from "./NotificationBell";
 
 interface HeaderProps {
   activeTab?: string; // Made optional since we're no longer using it
@@ -28,18 +29,7 @@ const Header = ({ activeTab }: HeaderProps) => {
               </Tooltip>
             </TooltipProvider>
             
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-[#0a1d36]">
-                    <Bell className="h-6 w-6" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Notifications (Coming soon)</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <NotificationBell />
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import FavoriteSchoolBanner from "./components/FavoriteSchoolBanner";
 import FavoriteSchoolModal from "./components/FavoriteSchoolModal";
+import { NotificationProvider } from "./contexts/NotificationContext";
 
 import ScoresPage from "./pages/ScoresPage";
 import StandingsPage from "./pages/StandingsPage";
@@ -17,6 +18,7 @@ import RivalriesPage from "./pages/RivalriesPage";
 import SoundsPage from "./pages/SoundsPage";
 import LocalEatsPage from "./pages/LocalEatsPage";
 import PodcastPage from "./pages/PodcastPage";
+import TestNotificationsPage from "./pages/TestNotificationsPage";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -29,35 +31,38 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-lg">
-        <Header />
-        
-        <FavoriteSchoolBanner onChangeFavorite={() => setShowFavoriteModal(true)} />
-        
-        <main className="flex-1 overflow-y-auto pb-16">
-          <Switch>
-            <Route path="/" component={ScoresPage} />
-            <Route path="/scores" component={ScoresPage} />
-            <Route path="/standings" component={StandingsPage} />
-            <Route path="/news" component={NewsPage} />
-            <Route path="/schools" component={SchoolsPage} />
-            <Route path="/schools/:id" component={SchoolProfile} />
-            <Route path="/rivalries" component={RivalriesPage} />
-            <Route path="/sounds" component={SoundsPage} />
-            <Route path="/eats" component={LocalEatsPage} />
-            <Route path="/podcast" component={PodcastPage} />
-            <Route component={NotFound} />
-          </Switch>
-        </main>
-        
-        <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
-        
-        <FavoriteSchoolModal 
-          isOpen={showFavoriteModal} 
-          onClose={() => setShowFavoriteModal(false)}
-        />
-      </div>
-      <Toaster />
+      <NotificationProvider>
+        <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-lg">
+          <Header />
+          
+          <FavoriteSchoolBanner onChangeFavorite={() => setShowFavoriteModal(true)} />
+          
+          <main className="flex-1 overflow-y-auto pb-16">
+            <Switch>
+              <Route path="/" component={ScoresPage} />
+              <Route path="/scores" component={ScoresPage} />
+              <Route path="/standings" component={StandingsPage} />
+              <Route path="/news" component={NewsPage} />
+              <Route path="/schools" component={SchoolsPage} />
+              <Route path="/schools/:id" component={SchoolProfile} />
+              <Route path="/rivalries" component={RivalriesPage} />
+              <Route path="/sounds" component={SoundsPage} />
+              <Route path="/eats" component={LocalEatsPage} />
+              <Route path="/podcast" component={PodcastPage} />
+              <Route path="/test-notifications" component={TestNotificationsPage} />
+              <Route component={NotFound} />
+            </Switch>
+          </main>
+          
+          <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
+          
+          <FavoriteSchoolModal 
+            isOpen={showFavoriteModal} 
+            onClose={() => setShowFavoriteModal(false)}
+          />
+        </div>
+        <Toaster />
+      </NotificationProvider>
     </QueryClientProvider>
   );
 }

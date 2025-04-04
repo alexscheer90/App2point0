@@ -61,7 +61,7 @@ export const gameSchema = z.object({
   awayTeamScore: z.number().optional(),
   startTime: z.string(),
   status: gameStatusSchema,
-  period: z.string().optional(),
+  period: z.number().optional(),
   clock: z.string().optional(),
   situation: z.string().optional(),
   venue: z.string().optional(),

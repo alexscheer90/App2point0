@@ -2,8 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertUserPreferencesSchema } from "@shared/schema";
+import { insertUserPreferencesSchema, Game, NewsItem } from "@shared/schema";
 import axios from "axios";
+import { WebSocketServer, WebSocket } from "ws";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoints for user preferences
@@ -226,6 +227,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+
+  // Create WebSocket server on a distinct path
+  const wss = new WebSocketServer({ 
+    server: httpServer, 
+    path: '/ws' 
+  });
+  
+  console.log('WebSocket server initialized on path: /ws');
+
+  // Store connected clients
+  const clients = new Set<WebSocket>();
+
+  // Helper function to broadcast to all connected clients
+  const broadcast = (data: any) => {
+    const message = JSON.stringify(data);
+    clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  };
+
+  // WebSocket connection handler
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    clients.add(ws);
+
+    // Handle incoming messages
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Received message:', data);
+
+        // Handle different message types
+        switch (data.type) {
+          case 'PING':
+            // Respond to keep-alive pings
+            ws.send(JSON.stringify({ type: 'PING' }));
+            break;
+          default:
+            console.log('Unknown message type:', data.type);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    });
+
+    // Handle client disconnection
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      clients.delete(ws);
+    });
+
+    // Handle errors
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      clients.delete(ws);
+    });
+
+    // Send a welcome message
+    ws.send(JSON.stringify({ 
+      type: 'INFO', 
+      data: { message: 'Connected to Mobile #MACtion WebSocket server' } 
+    }));
+  });
+
+  // Setup demo notifications for testing
+  // In a real app, these would be triggered by real events
+  setTimeout(() => {
+    // Sample game update for testing
+    const gameUpdate = {
+      type: 'game_update',
+      payload: {
+        id: 'game_1',
+        sportId: 'football',
+        homeTeamId: 'toledo',
+        awayTeamId: 'bgsu',
+        homeTeamScore: 24,
+        awayTeamScore: 21,
+        startTime: new Date().toISOString(),
+        status: 'live' as const,
+        period: 4,
+        clock: '2:30',
+        situation: 'Toledo ball, 3rd and 8',
+        venue: 'Glass Bowl',
+        isRivalryGame: true
+      } as Game
+    };
+    
+    broadcast(gameUpdate);
+    console.log('Sent test game update');
+    
+    // Sample news update for testing
+    setTimeout(() => {
+      const newsUpdate = {
+        type: 'news_update',
+        payload: {
+          id: 'news_1',
+          schoolId: 'toledo',
+          title: 'Toledo Takes Lead in Rivalry Game',
+          summary: 'Rockets score late touchdown to take lead over Falcons',
+          publishedAt: new Date().toISOString(),
+          url: 'https://utrockets.com/news/2025/4/4/football-rockets-take-lead'
+        } as NewsItem
+      };
+      
+      broadcast(newsUpdate);
+      console.log('Sent test news update');
+    }, 10000); // 10 seconds after game update
+  }, 30000); // 30 seconds after server start
 
   return httpServer;
 }
