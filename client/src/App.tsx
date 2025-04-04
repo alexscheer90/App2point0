@@ -30,9 +30,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-lg">
-        <Header 
-          activeTab={currentRoute.substring(1).split('/')[0]} 
-        />
+        <Header />
         
         <FavoriteSchoolBanner onChangeFavorite={() => setShowFavoriteModal(true)} />
         

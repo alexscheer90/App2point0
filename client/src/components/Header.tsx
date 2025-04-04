@@ -1,10 +1,9 @@
-import { Link } from "wouter";
-import { Search, Bell, Trophy, Music, Utensils, Headphones } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface HeaderProps {
-  activeTab: string;
+  activeTab?: string; // Made optional since we're no longer using it
 }
 
 const Header = ({ activeTab }: HeaderProps) => {
@@ -44,65 +43,7 @@ const Header = ({ activeTab }: HeaderProps) => {
           </div>
         </div>
       </div>
-      
-      {/* Tabs Navigation */}
-      <div className="px-4 pt-1 pb-0 flex space-x-4 overflow-x-auto bg-white text-gray-800 border-b border-gray-200">
-        <TabLink to="/scores" active={activeTab === "scores"}>
-          Scores
-        </TabLink>
-        <TabLink to="/standings" active={activeTab === "standings"}>
-          Standings
-        </TabLink>
-        <TabLink to="/news" active={activeTab === "news"}>
-          News
-        </TabLink>
-        <TabLink to="/schools" active={activeTab === "schools"}>
-          Schools
-        </TabLink>
-        <TabLink to="/rivalries" active={activeTab === "rivalries"}>
-          <div className="flex items-center gap-1">
-            <Trophy className="h-3 w-3" />
-            <span>Rivalries</span>
-          </div>
-        </TabLink>
-        <TabLink to="/sounds" active={activeTab === "sounds"}>
-          <div className="flex items-center gap-1">
-            <Music className="h-3 w-3" />
-            <span>Sounds</span>
-          </div>
-        </TabLink>
-        <TabLink to="/eats" active={activeTab === "eats"}>
-          <div className="flex items-center gap-1">
-            <Utensils className="h-3 w-3" />
-            <span>Eats</span>
-          </div>
-        </TabLink>
-        <TabLink to="/podcast" active={activeTab === "podcast"}>
-          <div className="flex items-center gap-1">
-            <Headphones className="h-3 w-3" />
-            <span>Podcast</span>
-          </div>
-        </TabLink>
-      </div>
     </header>
-  );
-};
-
-interface TabLinkProps {
-  to: string;
-  active: boolean;
-  children: React.ReactNode;
-}
-
-const TabLink = ({ to, active, children }: TabLinkProps) => {
-  return (
-    <Link href={to} className={`px-3 py-2 text-sm font-semibold focus:outline-none ${
-      active 
-        ? "text-[#C8102E] border-b-2 border-[#C8102E]" 
-        : "text-gray-600 hover:text-gray-800"
-    }`}>
-      {children}
-    </Link>
   );
 };
 
