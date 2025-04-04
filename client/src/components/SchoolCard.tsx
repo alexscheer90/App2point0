@@ -12,10 +12,10 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
         className="h-24 flex items-center justify-center"
         style={{ 
           backgroundColor: 
+            school.id === "bowlinggreen" ? school.secondaryColor :
+            school.id === "centralmichigan" ? school.secondaryColor :
             school.id === "buffalo" || 
-            school.id === "easternmichigan" || 
-            school.id === "centralmichigan" || 
-            school.id === "bowlinggreen" ? 
+            school.id === "easternmichigan" ? 
               "white" : school.primaryColor
         }}
       >
@@ -23,9 +23,7 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
           // When logo is available
           <div className={`h-16 w-16 flex items-center justify-center ${
             school.id === "buffalo" || 
-            school.id === "easternmichigan" || 
-            school.id === "centralmichigan" || 
-            school.id === "bowlinggreen" ? 
+            school.id === "easternmichigan" ? 
               "border border-gray-200 rounded-full" : ""
           }`}>
             <img 
