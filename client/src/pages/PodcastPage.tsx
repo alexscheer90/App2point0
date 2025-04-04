@@ -18,8 +18,9 @@ import { useToast } from '@/hooks/use-toast';
 import podcastLogoImg from '../assets/msc-podcast-logo.png';
 
 // MAC colors for consistent theme
-const MAC_NAVY = "#0C2340";
-const MAC_RED = "#C8102E";
+const MAC_NAVY = "#0B213E";
+const MAC_GREEN = "#019E4F";
+const MAC_GRAY = "#9DA5A8";
 
 const PodcastPage = () => {
   const { toast } = useToast();
@@ -184,8 +185,8 @@ const PodcastPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
-        <span className="text-[#C8102E]">MAC</span> Sports Connection
+      <h1 className="text-2xl font-bold mb-4 text-[#0B213E]">
+        <span className="text-[#019E4F]">MAC</span> Sports Connection
       </h1>
       
       <Tabs defaultValue="episodes" className="w-full mb-6">
@@ -200,12 +201,12 @@ const PodcastPage = () => {
           {featuredEpisode && (
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-3 flex items-center">
-                <Headphones className="h-4 w-4 mr-2 text-[#C8102E]" />
+                <Headphones className="h-4 w-4 mr-2 text-[#019E4F]" />
                 Latest Episode
               </h2>
               
               <Card className="overflow-hidden">
-                <div className="bg-gradient-to-r from-[#0C2340] to-[#2D4064] p-4 text-white">
+                <div className="bg-gradient-to-r from-[#0B213E] to-[#019E4F] p-4 text-white">
                   <div className="flex items-center mb-4">
                     <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mr-4 shrink-0">
                       {featuredEpisode.imageUrl ? (
