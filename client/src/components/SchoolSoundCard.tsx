@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Play, Pause, Music, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { useSchool } from '../hooks/useSchool';
 
 interface SchoolSoundCardProps {
   sound: SchoolSound;
@@ -13,6 +14,7 @@ interface SchoolSoundCardProps {
 const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const { data: school } = useSchool(sound.schoolId);
 
   const handlePlayPause = () => {
     if (!sound.audioUrl) return;
@@ -59,10 +61,21 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
           : "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
       )}>
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Music className="h-4 w-4" />
-            {sound.title}
-          </CardTitle>
+          <div className="flex items-center gap-3">
+            {school?.logoUrl && (
+              <div className="w-8 h-8 flex-shrink-0">
+                <img 
+                  src={school.logoUrl} 
+                  alt={`${school.name} logo`} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <Music className="h-4 w-4" />
+              {sound.title}
+            </CardTitle>
+          </div>
           <span className="text-xs text-muted-foreground capitalize">
             {sound.type.replace("_", " ")}
           </span>
