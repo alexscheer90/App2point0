@@ -1,44 +1,58 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getNews } from "../lib/api";
-import { NewsItem } from "@shared/schema";
+import { useQuery } from '@tanstack/react-query';
+import { NewsItem } from '@shared/schema';
+import { fetchSchoolNewsFeed, fetchAllSchoolsNews, schoolFeedUrls } from '../services/newsFeedParser';
+import { useState, useCallback } from 'react';
 
-export function useNews(schoolId: string = "all") {
-  const [page, setPage] = useState(1);
-  const pageSize = 5;
+// Hook to fetch news items from all schools or a specific school
+export function useNews(schoolId: string = 'all') {
+  const [displayCount, setDisplayCount] = useState(5);
   
-  const { data: allNews, isLoading } = useQuery({
-    queryKey: [`/api/news${schoolId === "all" ? "" : `/${schoolId}`}`],
-    queryFn: () => getNews(schoolId),
+  const { data: allNews, isLoading, error } = useQuery<NewsItem[]>({
+    queryKey: ['news', schoolId],
+    queryFn: async () => {
+      if (schoolId === 'all') {
+        // Fetch news from all schools
+        return fetchAllSchoolsNews();
+      } else {
+        // Fetch news from a specific school
+        const feedUrl = schoolFeedUrls[schoolId];
+        if (!feedUrl) {
+          console.warn(`No RSS feed URL configured for school: ${schoolId}`);
+          return [];
+        }
+        return fetchSchoolNewsFeed(schoolId, feedUrl);
+      }
+    },
+    // Keep data fresh but don't re-fetch too often
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
   
-  // Split news into featured and regular
-  const featuredNews = allNews && allNews.length > 0 ? [allNews[0]] : [];
+  // If we have news items, split them into featured and regular news
+  const featuredNews = (allNews && allNews.length > 0) ? [allNews[0]] : [];
+  const regularNews = (allNews && allNews.length > 1) 
+    ? allNews.slice(1, Math.min(displayCount + 1, allNews.length)) 
+    : [];
+    
+  // Function to load more news items
+  const loadMore = useCallback(() => {
+    setDisplayCount(prev => prev + 5);
+  }, []);
   
-  // Paginate regular news
-  const regularNewsAll = allNews ? allNews.slice(1) : [];
-  const regularNews = regularNewsAll.slice(0, page * pageSize);
-  
-  const loadMore = () => {
-    setPage(prev => prev + 1);
-  };
-  
-  const hasMore = regularNews.length < regularNewsAll.length;
+  // Determine if there are more news items to load
+  const hasMore = allNews ? regularNews.length < allNews.length - 1 : false;
   
   return {
     featuredNews,
     regularNews,
     isLoading,
+    error,
     loadMore,
-    hasMore,
+    hasMore
   };
 }
 
+// Convenience hook specifically for school news
 export function useSchoolNews(schoolId: string) {
-  const { data: news, isLoading } = useQuery({
-    queryKey: [`/api/schools/${schoolId}/news`],
-    queryFn: () => getNews(schoolId),
-  });
-  
-  return { news: news || [], isLoading };
+  return useNews(schoolId);
 }

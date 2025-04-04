@@ -126,6 +126,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API endpoint for fetching RSS feeds
+  // This endpoint acts as a proxy to avoid CORS issues when fetching from school websites
+  app.get("/api/fetch-rss", async (req, res) => {
+    try {
+      const url = req.query.url as string;
+      
+      if (!url) {
+        return res.status(400).json({ message: "URL parameter is required" });
+      }
+      
+      // Validate that the URL is from a trusted domain (MAC school websites)
+      const validDomains = [
+        'utrockets.com', // Toledo
+        'bgsufalcons.com', // Bowling Green
+        'emueagles.com', // Eastern Michigan
+        'gozips.com', // Akron
+        'cmuchippewas.com', // Central Michigan
+        'bsubsports.com', // Ball State
+        'ohiobobcats.com', // Ohio
+        'kentstatesports.com', // Kent State
+        'goniuhuskies.com', // Northern Illinois
+        'miamiredhawks.com', // Miami
+        'wmubroncos.com', // Western Michigan
+        'buffalo.edu', // Buffalo
+      ];
+      
+      const urlObj = new URL(url);
+      const isDomainValid = validDomains.some(domain => urlObj.hostname.includes(domain));
+      
+      if (!isDomainValid) {
+        return res.status(403).json({ message: "URL domain not allowed" });
+      }
+      
+      console.log(`Server fetching RSS from: ${url}`);
+      
+      // Make the request to the school website
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
+      
+      // Set the appropriate content type for XML
+      res.set('Content-Type', 'application/xml');
+      
+      // Return the XML content to the client
+      res.send(response.data);
+    } catch (error) {
+      console.error("Error fetching RSS feed:", error);
+      res.status(500).json({ message: "Failed to fetch RSS feed" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

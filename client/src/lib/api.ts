@@ -6,6 +6,7 @@ import { macRivalries } from "../data/macRivalries";
 import { macSchoolSounds } from "../data/macSchoolSounds";
 import { macLocalEats } from "../data/macLocalEats";
 import { scrapeStandingsForSport } from "../services/standingsScraper";
+import { fetchSchoolNewsFeed, fetchAllSchoolsNews, schoolFeedUrls } from "../services/newsFeedParser";
 
 // User preferences
 export async function getFavoriteSchool() {
@@ -168,60 +169,38 @@ export async function getSchoolGames(schoolId: string): Promise<Game[]> {
   );
 }
 
-// News API - Mock implementation
+// News API - Real RSS Feed Implementation
 export async function getNews(schoolId?: string): Promise<NewsItem[]> {
-  // Generate some mock news items
-  const now = new Date();
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-  const twoDaysAgo = new Date(now);
-  twoDaysAgo.setDate(now.getDate() - 2);
-  
-  const mockNews: NewsItem[] = [
-    {
-      id: "news1",
-      schoolId: "toledo",
-      title: "Toledo Rockets Clinch MAC West Division with Perfect Record",
-      summary: "The Rockets continue their winning streak, securing first place with a dominant performance against Western Michigan.",
-      content: "TOLEDO, OH - The Toledo Rockets have officially clinched the MAC West Division title with their eighth consecutive victory, continuing their perfect season. In a dominant display against Western Michigan on Saturday, the Rockets showcased why they've been the team to beat in the conference this year.\n\nHead Coach Jason Candle praised his team's performance, stating, \"These players have worked incredibly hard all season, and they deserve this achievement. But we're not done yet - we've got our sights set on the MAC Championship.\"\n\nQuarterback Dequan Finn completed 18 of 24 passes for 285 yards and three touchdowns in the victory. The Rockets defense also showed up, holding Western Michigan to just 14 points and forcing three turnovers.\n\nWith the division title locked up, Toledo now prepares for their final regular season games before the MAC Championship game in Detroit on December 3rd.",
-      imageUrl: "https://as1.ftcdn.net/v2/jpg/02/19/55/80/1000_F_219558039_bV25HgXWXVOcKdA6Yl3RpGN5AMkbZ9cN.jpg",
-      publishedAt: now.toISOString(),
-    },
-    {
-      id: "news2",
-      schoolId: "buffalo",
-      title: "Buffalo Men's Basketball Adds Five-Star Recruit for 2023",
-      summary: "The Bulls strengthen their roster with a top national recruit expected to make immediate impact.",
-      content: "BUFFALO, NY - The University at Buffalo men's basketball program received a major boost today with the announcement that five-star recruit Marcus Johnson has committed to join the Bulls for the 2023-24 season.\n\nJohnson, a 6'7\" forward from Rochester, NY, is ranked among the top 25 players nationally in his class and chose Buffalo over offers from several Power Five programs. This represents one of the highest-rated recruits in MAC history.\n\n\"We're thrilled to welcome Marcus to our Buffalo family,\" said Bulls head coach Jim Whitesell. \"He's not only an exceptional talent but a high-character young man who will represent our university well both on and off the court.\"\n\nJohnson averaged 24.6 points, 11.3 rebounds, and 4.2 assists per game as a junior at East High School last season.",
-      imageUrl: "https://as2.ftcdn.net/v2/jpg/00/46/76/29/1000_F_46762975_d8QzlIBcNBgfT1vLJ0n9cEiB5HcKGJXh.jpg",
-      publishedAt: yesterday.toISOString(),
-    },
-    {
-      id: "news3",
-      schoolId: "ohio",
-      title: "Ohio Women's Soccer Coach Wins MAC Coach of the Year",
-      summary: "After leading the Bobcats to their best season in program history, Coach Williams receives top conference honor.",
-      content: "ATHENS, OH - Ohio University women's soccer head coach Aaron Williams has been named the Mid-American Conference Coach of the Year after guiding the Bobcats to their most successful season in program history.\n\nIn just his third season at the helm, Williams led Ohio to a 15-2-1 regular season record and the program's first MAC regular season championship since 2004. Under his leadership, the Bobcats also set a school record with 11 consecutive victories.\n\n\"This award is a reflection of our entire program - the players, the assistant coaches, and the support staff,\" Williams said. \"I'm fortunate to work with an amazing group of student-athletes who have bought into our vision and put in the work every day.\"\n\nWilliams has compiled a 41-15-6 record since taking over the program, transforming the Bobcats into a conference powerhouse.",
-      imageUrl: "https://as1.ftcdn.net/v2/jpg/05/09/08/46/1000_F_509084671_Pprh63KuCCT7CrWSY11hY9ioZrzkHpNE.jpg",
-      publishedAt: yesterday.toISOString(),
-    },
-    {
-      id: "news4",
-      schoolId: "ballstate",
-      title: "Ball State Baseball Breaks Home Run Record in Win Against CMU",
-      summary: "Cardinals shatter single-season home run record with still three weeks left in regular season play.",
-      content: "MUNCIE, IN - The Ball State Cardinals baseball team made history yesterday, breaking the program's single-season home run record in impressive fashion during their 12-5 victory over Central Michigan.\n\nWith three home runs in yesterday's game, the Cardinals have now hit 87 home runs this season, surpassing the previous record of 85 set in 2009. What makes the achievement even more remarkable is that the team still has nine regular season games remaining.\n\n\"This group has tremendous power from top to bottom in the lineup,\" said Ball State head coach Rich Maloney. \"But what I'm most proud of is that we're not just swinging for the fences - we're putting together quality at-bats and playing complete baseball.\"\n\nSenior outfielder Zach Cole, who hit his team-leading 16th homer in the game, added, \"It's special to be part of history, but we have bigger goals ahead. We want to win the MAC tournament and make a run in the NCAA regionals.\"",
-      imageUrl: "https://as2.ftcdn.net/v2/jpg/00/91/44/31/1000_F_91443184_SY6XJwd7Qmopttx7IHFpKXD1rjR2kErq.jpg",
-      publishedAt: twoDaysAgo.toISOString(),
-    },
-  ];
-  
-  // Filter by school if needed
-  if (schoolId && schoolId !== "all") {
-    return mockNews.filter(news => news.schoolId === schoolId);
+  try {
+    console.log(`Fetching news for school: ${schoolId || 'all'}`);
+    
+    // Attempt to fetch real news from RSS feeds
+    if (schoolId && schoolId !== "all" && schoolFeedUrls[schoolId]) {
+      // Get news from a specific school's RSS feed
+      return await fetchSchoolNewsFeed(schoolId, schoolFeedUrls[schoolId]);
+    } else if (schoolId === "all" || !schoolId) {
+      // Get news from all schools with configured RSS feeds
+      return await fetchAllSchoolsNews();
+    }
+    
+    // If we reach here, no RSS feed is configured for this school
+    console.warn(`No RSS feed configured for school: ${schoolId}`);
+    
+    // Fallback to mock data for schools without RSS feeds
+    // This ensures we have something to display even if RSS isn't available
+    const now = new Date();
+    
+    // For Toledo, we should never reach here as we've configured its RSS feed
+    if (schoolId === "toledo") {
+      return [];
+    }
+    
+    // Return an empty array for now - in production we'd have mock data for all schools
+    return [];
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    return [];
   }
-  
-  return mockNews;
 }
 
 // Standings API - Implementation using real data from MAC website
