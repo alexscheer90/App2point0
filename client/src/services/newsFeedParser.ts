@@ -21,7 +21,7 @@ export async function fetchSchoolNewsFeed(schoolId: string, feedUrl: string): Pr
     }
 
     const xml = response.data;
-    return parseRssFeed(xml, schoolId);
+    return await parseRssFeed(xml, schoolId);
   } catch (error) {
     console.error(`Error fetching news feed for ${schoolId}:`, error);
     return [];
@@ -31,7 +31,7 @@ export async function fetchSchoolNewsFeed(schoolId: string, feedUrl: string): Pr
 /**
  * Parses RSS XML content into structured NewsItem objects
  */
-function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
+async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> {
   try {
     console.log("Parsing XML feed for school:", schoolId);
     
@@ -277,9 +277,34 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
   
       console.log(`Successfully parsed ${items.length} news items for ${schoolId}`);
       
-      // If we couldn't parse any items, return mock data
+      // If we couldn't parse any items, fetch directly from the API
       if (items.length === 0) {
-        console.warn("No items were successfully parsed. Using mock data instead.");
+        console.warn("No items were successfully parsed. Trying direct fetch method.");
+        try {
+          if (schoolId === 'ballstate') {
+            // Ball State uses Sidearm CMS which has a JSON news API
+            const newsResponse = await fetch('https://ballstatesports.com/services/archives.ashx?path=general');
+            if (newsResponse.ok) {
+              const newsData = await newsResponse.json();
+              if (Array.isArray(newsData) && newsData.length > 0) {
+                return newsData.slice(0, 10).map(item => ({
+                  id: `${schoolId}-${item.headline.substring(0, 10)}`,
+                  schoolId,
+                  title: item.headline,
+                  summary: item.teaser || "Latest news from Ball State Athletics",
+                  publishedAt: new Date(item.posted).toISOString(),
+                  url: `https://ballstatesports.com${item.url}`,
+                  imageUrl: item.photo ? `https://ballstatesports.com${item.photo}` : "https://ballstatesports.com/images/logos/site/site.png"
+                }));
+              }
+            }
+          }
+        } catch (directFetchError) {
+          console.error("Direct fetch method failed:", directFetchError);
+        }
+        
+        // If direct fetch also fails, return mock data as last resort
+        console.warn("Direct fetch also failed. Using mock data as last resort.");
         return mockItems;
       }
       
