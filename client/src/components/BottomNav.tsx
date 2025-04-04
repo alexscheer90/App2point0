@@ -69,11 +69,9 @@ interface NavItemProps {
 
 const NavItem = ({ to, icon, label, active }: NavItemProps) => {
   return (
-    <Link href={to}>
-      <a className={`flex flex-col items-center justify-center w-12 ${active ? 'text-[#C8102E]' : 'text-gray-600'}`}>
-        {icon}
-        <span className="text-[10px] mt-1">{label}</span>
-      </a>
+    <Link href={to} className={`flex flex-col items-center justify-center w-12 ${active ? 'text-[#C8102E]' : 'text-gray-600'}`}>
+      {icon}
+      <span className="text-[10px] mt-1">{label}</span>
     </Link>
   );
 };
