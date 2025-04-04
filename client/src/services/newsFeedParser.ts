@@ -91,9 +91,23 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
             }
           }
           
-          // If we still don't have a link, create a default one
+          // Special handling for Ball State feed which has link as direct child node text
+          if (!link && schoolId === 'ballstate') {
+            const linkNode = $(element).children('link').first();
+            if (linkNode.length > 0) {
+              link = linkNode.text().trim();
+            }
+          }
+          
+          // If we still don't have a link, create a default one based on schoolId
           if (!link) {
-            link = `https://utrockets.com/`;
+            if (schoolId === 'ballstate') {
+              link = `https://ballstatesports.com/`;
+            } else if (schoolId === 'toledo') {
+              link = `https://utrockets.com/`;
+            } else {
+              link = `https://getsomemaction.com/`;
+            }
           }
           
           const pubDate = $(element).find('pubDate, published').text().trim();
@@ -110,7 +124,9 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
           let imageUrl: string | undefined = undefined;
           if (description) {
             try {
-              const descriptionHtml = cheerio.load(description);
+              // Handle CDATA sections in description
+              const cleanDescription = description.replace(/^<!\[CDATA\[|\]\]>$/g, '');
+              const descriptionHtml = cheerio.load(cleanDescription);
               const img = descriptionHtml('img').first();
               if (img.length > 0) {
                 imageUrl = img.attr('src');
@@ -128,15 +144,24 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
             }
           }
           
-          // If we still don't have an image, use a fallback
+          // If we still don't have an image, use school-specific fallback
           if (!imageUrl) {
-            imageUrl = "https://static.gozips.com/images/logos/toledo.png";
+            if (schoolId === 'ballstate') {
+              imageUrl = "https://ballstatesports.com/images/logos/site/site.png";
+            } else if (schoolId === 'toledo') {
+              imageUrl = "https://static.gozips.com/images/logos/toledo.png";
+            } else {
+              imageUrl = "https://getsomemaction.com/images/logos/mac-logo.png";
+            }
           }
           
           // Clean up HTML from the description to use as summary
-          const summary = description
-            ? description.replace(/<\/?[^>]+(>|$)/g, " ").trim() // Remove HTML tags
-            : "No description available.";
+          let summary = "No description available.";
+          if (description) {
+            // Handle CDATA sections
+            const cleanDescription = description.replace(/^<!\[CDATA\[|\]\]>$/g, '');
+            summary = cleanDescription.replace(/<\/?[^>]+(>|$)/g, " ").trim(); // Remove HTML tags
+          }
           
           // Create a unique ID
           const id = `${schoolId}-${Buffer.from(title).toString('base64').substring(0, 12)}`;
@@ -165,6 +190,7 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
           };
   
           items.push(newsItem);
+          console.log(`Successfully parsed news item: "${title.substring(0, 30)}..." for ${schoolId}`);
         } catch (itemError) {
           console.error("Error parsing individual RSS item", itemError);
         }
