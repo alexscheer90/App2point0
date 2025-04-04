@@ -38,7 +38,7 @@ export const schoolSchema = z.object({
   mascot: z.string(),
   primaryColor: z.string(),
   secondaryColor: z.string(),
-  logoUrl: z.string(),
+  logoUrl: z.any(), // Changed to any to support imported images
   city: z.string().optional(),
   state: z.string().optional(),
 });

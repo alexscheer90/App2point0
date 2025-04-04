@@ -1,4 +1,16 @@
 import { School } from "@shared/schema";
+import akronLogo from "@assets/Akron.png";
+import ballStateLogo from "@assets/Ball State.png";
+import bgsuLogo from "@assets/BGSU.png";
+import buffaloLogo from "@assets/Buffalo.png";
+import cmuLogo from "@assets/CMU.png";
+import emuLogo from "@assets/EMU.png";
+import kentStateLogo from "@assets/Kent State.png";
+import miamiLogo from "@assets/Miami.png";
+import niuLogo from "@assets/NIU.png";
+import ohioLogo from "@assets/Ohio.png";
+import toledoLogo from "@assets/Toledo.png";
+import wmuLogo from "@assets/WMU.png";
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
@@ -10,7 +22,7 @@ export const macSchools: School[] = [
     mascot: "Zips",
     primaryColor: "#041E42",
     secondaryColor: "#A89968",
-    logoUrl: "",
+    logoUrl: akronLogo,
     city: "Akron",
     state: "OH",
   },
@@ -21,7 +33,7 @@ export const macSchools: School[] = [
     mascot: "Cardinals",
     primaryColor: "#BA0C2F",
     secondaryColor: "#FFFFFF",
-    logoUrl: "",
+    logoUrl: ballStateLogo,
     city: "Muncie",
     state: "IN",
   },
@@ -32,7 +44,7 @@ export const macSchools: School[] = [
     mascot: "Falcons",
     primaryColor: "#FE5000",
     secondaryColor: "#4F2C1D",
-    logoUrl: "",
+    logoUrl: bgsuLogo,
     city: "Bowling Green",
     state: "OH",
   },
@@ -43,7 +55,7 @@ export const macSchools: School[] = [
     mascot: "Bulls",
     primaryColor: "#005BBB",
     secondaryColor: "#FFFFFF",
-    logoUrl: "",
+    logoUrl: buffaloLogo,
     city: "Buffalo",
     state: "NY",
   },
@@ -54,7 +66,7 @@ export const macSchools: School[] = [
     mascot: "Chippewas",
     primaryColor: "#6A0032",
     secondaryColor: "#FFC82E",
-    logoUrl: "",
+    logoUrl: cmuLogo,
     city: "Mount Pleasant",
     state: "MI",
   },
@@ -65,7 +77,7 @@ export const macSchools: School[] = [
     mascot: "Eagles",
     primaryColor: "#046A38",
     secondaryColor: "#FFFFFF",
-    logoUrl: "",
+    logoUrl: emuLogo,
     city: "Ypsilanti",
     state: "MI",
   },
@@ -76,7 +88,7 @@ export const macSchools: School[] = [
     mascot: "Golden Flashes",
     primaryColor: "#002664",
     secondaryColor: "#EAAB00",
-    logoUrl: "",
+    logoUrl: kentStateLogo,
     city: "Kent",
     state: "OH",
   },
@@ -87,7 +99,7 @@ export const macSchools: School[] = [
     mascot: "RedHawks",
     primaryColor: "#B61E2E",
     secondaryColor: "#FFFFFF",
-    logoUrl: "",
+    logoUrl: miamiLogo,
     city: "Oxford",
     state: "OH",
   },
@@ -98,7 +110,7 @@ export const macSchools: School[] = [
     mascot: "Huskies",
     primaryColor: "#BA0C2F",
     secondaryColor: "#000000",
-    logoUrl: "",
+    logoUrl: niuLogo,
     city: "DeKalb",
     state: "IL",
   },
@@ -109,7 +121,7 @@ export const macSchools: School[] = [
     mascot: "Bobcats",
     primaryColor: "#00694E",
     secondaryColor: "#CDA077",
-    logoUrl: "",
+    logoUrl: ohioLogo,
     city: "Athens",
     state: "OH",
   },
@@ -120,7 +132,7 @@ export const macSchools: School[] = [
     mascot: "Rockets",
     primaryColor: "#003E7E",
     secondaryColor: "#FFD200",
-    logoUrl: "",
+    logoUrl: toledoLogo,
     city: "Toledo",
     state: "OH",
   },
@@ -131,7 +143,7 @@ export const macSchools: School[] = [
     mascot: "Broncos",
     primaryColor: "#6C4023",
     secondaryColor: "#B5A167",
-    logoUrl: "",
+    logoUrl: wmuLogo,
     city: "Kalamazoo",
     state: "MI",
   }
