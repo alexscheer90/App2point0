@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserPreferencesSchema } from "@shared/schema";
+import axios from "axios";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoints for user preferences
@@ -86,6 +87,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ message: "Failed to update favorite school" });
       }
+    }
+  });
+
+  // API endpoint for scraping standings data
+  // This endpoint acts as a proxy to avoid CORS issues when fetching from the MAC website
+  app.get("/api/scrape-standings", async (req, res) => {
+    try {
+      const url = req.query.url as string;
+      
+      if (!url) {
+        return res.status(400).json({ message: "URL parameter is required" });
+      }
+      
+      // Validate that the URL is from a trusted domain (MAC website)
+      const validDomains = ['getsomemaction.com', 'mac-sports.com'];
+      const urlObj = new URL(url);
+      const isDomainValid = validDomains.some(domain => urlObj.hostname.includes(domain));
+      
+      if (!isDomainValid) {
+        return res.status(403).json({ message: "URL domain not allowed" });
+      }
+      
+      console.log(`Server scraping data from: ${url}`);
+      
+      // Make the request to the MAC website
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
+      
+      // Return the HTML content to the client
+      res.send(response.data);
+    } catch (error) {
+      console.error("Error scraping standings:", error);
+      res.status(500).json({ message: "Failed to scrape standings data" });
     }
   });
 

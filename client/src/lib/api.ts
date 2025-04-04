@@ -5,6 +5,7 @@ import { macSports } from "../data/macSports";
 import { macRivalries } from "../data/macRivalries";
 import { macSchoolSounds } from "../data/macSchoolSounds";
 import { macLocalEats } from "../data/macLocalEats";
+import { scrapeStandingsForSport } from "../services/standingsScraper";
 
 // User preferences
 export async function getFavoriteSchool() {
@@ -223,192 +224,37 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
   return mockNews;
 }
 
-// Standings API - Mock implementation
+// Standings API - Implementation using real data from MAC website
 export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
-  // For demo purposes, just return mock data for football
-  if (sportId === "football") {
-    return [
-      // East Division
-      {
-        schoolId: "miamioh",
-        sportId: "football",
-        division: "East Division",
-        conference: { wins: 7, losses: 1, winningPercentage: 0.875 },
-        overall: { wins: 8, losses: 2, winningPercentage: 0.800 },
-      },
-      {
-        schoolId: "buffalo",
-        sportId: "football",
-        division: "East Division",
-        conference: { wins: 6, losses: 2, winningPercentage: 0.750 },
-        overall: { wins: 7, losses: 3, winningPercentage: 0.700 },
-      },
-      {
-        schoolId: "bowlinggreen",
-        sportId: "football",
-        division: "East Division",
-        conference: { wins: 5, losses: 3, winningPercentage: 0.625 },
-        overall: { wins: 6, losses: 4, winningPercentage: 0.600 },
-      },
-      {
-        schoolId: "ohio",
-        sportId: "football",
-        division: "East Division",
-        conference: { wins: 4, losses: 4, winningPercentage: 0.500 },
-        overall: { wins: 5, losses: 5, winningPercentage: 0.500 },
-      },
-      {
-        schoolId: "akron",
-        sportId: "football",
-        division: "East Division",
-        conference: { wins: 2, losses: 6, winningPercentage: 0.250 },
-        overall: { wins: 3, losses: 7, winningPercentage: 0.300 },
-      },
-      {
-        schoolId: "kentstate",
-        sportId: "football",
-        division: "East Division",
-        conference: { wins: 1, losses: 7, winningPercentage: 0.125 },
-        overall: { wins: 2, losses: 8, winningPercentage: 0.200 },
-      },
-      // West Division
-      {
-        schoolId: "toledo",
-        sportId: "football",
-        division: "West Division",
-        conference: { wins: 8, losses: 0, winningPercentage: 1.000 },
-        overall: { wins: 9, losses: 1, winningPercentage: 0.900 },
-      },
-      {
-        schoolId: "westernmichigan",
-        sportId: "football",
-        division: "West Division",
-        conference: { wins: 6, losses: 2, winningPercentage: 0.750 },
-        overall: { wins: 7, losses: 3, winningPercentage: 0.700 },
-      },
-      {
-        schoolId: "northernillinois",
-        sportId: "football",
-        division: "West Division",
-        conference: { wins: 5, losses: 3, winningPercentage: 0.625 },
-        overall: { wins: 6, losses: 4, winningPercentage: 0.600 },
-      },
-      {
-        schoolId: "centralmichigan",
-        sportId: "football",
-        division: "West Division",
-        conference: { wins: 3, losses: 5, winningPercentage: 0.375 },
-        overall: { wins: 4, losses: 6, winningPercentage: 0.400 },
-      },
-      {
-        schoolId: "ballstate",
-        sportId: "football",
-        division: "West Division",
-        conference: { wins: 2, losses: 6, winningPercentage: 0.250 },
-        overall: { wins: 3, losses: 7, winningPercentage: 0.300 },
-      },
-      {
-        schoolId: "easternmichigan",
-        sportId: "football",
-        division: "West Division",
-        conference: { wins: 1, losses: 7, winningPercentage: 0.125 },
-        overall: { wins: 2, losses: 8, winningPercentage: 0.200 },
-      },
-    ];
-  } else if (sportId === "basketball") {
-    // Return mock basketball standings
-    return [
-      // East Division
-      {
-        schoolId: "buffalo",
-        sportId: "basketball",
-        division: "East Division",
-        conference: { wins: 9, losses: 1, winningPercentage: 0.900 },
-        overall: { wins: 16, losses: 4, winningPercentage: 0.800 },
-      },
-      {
-        schoolId: "akron",
-        sportId: "basketball",
-        division: "East Division",
-        conference: { wins: 8, losses: 2, winningPercentage: 0.800 },
-        overall: { wins: 15, losses: 5, winningPercentage: 0.750 },
-      },
-      {
-        schoolId: "kentstate",
-        sportId: "basketball",
-        division: "East Division",
-        conference: { wins: 7, losses: 3, winningPercentage: 0.700 },
-        overall: { wins: 14, losses: 6, winningPercentage: 0.700 },
-      },
-      {
-        schoolId: "bowlinggreen",
-        sportId: "basketball",
-        division: "East Division",
-        conference: { wins: 4, losses: 6, winningPercentage: 0.400 },
-        overall: { wins: 9, losses: 11, winningPercentage: 0.450 },
-      },
-      {
-        schoolId: "miamioh",
-        sportId: "basketball",
-        division: "East Division",
-        conference: { wins: 3, losses: 7, winningPercentage: 0.300 },
-        overall: { wins: 8, losses: 12, winningPercentage: 0.400 },
-      },
-      {
-        schoolId: "ohio",
-        sportId: "basketball",
-        division: "East Division",
-        conference: { wins: 2, losses: 8, winningPercentage: 0.200 },
-        overall: { wins: 6, losses: 14, winningPercentage: 0.300 },
-      },
-      // West Division
-      {
-        schoolId: "toledo",
-        sportId: "basketball",
-        division: "West Division",
-        conference: { wins: 9, losses: 1, winningPercentage: 0.900 },
-        overall: { wins: 17, losses: 3, winningPercentage: 0.850 },
-      },
-      {
-        schoolId: "ballstate",
-        sportId: "basketball",
-        division: "West Division",
-        conference: { wins: 7, losses: 3, winningPercentage: 0.700 },
-        overall: { wins: 13, losses: 7, winningPercentage: 0.650 },
-      },
-      {
-        schoolId: "centralmichigan",
-        sportId: "basketball",
-        division: "West Division",
-        conference: { wins: 6, losses: 4, winningPercentage: 0.600 },
-        overall: { wins: 12, losses: 8, winningPercentage: 0.600 },
-      },
-      {
-        schoolId: "westernmichigan",
-        sportId: "basketball",
-        division: "West Division",
-        conference: { wins: 4, losses: 6, winningPercentage: 0.400 },
-        overall: { wins: 9, losses: 11, winningPercentage: 0.450 },
-      },
-      {
-        schoolId: "northernillinois",
-        sportId: "basketball",
-        division: "West Division",
-        conference: { wins: 3, losses: 7, winningPercentage: 0.300 },
-        overall: { wins: 7, losses: 13, winningPercentage: 0.350 },
-      },
-      {
-        schoolId: "easternmichigan",
-        sportId: "basketball",
-        division: "West Division",
-        conference: { wins: 2, losses: 8, winningPercentage: 0.200 },
-        overall: { wins: 5, losses: 15, winningPercentage: 0.250 },
-      },
-    ];
+  try {
+    // Get the sport details
+    const sport = macSports.find(s => s.id === sportId);
+    
+    if (!sport) {
+      console.error(`Sport with ID ${sportId} not found`);
+      return [];
+    }
+    
+    if (!sport.officialUrl) {
+      console.error(`No official URL found for sport ${sportId}`);
+      return [];
+    }
+    
+    // Use the scraper to get real-time data
+    const standings = await scrapeStandingsForSport(sport);
+    
+    // If we got real data, return it
+    if (standings.length > 0) {
+      return standings;
+    }
+    
+    // If scraping failed, return a placeholder message
+    console.error(`Failed to scrape standings for ${sportId}`);
+    return [];
+  } catch (error) {
+    console.error(`Error fetching standings for ${sportId}:`, error);
+    return [];
   }
-  
-  // Return empty array for other sports
-  return [];
 }
 
 // Get all standings for a specific school
@@ -418,14 +264,10 @@ export async function getSchoolStandings(schoolId: string): Promise<{ sportId: s
   
   for (const sport of sports) {
     const allStandings = await getStandings(sport);
-    const filteredStandings = allStandings.filter(entry => 
-      // Include standings for this school and also others in the same division
-      entry.schoolId === schoolId || 
-      allStandings.some(s => 
-        s.schoolId === schoolId && 
-        s.division === entry.division
-      )
-    );
+    
+    // Since MAC no longer has divisions, we include all standings when viewing a school
+    // Just return all standings - the filter is a no-op since `|| true` will always be true
+    const filteredStandings = allStandings;
     
     if (filteredStandings.length > 0) {
       results.push({
