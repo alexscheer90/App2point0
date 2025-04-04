@@ -9,6 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LocalEats } from '@shared/schema';
 
+// MAC colors
+const MAC_NAVY = "#0B213E";
+const MAC_GREEN = "#019E4F";
+const MAC_GRAY = "#9DA5A8";
+
 const LocalEatsPage = () => {
   const { data: schools, isLoading: isSchoolsLoading } = useMacSchools();
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
@@ -73,8 +78,8 @@ const LocalEatsPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
-        <span className="text-[#C8102E]">Local</span> Eats
+      <h1 className="text-2xl font-bold mb-4">
+        <span style={{ color: MAC_GREEN }}>Local</span> <span style={{ color: MAC_NAVY }}>Eats</span>
       </h1>
       
       <div className="flex gap-3 mb-4">
@@ -104,10 +109,11 @@ const LocalEatsPage = () => {
       </div>
       
       <Tabs defaultValue={selectedSchool || "all"} className="w-full mb-6">
-        <TabsList className="w-full mb-4 flex overflow-x-auto">
+        <TabsList className="w-full mb-4 flex overflow-x-auto" style={{ backgroundColor: MAC_NAVY }}>
           <TabsTrigger 
             value="all"
             onClick={() => setSelectedSchool(null)}
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
           >
             All Cities
           </TabsTrigger>
@@ -116,7 +122,7 @@ const LocalEatsPage = () => {
               key={school.id} 
               value={school.id}
               onClick={() => setSelectedSchool(school.id)}
-              className="whitespace-nowrap"
+              className="whitespace-nowrap text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
             >
               {school.city}
             </TabsTrigger>

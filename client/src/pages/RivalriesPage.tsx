@@ -8,6 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { School } from '@shared/schema';
 
+// MAC colors
+const MAC_NAVY = "#0B213E";
+const MAC_GREEN = "#019E4F";
+const MAC_GRAY = "#9DA5A8";
+
 const RivalriesPage = () => {
   const { data: rivalries, isLoading } = useRivalries();
   const { data: schools } = useMacSchools();
@@ -45,8 +50,8 @@ const RivalriesPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
-        <span className="text-[#C8102E]">MAC</span> Rivalries
+      <h1 className="text-2xl font-bold mb-4">
+        <span style={{ color: MAC_GREEN }}>MAC</span> <span style={{ color: MAC_NAVY }}>Rivalries</span>
       </h1>
       
       <div className="mb-4 relative">
@@ -61,8 +66,12 @@ const RivalriesPage = () => {
       </div>
       
       <Tabs defaultValue="all" className="w-full mb-6">
-        <TabsList className="w-full mb-4 flex overflow-x-auto">
-          <TabsTrigger value="all" onClick={() => setSelectedSchool(null)}>
+        <TabsList className="w-full mb-4 flex overflow-x-auto" style={{ backgroundColor: MAC_NAVY }}>
+          <TabsTrigger 
+            value="all" 
+            onClick={() => setSelectedSchool(null)}
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
             All Rivalries
           </TabsTrigger>
           {schools.map(school => (
@@ -70,7 +79,7 @@ const RivalriesPage = () => {
               key={school.id} 
               value={school.id}
               onClick={() => setSelectedSchool(school.id)}
-              className="whitespace-nowrap"
+              className="whitespace-nowrap text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
             >
               {school.shortName}
             </TabsTrigger>

@@ -113,7 +113,7 @@ const SchoolProfile = () => {
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <Link href="/schools">
-          <a className="flex items-center text-[#C8102E]">
+          <a className="flex items-center" style={{ color: "#019E4F" }}>
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back to Schools
           </a>
@@ -121,10 +121,10 @@ const SchoolProfile = () => {
         <Button 
           variant={isFavorite ? "secondary" : "outline"} 
           size="sm" 
-          className={isFavorite ? "bg-[#FFD100] hover:bg-[#e6bc00] text-[#0C2340]" : ""}
+          className={isFavorite ? "bg-[#019E4F] hover:bg-[#018C45] text-white" : ""}
           onClick={toggleFavorite}
         >
-          <Star className={`h-4 w-4 mr-1 ${isFavorite ? "fill-[#0C2340]" : ""}`} />
+          <Star className={`h-4 w-4 mr-1 ${isFavorite ? "fill-white" : ""}`} />
           {isFavorite ? "Favorite" : "Add to Favorites"}
         </Button>
       </div>
@@ -172,29 +172,56 @@ const SchoolProfile = () => {
       </Card>
       
       <Tabs defaultValue="games" className="w-full">
-        <TabsList className="w-full mb-4">
-          <TabsTrigger value="games" className="flex-1">Games</TabsTrigger>
-          <TabsTrigger value="news" className="flex-1">News</TabsTrigger>
-          <TabsTrigger value="standings" className="flex-1">Standings</TabsTrigger>
-          <TabsTrigger value="rivalries" className="flex-1">
+        <TabsList className="w-full mb-4" style={{ backgroundColor: "#0B213E" }}>
+          <TabsTrigger 
+            value="games" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
+            Games
+          </TabsTrigger>
+          <TabsTrigger 
+            value="news" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
+            News
+          </TabsTrigger>
+          <TabsTrigger 
+            value="standings" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
+            Standings
+          </TabsTrigger>
+          <TabsTrigger 
+            value="rivalries" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
             <div className="flex items-center gap-1">
               <Trophy className="h-3 w-3" />
               <span>Rivalries</span>
             </div>
           </TabsTrigger>
-          <TabsTrigger value="sounds" className="flex-1">
+          <TabsTrigger 
+            value="sounds" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
             <div className="flex items-center gap-1">
               <Music className="h-3 w-3" />
               <span>Sounds</span>
             </div>
           </TabsTrigger>
-          <TabsTrigger value="eats" className="flex-1">
+          <TabsTrigger 
+            value="eats" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
             <div className="flex items-center gap-1">
               <Utensils className="h-3 w-3" />
               <span>Eats</span>
             </div>
           </TabsTrigger>
-          <TabsTrigger value="podcast" className="flex-1">
+          <TabsTrigger 
+            value="podcast" 
+            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
             <div className="flex items-center gap-1">
               <Headphones className="h-3 w-3" />
               <span>Podcast</span>

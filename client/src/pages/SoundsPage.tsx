@@ -9,6 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SchoolSound } from '@shared/schema';
 
+// MAC colors
+const MAC_NAVY = "#0B213E";
+const MAC_GREEN = "#019E4F";
+const MAC_GRAY = "#9DA5A8";
+
 const SoundsPage = () => {
   const { data: schools, isLoading: isSchoolsLoading } = useMacSchools();
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
@@ -71,8 +76,8 @@ const SoundsPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
-        <span className="text-[#C8102E]">Sounds</span> of the Stadium
+      <h1 className="text-2xl font-bold mb-4">
+        <span style={{ color: MAC_GREEN }}>Sounds</span> <span style={{ color: MAC_NAVY }}>of the Stadium</span>
       </h1>
       
       <div className="flex gap-3 mb-4">
@@ -100,10 +105,11 @@ const SoundsPage = () => {
       </div>
       
       <Tabs defaultValue={selectedSchool || "all"} className="w-full mb-6">
-        <TabsList className="w-full mb-4 flex overflow-x-auto">
+        <TabsList className="w-full mb-4 flex overflow-x-auto" style={{ backgroundColor: MAC_NAVY }}>
           <TabsTrigger 
             value="all"
             onClick={() => setSelectedSchool(null)}
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
           >
             All Schools
           </TabsTrigger>
@@ -112,7 +118,7 @@ const SoundsPage = () => {
               key={school.id} 
               value={school.id}
               onClick={() => setSelectedSchool(school.id)}
-              className="whitespace-nowrap"
+              className="whitespace-nowrap text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
             >
               {school.shortName}
             </TabsTrigger>
