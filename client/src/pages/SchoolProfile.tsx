@@ -36,7 +36,9 @@ const SchoolProfile = () => {
   
   const { data: school, isLoading: isSchoolLoading } = useSchool(schoolId);
   const { liveGames, upcomingGames, recentGames, isLoading: isGamesLoading } = useSchoolGames(schoolId);
-  const { news, isLoading: isNewsLoading } = useSchoolNews(schoolId);
+  const { featuredNews, regularNews, isLoading: isNewsLoading } = useSchoolNews(schoolId);
+  // Combine featured and regular news for display
+  const news = [...(featuredNews || []), ...(regularNews || [])];
   const { data: standings, isLoading: isStandingsLoading } = useSchoolStandings(schoolId);
   const { data: rivalries, isLoading: isRivalriesLoading } = useSchoolRivalries(schoolId);
   const { data: schoolSounds, isLoading: isSchoolSoundsLoading } = useSchoolSounds(schoolId);
@@ -95,7 +97,7 @@ const SchoolProfile = () => {
     return (
       <div className="p-4">
         <Link href="/schools">
-          <a className="flex items-center text-[#C8102E] mb-4">
+          <a className="flex items-center text-[#019E4F] mb-4">
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back to Schools
           </a>
@@ -287,8 +289,8 @@ const SchoolProfile = () => {
               <Skeleton className="h-28 w-full mb-3" />
               <Skeleton className="h-28 w-full" />
             </>
-          ) : news.length > 0 ? (
-            news.map(item => (
+          ) : news && news.length > 0 ? (
+            news.map((item: NewsItemType) => (
               <NewsItem key={item.id} news={item} onClick={handleNewsClick} />
             ))
           ) : (
@@ -421,10 +423,10 @@ const SchoolProfile = () => {
                 MAC Sports Connection Podcast
               </h3>
               
-              <div className="rounded-lg overflow-hidden bg-gradient-to-r from-[#0C2340] to-[#2D4064] p-4 text-white mb-4">
+              <div className="rounded-lg overflow-hidden bg-gradient-to-r from-[#0B213E] to-[#019E4F] p-4 text-white mb-4">
                 <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-full bg-[#FFD100] flex items-center justify-center mr-3">
-                    <Headphones className="h-6 w-6 text-[#0C2340]" />
+                  <div className="w-12 h-12 rounded-full bg-[#9DA5A8] flex items-center justify-center mr-3">
+                    <Headphones className="h-6 w-6 text-[#0B213E]" />
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold">Latest Episode</h4>
