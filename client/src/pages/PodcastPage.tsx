@@ -1,93 +1,115 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMacSchools } from '../hooks/useSchool';
+import { usePodcast } from '../hooks/usePodcast';
+import { PodcastEpisode } from '../services/podcastFeedParser';
 import { 
   Headphones, Mic, Play, Pause, Share2, 
   ChevronDown, ChevronUp, Calendar, Clock, 
-  Download, ExternalLink 
+  Download, ExternalLink, RefreshCw, Info
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
-// Mock podcast episodes - replace with real data from RSS feed 
-const podcastEpisodes = [
-  { 
-    id: "ep1",
-    title: "MAC Football Season Preview 2025", 
-    date: "April 2, 2025",
-    duration: "45 mins",
-    description: "Our hosts break down what to expect from all MAC teams in the upcoming football season. We discuss key players, coaching changes, and make our season predictions.",
-    featured: true,
-    imageUrl: null
-  },
-  { 
-    id: "ep2",
-    title: "Bowl Game Recap: Toledo vs Miami", 
-    date: "March 26, 2025",
-    duration: "32 mins",
-    description: "Analyzing the thrilling championship game between the Toledo Rockets and the Miami RedHawks.",
-    featured: false
-  },
-  { 
-    id: "ep3",
-    title: "Rivalry Week: Special Coverage", 
-    date: "March 19, 2025",
-    duration: "38 mins",
-    description: "The history and passion behind the MAC's biggest rivalries, including Battle of I-75 and more.",
-    featured: false
-  },
-  { 
-    id: "ep4",
-    title: "Interview: Kent State Head Coach", 
-    date: "March 12, 2025",
-    duration: "41 mins",
-    description: "An exclusive conversation with Kent State's head coach about rebuilding the program.",
-    featured: false
-  },
-  { 
-    id: "ep5",
-    title: "MAC Basketball Tournament Preview", 
-    date: "March 5, 2025",
-    duration: "36 mins",
-    description: "Breaking down the brackets and making predictions for who will cut down the nets.",
-    featured: false
-  },
-  { 
-    id: "ep6",
-    title: "The History of #MACtion", 
-    date: "February 26, 2025",
-    duration: "39 mins",
-    description: "How the Mid-American Conference became famous for its weeknight football games.",
-    featured: false
-  }
-];
+// Import podcast logo
+import podcastLogoImg from '../assets/msc-podcast-logo.png';
 
-// Mock podcast categories
+// Podcast categories
 const podcastCategories = [
   "All Episodes", "Football", "Basketball", "Olympic Sports", "Interviews"
 ];
 
 const PodcastPage = () => {
-  const { data: schools } = useMacSchools();
+  const { toast } = useToast();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [activeCategory, setActiveCategory] = useState("All Episodes");
   const [playingEpisode, setPlayingEpisode] = useState<string | null>(null);
-  const [expandedEpisode, setExpandedEpisode] = useState<string | null>("ep1");
-  const [progress, setProgress] = useState(45); // Mock playback progress
-
-  const featuredEpisode = podcastEpisodes.find(ep => ep.featured);
-  const regularEpisodes = podcastEpisodes.filter(ep => !ep.featured);
-
-  const togglePlay = (episodeId: string) => {
-    if (playingEpisode === episodeId) {
+  const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  
+  // Get podcast data from RSS feed
+  const { 
+    info, 
+    featuredEpisode, 
+    regularEpisodes, 
+    isLoading, 
+    error 
+  } = usePodcast();
+  
+  // Create audio element for playback
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      
+      audioRef.current.addEventListener('timeupdate', () => {
+        if (audioRef.current) {
+          setCurrentTime(audioRef.current.currentTime);
+          setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
+        }
+      });
+      
+      audioRef.current.addEventListener('loadedmetadata', () => {
+        if (audioRef.current) {
+          setAudioDuration(audioRef.current.duration);
+        }
+      });
+      
+      audioRef.current.addEventListener('ended', () => {
+        setPlayingEpisode(null);
+      });
+    }
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+  
+  // Format time in minutes:seconds
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  // Toggle play/pause for an episode
+  const togglePlay = (episode: PodcastEpisode) => {
+    if (playingEpisode === episode.id) {
+      // Pause the current episode
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       setPlayingEpisode(null);
     } else {
-      setPlayingEpisode(episodeId);
+      // Stop any current playback
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      
+      // Start playing the new episode
+      if (episode.audioUrl && audioRef.current) {
+        audioRef.current.src = episode.audioUrl;
+        audioRef.current.play().catch(error => {
+          console.error('Error playing audio:', error);
+          toast({
+            title: "Playback Error",
+            description: "Unable to play this episode. Please try again.",
+            variant: "destructive"
+          });
+        });
+        setPlayingEpisode(episode.id);
+      }
     }
   };
-
+  
+  // Toggle episode details expansion
   const toggleExpandEpisode = (episodeId: string) => {
     if (expandedEpisode === episodeId) {
       setExpandedEpisode(null);
@@ -95,6 +117,71 @@ const PodcastPage = () => {
       setExpandedEpisode(episodeId);
     }
   };
+  
+  // Share podcast
+  const sharePodcast = (episode?: PodcastEpisode) => {
+    const shareData = {
+      title: episode ? `MAC Sports Connection - ${episode.title}` : 'MAC Sports Connection Podcast',
+      text: episode ? episode.description : 'The official podcast for MAC sports fans',
+      url: episode?.audioUrl || 'https://rss.art19.com/mac-sports-connection-podcast',
+    };
+    
+    if (navigator.share) {
+      navigator.share(shareData)
+        .catch((error) => console.log('Error sharing:', error));
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(shareData.url)
+        .then(() => {
+          toast({
+            title: "Link Copied",
+            description: "Podcast link copied to clipboard",
+          });
+        })
+        .catch(err => {
+          console.error('Failed to copy:', err);
+        });
+    }
+  };
+  
+  // Render loading state
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
+          <span className="text-[#C8102E]">MAC</span> Sports Connection
+        </h1>
+        
+        <div className="space-y-4">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    );
+  }
+  
+  // Render error state
+  if (error) {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4 text-[#0C2340]">
+          <span className="text-[#C8102E]">MAC</span> Sports Connection
+        </h1>
+        
+        <Card className="p-6 text-center">
+          <Info className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Unable to Load Podcast</h2>
+          <p className="text-gray-600 mb-4">We couldn't load the podcast episodes. Please try again later.</p>
+          <Button onClick={() => window.location.reload()}>
+            <RefreshCw className="h-4 w-4 mr-2" /> Retry
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
@@ -121,8 +208,20 @@ const PodcastPage = () => {
               <Card className="overflow-hidden">
                 <div className="bg-gradient-to-r from-[#0C2340] to-[#2D4064] p-4 text-white">
                   <div className="flex items-center mb-4">
-                    <div className="w-16 h-16 rounded-full bg-[#FFD100] flex items-center justify-center mr-4 shrink-0">
-                      <Headphones className="h-8 w-8 text-[#0C2340]" />
+                    <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mr-4 shrink-0">
+                      {featuredEpisode.imageUrl ? (
+                        <img 
+                          src={featuredEpisode.imageUrl} 
+                          alt="Episode artwork" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <img 
+                          src={podcastLogoImg} 
+                          alt="MAC Sports Connection" 
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold">{featuredEpisode.title}</h3>
@@ -140,20 +239,22 @@ const PodcastPage = () => {
                     {featuredEpisode.description}
                   </p>
                   
-                  <div className="mb-3">
-                    <Progress value={progress} className="h-2 bg-white/20" />
-                    <div className="flex justify-between mt-1 text-xs text-gray-300">
-                      <span>20:15</span>
-                      <span>45:00</span>
+                  {playingEpisode === featuredEpisode.id && (
+                    <div className="mb-3">
+                      <Progress value={progress} className="h-2 bg-white/20" />
+                      <div className="flex justify-between mt-1 text-xs text-gray-300">
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{formatTime(audioDuration)}</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
                   <div className="flex justify-between">
                     <Button 
                       variant="outline" 
                       size="sm"
                       className="bg-white/10 hover:bg-white/20 text-white border-white/20"
-                      onClick={() => togglePlay(featuredEpisode.id)}
+                      onClick={() => togglePlay(featuredEpisode)}
                     >
                       {playingEpisode === featuredEpisode.id ? (
                         <><Pause className="h-4 w-4 mr-2" /> Pause</>
@@ -163,10 +264,20 @@ const PodcastPage = () => {
                     </Button>
                     
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-white hover:bg-white/10"
+                        onClick={() => window.open(featuredEpisode.audioUrl, '_blank')}
+                      >
                         <Download className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-white hover:bg-white/10"
+                        onClick={() => sharePodcast(featuredEpisode)}
+                      >
                         <Share2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -195,113 +306,123 @@ const PodcastPage = () => {
           
           {/* Episode List */}
           <div className="space-y-3">
-            {regularEpisodes.map((episode) => (
-              <Card key={episode.id} className="overflow-hidden">
-                <div className="p-4">
-                  <div className="flex justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-[#0C2340]">{episode.title}</h3>
-                      <p className="text-xs text-gray-500 flex items-center mt-1">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {episode.date}
-                        <span className="mx-2">•</span>
-                        <Clock className="h-3 w-3 mr-1" />
-                        {episode.duration}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="rounded-full h-8 w-8 p-0"
-                        onClick={() => togglePlay(episode.id)}
-                      >
-                        {playingEpisode === episode.id ? (
-                          <Pause className="h-4 w-4" />
-                        ) : (
-                          <Play className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="rounded-full h-8 w-8 p-0"
-                        onClick={() => toggleExpandEpisode(episode.id)}
-                      >
-                        {expandedEpisode === episode.id ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {expandedEpisode === episode.id && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-sm text-gray-600 mb-3">
-                        {episode.description}
-                      </p>
+            {regularEpisodes && regularEpisodes.length > 0 ? (
+              regularEpisodes.map((episode) => (
+                <Card key={episode.id} className="overflow-hidden">
+                  <div className="p-4">
+                    <div className="flex justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-[#0C2340]">{episode.title}</h3>
+                        <p className="text-xs text-gray-500 flex items-center mt-1">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {episode.date}
+                          <span className="mx-2">•</span>
+                          <Clock className="h-3 w-3 mr-1" />
+                          {episode.duration}
+                        </p>
+                      </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Download className="h-3 w-3 mr-1" />
-                          Download
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="rounded-full h-8 w-8 p-0"
+                          onClick={() => togglePlay(episode)}
+                        >
+                          {playingEpisode === episode.id ? (
+                            <Pause className="h-4 w-4" />
+                          ) : (
+                            <Play className="h-4 w-4" />
+                          )}
                         </Button>
-                        <Button variant="outline" size="sm">
-                          <Share2 className="h-3 w-3 mr-1" />
-                          Share
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="rounded-full h-8 w-8 p-0"
+                          onClick={() => toggleExpandEpisode(episode.id)}
+                        >
+                          {expandedEpisode === episode.id ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     </div>
-                  )}
-                </div>
+                    
+                    {expandedEpisode === episode.id && (
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <p className="text-sm text-gray-600 mb-3">
+                          {episode.description}
+                        </p>
+                        
+                        {playingEpisode === episode.id && (
+                          <div className="mb-3">
+                            <Progress value={progress} className="h-2" />
+                            <div className="flex justify-between mt-1 text-xs text-gray-500">
+                              <span>{formatTime(currentTime)}</span>
+                              <span>{formatTime(audioDuration)}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(episode.audioUrl, '_blank')}
+                          >
+                            <Download className="h-3 w-3 mr-1" />
+                            Download
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => sharePodcast(episode)}
+                          >
+                            <Share2 className="h-3 w-3 mr-1" />
+                            Share
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              ))
+            ) : (
+              <Card className="p-6 text-center">
+                <p className="text-gray-500">No episodes available in this category.</p>
               </Card>
-            ))}
+            )}
           </div>
         </TabsContent>
         
         <TabsContent value="about">
           <Card className="p-6">
             <div className="flex items-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-[#0C2340] flex items-center justify-center mr-4 shrink-0">
-                <Mic className="h-8 w-8 text-[#FFD100]" />
+              <div className="w-16 h-16 overflow-hidden mr-4 shrink-0">
+                <img 
+                  src={podcastLogoImg} 
+                  alt="MAC Sports Connection" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <h2 className="text-xl font-bold">MAC Sports Connection</h2>
-                <p className="text-sm text-gray-500">The official podcast of #MACtion</p>
+                <p className="text-sm text-gray-500">ALL #MACTION, ALL THE TIME</p>
               </div>
             </div>
             
             <p className="mb-4 text-gray-700">
-              MAC Sports Connection is your ultimate source for Mid-American Conference sports coverage.
-              Each week, our hosts dive deep into football, basketball, and all MAC sports with game recaps,
-              previews, interviews with coaches and players, and expert analysis.
+              {info?.description || 
+                `MAC Sports Connection is your ultimate source for Mid-American Conference sports coverage.
+                Each week, our hosts dive deep into football, basketball, and all MAC sports with game recaps,
+                previews, interviews with coaches and players, and expert analysis.`}
             </p>
-            
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2">Hosts</h3>
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
-                  <div>
-                    <p className="font-medium">Mike Johnson</p>
-                    <p className="text-xs text-gray-500">Lead Host</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
-                  <div>
-                    <p className="font-medium">Sarah Williams</p>
-                    <p className="text-xs text-gray-500">Analyst</p>
-                  </div>
-                </div>
-              </div>
-            </div>
             
             <div>
               <h3 className="font-semibold mb-2">Release Schedule</h3>
               <p className="text-sm text-gray-700">
-                New episodes are released every Wednesday, with special episodes during championship weeks.
+                New episodes are released regularly, with special episodes during championship weeks.
               </p>
             </div>
           </Card>
@@ -317,7 +438,12 @@ const PodcastPage = () => {
                   <Headphones className="h-5 w-5 text-white" />
                 </div>
                 <span className="font-medium">Apple Podcasts</span>
-                <Button className="ml-auto" variant="ghost" size="sm">
+                <Button 
+                  className="ml-auto" 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => window.open('https://podcasts.apple.com/search?term=mac%20sports%20connection', '_blank')}
+                >
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </div>
@@ -327,7 +453,12 @@ const PodcastPage = () => {
                   <Headphones className="h-5 w-5 text-black" />
                 </div>
                 <span className="font-medium">Spotify</span>
-                <Button className="ml-auto" variant="ghost" size="sm">
+                <Button 
+                  className="ml-auto" 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => window.open('https://open.spotify.com/search/mac%20sports%20connection', '_blank')}
+                >
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </div>
@@ -337,17 +468,12 @@ const PodcastPage = () => {
                   <Headphones className="h-5 w-5 text-white" />
                 </div>
                 <span className="font-medium">Google Podcasts</span>
-                <Button className="ml-auto" variant="ghost" size="sm">
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="flex items-center p-3 border rounded-lg hover:bg-gray-50">
-                <div className="w-10 h-10 rounded-lg bg-[#F43E37] flex items-center justify-center mr-3">
-                  <Headphones className="h-5 w-5 text-white" />
-                </div>
-                <span className="font-medium">YouTube</span>
-                <Button className="ml-auto" variant="ghost" size="sm">
+                <Button 
+                  className="ml-auto" 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => window.open('https://podcasts.google.com/search/mac%20sports%20connection', '_blank')}
+                >
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </div>
@@ -359,10 +485,22 @@ const PodcastPage = () => {
                 <div className="flex">
                   <Input 
                     disabled
-                    value="https://macsportsconnection.com/feed/podcast"
+                    value="https://rss.art19.com/mac-sports-connection-podcast"
                     className="text-sm mr-2"
                   />
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText('https://rss.art19.com/mac-sports-connection-podcast')
+                        .then(() => {
+                          toast({
+                            title: "RSS Feed Copied",
+                            description: "RSS feed URL copied to clipboard",
+                          });
+                        });
+                    }}
+                  >
                     Copy
                   </Button>
                 </div>
@@ -375,7 +513,7 @@ const PodcastPage = () => {
   );
 };
 
-// Add missing Input component
+// Input component
 const Input = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
   return (
     <input
