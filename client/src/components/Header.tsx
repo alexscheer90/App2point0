@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, Trophy, Music, Utensils, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -58,6 +58,30 @@ const Header = ({ activeTab }: HeaderProps) => {
         </TabLink>
         <TabLink to="/schools" active={activeTab === "schools"}>
           Schools
+        </TabLink>
+        <TabLink to="/rivalries" active={activeTab === "rivalries"}>
+          <div className="flex items-center gap-1">
+            <Trophy className="h-3 w-3" />
+            <span>Rivalries</span>
+          </div>
+        </TabLink>
+        <TabLink to="/sounds" active={activeTab === "sounds"}>
+          <div className="flex items-center gap-1">
+            <Music className="h-3 w-3" />
+            <span>Sounds</span>
+          </div>
+        </TabLink>
+        <TabLink to="/eats" active={activeTab === "eats"}>
+          <div className="flex items-center gap-1">
+            <Utensils className="h-3 w-3" />
+            <span>Eats</span>
+          </div>
+        </TabLink>
+        <TabLink to="/podcast" active={activeTab === "podcast"}>
+          <div className="flex items-center gap-1">
+            <Headphones className="h-3 w-3" />
+            <span>Podcast</span>
+          </div>
         </TabLink>
       </div>
     </header>

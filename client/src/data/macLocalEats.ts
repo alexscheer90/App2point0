@@ -13,7 +13,8 @@ export const macLocalEats: LocalEats[] = [
     address: "105 N Main St, Akron, OH 44308",
     websiteUrl: "https://www.luigisrestaurant.com/",
     rating: 4.7,
-    distanceFromCampus: "0.8 miles"
+    distanceFromCampus: "0.8 miles",
+    priceRange: "$$"
   },
   {
     id: "diamond-deli-akron",
@@ -23,7 +24,8 @@ export const macLocalEats: LocalEats[] = [
     description: "Known for its oversized sandwiches named after Akron landmarks, Diamond Deli offers fresh ingredients and friendly service. Their homemade soups and sides complement their signature sandwiches perfectly.",
     address: "378 S Main St, Akron, OH 44311",
     rating: 4.6,
-    distanceFromCampus: "0.5 miles"
+    distanceFromCampus: "0.5 miles",
+    priceRange: "$"
   },
   
   // Ball State
@@ -36,7 +38,8 @@ export const macLocalEats: LocalEats[] = [
     address: "1600 W University Ave, Muncie, IN 47303",
     websiteUrl: "https://www.greekspizzeria.com/",
     rating: 4.4,
-    distanceFromCampus: "0.3 miles"
+    distanceFromCampus: "0.3 miles",
+    priceRange: "$$"
   },
   {
     id: "the-chug-muncie",
@@ -46,7 +49,8 @@ export const macLocalEats: LocalEats[] = [
     description: "This iconic Ball State bar and grill is known for its burgers and lively atmosphere. The Double Chug burger is a local legend, featuring two patties with all the fixings.",
     address: "409 N Martin St, Muncie, IN 47303",
     rating: 4.3,
-    distanceFromCampus: "0.2 miles"
+    distanceFromCampus: "0.2 miles",
+    priceRange: "$"
   },
   
   // Bowling Green
@@ -59,7 +63,8 @@ export const macLocalEats: LocalEats[] = [
     address: "163 S Main St, Bowling Green, OH 43402",
     websiteUrl: "https://www.sambs.com/",
     rating: 4.5,
-    distanceFromCampus: "0.6 miles"
+    distanceFromCampus: "0.6 miles",
+    priceRange: "$$"
   },
   {
     id: "myles-pizza-bg",
@@ -69,7 +74,8 @@ export const macLocalEats: LocalEats[] = [
     description: "Though the original closed in 2017, Myles' has reopened and continues its legacy as BG's most beloved pizza spot. Their thick-crust pizzas loaded with toppings are worth the wait.",
     address: "140 E Wooster St, Bowling Green, OH 43402",
     rating: 4.8,
-    distanceFromCampus: "0.4 miles"
+    distanceFromCampus: "0.4 miles",
+    priceRange: "$$"
   },
   
   // Buffalo
@@ -82,7 +88,8 @@ export const macLocalEats: LocalEats[] = [
     address: "3651 Sheridan Dr, Amherst, NY 14226",
     websiteUrl: "https://www.duffswings.com/",
     rating: 4.6,
-    distanceFromCampus: "1.2 miles"
+    distanceFromCampus: "1.2 miles",
+    priceRange: "$$"
   },
   {
     id: "lake-effect-buffalo",
@@ -92,7 +99,8 @@ export const macLocalEats: LocalEats[] = [
     description: "Housed in a classic 1950s diner car, Lake Effect serves up homemade comfort food. Their breakfast is served all day, making it perfect for students recovering from late nights.",
     address: "3165 Main St, Buffalo, NY 14214",
     rating: 4.5,
-    distanceFromCampus: "0.3 miles"
+    distanceFromCampus: "0.3 miles",
+    priceRange: "$"
   },
   
   // Toledo
@@ -105,7 +113,8 @@ export const macLocalEats: LocalEats[] = [
     address: "1902 Front St, Toledo, OH 43605",
     websiteUrl: "https://www.tonypacko.com/",
     rating: 4.4,
-    distanceFromCampus: "3.5 miles"
+    distanceFromCampus: "3.5 miles",
+    priceRange: "$$"
   },
   {
     id: "kengo-toledo",
@@ -115,7 +124,8 @@ export const macLocalEats: LocalEats[] = [
     description: "This upscale yet approachable spot offers authentic Japanese cuisine. The chef's choice sashimi platter is perfect for special occasions.",
     address: "38 S Saint Clair St, Toledo, OH 43604",
     rating: 4.8,
-    distanceFromCampus: "2.8 miles"
+    distanceFromCampus: "2.8 miles",
+    priceRange: "$$$"
   }
   
   // More restaurants would be added for the remaining MAC schools

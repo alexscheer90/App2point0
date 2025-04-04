@@ -133,6 +133,7 @@ export const localEatsSchema = z.object({
   imageUrl: z.string().optional(),
   rating: z.number().optional(),
   distanceFromCampus: z.string().optional(),
+  priceRange: z.enum(["$", "$$", "$$$", "$$$$"]).optional(),
 });
 
 export type School = z.infer<typeof schoolSchema>;

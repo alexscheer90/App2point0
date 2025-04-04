@@ -13,6 +13,10 @@ import StandingsPage from "./pages/StandingsPage";
 import NewsPage from "./pages/NewsPage";
 import SchoolsPage from "./pages/SchoolsPage";
 import SchoolProfile from "./pages/SchoolProfile";
+import RivalriesPage from "./pages/RivalriesPage";
+import SoundsPage from "./pages/SoundsPage";
+import LocalEatsPage from "./pages/LocalEatsPage";
+import PodcastPage from "./pages/PodcastPage";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -40,6 +44,10 @@ function App() {
             <Route path="/news" component={NewsPage} />
             <Route path="/schools" component={SchoolsPage} />
             <Route path="/schools/:id" component={SchoolProfile} />
+            <Route path="/rivalries" component={RivalriesPage} />
+            <Route path="/sounds" component={SoundsPage} />
+            <Route path="/eats" component={LocalEatsPage} />
+            <Route path="/podcast" component={PodcastPage} />
             <Route component={NotFound} />
           </Switch>
         </main>
