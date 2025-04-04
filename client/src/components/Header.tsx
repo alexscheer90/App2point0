@@ -9,10 +9,10 @@ interface HeaderProps {
 const Header = ({ activeTab }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-30">
-      <div className="bg-[#0C2340] text-white shadow-md">
+      <div className="bg-[#0B213E] text-white shadow-md">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold">Mobile <span className="text-[#FFD100]">#MACtion</span></h1>
+            <h1 className="text-xl font-bold">Mobile <span className="text-[#019E4F]">#MACtion</span></h1>
           </div>
           <div className="flex items-center space-x-4">
             <TooltipProvider>

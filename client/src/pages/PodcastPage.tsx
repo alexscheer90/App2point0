@@ -185,8 +185,8 @@ const PodcastPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-[#0B213E]">
-        <span className="text-[#019E4F]">MAC</span> Sports Connection
+      <h1 className="text-2xl font-bold mb-4" style={{ color: MAC_NAVY }}>
+        <span style={{ color: MAC_GREEN }}>MAC</span> Sports Connection
       </h1>
       
       <Tabs defaultValue="episodes" className="w-full mb-6">
@@ -201,12 +201,16 @@ const PodcastPage = () => {
           {featuredEpisode && (
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-3 flex items-center">
-                <Headphones className="h-4 w-4 mr-2 text-[#019E4F]" />
+                <Headphones className="h-4 w-4 mr-2" style={{ color: MAC_GREEN }} />
                 Latest Episode
               </h2>
               
               <Card className="overflow-hidden">
-                <div className="bg-gradient-to-r from-[#0B213E] to-[#019E4F] p-4 text-white">
+                <div style={{
+                  background: `linear-gradient(to right, ${MAC_NAVY}, ${MAC_GREEN})`,
+                  padding: '1rem',
+                  color: 'white'
+                }}>
                   <div className="flex items-center mb-4">
                     <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mr-4 shrink-0">
                       {featuredEpisode.imageUrl ? (
@@ -297,7 +301,7 @@ const PodcastPage = () => {
                   <div className="p-4">
                     <div className="flex justify-between">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-[#0C2340]">{episode.title}</h3>
+                        <h3 className="font-semibold" style={{ color: MAC_NAVY }}>{episode.title}</h3>
                         <p className="text-xs text-gray-500 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
                           {episode.date}
