@@ -144,6 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'gozips.com', // Akron
         'cmuchippewas.com', // Central Michigan
         'bsubsports.com', // Ball State
+        'ballstatesports.com', // Ball State (new URL)
         'ohiobobcats.com', // Ohio
         'kentstatesports.com', // Kent State
         'goniuhuskies.com', // Northern Illinois

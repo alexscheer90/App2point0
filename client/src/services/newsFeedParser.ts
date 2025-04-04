@@ -194,6 +194,7 @@ function parseRssFeed(xml: string, schoolId: string): NewsItem[] {
  */
 export const schoolFeedUrls: Record<string, string> = {
   'toledo': 'https://utrockets.com/rss?path=general',
+  'ballstate': 'https://ballstatesports.com/rss?path=general',
   // Add other schools' RSS feed URLs here as we find them
 };
 
