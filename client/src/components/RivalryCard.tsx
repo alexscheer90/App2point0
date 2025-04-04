@@ -13,22 +13,53 @@ interface RivalryCardProps {
 const RivalryCard = ({ rivalry }: RivalryCardProps) => {
   const { data: team1 } = useSchool(rivalry.team1Id);
   const { data: team2 } = useSchool(rivalry.team2Id);
+  const { data: team3 } = rivalry.team3Id ? useSchool(rivalry.team3Id) : { data: null };
   
   if (!team1 || !team2) return null;
+  const isThreeWayRivalry = rivalry.team3Id && team3;
   
   const getSeriesSummary = () => {
-    const { team1Wins, team2Wins, ties } = rivalry.series;
-    if (team1Wins > team2Wins) {
-      return `${team1.name} leads series ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
-    } else if (team2Wins > team1Wins) {
-      return `${team2.name} leads series ${team2Wins}-${team1Wins}${ties > 0 ? `-${ties}` : ''}`;
+    const { team1Wins, team2Wins, team3Wins = 0, ties } = rivalry.series;
+    
+    if (isThreeWayRivalry) {
+      return `Overall: ${team1.name.split(' ').pop()} (${team1Wins}), ${team2.name.split(' ').pop()} (${team2Wins}), ${team3!.name.split(' ').pop()} (${team3Wins})`;
     } else {
-      return `Series tied ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
+      if (team1Wins > team2Wins) {
+        return `${team1.name.split(' ').pop()} leads ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
+      } else if (team2Wins > team1Wins) {
+        return `${team2.name.split(' ').pop()} leads ${team2Wins}-${team1Wins}${ties > 0 ? `-${ties}` : ''}`;
+      } else {
+        return `Series tied ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
+      }
     }
   };
 
+  const renderTeamLogo = (team: School, size: string = "w-16 h-16") => (
+    <div className="flex flex-col items-center text-center">
+      {team.logoUrl ? (
+        <div className={`${size} mb-2 flex items-center justify-center`}>
+          <img 
+            src={team.logoUrl} 
+            alt={`${team.name} logo`} 
+            className="max-h-full max-w-full object-contain" 
+          />
+        </div>
+      ) : (
+        <div 
+          className={`${size} rounded-full mb-2`}
+          style={{ 
+            backgroundColor: team.primaryColor,
+            border: `2px solid ${team.secondaryColor}`,
+          }}
+        ></div>
+      )}
+      <span className="font-semibold text-sm">{team.name.split(' ').pop()}</span>
+      <span className="text-xs text-muted-foreground truncate max-w-24">{team.mascot}</span>
+    </div>
+  );
+
   return (
-    <Card className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300">
+    <Card className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 h-full">
       <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 pb-2">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-semibold">{rivalry.name}</CardTitle>
@@ -41,59 +72,29 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex flex-col items-center text-center w-5/12">
-            {team1.logoUrl ? (
-              // When logo is available
-              <div className="w-16 h-16 mb-2 flex items-center justify-center">
-                <img 
-                  src={team1.logoUrl} 
-                  alt={`${team1.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
-                />
-              </div>
-            ) : (
-              // Fallback to circular color block when no logo
-              <div 
-                className="w-16 h-16 rounded-full mb-2"
-                style={{ 
-                  backgroundColor: team1.primaryColor,
-                  border: `2px solid ${team1.secondaryColor}`,
-                }}
-              ></div>
-            )}
-            <span className="font-semibold">{team1.name}</span>
-            <span className="text-sm text-muted-foreground">{team1.mascot}</span>
+        {isThreeWayRivalry ? (
+          // Three-way rivalry layout
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {renderTeamLogo(team1, "w-14 h-14")}
+            {renderTeamLogo(team2, "w-14 h-14")}
+            {renderTeamLogo(team3!, "w-14 h-14")}
           </div>
-          
-          <div className="text-center w-2/12">
-            <div className="text-xl font-bold">VS</div>
+        ) : (
+          // Two-way rivalry layout
+          <div className="flex justify-between items-center mb-4">
+            <div className="w-5/12">
+              {renderTeamLogo(team1)}
+            </div>
+            
+            <div className="text-center w-2/12">
+              <div className="text-xl font-bold">VS</div>
+            </div>
+            
+            <div className="w-5/12">
+              {renderTeamLogo(team2)}
+            </div>
           </div>
-          
-          <div className="flex flex-col items-center text-center w-5/12">
-            {team2.logoUrl ? (
-              // When logo is available
-              <div className="w-16 h-16 mb-2 flex items-center justify-center">
-                <img 
-                  src={team2.logoUrl} 
-                  alt={`${team2.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
-                />
-              </div>
-            ) : (
-              // Fallback to circular color block when no logo
-              <div 
-                className="w-16 h-16 rounded-full mb-2"
-                style={{ 
-                  backgroundColor: team2.primaryColor,
-                  border: `2px solid ${team2.secondaryColor}`,
-                }}
-              ></div>
-            )}
-            <span className="font-semibold">{team2.name}</span>
-            <span className="text-sm text-muted-foreground">{team2.mascot}</span>
-          </div>
-        </div>
+        )}
         
         <div className="text-center text-sm font-medium mb-2">
           {getSeriesSummary()}
@@ -105,7 +106,7 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="bg-gray-50 dark:bg-gray-800/50 pt-2">
+      <CardFooter className="bg-gray-50 dark:bg-gray-800/50 pt-2 mt-auto">
         <Button 
           variant="ghost" 
           className="w-full flex items-center justify-between"

@@ -35,11 +35,13 @@ const RivalriesPage = () => {
       rivalry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       rivalry.trophyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       schools?.find(s => s.id === rivalry.team1Id)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      schools?.find(s => s.id === rivalry.team2Id)?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      schools?.find(s => s.id === rivalry.team2Id)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (rivalry.team3Id && schools?.find(s => s.id === rivalry.team3Id)?.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesSchool = selectedSchool === null || 
       rivalry.team1Id === selectedSchool || 
-      rivalry.team2Id === selectedSchool;
+      rivalry.team2Id === selectedSchool ||
+      (rivalry.team3Id && rivalry.team3Id === selectedSchool);
     
     return matchesSearch && matchesSchool;
   });
@@ -88,12 +90,11 @@ const RivalriesPage = () => {
       </Tabs>
       
       {filteredRivalries && filteredRivalries.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredRivalries.map(rivalry => (
-            <RivalryCard 
-              key={rivalry.id} 
-              rivalry={rivalry} 
-            />
+            <div key={rivalry.id} className="h-full">
+              <RivalryCard rivalry={rivalry} />
+            </div>
           ))}
         </div>
       ) : (

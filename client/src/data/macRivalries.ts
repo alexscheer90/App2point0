@@ -13,7 +13,7 @@ export const macRivalries: Rivalry[] = [
       team2Wins: 40,
       ties: 4
     },
-    trophyName: "Peace Pipe",
+    trophyName: "I-75 Trophy",
     firstGame: "1919-11-06",
     description: "The Battle of I-75 is played between the Toledo Rockets and the Bowling Green Falcons, named after Interstate 75 which connects the two schools, separating them by just 25 miles. The rivalry dates back to 1919 and is one of the most heated in the MAC.",
     lastGameId: "game1"
@@ -23,11 +23,14 @@ export const macRivalries: Rivalry[] = [
     name: "Michigan MAC Trophy",
     team1Id: "centralmichigan",
     team2Id: "westernmichigan",
+    team3Id: "easternmichigan",
     series: {
-      team1Wins: 22,
-      team2Wins: 38,
-      ties: 2
+      team1Wins: 9,  // CMU trophy wins since 2005
+      team2Wins: 8,  // WMU trophy wins since 2005
+      team3Wins: 5,  // EMU trophy wins since 2005
+      ties: 0
     },
+    trophyName: "Michigan MAC Trophy",
     firstGame: "1907-10-16",
     description: "The Michigan MAC Trophy is contested between Central Michigan, Eastern Michigan, and Western Michigan. The trophy was established in 2005 to be awarded to the Michigan-based MAC school with the best head-to-head record each year."
   },

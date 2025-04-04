@@ -101,9 +101,11 @@ export const rivalrySchema = z.object({
   name: z.string(),
   team1Id: z.string(),
   team2Id: z.string(),
+  team3Id: z.string().optional(),
   series: z.object({
     team1Wins: z.number(),
     team2Wins: z.number(),
+    team3Wins: z.number().optional(),
     ties: z.number(),
   }),
   trophyName: z.string().optional(),
