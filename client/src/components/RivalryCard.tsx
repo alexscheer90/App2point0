@@ -22,7 +22,7 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
     const { team1Wins, team2Wins, team3Wins = 0, ties } = rivalry.series;
     
     if (isThreeWayRivalry) {
-      return `Overall: ${team1.shortName} (${team1Wins}), ${team2.shortName} (${team2Wins}), ${team3!.shortName} (${team3Wins})`;
+      return `${team1.shortName} (${team1Wins}), ${team2.shortName} (${team2Wins}), ${team3!.shortName} (${team3Wins})`;
     } else {
       if (team1Wins > team2Wins) {
         return `${team1.shortName} leads ${team1Wins}-${team2Wins}${ties > 0 ? `-${ties}` : ''}`;
