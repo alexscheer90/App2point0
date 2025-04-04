@@ -190,10 +190,25 @@ const PodcastPage = () => {
       </h1>
       
       <Tabs defaultValue="episodes" className="w-full mb-6">
-        <TabsList className="w-full mb-4">
-          <TabsTrigger value="episodes">Episodes</TabsTrigger>
-          <TabsTrigger value="about">About</TabsTrigger>
-          <TabsTrigger value="subscribe">Subscribe</TabsTrigger>
+        <TabsList className="w-full mb-4" style={{ backgroundColor: MAC_NAVY }}>
+          <TabsTrigger 
+            value="episodes" 
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
+            Episodes
+          </TabsTrigger>
+          <TabsTrigger 
+            value="about"
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
+            About
+          </TabsTrigger>
+          <TabsTrigger 
+            value="subscribe"
+            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+          >
+            Subscribe
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="episodes">

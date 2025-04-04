@@ -55,25 +55,23 @@ const NewsItem = ({ news, onClick }: NewsItemProps) => {
             className="w-20 h-20 rounded object-cover mr-3" 
           />
         ) : (
-          <div 
-            className="w-20 h-20 rounded mr-3 flex items-center justify-center"
-            style={{ backgroundColor: school.primaryColor }}
-          >
-            <span className="text-xl font-bold" style={{ color: school.secondaryColor }}>
-              {school.shortName.charAt(0)}
-            </span>
+          <div className="w-20 h-20 rounded mr-3 flex items-center justify-center bg-white">
+            <img 
+              src={school.logoUrl} 
+              alt={school.name} 
+              className="w-16 h-16 object-contain" 
+            />
           </div>
         )}
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center">
-              <div 
-                className="w-4 h-4 rounded-full mr-1 flex items-center justify-center"
-                style={{ backgroundColor: school.primaryColor }}
-              >
-                <span className="text-[0.5rem] font-bold" style={{ color: school.secondaryColor }}>
-                  {school.shortName.charAt(0)}
-                </span>
+              <div className="w-4 h-4 rounded-full mr-1 flex items-center justify-center bg-white overflow-hidden">
+                <img 
+                  src={school.logoUrl} 
+                  alt={school.name} 
+                  className="w-3 h-3 object-contain"
+                />
               </div>
               <span className="text-xs text-gray-600">{school.name} • {timeAgo}</span>
             </div>

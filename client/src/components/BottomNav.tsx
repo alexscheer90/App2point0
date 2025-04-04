@@ -1,6 +1,10 @@
 import { Link } from "wouter";
 import { FileText, ChartBar, Newspaper, School, Trophy, Music, Utensils, Headphones } from "lucide-react";
 
+// MAC colors
+const MAC_NAVY = "#0B213E";
+const MAC_GREEN = "#019E4F";
+
 interface BottomNavProps {
   activeTab: string;
 }
@@ -69,7 +73,7 @@ interface NavItemProps {
 
 const NavItem = ({ to, icon, label, active }: NavItemProps) => {
   return (
-    <Link href={to} className={`flex flex-col items-center justify-center w-12 ${active ? 'text-[#C8102E]' : 'text-gray-600'}`}>
+    <Link href={to} className={`flex flex-col items-center justify-center w-12 ${active ? `text-[${MAC_GREEN}]` : 'text-gray-600'}`}>
       {icon}
       <span className="text-[10px] mt-1">{label}</span>
     </Link>

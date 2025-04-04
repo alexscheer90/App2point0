@@ -2,6 +2,11 @@ import { StandingsEntry } from "@shared/schema";
 import { useMacSchools } from "../hooks/useSchool";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// MAC colors
+const MAC_NAVY = "#0B213E";
+const MAC_GREEN = "#019E4F";
+const MAC_GRAY = "#9DA5A8";
+
 interface StandingsTableProps {
   sport: string;
   entries: StandingsEntry[];
@@ -32,17 +37,17 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <tr style={{ backgroundColor: MAC_NAVY }}>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
                   Team
                 </th>
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider text-white">
                   W
                 </th>
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider text-white">
                   L
                 </th>
-                <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider text-white">
                   PCT
                 </th>
               </tr>
@@ -55,7 +60,11 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                 const isFavorite = favoriteSchoolId === school.id;
                 
                 return (
-                  <tr key={entry.schoolId} className={`hover:bg-gray-50 ${isFavorite ? 'bg-yellow-50' : ''}`}>
+                  <tr 
+                    key={entry.schoolId} 
+                    className={`hover:bg-gray-50 ${isFavorite ? '' : ''}`}
+                    style={isFavorite ? { backgroundColor: `${MAC_GREEN}20` } : {}}
+                  >
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
                         {school.logoUrl ? (
