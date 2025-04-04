@@ -21,11 +21,7 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
       >
         {school.logoUrl ? (
           // When logo is available
-          <div className={`h-16 w-16 flex items-center justify-center ${
-            school.id === "buffalo" || 
-            school.id === "easternmichigan" ? 
-              "border border-gray-200 rounded-full" : ""
-          }`}>
+          <div className="h-16 w-16 flex items-center justify-center">
             <img 
               src={school.logoUrl} 
               alt={`${school.name} logo`} 
