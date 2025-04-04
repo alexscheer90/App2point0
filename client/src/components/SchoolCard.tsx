@@ -7,12 +7,22 @@ interface SchoolCardProps {
 
 const SchoolCard = ({ school }: SchoolCardProps) => {
   return (
-    <Link href={`/schools/${school.id}`}>
-      <a className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 transition-shadow hover:shadow-lg">
-        <div 
-          className="h-24 flex items-center justify-center"
-          style={{ backgroundColor: school.primaryColor }}
-        >
+    <Link href={`/schools/${school.id}`} className="block bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 transition-shadow hover:shadow-lg">
+      <div 
+        className="h-24 flex items-center justify-center"
+        style={{ backgroundColor: school.primaryColor }}
+      >
+        {school.logoUrl ? (
+          // When logo is available
+          <div className="h-16 w-16 flex items-center justify-center">
+            <img 
+              src={school.logoUrl} 
+              alt={`${school.name} logo`} 
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        ) : (
+          // Fallback to circular initial when no logo
           <div 
             className="h-16 w-16 rounded-full flex items-center justify-center"
             style={{ backgroundColor: school.secondaryColor }}
@@ -24,12 +34,12 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
               {school.shortName.charAt(0)}
             </span>
           </div>
-        </div>
-        <div className="p-3 text-center">
-          <h3 className="font-bold">{school.name}</h3>
-          <p className="text-xs text-gray-600">{school.mascot}</p>
-        </div>
-      </a>
+        )}
+      </div>
+      <div className="p-3 text-center">
+        <h3 className="font-bold">{school.name}</h3>
+        <p className="text-xs text-gray-600">{school.mascot}</p>
+      </div>
     </Link>
   );
 };

@@ -78,28 +78,52 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       <div className="p-3">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            <div 
-              className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-              style={{ backgroundColor: homeTeam.primaryColor }}
-            >
-              <span className="text-xs font-bold" style={{ color: homeTeam.secondaryColor }}>
-                {homeTeam.shortName.charAt(0)}
-              </span>
-            </div>
+            {homeTeam.logoUrl ? (
+              // When logo is available
+              <div className="w-8 h-8 mr-3 flex items-center justify-center">
+                <img 
+                  src={homeTeam.logoUrl} 
+                  alt={`${homeTeam.name} logo`} 
+                  className="max-h-full max-w-full object-contain" 
+                />
+              </div>
+            ) : (
+              // Fallback to circular initial when no logo
+              <div 
+                className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
+                style={{ backgroundColor: homeTeam.primaryColor }}
+              >
+                <span className="text-xs font-bold" style={{ color: homeTeam.secondaryColor }}>
+                  {homeTeam.shortName.charAt(0)}
+                </span>
+              </div>
+            )}
             <span className="font-semibold text-sm">{homeTeam.name}</span>
           </div>
           <span className="font-bold text-lg">{game.homeTeamScore}</span>
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <div 
-              className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-              style={{ backgroundColor: awayTeam.primaryColor }}
-            >
-              <span className="text-xs font-bold" style={{ color: awayTeam.secondaryColor }}>
-                {awayTeam.shortName.charAt(0)}
-              </span>
-            </div>
+            {awayTeam.logoUrl ? (
+              // When logo is available
+              <div className="w-8 h-8 mr-3 flex items-center justify-center">
+                <img 
+                  src={awayTeam.logoUrl} 
+                  alt={`${awayTeam.name} logo`} 
+                  className="max-h-full max-w-full object-contain" 
+                />
+              </div>
+            ) : (
+              // Fallback to circular initial when no logo
+              <div 
+                className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
+                style={{ backgroundColor: awayTeam.primaryColor }}
+              >
+                <span className="text-xs font-bold" style={{ color: awayTeam.secondaryColor }}>
+                  {awayTeam.shortName.charAt(0)}
+                </span>
+              </div>
+            )}
             <span className="font-semibold text-sm">{awayTeam.name}</span>
           </div>
           <span className="font-bold text-lg">{game.awayTeamScore}</span>

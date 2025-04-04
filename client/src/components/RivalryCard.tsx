@@ -43,13 +43,25 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
       <CardContent className="pt-4">
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col items-center text-center w-5/12">
-            <div 
-              className="w-16 h-16 rounded-full mb-2"
-              style={{ 
-                backgroundColor: team1.primaryColor,
-                border: `2px solid ${team1.secondaryColor}`,
-              }}
-            ></div>
+            {team1.logoUrl ? (
+              // When logo is available
+              <div className="w-16 h-16 mb-2 flex items-center justify-center">
+                <img 
+                  src={team1.logoUrl} 
+                  alt={`${team1.name} logo`} 
+                  className="max-h-full max-w-full object-contain" 
+                />
+              </div>
+            ) : (
+              // Fallback to circular color block when no logo
+              <div 
+                className="w-16 h-16 rounded-full mb-2"
+                style={{ 
+                  backgroundColor: team1.primaryColor,
+                  border: `2px solid ${team1.secondaryColor}`,
+                }}
+              ></div>
+            )}
             <span className="font-semibold">{team1.name}</span>
             <span className="text-sm text-muted-foreground">{team1.mascot}</span>
           </div>
@@ -59,13 +71,25 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
           </div>
           
           <div className="flex flex-col items-center text-center w-5/12">
-            <div 
-              className="w-16 h-16 rounded-full mb-2"
-              style={{ 
-                backgroundColor: team2.primaryColor,
-                border: `2px solid ${team2.secondaryColor}`,
-              }}
-            ></div>
+            {team2.logoUrl ? (
+              // When logo is available
+              <div className="w-16 h-16 mb-2 flex items-center justify-center">
+                <img 
+                  src={team2.logoUrl} 
+                  alt={`${team2.name} logo`} 
+                  className="max-h-full max-w-full object-contain" 
+                />
+              </div>
+            ) : (
+              // Fallback to circular color block when no logo
+              <div 
+                className="w-16 h-16 rounded-full mb-2"
+                style={{ 
+                  backgroundColor: team2.primaryColor,
+                  border: `2px solid ${team2.secondaryColor}`,
+                }}
+              ></div>
+            )}
             <span className="font-semibold">{team2.name}</span>
             <span className="text-sm text-muted-foreground">{team2.mascot}</span>
           </div>
