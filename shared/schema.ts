@@ -70,7 +70,6 @@ export const gameSchema = z.object({
 export const standingsEntrySchema = z.object({
   schoolId: z.string(),
   sportId: z.string(),
-  division: z.string().optional(),
   conference: z.object({
     wins: z.number(),
     losses: z.number(),
