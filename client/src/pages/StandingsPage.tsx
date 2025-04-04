@@ -38,7 +38,7 @@ const StandingsPage = () => {
       
       <div className="px-4 relative">
         {/* MAC Logo in top right corner */}
-        <div className="absolute top-0 right-0 w-20 h-20 md:w-24 md:h-24 opacity-90">
+        <div className="absolute top-0 right-0 w-20 h-20 md:w-24 md:h-24">
           <img 
             src={macLogo} 
             alt="MAC Conference Logo" 
