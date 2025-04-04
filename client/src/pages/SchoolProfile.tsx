@@ -4,6 +4,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause } from "lucide-react";
+
+// Import school logo images
+import akronLogo from "@assets/Akron.png";
+import bgsuLogo from "@assets/BGSU.png";
+import ballStateLogo from "@assets/Ball State.png";
+import buffaloLogo from "@assets/Buffalo.png";
+import cmuLogo from "@assets/CMU.png";
+import emuLogo from "@assets/EMU.png";
+import kentStateLogo from "@assets/Kent State.png";
+import miamiLogo from "@assets/Miami.png";
+import niuLogo from "@assets/NIU.png";
+import ohioLogo from "@assets/Ohio.png";
+import toledoLogo from "@assets/Toledo.png";
+import wmuLogo from "@assets/WMU.png";
 import { useSchool } from "../hooks/useSchool";
 import { useSchoolGames } from "../hooks/useScores";
 import { useSchoolNews } from "../hooks/useNews";
@@ -83,6 +97,38 @@ const SchoolProfile = () => {
     setShowNewsDialog(false);
   };
   
+  // Function to get the school logo based on school ID
+  const getSchoolLogo = (schoolId: string): string | undefined => {
+    switch (schoolId) {
+      case "akron":
+        return akronLogo;
+      case "ballstate":
+        return ballStateLogo;
+      case "bowlinggreen":
+        return bgsuLogo;
+      case "buffalo":
+        return buffaloLogo;
+      case "centralmichigan":
+        return cmuLogo;
+      case "easternmichigan":
+        return emuLogo;
+      case "kentstate":
+        return kentStateLogo;
+      case "miami":
+        return miamiLogo;
+      case "northernillinois":
+        return niuLogo;
+      case "ohio":
+        return ohioLogo;
+      case "toledo":
+        return toledoLogo;
+      case "westernmichigan":
+        return wmuLogo;
+      default:
+        return undefined;
+    }
+  };
+  
   if (isSchoolLoading) {
     return (
       <div className="p-4">
@@ -149,10 +195,24 @@ const SchoolProfile = () => {
         >
           <div className="flex items-center">
             <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center mr-3"
-              style={{ backgroundColor: school.secondaryColor, color: school.primaryColor }}
+              className="w-12 h-12 rounded-full flex items-center justify-center mr-3 overflow-hidden"
+              style={{ 
+                backgroundColor: school.secondaryColor,
+                border: `2px solid ${school.secondaryColor}`,
+                padding: getSchoolLogo(school.id) ? "2px" : "0"
+              }}
             >
-              <span className="font-bold text-xl">{school.shortName.charAt(0)}</span>
+              {getSchoolLogo(school.id) ? (
+                <img 
+                  src={getSchoolLogo(school.id)} 
+                  alt={`${school.name} logo`} 
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <span className="font-bold text-xl" style={{ color: school.primaryColor }}>
+                  {school.shortName.charAt(0)}
+                </span>
+              )}
             </div>
             <div>
               <CardTitle className="text-xl">{school.name}</CardTitle>
@@ -510,12 +570,24 @@ const SchoolProfile = () => {
               
               <div className="flex items-center mb-3">
                 <div 
-                  className="w-5 h-5 mr-2 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: school.primaryColor }}
+                  className="w-5 h-5 mr-2 rounded-full flex items-center justify-center overflow-hidden"
+                  style={{ 
+                    backgroundColor: school.primaryColor,
+                    border: `1px solid ${school.secondaryColor}`,
+                    padding: getSchoolLogo(school.id) ? "1px" : "0"
+                  }}
                 >
-                  <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
-                    {school.shortName.charAt(0)}
-                  </span>
+                  {getSchoolLogo(school.id) ? (
+                    <img 
+                      src={getSchoolLogo(school.id)} 
+                      alt={`${school.name} logo`} 
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
+                      {school.shortName.charAt(0)}
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-gray-600">
                   {school.name} • {new Date(selectedNews.publishedAt).toLocaleDateString()}
