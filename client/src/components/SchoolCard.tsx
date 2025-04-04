@@ -10,11 +10,24 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
     <Link href={`/schools/${school.id}`} className="block bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 transition-shadow hover:shadow-lg">
       <div 
         className="h-24 flex items-center justify-center"
-        style={{ backgroundColor: school.primaryColor }}
+        style={{ 
+          backgroundColor: 
+            school.id === "buffalo" || 
+            school.id === "easternmichigan" || 
+            school.id === "centralmichigan" || 
+            school.id === "bowlinggreen" ? 
+              "white" : school.primaryColor
+        }}
       >
         {school.logoUrl ? (
           // When logo is available
-          <div className="h-16 w-16 flex items-center justify-center">
+          <div className={`h-16 w-16 flex items-center justify-center ${
+            school.id === "buffalo" || 
+            school.id === "easternmichigan" || 
+            school.id === "centralmichigan" || 
+            school.id === "bowlinggreen" ? 
+              "border border-gray-200 rounded-full" : ""
+          }`}>
             <img 
               src={school.logoUrl} 
               alt={`${school.name} logo`} 
