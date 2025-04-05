@@ -44,6 +44,17 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     };
   }, [audioElement]);
 
+  // Helper function to convert hex color to rgba with opacity
+  const getBgColor = (hex: string, opacity: number = 0.15) => {
+    if (hex.startsWith('#')) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    return hex;
+  };
+
   // Generate styles based on school colors
   const getCardStyle = () => {
     if (!school) return {};
@@ -53,22 +64,11 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
       ? school.primaryColor
       : (school.secondaryColor || school.primaryColor);
     
-    // Convert hex to rgba for background
-    const getBgColor = (hex: string, opacity: number = 0.15) => {
-      if (hex.startsWith('#')) {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-      }
-      return hex;
-    };
-    
     // Return the card style with background color
     return {
       backgroundColor: sound.type === 'fight_song'
-        ? `${getBgColor(school.primaryColor, 0.15)}`
-        : `${getBgColor(school.secondaryColor || school.primaryColor, 0.15)}`,
+        ? getBgColor(school.primaryColor, 0.15)
+        : getBgColor(school.secondaryColor || school.primaryColor, 0.15),
       borderLeft: `4px solid ${color}`
     };
   };
@@ -120,7 +120,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
           <span 
             className="text-xs font-medium capitalize px-2 py-1 rounded-full"
             style={{
-              backgroundColor: school ? `${school.primaryColor}20` : '#f1f1f1',
+              backgroundColor: school ? getBgColor(school.primaryColor, 0.12) : '#f1f1f1',
               color: school ? school.primaryColor : 'inherit'
             }}
           >
@@ -193,8 +193,8 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                   style={{
                     backgroundColor: school 
                       ? sound.type === 'fight_song'
-                        ? `${getBgColor(school.primaryColor, 0.1)}`
-                        : `${getBgColor(school.secondaryColor || school.primaryColor, 0.1)}`
+                        ? getBgColor(school.primaryColor, 0.1)
+                        : getBgColor(school.secondaryColor || school.primaryColor, 0.1)
                       : 'inherit',
                     borderLeft: school 
                       ? `3px solid ${sound.type === 'fight_song' 
