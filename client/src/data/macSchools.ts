@@ -77,7 +77,7 @@ export const macSchools: School[] = [
     shortName: "EMU",
     mascot: "Eagles",
     primaryColor: "#046A38",
-    secondaryColor: "#FFFFFF",
+    secondaryColor: "#777777",
     logoUrl: emuLogo,
     city: "Ypsilanti",
     state: "MI",
