@@ -184,9 +184,10 @@ const SchoolProfile = () => {
           style={{ 
             backgroundColor: 
               school.id === "buffalo" || 
-              school.id === "easternmichigan" || 
               school.id === "centralmichigan" ? 
-                "white" : school.primaryColor, 
+                "white" : 
+              school.id === "easternmichigan" ?
+                "#777777" : school.primaryColor, 
             color: 
               school.id === "buffalo" || 
               school.id === "easternmichigan" || 
