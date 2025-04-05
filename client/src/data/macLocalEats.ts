@@ -126,7 +126,43 @@ export const macLocalEats: LocalEats[] = [
     rating: 4.8,
     distanceFromCampus: "2.8 miles",
     priceRange: "$$$"
-  }
+  },
   
-  // More restaurants would be added for the remaining MAC schools
+  // UMass Amherst
+  {
+    id: "antonios-pizza-umass",
+    schoolId: "umass",
+    name: "Antonio's Pizza",
+    cuisine: "Pizza",
+    description: "Famous for their creative pizza slices, Antonio's is a UMass institution. Their unique toppings and combinations make this a must-visit spot for students and visitors alike.",
+    address: "31 N Pleasant St, Amherst, MA 01002",
+    websiteUrl: "https://www.antoniospizza.com/",
+    rating: 4.7,
+    distanceFromCampus: "1.2 miles",
+    priceRange: "$"
+  },
+  {
+    id: "amherst-brewing-umass",
+    schoolId: "umass",
+    name: "Amherst Brewing",
+    cuisine: "American/Brewery",
+    description: "Craft beer and elevated pub food make this a popular gathering spot. Their outdoor beer garden is perfect for nice weather, and they often host live music and events.",
+    address: "10 University Dr, Amherst, MA 01002",
+    websiteUrl: "https://www.amherstbrewing.com/",
+    rating: 4.5,
+    distanceFromCampus: "1.5 miles",
+    priceRange: "$$"
+  },
+  {
+    id: "mission-cantina-umass",
+    schoolId: "umass",
+    name: "Mission Cantina",
+    cuisine: "Mexican",
+    description: "Authentic Mexican cuisine with creative cocktails. Their tacos and burritos are made with fresh ingredients, and the festive atmosphere makes it a favorite among students.",
+    address: "485 West St, Amherst, MA 01002",
+    websiteUrl: "https://www.missioncantinaamherst.com/",
+    rating: 4.6,
+    distanceFromCampus: "2.3 miles",
+    priceRange: "$$"
+  }
 ];

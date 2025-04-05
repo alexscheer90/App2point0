@@ -130,5 +130,32 @@ export const macRivalries: Rivalry[] = [
     trophyName: "Victory Bell",
     firstGame: "1888-12-08",
     description: "Although Cincinnati is not a MAC school, the Victory Bell game between Miami and Cincinnati is one of the oldest non-conference rivalries in college football, dating back to 1888. The bell itself was a gift from Miami's Chi Omega sorority in 1927."
+  },
+  {
+    id: "minuteman-musket",
+    name: "Minuteman Musket",
+    team1Id: "umass",
+    team2Id: "connecticut",
+    series: {
+      team1Wins: 38,
+      team2Wins: 39,
+      ties: 2
+    },
+    trophyName: "Minuteman Musket",
+    firstGame: "1897-11-09",
+    description: "The UMass-UConn rivalry is symbolized by the Minuteman Musket, which was introduced in 2004. Though UConn is no longer in the same conference as UMass, the regional rivalry remains an important tradition for both schools."
+  },
+  {
+    id: "battle-for-the-bay-state",
+    name: "Battle for the Bay State",
+    team1Id: "umass",
+    team2Id: "boston-college",
+    series: {
+      team1Wins: 5,
+      team2Wins: 22,
+      ties: 0
+    },
+    firstGame: "1899-10-21",
+    description: "Though Boston College is not a MAC school, the in-state rivalry between UMass and Boston College represents bragging rights for college football in Massachusetts. The two schools have played intermittently since their first meeting in 1899."
   }
 ];

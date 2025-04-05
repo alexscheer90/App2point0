@@ -241,5 +241,25 @@ export const macSchoolSounds: SchoolSound[] = [
     lyrics: "Western we sing to you, Brown and Gold, Western we bring to you, faith untold. You give us knowledge, strength that will never fail. We sing to you our Alma Mater, Western, hail!",
     description: "Western Michigan's Alma Mater is a tribute to the university's mission of providing academic excellence.",
     audioUrl: "/sounds/wmu-alma.mp3"
+  },
+  
+  // UMass
+  {
+    id: "umass-fight",
+    schoolId: "umass",
+    type: "fight_song",
+    title: "Fight Mass",
+    lyrics: "Fight, fight Massachusetts, Fight, fight every down, Fight, fight for the home team, We're out to win this game! March, march on down the field, Hail to our heroes bold, For Mass-a-chu-setts, Fight down the field, fight! Fight to the goal! GO UMASS!",
+    description: "Fight Mass is the primary fight song of the University of Massachusetts Amherst.",
+    audioUrl: "/sounds/umass-fight.mp3"
+  },
+  {
+    id: "umass-alma",
+    schoolId: "umass",
+    type: "alma_mater",
+    title: "UMass Alma Mater",
+    lyrics: "When twilight shadows darken, Quest not the reason why, Our hearts with pride will harken, Old Massachusetts' cry. 'Tis there where beauty softly lies, 'Neath the blue New England skies. We'll cherish each day of our college life, The hills, the trees, the rising sun. Our hopes, our dreams, for future years have only then begun.",
+    description: "The UMass Alma Mater is performed at university convocations and other formal events.",
+    audioUrl: "/sounds/umass-alma.mp3"
   }
 ];
