@@ -94,6 +94,17 @@ export const macSchools: School[] = [
     state: "OH",
   },
   {
+    id: "umass",
+    name: "Massachusetts",
+    shortName: "UMass",
+    mascot: "Minutemen",
+    primaryColor: "#881c1c",
+    secondaryColor: "#FFFFFF",
+    logoUrl: umassLogo,
+    city: "Amherst",
+    state: "MA",
+  },
+  {
     id: "miamioh",
     name: "Miami",
     shortName: "Miami",
@@ -147,16 +158,5 @@ export const macSchools: School[] = [
     logoUrl: wmuLogo,
     city: "Kalamazoo",
     state: "MI",
-  },
-  {
-    id: "umass",
-    name: "UMass",
-    shortName: "UMass",
-    mascot: "Minutemen",
-    primaryColor: "#881c1c",
-    secondaryColor: "#FFFFFF",
-    logoUrl: umassLogo,
-    city: "Amherst",
-    state: "MA",
   }
 ];

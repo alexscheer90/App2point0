@@ -243,7 +243,7 @@ export const macSchoolSounds: SchoolSound[] = [
     audioUrl: "/sounds/wmu-alma.mp3"
   },
   
-  // UMass
+  // Massachusetts
   {
     id: "umass-fight",
     schoolId: "umass",
@@ -257,9 +257,9 @@ export const macSchoolSounds: SchoolSound[] = [
     id: "umass-alma",
     schoolId: "umass",
     type: "alma_mater",
-    title: "UMass Alma Mater",
+    title: "Massachusetts Alma Mater",
     lyrics: "When twilight shadows darken, Quest not the reason why, Our hearts with pride will harken, Old Massachusetts' cry. 'Tis there where beauty softly lies, 'Neath the blue New England skies. We'll cherish each day of our college life, The hills, the trees, the rising sun. Our hopes, our dreams, for future years have only then begun.",
-    description: "The UMass Alma Mater is performed at university convocations and other formal events.",
+    description: "The Massachusetts Alma Mater is performed at university convocations and other formal events.",
     audioUrl: "/sounds/umass-alma.mp3"
   }
 ];

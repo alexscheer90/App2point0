@@ -128,13 +128,13 @@ export const macLocalEats: LocalEats[] = [
     priceRange: "$$$"
   },
   
-  // UMass Amherst
+  // Massachusetts
   {
     id: "antonios-pizza-umass",
     schoolId: "umass",
     name: "Antonio's Pizza",
     cuisine: "Pizza",
-    description: "Famous for their creative pizza slices, Antonio's is a UMass institution. Their unique toppings and combinations make this a must-visit spot for students and visitors alike.",
+    description: "Famous for their creative pizza slices, Antonio's is a Massachusetts institution. Their unique toppings and combinations make this a must-visit spot for students and visitors alike.",
     address: "31 N Pleasant St, Amherst, MA 01002",
     websiteUrl: "https://www.antoniospizza.com/",
     rating: 4.7,

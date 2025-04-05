@@ -143,7 +143,7 @@ export const macRivalries: Rivalry[] = [
     },
     trophyName: "Minuteman Musket",
     firstGame: "1897-11-09",
-    description: "The UMass-UConn rivalry is symbolized by the Minuteman Musket, which was introduced in 2004. Though UConn is no longer in the same conference as UMass, the regional rivalry remains an important tradition for both schools."
+    description: "The Massachusetts-UConn rivalry is symbolized by the Minuteman Musket, which was introduced in 2004. Though UConn is no longer in the same conference as Massachusetts, the regional rivalry remains an important tradition for both schools."
   },
   {
     id: "battle-for-the-bay-state",
@@ -156,6 +156,6 @@ export const macRivalries: Rivalry[] = [
       ties: 0
     },
     firstGame: "1899-10-21",
-    description: "Though Boston College is not a MAC school, the in-state rivalry between UMass and Boston College represents bragging rights for college football in Massachusetts. The two schools have played intermittently since their first meeting in 1899."
+    description: "Though Boston College is not a MAC school, the in-state rivalry between Massachusetts and Boston College represents bragging rights for college football in Massachusetts. The two schools have played intermittently since their first meeting in 1899."
   }
 ];
