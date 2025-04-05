@@ -3,7 +3,6 @@ import { useMacSchools } from '../hooks/useSchool';
 import { useLocalEats } from '../hooks/useLocalEats';
 import LocalEatCard from '../components/LocalEatCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Utensils, MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -82,7 +81,7 @@ const LocalEatsPage = () => {
         <span style={{ color: MAC_GREEN }}>Local</span> <span style={{ color: MAC_NAVY }}>Eats</span>
       </h1>
       
-      <div className="flex gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
           <Input
@@ -94,41 +93,41 @@ const LocalEatsPage = () => {
           />
         </div>
         
-        <Select value={priceFilter} onValueChange={setPriceFilter}>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="All Prices" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Prices</SelectItem>
-            <SelectItem value="$">$</SelectItem>
-            <SelectItem value="$$">$$</SelectItem>
-            <SelectItem value="$$$">$$$</SelectItem>
-            <SelectItem value="$$$$">$$$$</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <Tabs defaultValue={selectedSchool || "all"} className="w-full mb-6">
-        <TabsList className="w-full mb-4 flex overflow-x-auto" style={{ backgroundColor: MAC_NAVY }}>
-          <TabsTrigger 
-            value="all"
-            onClick={() => setSelectedSchool(null)}
-            className="text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+        <div className="flex gap-3">
+          <Select 
+            value={selectedSchool || "all"} 
+            onValueChange={(value) => setSelectedSchool(value === "all" ? null : value)}
           >
-            All Cities
-          </TabsTrigger>
-          {schools.map(school => (
-            <TabsTrigger 
-              key={school.id} 
-              value={school.id}
-              onClick={() => setSelectedSchool(school.id)}
-              className="whitespace-nowrap text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-            >
-              {school.city}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+            <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: "white", borderColor: MAC_NAVY }}>
+              <SelectValue placeholder="Select a city" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All MAC Cities</SelectItem>
+              {schools.map(school => (
+                <SelectItem key={school.id} value={school.id}>
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                    {school.city}, {school.state}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select value={priceFilter} onValueChange={setPriceFilter}>
+            <SelectTrigger className="w-full sm:w-[120px]" style={{ backgroundColor: "white", borderColor: MAC_NAVY }}>
+              <SelectValue placeholder="All Prices" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Prices</SelectItem>
+              <SelectItem value="$">$</SelectItem>
+              <SelectItem value="$$">$$</SelectItem>
+              <SelectItem value="$$$">$$$</SelectItem>
+              <SelectItem value="$$$$">$$$$</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {isLoading ? (
         <>
