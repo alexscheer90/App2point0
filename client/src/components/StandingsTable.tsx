@@ -1,6 +1,8 @@
 import { StandingsEntry } from "@shared/schema";
 import { useMacSchools } from "../hooks/useSchool";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 // MAC colors
 const MAC_NAVY = "#0B213E";
@@ -15,6 +17,7 @@ interface StandingsTableProps {
 
 const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProps) => {
   const { data: schools } = useMacSchools();
+  const [view, setView] = useState<"conference" | "overall">("conference");
   
   if (!schools) {
     return (
@@ -27,15 +30,31 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   }
   
   // Sort entries by winning percentage (descending)
-  const sortedEntries = [...entries].sort((a, b) => 
-    b.conference.winningPercentage - a.conference.winningPercentage
-  );
+  const sortedEntries = [...entries].sort((a, b) => {
+    if (view === "conference") {
+      return b.conference.winningPercentage - a.conference.winningPercentage;
+    } else {
+      return b.overall.winningPercentage - a.overall.winningPercentage;
+    }
+  });
   
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-      <ScrollArea className="h-[calc(100vh-300px)]">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+      <div className="p-3 border-b border-gray-200 flex justify-end">
+        <Select value={view} onValueChange={(value) => setView(value as "conference" | "overall")}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="View" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="conference">Conference</SelectItem>
+            <SelectItem value="overall">Overall</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <ScrollArea className="h-[calc(100vh-350px)]">
+        <div>
+          <table className="w-full divide-y divide-gray-200">
             <thead>
               <tr style={{ backgroundColor: MAC_NAVY }}>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
@@ -58,18 +77,19 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                 if (!school) return null;
                 
                 const isFavorite = favoriteSchoolId === school.id;
+                const stats = view === "conference" ? entry.conference : entry.overall;
                 
                 return (
                   <tr 
                     key={entry.schoolId} 
-                    className={`hover:bg-gray-50 ${isFavorite ? '' : ''}`}
+                    className={`hover:bg-gray-50`}
                     style={isFavorite ? { backgroundColor: `${MAC_GREEN}20` } : {}}
                   >
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-2 sm:px-4 py-3">
                       <div className="flex items-center">
                         {school.logoUrl ? (
                           // When logo is available
-                          <div className="w-6 h-6 mr-2 flex items-center justify-center">
+                          <div className="w-6 h-6 mr-2 flex-shrink-0 flex items-center justify-center">
                             <img 
                               src={school.logoUrl} 
                               alt={`${school.name} logo`} 
@@ -79,7 +99,7 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                         ) : (
                           // Fallback to circular initial when no logo
                           <div 
-                            className="w-6 h-6 mr-2 rounded-full flex items-center justify-center" 
+                            className="w-6 h-6 mr-2 flex-shrink-0 rounded-full flex items-center justify-center" 
                             style={{ backgroundColor: school.primaryColor }}
                           >
                             <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
@@ -87,17 +107,17 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                             </span>
                           </div>
                         )}
-                        <span className="text-sm font-medium text-gray-900">{school.name}</span>
+                        <span className="text-sm font-medium text-gray-900 truncate">{school.name}</span>
                       </div>
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap text-center text-sm">
-                      {entry.conference.wins}
+                    <td className="px-1 sm:px-3 py-3 text-center text-sm">
+                      {stats.wins}
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap text-center text-sm">
-                      {entry.conference.losses}
+                    <td className="px-1 sm:px-3 py-3 text-center text-sm">
+                      {stats.losses}
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap text-center text-sm">
-                      {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
+                    <td className="px-1 sm:px-3 py-3 text-center text-sm">
+                      {stats.winningPercentage.toFixed(3).replace(/^0+/, '')}
                     </td>
                   </tr>
                 );
