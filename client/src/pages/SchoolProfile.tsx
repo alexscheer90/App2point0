@@ -178,7 +178,12 @@ const SchoolProfile = () => {
         </Button>
       </div>
       
-      <Card className="mb-4">
+      <Card 
+        className="mb-4"
+        style={{
+          backgroundColor: school.id === "easternmichigan" ? "#777777" : "white"
+        }}
+      >
         <CardHeader 
           className="pb-2"
           style={{ 
