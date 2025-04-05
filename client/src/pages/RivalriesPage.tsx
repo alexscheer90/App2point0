@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useRivalries } from '../hooks/useRivalries';
 import { useMacSchools } from '../hooks/useSchool';
 import RivalryCard from '../components/RivalryCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
 import { School } from '@shared/schema';
 
 // MAC colors
@@ -15,7 +13,6 @@ const MAC_GRAY = "#9DA5A8";
 const RivalriesPage = () => {
   const { data: rivalries, isLoading } = useRivalries();
   const { data: schools } = useMacSchools();
-  const [searchTerm, setSearchTerm] = useState('');
 
   if (isLoading || !schools) {
     return (
@@ -27,15 +24,8 @@ const RivalriesPage = () => {
     );
   }
 
-  // Filter rivalries based on search term only
-  const filteredRivalries = rivalries?.filter(rivalry => {
-    return searchTerm === '' || 
-      rivalry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rivalry.trophyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      schools?.find(s => s.id === rivalry.team1Id)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      schools?.find(s => s.id === rivalry.team2Id)?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rivalry.team3Id && schools?.find(s => s.id === rivalry.team3Id)?.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  });
+  // No filtering needed
+  const filteredRivalries = rivalries;
 
   const getSchoolById = (id: string): School | undefined => {
     return schools?.find(school => school.id === id);
@@ -43,20 +33,9 @@ const RivalriesPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">
+      <h1 className="text-2xl font-bold mb-6">
         <span style={{ color: MAC_GREEN }}>MAC</span> <span style={{ color: MAC_NAVY }}>Rivalries</span>
       </h1>
-      
-      <div className="mb-6 relative">
-        <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
-        <Input
-          type="text"
-          placeholder="Search for rivalries or trophies..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9"
-        />
-      </div>
       
       {filteredRivalries && filteredRivalries.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -68,7 +47,7 @@ const RivalriesPage = () => {
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200">
-          <p className="text-gray-500">No rivalries found matching your criteria.</p>
+          <p className="text-gray-500">No MAC rivalries available.</p>
         </div>
       )}
     </div>

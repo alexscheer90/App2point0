@@ -191,14 +191,22 @@ const SoundsPage = () => {
               <div key={schoolId} className="space-y-4">
                 <h2 className="text-xl font-semibold">
                   <div className="flex items-center">
-                    <div 
-                      className="w-8 h-8 mr-2 rounded-full flex items-center justify-center" 
-                      style={{ backgroundColor: school.primaryColor }}
-                    >
-                      <span className="text-sm font-bold" style={{ color: school.secondaryColor }}>
-                        {school.shortName.charAt(0)}
-                      </span>
-                    </div>
+                    {school.logoUrl ? (
+                      <img 
+                        src={school.logoUrl} 
+                        alt={`${school.name} logo`} 
+                        className="w-8 h-8 mr-2 object-contain" 
+                      />
+                    ) : (
+                      <div 
+                        className="w-8 h-8 mr-2 rounded-full flex items-center justify-center" 
+                        style={{ backgroundColor: school.primaryColor }}
+                      >
+                        <span className="text-sm font-bold" style={{ color: school.secondaryColor }}>
+                          {school.shortName.charAt(0)}
+                        </span>
+                      </div>
+                    )}
                     {school.name} {school.mascot}
                   </div>
                 </h2>

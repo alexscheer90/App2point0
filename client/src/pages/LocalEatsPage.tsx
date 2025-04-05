@@ -144,10 +144,32 @@ const LocalEatsPage = () => {
                 {/* Get selected school */}
                 {(() => {
                   const school = schools.find(s => s.id === selectedSchool);
+                  if (!school) return null;
+                  
                   return (
-                    <h3 className="font-semibold text-lg flex items-center">
-                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                      {school?.city}, {school?.state}
+                    <h3 className="font-semibold text-lg">
+                      <div className="flex items-center">
+                        {school.logoUrl ? (
+                          <img 
+                            src={school.logoUrl} 
+                            alt={`${school.name} logo`} 
+                            className="w-8 h-8 mr-2 object-contain" 
+                          />
+                        ) : (
+                          <div 
+                            className="w-8 h-8 mr-2 rounded-full flex items-center justify-center" 
+                            style={{ backgroundColor: school.primaryColor }}
+                          >
+                            <span className="text-sm font-bold" style={{ color: school.secondaryColor }}>
+                              {school.shortName.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1 text-gray-500" />
+                          {school.city}, {school.state}
+                        </div>
+                      </div>
                     </h3>
                   );
                 })()}
@@ -170,9 +192,29 @@ const LocalEatsPage = () => {
           {Object.keys(restaurantsBySchool).length > 0 ? (
             Object.entries(restaurantsBySchool).map(([schoolId, { school, restaurants }]) => (
               <div key={schoolId} className="space-y-4">
-                <h2 className="text-xl font-semibold flex items-center">
-                  <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                  {school.city}, {school.state}
+                <h2 className="text-xl font-semibold">
+                  <div className="flex items-center">
+                    {school.logoUrl ? (
+                      <img 
+                        src={school.logoUrl} 
+                        alt={`${school.name} logo`} 
+                        className="w-8 h-8 mr-2 object-contain" 
+                      />
+                    ) : (
+                      <div 
+                        className="w-8 h-8 mr-2 rounded-full flex items-center justify-center" 
+                        style={{ backgroundColor: school.primaryColor }}
+                      >
+                        <span className="text-sm font-bold" style={{ color: school.secondaryColor }}>
+                          {school.shortName.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-1 text-gray-500" />
+                      {school.city}, {school.state}
+                    </div>
+                  </div>
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
