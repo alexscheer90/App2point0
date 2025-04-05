@@ -44,22 +44,63 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     };
   }, [audioElement]);
 
+  // Generate styles based on school colors
   const getCardStyle = () => {
+    if (!school) return {};
+    
+    // Get the appropriate color based on sound type
+    const color = sound.type === 'fight_song' 
+      ? school.primaryColor
+      : (school.secondaryColor || school.primaryColor);
+    
+    // Convert hex to rgba for background
+    const getBgColor = (hex: string, opacity: number = 0.15) => {
+      if (hex.startsWith('#')) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      }
+      return hex;
+    };
+    
+    // Return the card style with background color
     return {
-      borderLeft: sound.type === 'fight_song' 
-        ? '4px solid #FFC107' // Gold border for fight songs
-        : '4px solid #3F51B5'  // Blue border for alma maters
+      backgroundColor: sound.type === 'fight_song'
+        ? `${getBgColor(school.primaryColor, 0.15)}`
+        : `${getBgColor(school.secondaryColor || school.primaryColor, 0.15)}`,
+      borderLeft: `4px solid ${color}`
+    };
+  };
+
+  // Create color for text and button elements
+  const getTextStyle = () => {
+    if (!school) return {};
+    
+    return {
+      color: sound.type === 'fight_song'
+        ? school.primaryColor
+        : (school.secondaryColor || school.primaryColor)
+    };
+  };
+  
+  // Style for the play/pause button
+  const getButtonStyle = () => {
+    if (!school) return {};
+    
+    const color = sound.type === 'fight_song' 
+      ? school.primaryColor 
+      : (school.secondaryColor || school.primaryColor);
+    
+    return {
+      borderColor: color,
+      color: color
     };
   };
 
   return (
     <Card className="overflow-hidden" style={getCardStyle()}>
-      <CardHeader className={cn(
-        "pb-2",
-        sound.type === 'fight_song' 
-          ? "bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10" 
-          : "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10"
-      )}>
+      <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             {school?.logoUrl && (
@@ -76,7 +117,13 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
               {sound.title}
             </CardTitle>
           </div>
-          <span className="text-xs text-muted-foreground capitalize">
+          <span 
+            className="text-xs font-medium capitalize px-2 py-1 rounded-full"
+            style={{
+              backgroundColor: school ? `${school.primaryColor}20` : '#f1f1f1',
+              color: school ? school.primaryColor : 'inherit'
+            }}
+          >
             {sound.type.replace("_", " ")}
           </span>
         </div>
@@ -92,10 +139,8 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
             <Button 
               variant="outline" 
               size="sm"
-              className={cn(
-                "flex items-center gap-2",
-                isPlaying ? "bg-primary/10" : ""
-              )}
+              className="flex items-center gap-2"
+              style={getButtonStyle()}
               onClick={handlePlayPause}
             >
               {isPlaying ? (
@@ -119,6 +164,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                   variant="outline" 
                   size="sm"
                   className="flex items-center gap-2"
+                  style={getButtonStyle()}
                 >
                   <FileText className="h-4 w-4" />
                   View Lyrics
@@ -126,9 +172,39 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>{sound.title} Lyrics</DialogTitle>
+                  <DialogTitle 
+                    className="flex items-center gap-2"
+                    style={getTextStyle()}
+                  >
+                    {school?.logoUrl && (
+                      <div className="w-6 h-6 flex-shrink-0">
+                        <img 
+                          src={school.logoUrl} 
+                          alt={`${school.name} logo`} 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                    {sound.title} Lyrics
+                  </DialogTitle>
                 </DialogHeader>
-                <div className="mt-4 whitespace-pre-line">{sound.lyrics}</div>
+                <div 
+                  className="mt-4 whitespace-pre-line p-4 rounded-md"
+                  style={{
+                    backgroundColor: school 
+                      ? sound.type === 'fight_song'
+                        ? `${getBgColor(school.primaryColor, 0.1)}`
+                        : `${getBgColor(school.secondaryColor || school.primaryColor, 0.1)}`
+                      : 'inherit',
+                    borderLeft: school 
+                      ? `3px solid ${sound.type === 'fight_song' 
+                          ? school.primaryColor 
+                          : (school.secondaryColor || school.primaryColor)}`
+                      : 'none'
+                  }}
+                >
+                  {sound.lyrics}
+                </div>
               </DialogContent>
             </Dialog>
           )}
