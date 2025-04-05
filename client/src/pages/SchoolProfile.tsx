@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause } from "lucide-react";
 
 // Import school logo images
@@ -233,61 +234,64 @@ const SchoolProfile = () => {
       </Card>
       
       <Tabs defaultValue="games" className="w-full">
-        <TabsList className="w-full mb-4" style={{ backgroundColor: "#0B213E" }}>
-          <TabsTrigger 
-            value="games" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
+        <div className="mb-4">
+          <Select
+            onValueChange={(value) => {
+              // Find the tab element and activate it
+              const tabElement = document.querySelector(`[data-value="${value}"]`) as HTMLElement;
+              if (tabElement) {
+                tabElement.click();
+              }
+            }}
+            defaultValue="games"
           >
-            Games
-          </TabsTrigger>
-          <TabsTrigger 
-            value="news" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-          >
-            News
-          </TabsTrigger>
-          <TabsTrigger 
-            value="standings" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-          >
-            Standings
-          </TabsTrigger>
-          <TabsTrigger 
-            value="rivalries" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-          >
-            <div className="flex items-center gap-1">
-              <Trophy className="h-3 w-3" />
-              <span>Rivalries</span>
-            </div>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="sounds" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-          >
-            <div className="flex items-center gap-1">
-              <Music className="h-3 w-3" />
-              <span>Sounds</span>
-            </div>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="eats" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-          >
-            <div className="flex items-center gap-1">
-              <Utensils className="h-3 w-3" />
-              <span>Eats</span>
-            </div>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="podcast" 
-            className="flex-1 text-white data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-[#019E4F]"
-          >
-            <div className="flex items-center gap-1">
-              <Headphones className="h-3 w-3" />
-              <span>Podcast</span>
-            </div>
-          </TabsTrigger>
+            <SelectTrigger 
+              className="w-full bg-white border border-gray-300 text-gray-700 rounded leading-tight focus:outline-none focus:bg-white focus:border-[#019E4F]"
+              style={{ backgroundColor: "#0B213E", color: "white", borderColor: "#0B213E" }}
+            >
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="games">Games</SelectItem>
+              <SelectItem value="news">News</SelectItem>
+              <SelectItem value="standings">Standings</SelectItem>
+              <SelectItem value="rivalries">
+                <div className="flex items-center gap-1">
+                  <Trophy className="h-3 w-3" />
+                  <span>Rivalries</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="sounds">
+                <div className="flex items-center gap-1">
+                  <Music className="h-3 w-3" />
+                  <span>Sounds</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="eats">
+                <div className="flex items-center gap-1">
+                  <Utensils className="h-3 w-3" />
+                  <span>Eats</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="podcast">
+                <div className="flex items-center gap-1">
+                  <Headphones className="h-3 w-3" />
+                  <span>Podcast</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Hidden TabsList for Tabs functionality to work properly */}
+        <TabsList className="hidden">
+          <TabsTrigger value="games" data-value="games">Games</TabsTrigger>
+          <TabsTrigger value="news" data-value="news">News</TabsTrigger>
+          <TabsTrigger value="standings" data-value="standings">Standings</TabsTrigger>
+          <TabsTrigger value="rivalries" data-value="rivalries">Rivalries</TabsTrigger>
+          <TabsTrigger value="sounds" data-value="sounds">Sounds</TabsTrigger>
+          <TabsTrigger value="eats" data-value="eats">Eats</TabsTrigger>
+          <TabsTrigger value="podcast" data-value="podcast">Podcast</TabsTrigger>
         </TabsList>
         
         <TabsContent value="games">
