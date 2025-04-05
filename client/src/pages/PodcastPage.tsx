@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 
 // Import podcast logo
-import podcastLogoImg from '../assets/msc-podcast-logo.png';
+import podcastLogoImg from '../assets/podcast-logo.jpeg';
 
 // MAC colors for consistent theme
 const MAC_NAVY = "#0B213E";
