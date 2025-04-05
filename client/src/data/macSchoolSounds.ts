@@ -146,7 +146,7 @@ export const macSchoolSounds: SchoolSound[] = [
   // Miami (OH)
   {
     id: "miami-fight",
-    schoolId: "miami",
+    schoolId: "miamioh",
     type: "fight_song",
     title: "Miami Fight Song",
     lyrics: "Love and honor to Miami, Our college old and grand. Proudly we shall ever hail thee, Over all the land. Alma mater now we praise thee, Sing joyfully this lay. Love and honor to Miami, Forever and a day!",
@@ -155,7 +155,7 @@ export const macSchoolSounds: SchoolSound[] = [
   },
   {
     id: "miami-alma",
-    schoolId: "miami",
+    schoolId: "miamioh",
     type: "alma_mater",
     title: "Old Miami Alma Mater",
     lyrics: "Old Miami, new Miami, Days of old and days to be; Weave the story of thy glory, Our Miami, here's to thee! Miami, our Miami, Proud thy warriors loyal and true; Our Miami, fair Miami, Thy loyal sons love you!",
