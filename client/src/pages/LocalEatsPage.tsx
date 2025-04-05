@@ -20,7 +20,7 @@ const LocalEatsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   
   const { data: restaurants, isLoading: isRestaurantsLoading } = useLocalEats(selectedSchool || "");
-  const isLoading = isSchoolsLoading || (selectedSchool && isRestaurantsLoading);
+  const isLoading = isSchoolsLoading || isRestaurantsLoading;
 
   if (isSchoolsLoading || !schools) {
     return (

@@ -20,7 +20,7 @@ const SoundsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   
   const { data: sounds, isLoading: isSoundsLoading } = useSchoolSounds(selectedSchool || "");
-  const isLoading = isSchoolsLoading || (selectedSchool && isSoundsLoading);
+  const isLoading = isSchoolsLoading || isSoundsLoading;
 
   if (isSchoolsLoading || !schools) {
     return (

@@ -4,9 +4,10 @@ import { getSchoolSounds, getSchoolSound, getSchoolSoundsByType } from "@/lib/ap
 
 export function useSchoolSounds(schoolId: string) {
   return useQuery({
-    queryKey: ["/api/schools", schoolId, "sounds"],
+    queryKey: ["/api/schools", schoolId || "all", "sounds"],
     queryFn: () => getSchoolSounds(schoolId),
-    enabled: !!schoolId,
+    // Always enable the query, even with empty schoolId
+    enabled: true,
   });
 }
 

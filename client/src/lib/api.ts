@@ -55,6 +55,10 @@ export async function getSchoolRivalries(schoolId: string): Promise<Rivalry[]> {
 
 // School Sounds API
 export async function getSchoolSounds(schoolId: string): Promise<SchoolSound[]> {
+  // If no schoolId is provided, return all sounds
+  if (!schoolId) {
+    return macSchoolSounds;
+  }
   return macSchoolSounds.filter(sound => sound.schoolId === schoolId);
 }
 
@@ -63,6 +67,10 @@ export async function getSchoolSound(id: string): Promise<SchoolSound | undefine
 }
 
 export async function getSchoolSoundsByType(schoolId: string, type: "fight_song" | "alma_mater"): Promise<SchoolSound[]> {
+  // If no schoolId is provided, return all sounds of the specified type
+  if (!schoolId) {
+    return macSchoolSounds.filter(sound => sound.type === type);
+  }
   return macSchoolSounds.filter(sound => 
     sound.schoolId === schoolId && sound.type === type
   );
@@ -70,6 +78,10 @@ export async function getSchoolSoundsByType(schoolId: string, type: "fight_song"
 
 // Local Eats API
 export async function getLocalEats(schoolId: string): Promise<LocalEats[]> {
+  // If no schoolId is provided, return all restaurants
+  if (!schoolId) {
+    return macLocalEats;
+  }
   return macLocalEats.filter(restaurant => restaurant.schoolId === schoolId);
 }
 

@@ -4,9 +4,10 @@ import { getLocalEats, getLocalEat } from "@/lib/api";
 
 export function useLocalEats(schoolId: string) {
   return useQuery({
-    queryKey: ["/api/schools", schoolId, "local-eats"],
+    queryKey: ["/api/schools", schoolId || "all", "local-eats"],
     queryFn: () => getLocalEats(schoolId),
-    enabled: !!schoolId,
+    // Always enable the query, even with empty schoolId
+    enabled: true,
   });
 }
 
