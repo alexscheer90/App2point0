@@ -137,7 +137,7 @@ export const macSports: Sport[] = [
   {
     id: "other",
     name: "Other Sports",
-    gender: "all",
+    gender: "mixed",
     officialUrl: "https://getsomemaction.com/"
   }
 ];
