@@ -12,6 +12,8 @@ import ohioLogo from "@assets/Ohio.png";
 import toledoLogo from "@assets/Toledo.png";
 import wmuLogo from "@assets/WMU.png";
 import massachusettsLogo from "@assets/UMass.png";
+// Import the MAC logo images
+import macLogoPath from "@assets/IMG_0680.png"; // Using the MAC logo image file from attached assets
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
@@ -158,5 +160,16 @@ export const macSchools: School[] = [
     logoUrl: wmuLogo,
     city: "Kalamazoo",
     state: "MI",
+  },
+  {
+    id: "mac",
+    name: "Mid-American Conference",
+    shortName: "MAC",
+    mascot: "Championship",
+    primaryColor: "#0B213E", // MAC Navy Blue
+    secondaryColor: "#019E4F", // MAC Green
+    logoUrl: macLogoPath,
+    city: "Cleveland",
+    state: "OH",
   }
 ];

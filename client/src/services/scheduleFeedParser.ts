@@ -192,6 +192,13 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
 function findSchoolId(schoolName: string): string | null {
   if (!schoolName) return null;
   
+  // Special handling for MAC Championship/Tournament games
+  if (schoolName.toLowerCase().includes('mac championship') || 
+      schoolName.toLowerCase().includes('mid-american conference championship') ||
+      schoolName.toLowerCase().includes('mac tournament')) {
+    return 'mac'; // Return special ID for MAC Championship games
+  }
+  
   // Normalize the name: convert to lowercase, remove common prefixes
   const normalizedName = schoolName.toLowerCase()
     .replace(/^(men's|women's|male|female)\s+/i, '')
@@ -236,7 +243,8 @@ function findSchoolId(schoolName: string): string | null {
     'niu': 'northernillinois',
     'massachusetts': 'umass',
     'umass': 'umass',
-    'minutemen': 'umass'
+    'minutemen': 'umass',
+    'mac': 'mac'  // MAC identifier for championship/tournament games
   };
   
   // Check for direct match first

@@ -40,12 +40,12 @@ function getMacSportId(sportId: string): string {
   const sportMap: Record<string, string> = {
     'football': '1',
     'basketball': '2',
-    'wbasketball': '2',  // Women's basketball also uses ID 2
+    'wbasketball': '15',  // Changed to 15 for Women's basketball for better filtering
     'baseball': '3',
     'softball': '10',
     'volleyball': '8',
     'soccer': '5',
-    'wsoccer': '5',      // Women's soccer also uses ID 5
+    'wsoccer': '16',      // Changed to 16 for Women's soccer for better filtering
     'fieldhockey': '4',
     'track': '7',
     'crosscountry': '13',
@@ -153,13 +153,31 @@ function parseCalendarEvents(icsContent: string, sportId: string): Game[] {
         // Map to our internal IDs
         const homeTeamId = findSchoolId(homeTeam);
         const awayTeamId = findSchoolId(awayTeam);
-        const mappedSportId = findSportId(eventSport) || 'other';
+        const mappedSportId = findSportId(eventSport, summary, description) || 'other';
         
         console.log(`Mapped IDs: Home=${homeTeamId}, Away=${awayTeamId}, Sport=${mappedSportId}`);
         
         // Filter by sport if requested
-        if (sportId !== 'all' && sportId !== mappedSportId && mappedSportId !== 'other') {
-          return; // Skip this item if sport doesn't match
+        if (sportId !== 'all' && sportId !== mappedSportId) {
+          // Check if men's vs. women's sport - sometimes they're not properly distinguished in feed
+          // For basketball and soccer, which have both men's and women's teams
+          if ((sportId === 'basketball' || sportId === 'soccer') && 
+              (summary.toLowerCase().includes('women') || 
+               description?.toLowerCase().includes('women'))) {
+            return; // This is a women's game but we're requesting men's
+          }
+          
+          if ((sportId === 'wbasketball' || sportId === 'wsoccer') && 
+              !(summary.toLowerCase().includes('women') || 
+                description?.toLowerCase().includes('women'))) {
+            return; // This is a men's game but we're requesting women's
+          }
+          
+          // For all other sports, skip if the ID doesn't match
+          if (sportId !== 'basketball' && sportId !== 'wbasketball' && 
+              sportId !== 'soccer' && sportId !== 'wsoccer') {
+            return; // Skip this item if sport doesn't match
+          }
         }
         
         // Use the UID as game ID if available, otherwise create one
@@ -261,6 +279,13 @@ function parseIcsDate(icsDate: string): Date | null {
 function findSchoolId(schoolName: string): string | null {
   if (!schoolName) return null;
   
+  // Special handling for MAC Championship/Tournament games
+  if (schoolName.toLowerCase().includes('mac championship') || 
+      schoolName.toLowerCase().includes('mid-american conference championship') ||
+      schoolName.toLowerCase().includes('mac tournament')) {
+    return 'mac'; // Return special ID for MAC Championship games
+  }
+  
   // Normalize the name: convert to lowercase, remove common prefixes
   const normalizedName = schoolName.toLowerCase()
     .replace(/^(men's|women's|male|female)\s+/i, '')
@@ -305,7 +330,8 @@ function findSchoolId(schoolName: string): string | null {
     'niu': 'northernillinois',
     'massachusetts': 'umass',
     'umass': 'umass',
-    'minutemen': 'umass'
+    'minutemen': 'umass',
+    'mac': 'mac'  // MAC identifier for championship/tournament games
   };
   
   // Check for direct match first
@@ -335,17 +361,23 @@ function findSchoolId(schoolName: string): string | null {
 
 /**
  * Maps sport names from feed to our internal sport IDs
+ * Also handles detection of men's vs women's sports from summary text
  */
-function findSportId(sportName: string): string | null {
+function findSportId(sportName: string, summary?: string, description?: string): string | null {
   if (!sportName) return null;
   
   // Normalize the name
   const normalizedName = sportName.toLowerCase().trim();
   
+  // Check if we need to distinguish between men's and women's sports
+  const isWomensSport = 
+    (summary && summary.toLowerCase().includes('women')) || 
+    (description && description.toLowerCase().includes('women'));
+  
   // Direct matching against common sport name variations
   const sportMappings: Record<string, string> = {
     'football': 'football',
-    'basketball': 'basketball',
+    'basketball': isWomensSport ? 'wbasketball' : 'basketball',
     'men\'s basketball': 'basketball',
     'men\'s hoops': 'basketball',
     'men basketball': 'basketball',
@@ -355,7 +387,7 @@ function findSportId(sportName: string): string | null {
     'baseball': 'baseball',
     'softball': 'softball',
     'volleyball': 'volleyball',
-    'soccer': 'soccer',
+    'soccer': isWomensSport ? 'wsoccer' : 'soccer',
     'men\'s soccer': 'soccer',
     'women\'s soccer': 'wsoccer',
     'field hockey': 'fieldhockey',
