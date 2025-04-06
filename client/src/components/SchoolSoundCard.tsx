@@ -27,8 +27,12 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     // Create new audio element if not already created
     if (!audioRef.current && sound.audioUrl) {
       const audio = new Audio();
-      // Use a complete URL with the correct path
-      audio.src = sound.audioUrl;
+      
+      // Fix the audio path to use the correct full path from the server
+      const audioPath = `/audio/sounds/${sound.audioUrl.split('/').pop()}`;
+      audio.src = audioPath;
+      
+      console.log("Loading audio from path:", audioPath);
       
       // Set initial volume
       audio.volume = volume;
@@ -241,15 +245,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            {sound.bandLogoUrl ? (
-              <div className="w-8 h-8 flex-shrink-0">
-                <img 
-                  src={sound.bandLogoUrl} 
-                  alt={`${school?.name || ""} band logo`} 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ) : school?.logoUrl && (
+            {school?.logoUrl && (
               <div className="w-8 h-8 flex-shrink-0">
                 <img 
                   src={school.logoUrl} 
@@ -386,15 +382,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                         className="flex items-center gap-2"
                         style={getTextStyle()}
                       >
-                        {sound.bandLogoUrl ? (
-                          <div className="w-6 h-6 flex-shrink-0">
-                            <img 
-                              src={sound.bandLogoUrl} 
-                              alt={`${school?.name || ""} band logo`} 
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                        ) : school?.logoUrl && (
+                        {school?.logoUrl && (
                           <div className="w-6 h-6 flex-shrink-0">
                             <img 
                               src={school.logoUrl} 
