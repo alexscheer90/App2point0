@@ -127,6 +127,7 @@ export const schoolSoundSchema = z.object({
   audioUrl: z.string().optional(),
   lyrics: z.string().optional(),
   description: z.string().optional(),
+  bandLogoUrl: z.string().optional(), // Added to display band logo
 });
 
 export const localEatsSchema = z.object({

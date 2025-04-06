@@ -24,6 +24,14 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   const { data: school } = useSchool(sound.schoolId);
 
   useEffect(() => {
+    // Create new audio element if not already created
+    if (!audioRef.current && sound.audioUrl) {
+      audioRef.current = new Audio(sound.audioUrl);
+      
+      // Set initial volume
+      audioRef.current.volume = volume;
+    }
+    
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -49,16 +57,19 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
 
-    // Set initial volume
-    audio.volume = volume;
+    // Load audio if not loaded
+    if (audio.readyState === 0) {
+      audio.load();
+    }
 
-    // Clean up event listeners
+    // Clean up event listeners and pause audio on unmount
     return () => {
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
+      audio.pause();
     };
-  }, []);
+  }, [sound.audioUrl, volume]);
 
   // Handle play/pause
   const handlePlayPause = () => {
@@ -185,15 +196,19 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
 
   return (
     <Card className="overflow-hidden" style={getCardStyle()}>
-      {/* Hidden audio element */}
-      {sound.audioUrl && (
-        <audio ref={audioRef} src={sound.audioUrl} preload="metadata" />
-      )}
       
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            {school?.logoUrl && (
+            {sound.bandLogoUrl ? (
+              <div className="w-8 h-8 flex-shrink-0">
+                <img 
+                  src={sound.bandLogoUrl} 
+                  alt={`${school?.name || ""} band logo`} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : school?.logoUrl && (
               <div className="w-8 h-8 flex-shrink-0">
                 <img 
                   src={school.logoUrl} 
@@ -330,7 +345,15 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                         className="flex items-center gap-2"
                         style={getTextStyle()}
                       >
-                        {school?.logoUrl && (
+                        {sound.bandLogoUrl ? (
+                          <div className="w-6 h-6 flex-shrink-0">
+                            <img 
+                              src={sound.bandLogoUrl} 
+                              alt={`${school?.name || ""} band logo`} 
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        ) : school?.logoUrl && (
                           <div className="w-6 h-6 flex-shrink-0">
                             <img 
                               src={school.logoUrl} 
