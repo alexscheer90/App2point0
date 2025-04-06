@@ -1,8 +1,25 @@
-import axios from 'axios';
+import { Game } from "@shared/schema";
+import axios from "axios";
 import * as cheerio from 'cheerio';
-import { Game } from '@shared/schema';
-import { macSchools } from '../data/macSchools';
-import { macSports } from '../data/macSports';
+import { macSchools } from "../data/macSchools";
+import { macSports } from "../data/macSports";
+
+/**
+ * Wrapper function to fetch all MAC events across sports
+ * @param sportId Optional sport ID to filter events by
+ * @returns Promise containing all fetched game objects
+ */
+export async function fetchAllMacEvents(sportId: string = 'all'): Promise<Game[]> {
+  try {
+    // Main URL for MAC schedule feeds
+    const feedUrl = 'https://getsomemaction.com/calendar.aspx';
+    
+    return await fetchMacSchedule(sportId, feedUrl);
+  } catch (error) {
+    console.error("Error fetching all MAC events:", error);
+    return [];
+  }
+}
 
 /**
  * Fetches and parses MAC schedule feeds
@@ -49,109 +66,76 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
         xmlMode: true 
       });
       
+      // Find all events/items in the feed
+      const items = $('item');
+      console.log(`Found ${items.length} events in the feed`);
+      
+      if (items.length === 0) {
+        console.warn("No events found in feed");
+        return [];
+      }
+      
       const games: Game[] = [];
       
-      // Debug the XML structure
-      console.log("Number of event elements:", $('item, event').length);
-      
-      // Find all events/games in the feed
-      $('item, event').each((i, element) => {
+      // Process each event
+      items.each((i, item) => {
         try {
-          const el = $(element);
+          const $item = $(item);
           
-          // Extract title/summary and clean it up
-          const title = el.find('title, summary').text().trim();
-          if (!title) {
-            console.warn("Found event without title, skipping");
-            return; // Skip events without title
-          }
+          const title = $item.find('title').text().trim();
+          const description = $item.find('description').text().trim();
+          const link = $item.find('link').text().trim();
+          const pubDate = $item.find('pubDate').text().trim();
+          const eventDate = pubDate ? new Date(pubDate) : new Date();
           
-          // Parse the title to extract teams and sport
-          // Expected formats like "Toledo vs. Bowling Green (Football)" or "Men's Basketball: Toledo at Kent State"
-          let eventHomeTeam = '';
-          let eventAwayTeam = '';
-          let eventSport = '';
+          // Extract team names from title 
+          // Common format: "Team1 vs. Team2 • Sport (Location)"
+          let eventHomeTeam = "";
+          let eventAwayTeam = "";
+          let eventSport = "";
           
-          // Parse title to extract teams and sport
-          const sportMatch = title.match(/\(([^)]+)\)$/);
-          if (sportMatch) {
-            eventSport = sportMatch[1].toLowerCase().trim();
-          }
-          
-          // Check for standard "vs." or "at" format
-          if (title.includes(' vs. ')) {
-            const parts = title.split(' vs. ');
-            eventHomeTeam = parts[0].trim();
-            const awayPart = parts[1].split(/\s*\(/)[0].trim();
-            eventAwayTeam = awayPart;
-          } else if (title.includes(' at ')) {
-            const parts = title.split(' at ');
-            eventAwayTeam = parts[0].trim().replace(/^[^:]+:\s*/, ''); // Remove any "Sport:" prefix
-            eventHomeTeam = parts[1].split(/\s*\(/)[0].trim();
-          } else if (title.includes(' vs ')) {
-            const parts = title.split(' vs ');
-            eventHomeTeam = parts[0].trim();
-            const awayPart = parts[1].split(/\s*\(/)[0].trim();
-            eventAwayTeam = awayPart;
-          }
-          
-          // Get date/time
-          let startTimeStr = el.find('pubDate, published, eventDate, date').text().trim();
-          if (!startTimeStr) {
-            // Look for other date formats
-            startTimeStr = el.find('startDate, start, eventStartDate').text().trim();
-          }
-          
-          // Parse the start time string to a Date object
-          let startTime = new Date();
-          try {
-            if (startTimeStr) {
-              startTime = new Date(startTimeStr);
-            }
-          } catch (dateError) {
-            console.error("Error parsing event date:", dateError);
-          }
-          
-          // Get location/venue
-          let venue = el.find('location, venue').text().trim();
-          
-          // Get description for additional details
-          let description = el.find('description, content').text().trim();
-          
-          // Get link for tickets/more info
-          let link = el.find('link').text().trim();
-          if (!link) {
-            // Try for link with href attribute
-            const linkWithAttr = el.find('link[href]').attr('href');
-            if (linkWithAttr) {
-              link = linkWithAttr;
+          // Parse title to extract teams
+          const vsMatch = title.match(/(.*?)\s+(?:vs\.?|at|@)\s+(.*?)(?:\s+[\•\-\|]\s+|$)/i);
+          if (vsMatch && vsMatch.length >= 3) {
+            if (title.includes(" at ") || title.includes(" @ ")) {
+              // Format is "Away at Home"
+              eventAwayTeam = vsMatch[1].trim();
+              eventHomeTeam = vsMatch[2].trim();
+            } else {
+              // Format is "Home vs Away"
+              eventHomeTeam = vsMatch[1].trim();
+              eventAwayTeam = vsMatch[2].trim();
             }
           }
           
-          // Find the actual school IDs from our data
+          // Extract sport type from title
+          const sportMatch = title.match(/[\•\-\|]\s+(.+?)(?:\s+\(|$)/i);
+          if (sportMatch && sportMatch.length >= 2) {
+            eventSport = sportMatch[1].trim();
+          }
+          
+          // Map to our internal IDs
           const homeTeamId = findSchoolId(eventHomeTeam);
           const awayTeamId = findSchoolId(eventAwayTeam);
+          const mappedSportId = findSportId(eventSport) || 'other';
           
-          // Find the sport ID from our data
-          const mappedSportId = findSportId(eventSport);
-          
-          // Skip if this isn't the sport we're looking for
-          if (sportId !== 'all' && mappedSportId !== sportId) {
-            return;
+          // Filter by sport if requested
+          if (sportId !== 'all' && mappedSportId !== sportId && mappedSportId !== 'other') {
+            return; // Skip this item
           }
           
           // Create a unique ID for the game
-          const gameId = `game-${Buffer.from(title + startTime.toISOString()).toString('base64').substring(0, 12)}`;
+          const gameId = `game-${Buffer.from(title + eventDate.toISOString()).toString('base64').substring(0, 12)}`;
           
           // Create the game object
           const game: Game = {
             id: gameId,
-            sportId: mappedSportId || 'other',
+            sportId: mappedSportId,
             homeTeamId: homeTeamId || 'unknown',
             awayTeamId: awayTeamId || 'unknown',
-            startTime: startTime.toISOString(),
-            scheduledTime: startTime.toISOString(), // Required field for Game schema
-            status: isPastEvent(startTime) ? 'final' : 'scheduled',
+            startTime: eventDate.toISOString(),
+            scheduledTime: eventDate.toISOString(),
+            status: isPastEvent(eventDate) ? 'final' : 'scheduled',
             venue: title, // Use the full title as venue to preserve all information
           };
           
@@ -183,7 +167,6 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
           }
           
           // Add all games regardless of whether they are MAC schools or not
-          // This ensures we display non-conference games as well
           games.push(game);
           console.log(`Successfully parsed game: ${eventHomeTeam} vs ${eventAwayTeam}`);
         } catch (itemError) {
@@ -344,26 +327,4 @@ function findSportId(sportName: string): string | null {
 function isPastEvent(eventDate: Date): boolean {
   const now = new Date();
   return eventDate < now;
-}
-
-/**
- * Schedule feed URLs for different MAC sports
- */
-export const scheduleFeedUrls: Record<string, string> = {
-  'general': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=0&school_id=0&schedule_id=0',
-  'football': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=1&school_id=0&schedule_id=0',
-  'basketball': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=2&school_id=0&schedule_id=0',
-  'baseball': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=3&school_id=0&schedule_id=0'
-  // Can add more sport-specific feeds as they become available
-};
-
-/**
- * Fetches all available MAC events
- */
-export async function fetchAllMacEvents(sportId: string = 'all'): Promise<Game[]> {
-  const feedUrl = sportId !== 'all' && scheduleFeedUrls[sportId] 
-    ? scheduleFeedUrls[sportId] 
-    : scheduleFeedUrls.general;
-    
-  return await fetchMacSchedule(sportId, feedUrl);
 }

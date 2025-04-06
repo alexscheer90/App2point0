@@ -8,6 +8,7 @@ import { macLocalEats } from "../data/macLocalEats";
 import { scrapeStandingsForSport } from "../services/standingsScraper";
 import { fetchSchoolNewsFeed, fetchAllSchoolsNews, schoolFeedUrls } from "../services/newsFeedParser";
 import { fetchAllMacEvents } from "../services/scheduleFeedParser";
+import { fetchMacCalendar } from "../services/icsParser";
 
 // User preferences
 export async function getFavoriteSchool() {
@@ -94,16 +95,25 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
 
 export async function getGames(sportId?: string): Promise<Game[]> {
   try {
-    // Attempt to fetch real game data from the MAC RSS feed
+    // Attempt to fetch real game data from the MAC ICS calendar feed
     console.log(`Fetching games for sport: ${sportId || 'all'}`);
-    const realGames = await fetchAllMacEvents(sportId || 'all');
+    const realGames = await fetchMacCalendar(sportId || 'all');
     
     if (realGames && realGames.length > 0) {
-      console.log(`Successfully fetched ${realGames.length} games from MAC feed`);
+      console.log(`Successfully fetched ${realGames.length} games from MAC calendar feed`);
       return realGames;
     }
     
-    // If we couldn't get real data, generate demo games as a fallback
+    // If we couldn't get real data, try the RSS feed as a fallback
+    console.log("No games found in ICS feed, trying RSS feed");
+    const rssGames = await fetchAllMacEvents(sportId || 'all');
+    
+    if (rssGames && rssGames.length > 0) {
+      console.log(`Successfully fetched ${rssGames.length} games from MAC RSS feed`);
+      return rssGames;
+    }
+    
+    // If we still couldn't get real data, use demo games as a last resort
     console.warn("No real games data available, using fallback data");
     
     // Generate fallback games for demonstration

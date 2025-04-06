@@ -226,7 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // API endpoint for fetching schedule RSS feeds
+  // API endpoint for fetching schedule feeds (supports both RSS and ICS formats)
   app.get("/api/fetch-schedule", async (req, res) => {
     try {
       const url = req.query.url as string;
@@ -262,24 +262,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "URL domain not allowed" });
       }
       
-      console.log(`Server fetching schedule from: ${url}`);
+      // Determine if we're fetching an ICS calendar file
+      const isIcsRequest = url.includes('.ics') || url.includes('calendar.ashx');
+      
+      console.log(`Server fetching ${isIcsRequest ? 'ICS calendar' : 'schedule feed'} from: ${url}`);
       
       // Make the request to the site with automatic redirect following
       const response = await axios.get(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+          'Accept': isIcsRequest 
+            ? 'text/calendar, text/plain, */*' 
+            : 'application/rss+xml, application/xml, text/xml, */*'
         },
         maxRedirects: 5, // Allow up to 5 redirects
         validateStatus: function (status) {
           return status >= 200 && status < 400; // Accept 2xx and 3xx status codes
-        }
+        },
+        // Don't parse ICS files, return them as text
+        responseType: isIcsRequest ? 'text' : 'json'
       });
       
-      // Set the appropriate content type for XML
-      res.set('Content-Type', 'application/xml');
+      // Set the appropriate content type
+      if (isIcsRequest) {
+        res.set('Content-Type', 'text/calendar');
+      } else {
+        res.set('Content-Type', 'application/xml');
+      }
       
-      // Return the XML content to the client
+      // Return the content to the client
       res.send(response.data);
     } catch (error) {
       console.error("Error fetching schedule feed:", error);
