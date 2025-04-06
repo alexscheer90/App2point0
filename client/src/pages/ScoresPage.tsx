@@ -165,8 +165,30 @@ const ScoresPage = () => {
           )}
           
           {liveGames.length === 0 && upcomingGames.length === 0 && recentGames.length === 0 && (
-            <div className="px-4 py-8 text-center">
-              <p className="text-gray-500">No games scheduled for today.</p>
+            <div className="px-4 py-12 text-center">
+              <div className="mb-4 flex justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Games Today</h3>
+              {selectedSport !== 'all' ? (
+                <p className="text-gray-500 max-w-md mx-auto">
+                  There are no {SPORT_TABS.find(tab => tab.id === selectedSport)?.name} games scheduled for today. Try selecting a different sport.
+                </p>
+              ) : (
+                <p className="text-gray-500 max-w-md mx-auto">
+                  There are no MAC games scheduled for today, or we couldn't retrieve the schedule data. Check back later or try refreshing.
+                </p>
+              )}
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => window.location.reload()}
+              >
+                Refresh
+              </Button>
             </div>
           )}
         </>

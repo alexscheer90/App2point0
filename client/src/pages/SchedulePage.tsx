@@ -314,7 +314,26 @@ const SchedulePage = () => {
       
       {/* Game List */}
       <div>
-        {Object.keys(gamesByDate).length > 0 ? (
+        {/* Check if we failed to load any games data */}
+        {(!games || games.length === 0) ? (
+          <div className="text-center py-12 px-4 bg-gray-50 rounded-lg">
+            <div className="mb-4 flex justify-center">
+              <Calendar className="h-12 w-12 text-gray-300" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Game Data Available</h3>
+            <p className="text-gray-500 max-w-md mx-auto">
+              We couldn't retrieve the schedule from the MAC calendar feed. Please check your connection and try again later.
+            </p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : Object.keys(gamesByDate).length > 0 ? (
+          // We have games data and matches for the current filters
           Object.keys(gamesByDate).map(dateStr => (
             <div key={dateStr} className="mb-6">
               <h3 className="text-sm font-medium text-gray-500 mb-2">
@@ -328,8 +347,20 @@ const SchedulePage = () => {
             </div>
           ))
         ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No games found for the selected filters.</p>
+          // We have games data but no matches for the current filters
+          <div className="text-center py-8 bg-gray-50 rounded-lg">
+            <p className="text-gray-500 mb-3">No games found for the selected filters.</p>
+            <Button 
+              variant="outline" 
+              className="mt-2"
+              onClick={() => {
+                setSelectedTeam("all");
+                setSelectedSport("all");
+                setCurrentView("all");
+              }}
+            >
+              Reset Filters
+            </Button>
           </div>
         )}
       </div>

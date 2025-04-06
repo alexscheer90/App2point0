@@ -279,19 +279,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         validateStatus: function (status) {
           return status >= 200 && status < 400; // Accept 2xx and 3xx status codes
         },
-        // Don't parse ICS files, return them as text
-        responseType: isIcsRequest ? 'text' : 'json'
+        // Don't transform the response, we'll handle the data format manually
+        transformResponse: [(data) => data],
+        // Always get response as text to avoid parsing issues
+        responseType: 'text'
       });
       
-      // Set the appropriate content type
+      const responseData = response.data;
+      
+      // Validate the response content based on request type
       if (isIcsRequest) {
+        // Check if the response is actually an ICS calendar
+        if (!responseData.includes('BEGIN:VCALENDAR') && !responseData.includes('BEGIN:VEVENT')) {
+          console.error('Invalid ICS calendar format received:', responseData.substring(0, 100));
+          return res.status(422).json({ 
+            message: "Invalid calendar format received from source",
+            details: "The response does not appear to be a valid iCalendar file"
+          });
+        }
+        
         res.set('Content-Type', 'text/calendar');
       } else {
+        // For XML/RSS feeds, check if we got XML back
+        if (!responseData.includes('<?xml') && !responseData.includes('<rss') && 
+            !responseData.includes('<feed') && responseData.includes('<!DOCTYPE html>')) {
+          console.error('Expected XML/RSS but received HTML:', responseData.substring(0, 100));
+          return res.status(422).json({ 
+            message: "Invalid feed format received from source",
+            details: "The response appears to be HTML instead of XML/RSS"
+          });
+        }
+        
         res.set('Content-Type', 'application/xml');
       }
       
       // Return the content to the client
-      res.send(response.data);
+      res.send(responseData);
     } catch (error) {
       console.error("Error fetching schedule feed:", error);
       res.status(500).json({ message: "Failed to fetch schedule feed" });

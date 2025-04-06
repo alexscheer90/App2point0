@@ -95,116 +95,47 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
 
 export async function getGames(sportId?: string): Promise<Game[]> {
   try {
-    // Attempt to fetch real game data from the MAC ICS calendar feed
+    // Try multiple data sources to get real game data
     console.log(`Fetching games for sport: ${sportId || 'all'}`);
-    const realGames = await fetchMacCalendar(sportId || 'all');
     
-    if (realGames && realGames.length > 0) {
-      console.log(`Successfully fetched ${realGames.length} games from MAC calendar feed`);
-      return realGames;
+    // First attempt: Try the MAC ICS calendar feed
+    try {
+      const realGames = await fetchMacCalendar(sportId || 'all');
+      
+      if (realGames && realGames.length > 0) {
+        console.log(`Successfully fetched ${realGames.length} games from MAC calendar feed`);
+        return realGames;
+      } else {
+        console.log("No games found in ICS feed or invalid format received");
+      }
+    } catch (icsError) {
+      console.error("Error fetching from ICS calendar:", icsError);
     }
     
-    // If we couldn't get real data, try the RSS feed as a fallback
-    console.log("No games found in ICS feed, trying RSS feed");
-    const rssGames = await fetchAllMacEvents(sportId || 'all');
-    
-    if (rssGames && rssGames.length > 0) {
-      console.log(`Successfully fetched ${rssGames.length} games from MAC RSS feed`);
-      return rssGames;
+    // Second attempt: Try the RSS feed 
+    try {
+      console.log("Trying RSS feed as an alternative source");
+      const rssGames = await fetchAllMacEvents(sportId || 'all');
+      
+      if (rssGames && rssGames.length > 0) {
+        console.log(`Successfully fetched ${rssGames.length} games from MAC RSS feed`);
+        return rssGames;
+      } else {
+        console.log("No games found in RSS feed or invalid format received");
+      }
+    } catch (rssError) {
+      console.error("Error fetching from RSS feed:", rssError);
     }
     
-    // If we still couldn't get real data, use demo games as a last resort
-    console.warn("No real games data available, using fallback data");
+    // If we reach here, we couldn't get any data from either source
+    console.error("Failed to fetch game data from any source");
     
-    // Generate fallback games for demonstration
-    const now = new Date();
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
-    const tomorrow = new Date(now);
-    tomorrow.setDate(now.getDate() + 1);
+    // Instead of fake data, show an empty result set with proper message
+    // The UI layer should handle this empty state appropriately
+    return [];
     
-    const fallbackGames: Game[] = [
-      // Live games
-      {
-        id: "game1",
-        sportId: "football",
-        homeTeamId: "toledo",
-        awayTeamId: "bowlinggreen",
-        homeTeamScore: 24,
-        awayTeamScore: 17,
-        startTime: now.toISOString(),
-        scheduledTime: now.toISOString(),
-        status: "live",
-        period: 3,
-        situation: "Ball on 34 yard line • 3rd & 8",
-      },
-      {
-        id: "game2",
-        sportId: "wbasketball",
-        homeTeamId: "ohio",
-        awayTeamId: "kentstate",
-        homeTeamScore: 56,
-        awayTeamScore: 42,
-        startTime: now.toISOString(),
-        scheduledTime: now.toISOString(),
-        status: "live",
-        period: 2,
-        situation: "8:45 remaining • Ohio possession",
-      },
-      // Upcoming games
-      {
-        id: "game3",
-        sportId: "football",
-        homeTeamId: "miamioh",
-        awayTeamId: "ballstate",
-        startTime: tomorrow.toISOString(),
-        scheduledTime: tomorrow.toISOString(),
-        status: "scheduled",
-        venue: "Yager Stadium, Oxford OH",
-      },
-      {
-        id: "game4",
-        sportId: "basketball",
-        homeTeamId: "akron",
-        awayTeamId: "northernillinois",
-        startTime: tomorrow.toISOString(),
-        scheduledTime: tomorrow.toISOString(),
-        status: "scheduled",
-        venue: "James A. Rhodes Arena, Akron OH",
-      },
-      // Completed games
-      {
-        id: "game5",
-        sportId: "baseball",
-        homeTeamId: "westernmichigan",
-        awayTeamId: "centralmichigan",
-        homeTeamScore: 5,
-        awayTeamScore: 3,
-        startTime: yesterday.toISOString(),
-        scheduledTime: yesterday.toISOString(),
-        status: "final",
-      },
-      {
-        id: "game6",
-        sportId: "football",
-        homeTeamId: "easternmichigan",
-        awayTeamId: "buffalo",
-        homeTeamScore: 21,
-        awayTeamScore: 28,
-        startTime: yesterday.toISOString(),
-        scheduledTime: yesterday.toISOString(),
-        status: "final",
-      },
-    ];
-    
-    // Filter by sport if needed
-    if (sportId && sportId !== "all") {
-      return fallbackGames.filter(game => game.sportId === sportId);
-    }
-    
-    return fallbackGames;
   } catch (error) {
-    console.error("Error fetching games:", error);
+    console.error("Unexpected error fetching games:", error);
     return [];
   }
 }
@@ -224,25 +155,27 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
     // Attempt to fetch real news from RSS feeds
     if (schoolId && schoolId !== "all" && schoolFeedUrls[schoolId]) {
       // Get news from a specific school's RSS feed
-      return await fetchSchoolNewsFeed(schoolId, schoolFeedUrls[schoolId]);
+      const schoolNews = await fetchSchoolNewsFeed(schoolId, schoolFeedUrls[schoolId]);
+      if (schoolNews && schoolNews.length > 0) {
+        return schoolNews;
+      } else {
+        console.warn(`No news items found in RSS feed for school: ${schoolId}`);
+      }
     } else if (schoolId === "all" || !schoolId) {
       // Get news from all schools with configured RSS feeds
-      return await fetchAllSchoolsNews();
+      const allNews = await fetchAllSchoolsNews();
+      if (allNews && allNews.length > 0) {
+        return allNews;
+      } else {
+        console.warn("No news items found in any school RSS feeds");
+      }
+    } else {
+      // If we reach here, no RSS feed is configured for this school
+      console.warn(`No RSS feed configured for school: ${schoolId}`);
     }
     
-    // If we reach here, no RSS feed is configured for this school
-    console.warn(`No RSS feed configured for school: ${schoolId}`);
-    
-    // Fallback to mock data for schools without RSS feeds
-    // This ensures we have something to display even if RSS isn't available
-    const now = new Date();
-    
-    // For Toledo, we should never reach here as we've configured its RSS feed
-    if (schoolId === "toledo") {
-      return [];
-    }
-    
-    // Return an empty array for now - in production we'd have mock data for all schools
+    // Instead of using fake data, return an empty array with proper error handling in UI
+    console.log("Returning empty news array - no real data available from RSS feeds");
     return [];
   } catch (error) {
     console.error("Error fetching news:", error);

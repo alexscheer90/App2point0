@@ -31,17 +31,42 @@ export async function fetchMacSchedule(sportId: string = 'all', feedUrl: string)
   try {
     console.log(`Fetching MAC schedule for sport: ${sportId} from ${feedUrl}`);
     
+    // Make sure we're using https
+    if (feedUrl.startsWith('http:')) {
+      feedUrl = feedUrl.replace('http:', 'https:');
+    }
+    
     // Use our server proxy to avoid CORS issues
-    const response = await axios.get(`/api/fetch-schedule?url=${encodeURIComponent(feedUrl)}`);
+    const response = await axios.get(`/api/fetch-schedule?url=${encodeURIComponent(feedUrl)}`, {
+      // Set a longer timeout for slower connections
+      timeout: 10000,
+      validateStatus: (status) => {
+        // Accept only 200-299 status codes
+        return status >= 200 && status < 300;
+      }
+    });
     
     if (response.status !== 200) {
       throw new Error(`Failed to fetch schedule feed, status: ${response.status}`);
     }
 
-    const xml = response.data;
-    return await parseScheduleFeed(xml, sportId);
+    // Verify the received content
+    const content = response.data;
+    
+    // Check if response is valid XML or HTML
+    if (typeof content === 'string' && 
+        (content.includes('<!DOCTYPE html>') || content.includes('<html'))) {
+      console.warn('Received HTML instead of XML feed, cannot parse schedule data');
+      return [];
+    }
+    
+    // Parse the feed content
+    return await parseScheduleFeed(content, sportId);
   } catch (error) {
     console.error(`Error fetching schedule feed:`, error);
+    if (error instanceof Error) {
+      console.error('Details:', error.message);
+    }
     return [];
   }
 }

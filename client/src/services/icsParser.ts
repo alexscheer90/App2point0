@@ -12,23 +12,44 @@ import { macSports } from "../data/macSports";
 export async function fetchMacCalendar(sportId: string = 'all'): Promise<Game[]> {
   try {
     // Use the official MAC calendar URL in ICS format
-    const icsUrl = `http://getsomemaction.com/calendar.ashx/calendar.ics?sport_id=${
+    // Use https instead of http for more reliable connections
+    const icsUrl = `https://getsomemaction.com/calendar.ashx/calendar.ics?sport_id=${
       sportId === 'all' ? '0' : getMacSportId(sportId)
     }&school_id=0&schedule_id=0&_=${Date.now()}`;
     
     console.log(`Fetching MAC calendar for sport: ${sportId} from ${icsUrl}`);
     
     // Use our server proxy to avoid CORS issues
-    const response = await axios.get(`/api/fetch-schedule?url=${encodeURIComponent(icsUrl)}`);
+    const response = await axios.get(`/api/fetch-schedule?url=${encodeURIComponent(icsUrl)}`, {
+      // Set a longer timeout for slower connections
+      timeout: 10000,
+      validateStatus: (status) => {
+        // Accept only 200-299 status codes
+        return status >= 200 && status < 300;
+      }
+    });
     
     if (response.status !== 200) {
       throw new Error(`Failed to fetch calendar feed, status: ${response.status}`);
     }
 
     const icsContent = response.data;
+    
+    // Basic validation that we received a valid ICS format
+    if (typeof icsContent !== 'string' || 
+        (!icsContent.includes('BEGIN:VCALENDAR') && !icsContent.includes('BEGIN:VEVENT'))) {
+      console.error('Invalid ICS calendar format received:', 
+        typeof icsContent === 'string' ? icsContent.substring(0, 100) : typeof icsContent);
+      throw new Error('Invalid calendar format received');
+    }
+    
     return parseCalendarEvents(icsContent, sportId);
   } catch (error) {
     console.error(`Error fetching calendar feed:`, error);
+    // Return empty array but don't fail silently
+    if (error instanceof Error) {
+      console.error('Details:', error.message);
+    }
     return [];
   }
 }
