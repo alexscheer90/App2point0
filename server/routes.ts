@@ -226,6 +226,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API endpoint for fetching schedule RSS feeds
+  app.get("/api/fetch-schedule", async (req, res) => {
+    try {
+      const url = req.query.url as string;
+      
+      if (!url) {
+        return res.status(400).json({ message: "URL parameter is required" });
+      }
+      
+      // Validate that the URL is from a trusted domain (MAC or school websites)
+      const validDomains = [
+        'getsomemaction.com', // MAC main site
+        'mac-sports.com',     // MAC sports site
+        'utrockets.com',      // Toledo
+        'bgsufalcons.com',    // Bowling Green
+        'emueagles.com',      // Eastern Michigan
+        'gozips.com',         // Akron
+        'cmuchippewas.com',   // Central Michigan
+        'bsubsports.com',     // Ball State
+        'ballstatesports.com',// Ball State (new URL)
+        'ohiobobcats.com',    // Ohio
+        'kentstatesports.com',// Kent State
+        'goniuhuskies.com',   // Northern Illinois
+        'miamiredhawks.com',  // Miami
+        'wmubroncos.com',     // Western Michigan
+        'buffalo.edu',        // Buffalo
+        'umassathletics.com', // UMass
+      ];
+      
+      const urlObj = new URL(url);
+      const isDomainValid = validDomains.some(domain => urlObj.hostname.includes(domain));
+      
+      if (!isDomainValid) {
+        return res.status(403).json({ message: "URL domain not allowed" });
+      }
+      
+      console.log(`Server fetching schedule from: ${url}`);
+      
+      // Make the request to the site with automatic redirect following
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+        },
+        maxRedirects: 5, // Allow up to 5 redirects
+        validateStatus: function (status) {
+          return status >= 200 && status < 400; // Accept 2xx and 3xx status codes
+        }
+      });
+      
+      // Set the appropriate content type for XML
+      res.set('Content-Type', 'application/xml');
+      
+      // Return the XML content to the client
+      res.send(response.data);
+    } catch (error) {
+      console.error("Error fetching schedule feed:", error);
+      res.status(500).json({ message: "Failed to fetch schedule feed" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   // Create WebSocket server on a distinct path
