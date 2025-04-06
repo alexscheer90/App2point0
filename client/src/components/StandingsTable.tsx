@@ -39,10 +39,10 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
                 Team
               </th>
-              <th colSpan={3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+              <th colSpan={4} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Conference
               </th>
-              <th colSpan={3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+              <th colSpan={4} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Overall
               </th>
             </tr>
@@ -50,9 +50,11 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
             </tr>
           </thead>
@@ -102,6 +104,9 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                     {entry.conference.losses}
                   </td>
                   <td className="px-1 py-3 text-center text-sm">
+                    {entry.conference.ties || "-"}
+                  </td>
+                  <td className="px-1 py-3 text-center text-sm">
                     {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
                   </td>
                   {/* Overall Record */}
@@ -110,6 +115,9 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                   </td>
                   <td className="px-1 py-3 text-center text-sm">
                     {entry.overall.losses}
+                  </td>
+                  <td className="px-1 py-3 text-center text-sm">
+                    {entry.overall.ties || "-"}
                   </td>
                   <td className="px-1 py-3 text-center text-sm">
                     {entry.overall.winningPercentage.toFixed(3).replace(/^0+/, '')}

@@ -218,14 +218,24 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
 
 // Get all standings for a specific school
 export async function getSchoolStandings(schoolId: string): Promise<{ sportId: string, entries: StandingsEntry[] }[]> {
-  const sports = ["football", "basketball", "baseball"];
+  // Include all sports with updated standings
+  const sports = [
+    "football", 
+    "mbball", 
+    "wbball", 
+    "baseball", 
+    "softball", 
+    "wsoc", 
+    "wvball", 
+    "fhockey", 
+    "wrestling"
+  ];
   const results = [];
   
   for (const sport of sports) {
     const allStandings = await getStandings(sport);
     
     // Since MAC no longer has divisions, we include all standings when viewing a school
-    // Just return all standings - the filter is a no-op since `|| true` will always be true
     const filteredStandings = allStandings;
     
     if (filteredStandings.length > 0) {
