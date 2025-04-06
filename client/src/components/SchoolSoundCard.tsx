@@ -26,10 +26,18 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   useEffect(() => {
     // Create new audio element if not already created
     if (!audioRef.current && sound.audioUrl) {
-      audioRef.current = new Audio(sound.audioUrl);
+      const audio = new Audio();
+      // Use a complete URL with the correct path
+      audio.src = sound.audioUrl;
       
       // Set initial volume
-      audioRef.current.volume = volume;
+      audio.volume = volume;
+      
+      // Set properties to help with iOS/Safari playback
+      audio.preload = "metadata";
+      
+      // Store the audio element in the ref
+      audioRef.current = audio;
     }
     
     const audio = audioRef.current;
@@ -37,6 +45,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
 
     // Initialize audio duration when metadata is loaded
     const handleLoadedMetadata = () => {
+      console.log("Audio metadata loaded, duration:", audio.duration);
       setDuration(audio.duration);
     };
 
@@ -51,22 +60,40 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
       setCurrentTime(0);
       audio.currentTime = 0;
     };
+    
+    // Handle play event
+    const handlePlay = () => {
+      console.log("Audio playing");
+      setIsPlaying(true);
+    };
+    
+    // Handle pause event
+    const handlePause = () => {
+      console.log("Audio paused");
+      setIsPlaying(false);
+    };
+    
+    // Handle errors
+    const handleError = (e: Event) => {
+      console.error("Audio error:", e);
+    };
 
     // Add event listeners
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
-
-    // Load audio if not loaded
-    if (audio.readyState === 0) {
-      audio.load();
-    }
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('error', handleError);
 
     // Clean up event listeners and pause audio on unmount
     return () => {
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('error', handleError);
       audio.pause();
     };
   }, [sound.audioUrl, volume]);
@@ -78,9 +105,23 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play();
+      // Use promise to handle potential playback errors (common on mobile)
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully
+            console.log("Audio playback started successfully");
+          })
+          .catch(error => {
+            // Auto-play was blocked or other error
+            console.error("Error playing audio:", error);
+            setIsPlaying(false); // Reset state if playback fails
+          });
+      }
     }
-    setIsPlaying(!isPlaying);
+    // Don't set isPlaying directly here, let the event handlers handle it
   };
 
   // Handle seeking

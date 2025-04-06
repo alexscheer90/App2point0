@@ -3,8 +3,7 @@ import { useMacSchools } from '../hooks/useSchool';
 import { useSchoolSounds } from '../hooks/useSchoolSounds';
 import SchoolSoundCard from '../components/SchoolSoundCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Music, SearchIcon } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Music } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SchoolSound } from '@shared/schema';
 
@@ -17,7 +16,6 @@ const SoundsPage = () => {
   const { data: schools, isLoading: isSchoolsLoading } = useMacSchools();
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
   const [soundType, setSoundType] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState('');
   
   const { data: sounds, isLoading: isSoundsLoading } = useSchoolSounds(selectedSchool || "");
   const isLoading = isSchoolsLoading || isSoundsLoading;
@@ -33,14 +31,10 @@ const SoundsPage = () => {
     );
   }
 
-  // Filter sounds based on type and search term
+  // Filter sounds based on type
   const filteredSounds = sounds?.filter(sound => {
     const matchesType = soundType === "all" || sound.type === soundType;
-    const matchesSearch = searchTerm === '' || 
-      sound.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (sound.description && sound.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    return matchesType && matchesSearch;
+    return matchesType;
   }) || [];
 
   // Group sounds by school for "all" view
@@ -57,11 +51,7 @@ const SoundsPage = () => {
       
       const filteredSchoolSounds = schoolSounds.filter(sound => {
         const matchesType = soundType === "all" || sound.type === soundType;
-        const matchesSearch = searchTerm === '' || 
-          sound.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (sound.description && sound.description.toLowerCase().includes(searchTerm.toLowerCase()));
-        
-        return matchesType && matchesSearch;
+        return matchesType;
       });
       
       if (filteredSchoolSounds.length > 0) {
@@ -79,58 +69,45 @@ const SoundsPage = () => {
         <span style={{ color: MAC_GREEN }}>Sounds</span> <span style={{ color: MAC_NAVY }}>of the Stadium</span>
       </h1>
       
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <SearchIcon className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search sounds..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+      <div className="flex gap-3 mb-6">
+        <Select 
+          value={selectedSchool || "all"} 
+          onValueChange={(value) => setSelectedSchool(value === "all" ? null : value)}
+        >
+          <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: "white", borderColor: MAC_NAVY }}>
+            <SelectValue placeholder="Select a school" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All MAC Schools</SelectItem>
+            {schools.map(school => (
+              <SelectItem key={school.id} value={school.id}>
+                <div className="flex items-center">
+                  {school.logoUrl && (
+                    <div className="w-5 h-5 mr-2">
+                      <img 
+                        src={school.logoUrl} 
+                        alt={`${school.name} logo`} 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+                  {school.name}
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         
-        <div className="flex gap-3">
-          <Select 
-            value={selectedSchool || "all"} 
-            onValueChange={(value) => setSelectedSchool(value === "all" ? null : value)}
-          >
-            <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: "white", borderColor: MAC_NAVY }}>
-              <SelectValue placeholder="Select a school" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All MAC Schools</SelectItem>
-              {schools.map(school => (
-                <SelectItem key={school.id} value={school.id}>
-                  <div className="flex items-center">
-                    {school.logoUrl && (
-                      <div className="w-5 h-5 mr-2">
-                        <img 
-                          src={school.logoUrl} 
-                          alt={`${school.name} logo`} 
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    )}
-                    {school.name}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={soundType} onValueChange={setSoundType}>
-            <SelectTrigger className="w-full sm:w-[140px]" style={{ backgroundColor: "white", borderColor: MAC_NAVY }}>
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="fight_song">Fight Songs</SelectItem>
-              <SelectItem value="alma_mater">Alma Maters</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={soundType} onValueChange={setSoundType}>
+          <SelectTrigger className="w-full sm:w-[140px]" style={{ backgroundColor: "white", borderColor: MAC_NAVY }}>
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="fight_song">Fight Songs</SelectItem>
+            <SelectItem value="alma_mater">Alma Maters</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
