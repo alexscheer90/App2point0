@@ -57,8 +57,6 @@ export const gameSchema = z.object({
   sportId: z.string(),
   homeTeamId: z.string(),
   awayTeamId: z.string(),
-  homeTeamName: z.string().optional(), // For non-MAC opponents
-  awayTeamName: z.string().optional(), // For non-MAC opponents
   homeTeamScore: z.number().optional(),
   awayTeamScore: z.number().optional(),
   startTime: z.string(),
@@ -129,7 +127,6 @@ export const schoolSoundSchema = z.object({
   audioUrl: z.string().optional(),
   lyrics: z.string().optional(),
   description: z.string().optional(),
-  bandLogoUrl: z.string().optional(), // Added to display band logo
 });
 
 export const localEatsSchema = z.object({

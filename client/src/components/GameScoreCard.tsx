@@ -3,7 +3,6 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import ShareButton from "./ShareButton";
 import { format } from "date-fns";
-import ncaaLogoPath from "@assets/NCAA_logo.svg.png";
 
 interface GameScoreCardProps {
   game: Game;
@@ -27,33 +26,9 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
   const awayTeam = schools.find(school => school.id === game.awayTeamId);
   const sport = sports.find(sport => sport.id === game.sportId);
   
-  if (!sport) {
+  if (!homeTeam || !awayTeam || !sport) {
     return null;
   }
-  
-  // If either team is not in our MAC schools, use a generic NCAA team object
-  const ncaaTeam = {
-    id: 'ncaa',
-    name: 'NCAA Opponent',
-    shortName: 'NCAA',
-    logoUrl: ncaaLogoPath,
-    primaryColor: '#0089D0',
-    secondaryColor: '#FFFFFF',
-    mascot: 'NCAA',
-    city: '',
-    state: '',
-  };
-  
-  // Use NCAA team placeholder if team not found in schools array
-  const finalHomeTeam = homeTeam || { 
-    ...ncaaTeam, 
-    name: game.homeTeamId === 'TBD' ? 'TBD' : 'NCAA Opponent' 
-  };
-  
-  const finalAwayTeam = awayTeam || { 
-    ...ncaaTeam, 
-    name: game.awayTeamId === 'TBD' ? 'TBD' : 'NCAA Opponent'
-  };
   
   // Create a share URL for the game
   const shareUrl = `/games/${game.id}`;
@@ -63,14 +38,14 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
   let description = '';
   
   if (game.status === 'final') {
-    shareTitle = `Final: ${finalHomeTeam.name} ${game.homeTeamScore}, ${finalAwayTeam.name} ${game.awayTeamScore}`;
+    shareTitle = `Final: ${homeTeam.name} ${game.homeTeamScore}, ${awayTeam.name} ${game.awayTeamScore}`;
     description = `Check out the final score of this ${sport.name} game from Mobile #MACtion!`;
   } else if (game.status === 'live') {
-    shareTitle = `LIVE: ${finalHomeTeam.name} ${game.homeTeamScore}, ${finalAwayTeam.name} ${game.awayTeamScore}`;
+    shareTitle = `LIVE: ${homeTeam.name} ${game.homeTeamScore}, ${awayTeam.name} ${game.awayTeamScore}`;
     description = `Watch this ${sport.name} game live on Mobile #MACtion!`;
   } else {
     const gameDate = game.startTime ? format(new Date(game.startTime), 'MMM d, yyyy') : '';
-    shareTitle = `${finalHomeTeam.name} vs ${finalAwayTeam.name} - ${gameDate}`;
+    shareTitle = `${homeTeam.name} vs ${awayTeam.name} - ${gameDate}`;
     description = `Don't miss this upcoming ${sport.name} matchup on Mobile #MACtion!`;
   }
   
@@ -103,12 +78,12 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       <div className="p-3">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            {finalHomeTeam.logoUrl ? (
+            {homeTeam.logoUrl ? (
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
-                  src={finalHomeTeam.logoUrl} 
-                  alt={`${finalHomeTeam.name} logo`} 
+                  src={homeTeam.logoUrl} 
+                  alt={`${homeTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
                 />
               </div>
@@ -116,25 +91,25 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
               // Fallback to circular initial when no logo
               <div 
                 className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: finalHomeTeam.primaryColor }}
+                style={{ backgroundColor: homeTeam.primaryColor }}
               >
-                <span className="text-xs font-bold" style={{ color: finalHomeTeam.secondaryColor }}>
-                  {finalHomeTeam.shortName.charAt(0)}
+                <span className="text-xs font-bold" style={{ color: homeTeam.secondaryColor }}>
+                  {homeTeam.shortName.charAt(0)}
                 </span>
               </div>
             )}
-            <span className="font-semibold text-sm">{finalHomeTeam.name}</span>
+            <span className="font-semibold text-sm">{homeTeam.name}</span>
           </div>
           <span className="font-bold text-lg">{game.homeTeamScore}</span>
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            {finalAwayTeam.logoUrl ? (
+            {awayTeam.logoUrl ? (
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
-                  src={finalAwayTeam.logoUrl} 
-                  alt={`${finalAwayTeam.name} logo`} 
+                  src={awayTeam.logoUrl} 
+                  alt={`${awayTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
                 />
               </div>
@@ -142,14 +117,14 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
               // Fallback to circular initial when no logo
               <div 
                 className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: finalAwayTeam.primaryColor }}
+                style={{ backgroundColor: awayTeam.primaryColor }}
               >
-                <span className="text-xs font-bold" style={{ color: finalAwayTeam.secondaryColor }}>
-                  {finalAwayTeam.shortName.charAt(0)}
+                <span className="text-xs font-bold" style={{ color: awayTeam.secondaryColor }}>
+                  {awayTeam.shortName.charAt(0)}
                 </span>
               </div>
             )}
-            <span className="font-semibold text-sm">{finalAwayTeam.name}</span>
+            <span className="font-semibold text-sm">{awayTeam.name}</span>
           </div>
           <span className="font-bold text-lg">{game.awayTeamScore}</span>
         </div>

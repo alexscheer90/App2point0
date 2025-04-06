@@ -7,8 +7,6 @@ import { macSchoolSounds } from "../data/macSchoolSounds";
 import { macLocalEats } from "../data/macLocalEats";
 import { scrapeStandingsForSport } from "../services/standingsScraper";
 import { fetchSchoolNewsFeed, fetchAllSchoolsNews, schoolFeedUrls } from "../services/newsFeedParser";
-import { fetchAllMacEvents } from "../services/scheduleFeedParser";
-import { fetchMacCalendar } from "../services/icsParser";
 
 // User preferences
 export async function getFavoriteSchool() {
@@ -91,53 +89,89 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
   return macLocalEats.find(restaurant => restaurant.id === id);
 }
 
-// Games API - Real implementation using feed
-
+// Games API - Mock implementation
 export async function getGames(sportId?: string): Promise<Game[]> {
-  try {
-    // Try multiple data sources to get real game data
-    console.log(`Fetching games for sport: ${sportId || 'all'}`);
-    
-    // First attempt: Try the MAC ICS calendar feed
-    try {
-      const realGames = await fetchMacCalendar(sportId || 'all');
-      
-      if (realGames && realGames.length > 0) {
-        console.log(`Successfully fetched ${realGames.length} games from MAC calendar feed`);
-        return realGames;
-      } else {
-        console.log("No games found in ICS feed or invalid format received");
-      }
-    } catch (icsError) {
-      console.error("Error fetching from ICS calendar:", icsError);
-    }
-    
-    // Second attempt: Try the RSS feed 
-    try {
-      console.log("Trying RSS feed as an alternative source");
-      const rssGames = await fetchAllMacEvents(sportId || 'all');
-      
-      if (rssGames && rssGames.length > 0) {
-        console.log(`Successfully fetched ${rssGames.length} games from MAC RSS feed`);
-        return rssGames;
-      } else {
-        console.log("No games found in RSS feed or invalid format received");
-      }
-    } catch (rssError) {
-      console.error("Error fetching from RSS feed:", rssError);
-    }
-    
-    // If we reach here, we couldn't get any data from either source
-    console.error("Failed to fetch game data from any source");
-    
-    // Instead of fake data, show an empty result set with proper message
-    // The UI layer should handle this empty state appropriately
-    return [];
-    
-  } catch (error) {
-    console.error("Unexpected error fetching games:", error);
-    return [];
+  // Generate some mock games for demonstration
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  
+  const mockGames: Game[] = [
+    // Live games
+    {
+      id: "game1",
+      sportId: "football",
+      homeTeamId: "toledo",
+      awayTeamId: "bowlinggreen",
+      homeTeamScore: 24,
+      awayTeamScore: 17,
+      startTime: now.toISOString(),
+      status: "live",
+      period: "3rd QTR",
+      situation: "Ball on 34 yard line • 3rd & 8",
+    },
+    {
+      id: "game2",
+      sportId: "wbasketball",
+      homeTeamId: "ohio",
+      awayTeamId: "kentstate",
+      homeTeamScore: 56,
+      awayTeamScore: 42,
+      startTime: now.toISOString(),
+      status: "live",
+      period: "2nd Half",
+      situation: "8:45 remaining • Ohio possession",
+    },
+    // Upcoming games
+    {
+      id: "game3",
+      sportId: "football",
+      homeTeamId: "miamioh",
+      awayTeamId: "ballstate",
+      startTime: tomorrow.toISOString(),
+      status: "scheduled",
+      venue: "Yager Stadium, Oxford OH",
+    },
+    {
+      id: "game4",
+      sportId: "basketball",
+      homeTeamId: "akron",
+      awayTeamId: "northernillinois",
+      startTime: tomorrow.toISOString(),
+      status: "scheduled",
+      venue: "James A. Rhodes Arena, Akron OH",
+    },
+    // Completed games
+    {
+      id: "game5",
+      sportId: "baseball",
+      homeTeamId: "westernmichigan",
+      awayTeamId: "centralmichigan",
+      homeTeamScore: 5,
+      awayTeamScore: 3,
+      startTime: yesterday.toISOString(),
+      status: "final",
+    },
+    {
+      id: "game6",
+      sportId: "football",
+      homeTeamId: "easternmichigan",
+      awayTeamId: "buffalo",
+      homeTeamScore: 21,
+      awayTeamScore: 28,
+      startTime: yesterday.toISOString(),
+      status: "final",
+    },
+  ];
+  
+  // Filter by sport if needed
+  if (sportId && sportId !== "all") {
+    return mockGames.filter(game => game.sportId === sportId);
   }
+  
+  return mockGames;
 }
 
 export async function getSchoolGames(schoolId: string): Promise<Game[]> {
@@ -155,27 +189,25 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
     // Attempt to fetch real news from RSS feeds
     if (schoolId && schoolId !== "all" && schoolFeedUrls[schoolId]) {
       // Get news from a specific school's RSS feed
-      const schoolNews = await fetchSchoolNewsFeed(schoolId, schoolFeedUrls[schoolId]);
-      if (schoolNews && schoolNews.length > 0) {
-        return schoolNews;
-      } else {
-        console.warn(`No news items found in RSS feed for school: ${schoolId}`);
-      }
+      return await fetchSchoolNewsFeed(schoolId, schoolFeedUrls[schoolId]);
     } else if (schoolId === "all" || !schoolId) {
       // Get news from all schools with configured RSS feeds
-      const allNews = await fetchAllSchoolsNews();
-      if (allNews && allNews.length > 0) {
-        return allNews;
-      } else {
-        console.warn("No news items found in any school RSS feeds");
-      }
-    } else {
-      // If we reach here, no RSS feed is configured for this school
-      console.warn(`No RSS feed configured for school: ${schoolId}`);
+      return await fetchAllSchoolsNews();
     }
     
-    // Instead of using fake data, return an empty array with proper error handling in UI
-    console.log("Returning empty news array - no real data available from RSS feeds");
+    // If we reach here, no RSS feed is configured for this school
+    console.warn(`No RSS feed configured for school: ${schoolId}`);
+    
+    // Fallback to mock data for schools without RSS feeds
+    // This ensures we have something to display even if RSS isn't available
+    const now = new Date();
+    
+    // For Toledo, we should never reach here as we've configured its RSS feed
+    if (schoolId === "toledo") {
+      return [];
+    }
+    
+    // Return an empty array for now - in production we'd have mock data for all schools
     return [];
   } catch (error) {
     console.error("Error fetching news:", error);
@@ -186,11 +218,8 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
 // Standings API - Implementation using real data from MAC website
 export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
   try {
-    // Handle special cases where we need to map IDs
-    const mappedSportId = sportId === "basketball" ? "mbball" : sportId;
-    
     // Get the sport details
-    const sport = macSports.find(s => s.id === mappedSportId);
+    const sport = macSports.find(s => s.id === sportId);
     
     if (!sport) {
       console.error(`Sport with ID ${sportId} not found`);
@@ -202,7 +231,7 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return [];
     }
     
-    // Use the scraper to get the data
+    // Use the scraper to get real-time data
     const standings = await scrapeStandingsForSport(sport);
     
     // If we got real data, return it
@@ -210,8 +239,8 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return standings;
     }
     
-    // If scraping failed, return empty array
-    console.error(`Failed to get standings for ${sportId}`);
+    // If scraping failed, return a placeholder message
+    console.error(`Failed to scrape standings for ${sportId}`);
     return [];
   } catch (error) {
     console.error(`Error fetching standings for ${sportId}:`, error);
@@ -221,32 +250,19 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
 
 // Get all standings for a specific school
 export async function getSchoolStandings(schoolId: string): Promise<{ sportId: string, entries: StandingsEntry[] }[]> {
-  // Include all sports with updated standings
-  const sports = [
-    "football", 
-    "mbball", 
-    "wbball", 
-    "baseball", 
-    "softball", 
-    "wsoc", 
-    "wvball", 
-    "fhockey", 
-    "wrestling"
-  ];
+  const sports = ["football", "basketball", "baseball"];
   const results = [];
   
   for (const sport of sports) {
     const allStandings = await getStandings(sport);
     
     // Since MAC no longer has divisions, we include all standings when viewing a school
+    // Just return all standings - the filter is a no-op since `|| true` will always be true
     const filteredStandings = allStandings;
     
     if (filteredStandings.length > 0) {
-      // Use proper display name for the sport ID to match what's in the Sport object
-      const displaySportId = sport === "mbball" ? "basketball" : sport;
-      
       results.push({
-        sportId: displaySportId,
+        sportId: sport,
         entries: filteredStandings
       });
     }

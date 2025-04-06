@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { SchoolSound } from '@shared/schema';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, Music, FileText } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { useSchool } from '../hooks/useSchool';
 
 interface SchoolSoundCardProps {
@@ -12,8 +13,37 @@ interface SchoolSoundCardProps {
 
 const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const { data: school } = useSchool(sound.schoolId);
-  
+
+  const handlePlayPause = () => {
+    if (!sound.audioUrl) return;
+    
+    if (!audioElement) {
+      const audio = new Audio(sound.audioUrl);
+      audio.addEventListener('ended', () => setIsPlaying(false));
+      setAudioElement(audio);
+      audio.play();
+      setIsPlaying(true);
+    } else {
+      if (isPlaying) {
+        audioElement.pause();
+      } else {
+        audioElement.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
+      }
+    };
+  }, [audioElement]);
+
   // Helper function to convert hex color to rgba with opacity
   const getBgColor = (hex: string, opacity: number = 0.15) => {
     if (hex.startsWith('#')) {
@@ -68,15 +98,6 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     };
   };
 
-  // Handle play/pause action
-  const handlePlayPause = () => {
-    // For now, just toggle the button state without playing audio
-    setIsPlaying(!isPlaying);
-    
-    // In the future, this will play/pause actual audio
-    console.log(`${isPlaying ? 'Pausing' : 'Playing'} ${sound.title}`);
-  };
-
   return (
     <Card className="overflow-hidden" style={getCardStyle()}>
       <CardHeader className="pb-2">
@@ -108,31 +129,33 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
         </div>
       </CardHeader>
       
-      <CardContent className="pt-2 pb-3">
+      <CardContent className="pt-4 pb-2">
         {sound.description && (
           <p className="text-sm text-muted-foreground mb-4">{sound.description}</p>
         )}
         
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="flex items-center gap-2 w-24 justify-center"
-            style={getButtonStyle()}
-            onClick={handlePlayPause}
-          >
-            {isPlaying ? (
-              <>
-                <Pause className="h-4 w-4" />
-                Pause
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" />
-                Play
-              </>
-            )}
-          </Button>
+        <div className="flex justify-between">
+          {sound.audioUrl && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-2"
+              style={getButtonStyle()}
+              onClick={handlePlayPause}
+            >
+              {isPlaying ? (
+                <>
+                  <Pause className="h-4 w-4" />
+                  Pause
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Play
+                </>
+              )}
+            </Button>
+          )}
           
           {sound.lyrics && (
             <Dialog>
@@ -164,9 +187,6 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                     )}
                     {sound.title} Lyrics
                   </DialogTitle>
-                  <DialogDescription>
-                    Lyrics for {school?.name || ""} {sound.type.replace("_", " ")}
-                  </DialogDescription>
                 </DialogHeader>
                 <div 
                   className="mt-4 whitespace-pre-line p-4 rounded-md"
