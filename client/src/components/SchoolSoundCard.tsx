@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SchoolSound } from '@shared/schema';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, Music, FileText } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Play, Pause, Music, FileText, SkipBack, Volume2, VolumeX } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { useSchool } from '../hooks/useSchool';
+import { formatTime } from '@/lib/utils';
 
 interface SchoolSoundCardProps {
   sound: SchoolSound;
@@ -13,36 +15,106 @@ interface SchoolSoundCardProps {
 
 const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(0.7);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showVolumeControl, setShowVolumeControl] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { data: school } = useSchool(sound.schoolId);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Initialize audio duration when metadata is loaded
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    // Update current time during playback
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    // Reset when playback ends
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      audio.currentTime = 0;
+    };
+
+    // Add event listeners
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
+    // Set initial volume
+    audio.volume = volume;
+
+    // Clean up event listeners
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
+
+  // Handle play/pause
   const handlePlayPause = () => {
-    if (!sound.audioUrl) return;
+    if (!sound.audioUrl || !audioRef.current) return;
     
-    if (!audioElement) {
-      const audio = new Audio(sound.audioUrl);
-      audio.addEventListener('ended', () => setIsPlaying(false));
-      setAudioElement(audio);
-      audio.play();
-      setIsPlaying(true);
+    if (isPlaying) {
+      audioRef.current.pause();
     } else {
-      if (isPlaying) {
-        audioElement.pause();
-      } else {
-        audioElement.play();
-      }
-      setIsPlaying(!isPlaying);
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // Handle seeking
+  const handleSeek = (value: number[]) => {
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = value[0];
+    setCurrentTime(value[0]);
+  };
+
+  // Handle volume change
+  const handleVolumeChange = (value: number[]) => {
+    if (!audioRef.current) return;
+    const newVolume = value[0];
+    setVolume(newVolume);
+    audioRef.current.volume = newVolume;
+    
+    if (newVolume === 0) {
+      setIsMuted(true);
+    } else if (isMuted) {
+      setIsMuted(false);
     }
   };
 
-  React.useEffect(() => {
-    return () => {
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.src = '';
-      }
-    };
-  }, [audioElement]);
+  // Handle mute toggle
+  const handleMuteToggle = () => {
+    if (!audioRef.current) return;
+    
+    if (isMuted) {
+      audioRef.current.volume = volume;
+    } else {
+      audioRef.current.volume = 0;
+    }
+    setIsMuted(!isMuted);
+  };
+
+  // Handle restart
+  const handleRestart = () => {
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = 0;
+    setCurrentTime(0);
+    if (!isPlaying) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   // Helper function to convert hex color to rgba with opacity
   const getBgColor = (hex: string, opacity: number = 0.15) => {
@@ -98,8 +170,26 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
     };
   };
 
+  // Get progress color for slider
+  const getProgressColor = () => {
+    if (!school) return {};
+    
+    const color = sound.type === 'fight_song' 
+      ? school.primaryColor 
+      : (school.secondaryColor || school.primaryColor);
+    
+    return {
+      '--progress-color': color,
+    } as React.CSSProperties;
+  };
+
   return (
     <Card className="overflow-hidden" style={getCardStyle()}>
+      {/* Hidden audio element */}
+      {sound.audioUrl && (
+        <audio ref={audioRef} src={sound.audioUrl} preload="metadata" />
+      )}
+      
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -129,86 +219,155 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
         </div>
       </CardHeader>
       
-      <CardContent className="pt-4 pb-2">
+      <CardContent className="pt-2 pb-3">
         {sound.description && (
           <p className="text-sm text-muted-foreground mb-4">{sound.description}</p>
         )}
         
-        <div className="flex justify-between">
-          {sound.audioUrl && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="flex items-center gap-2"
-              style={getButtonStyle()}
-              onClick={handlePlayPause}
-            >
-              {isPlaying ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Play
-                </>
-              )}
-            </Button>
-          )}
-          
-          {sound.lyrics && (
-            <Dialog>
-              <DialogTrigger asChild>
+        {sound.audioUrl && (
+          <div className="space-y-2">
+            {/* Progress bar slider */}
+            <div className="px-1">
+              <Slider
+                value={[currentTime]}
+                min={0}
+                max={duration || 100}
+                step={0.1}
+                onValueChange={handleSeek}
+                className="cursor-pointer"
+                style={getProgressColor()}
+              />
+              
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+            
+            {/* Player controls */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleRestart}
+                >
+                  <SkipBack className="h-4 w-4" />
+                </Button>
+                
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 w-20 justify-center"
                   style={getButtonStyle()}
+                  onClick={handlePlayPause}
                 >
-                  <FileText className="h-4 w-4" />
-                  View Lyrics
+                  {isPlaying ? (
+                    <>
+                      <Pause className="h-4 w-4" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" />
+                      Play
+                    </>
+                  )}
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle 
-                    className="flex items-center gap-2"
-                    style={getTextStyle()}
-                  >
-                    {school?.logoUrl && (
-                      <div className="w-6 h-6 flex-shrink-0">
-                        <img 
-                          src={school.logoUrl} 
-                          alt={`${school.name} logo`} 
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    )}
-                    {sound.title} Lyrics
-                  </DialogTitle>
-                </DialogHeader>
+                
                 <div 
-                  className="mt-4 whitespace-pre-line p-4 rounded-md"
-                  style={{
-                    backgroundColor: school 
-                      ? sound.type === 'fight_song'
-                        ? getBgColor(school.primaryColor, 0.1)
-                        : getBgColor(school.secondaryColor || school.primaryColor, 0.1)
-                      : 'inherit',
-                    borderLeft: school 
-                      ? `3px solid ${sound.type === 'fight_song' 
-                          ? school.primaryColor 
-                          : (school.secondaryColor || school.primaryColor)}`
-                      : 'none'
-                  }}
+                  className="relative" 
+                  onMouseEnter={() => setShowVolumeControl(true)}
+                  onMouseLeave={() => setShowVolumeControl(false)}
                 >
-                  {sound.lyrics}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={handleMuteToggle}
+                  >
+                    {isMuted || volume === 0 ? (
+                      <VolumeX className="h-4 w-4" />
+                    ) : (
+                      <Volume2 className="h-4 w-4" />
+                    )}
+                  </Button>
+                  
+                  {/* Volume slider */}
+                  {showVolumeControl && (
+                    <div className="absolute -left-12 bottom-full mb-2 bg-white shadow-md rounded-md p-2 w-32 z-10">
+                      <Slider
+                        value={[isMuted ? 0 : volume]}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        onValueChange={handleVolumeChange}
+                        className="cursor-pointer"
+                        style={getProgressColor()}
+                      />
+                    </div>
+                  )}
                 </div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
+              </div>
+              
+              {sound.lyrics && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="flex items-center gap-2"
+                      style={getButtonStyle()}
+                    >
+                      <FileText className="h-4 w-4" />
+                      View Lyrics
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle 
+                        className="flex items-center gap-2"
+                        style={getTextStyle()}
+                      >
+                        {school?.logoUrl && (
+                          <div className="w-6 h-6 flex-shrink-0">
+                            <img 
+                              src={school.logoUrl} 
+                              alt={`${school.name} logo`} 
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
+                        {sound.title} Lyrics
+                      </DialogTitle>
+                      <DialogDescription>
+                        Lyrics for {school?.name || ""} {sound.type.replace("_", " ")}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div 
+                      className="mt-4 whitespace-pre-line p-4 rounded-md"
+                      style={{
+                        backgroundColor: school 
+                          ? sound.type === 'fight_song'
+                            ? getBgColor(school.primaryColor, 0.1)
+                            : getBgColor(school.secondaryColor || school.primaryColor, 0.1)
+                          : 'inherit',
+                        borderLeft: school 
+                          ? `3px solid ${sound.type === 'fight_song' 
+                              ? school.primaryColor 
+                              : (school.secondaryColor || school.primaryColor)}`
+                          : 'none'
+                      }}
+                    >
+                      {sound.lyrics}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
