@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { FileText, ChartBar, Newspaper, School, Trophy, Music, Utensils, Headphones } from "lucide-react";
+import { FileText, ChartBar, Newspaper, School, Trophy, Music, Utensils, Headphones, Calendar } from "lucide-react";
 
 // MAC colors
 const MAC_NAVY = "#0B213E";
@@ -35,6 +35,12 @@ const BottomNav = ({ activeTab }: BottomNavProps) => {
         icon={<School className="h-5 w-5" />}
         label="Schools"
         active={activeTab === "schools"} 
+      />
+      <NavItem 
+        to="/schedule" 
+        icon={<Calendar className="h-5 w-5" />}
+        label="Schedule"
+        active={activeTab === "schedule"} 
       />
       <NavItem 
         to="/rivalries" 

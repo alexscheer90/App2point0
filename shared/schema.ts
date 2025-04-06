@@ -60,12 +60,17 @@ export const gameSchema = z.object({
   homeTeamScore: z.number().optional(),
   awayTeamScore: z.number().optional(),
   startTime: z.string(),
+  scheduledTime: z.string(),  // Added for schedule view
   status: gameStatusSchema,
   period: z.number().optional(),
   clock: z.string().optional(),
   situation: z.string().optional(),
   venue: z.string().optional(),
+  location: z.string().optional(),  // Added for full location name
+  ticketUrl: z.string().optional(), // Added for ticket purchase link
   isRivalryGame: z.boolean().optional(),
+  homeScore: z.number().optional(), // Alias for homeTeamScore for consistency
+  awayScore: z.number().optional(), // Alias for awayTeamScore for consistency
 });
 
 export const standingsEntrySchema = z.object({
