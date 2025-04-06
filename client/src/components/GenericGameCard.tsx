@@ -51,6 +51,23 @@ const GenericGameCard = ({ game }: GenericGameCardProps) => {
     }
   }
   
+  // For events that don't have the special situation format, see if we can extract teams from title
+  if (!nonMacHomeTeam && !nonMacAwayTeam && game.venue) {
+    // Try to extract teams from the event title/description if available
+    const titleMatch = game.venue.match(/(.*?)\s+(?:vs\.?|at)\s+(.*?)(?:\s+\(|\s*$)/i);
+    if (titleMatch && titleMatch.length >= 3) {
+      if (game.venue && game.venue.includes(" at ")) {
+        // Format is "Away at Home"
+        nonMacAwayTeam = titleMatch[1].trim();
+        nonMacHomeTeam = titleMatch[2].trim();
+      } else {
+        // Format is "Home vs Away"
+        nonMacHomeTeam = titleMatch[1].trim();
+        nonMacAwayTeam = titleMatch[2].trim();
+      }
+    }
+  }
+  
   // Format the date nicely
   const gameDate = new Date(game.startTime);
   const isToday = new Date().toDateString() === gameDate.toDateString();

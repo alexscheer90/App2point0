@@ -152,17 +152,19 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
             startTime: startTime.toISOString(),
             scheduledTime: startTime.toISOString(), // Required field for Game schema
             status: isPastEvent(startTime) ? 'final' : 'scheduled',
-            venue: venue || 'TBD',
+            venue: title, // Use the full title as venue to preserve all information
           };
           
           // Store original team names for display purposes when there's no matching MAC school
+          let situationText = '';
+
           if (!homeTeamId) {
-            game.situation = `Home: ${eventHomeTeam}`;
+            situationText = `Home: ${eventHomeTeam}`;
           }
           
           if (!awayTeamId) {
-            game.situation = game.situation 
-              ? `${game.situation} | Away: ${eventAwayTeam}` 
+            situationText = situationText 
+              ? `${situationText} | Away: ${eventAwayTeam}` 
               : `Away: ${eventAwayTeam}`;
           }
           
@@ -171,15 +173,19 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
             game.ticketUrl = link;
           }
           
-          if (description && !game.situation) {
+          // If we have the original team names, use them in situation
+          if (situationText) {
+            game.situation = situationText;
+          }
+          // Otherwise, if we have description, use that
+          else if (description) {
             game.situation = description.substring(0, 100);
           }
           
-          // Add the game if at least one team is a MAC school or if we want to show all games
-          if (homeTeamId || awayTeamId) {
-            games.push(game);
-            console.log(`Successfully parsed game: ${eventHomeTeam} vs ${eventAwayTeam}`);
-          }
+          // Add all games regardless of whether they are MAC schools or not
+          // This ensures we display non-conference games as well
+          games.push(game);
+          console.log(`Successfully parsed game: ${eventHomeTeam} vs ${eventAwayTeam}`);
         } catch (itemError) {
           console.error("Error parsing individual schedule event:", itemError);
         }
