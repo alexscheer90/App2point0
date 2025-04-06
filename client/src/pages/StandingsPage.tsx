@@ -37,16 +37,17 @@ const StandingsPage = () => {
       </div>
       
       <div className="px-4 relative">
-        {/* MAC Logo in top right corner */}
-        <div className="absolute top-0 right-0 w-16 h-16 md:w-20 md:h-20">
-          <img 
-            src={macLogo} 
-            alt="MAC Conference Logo" 
-            className="w-full h-full object-contain"
-          />
+        <div className="flex items-center mb-3">
+          <h2 className="font-bold text-xl mr-3">{sportName} Standings</h2>
+          {/* MAC Logo next to title */}
+          <div className="w-10 h-10">
+            <img 
+              src={macLogo} 
+              alt="MAC Conference Logo" 
+              className="w-full h-full object-contain"
+            />
+          </div>
         </div>
-        
-        <h2 className="font-bold text-xl mb-3">{sportName} Standings</h2>
         
         {isStandingsLoading ? (
           <Skeleton className="w-full h-96" />
