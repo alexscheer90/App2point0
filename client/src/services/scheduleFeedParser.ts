@@ -333,8 +333,10 @@ function isPastEvent(eventDate: Date): boolean {
  * Schedule feed URLs for different MAC sports
  */
 export const scheduleFeedUrls: Record<string, string> = {
-  'general': 'https://getsomemaction.com/calendar.ashx/calendar.rss',
-  'football': 'https://getsomemaction.com/calendar.ashx/calendar.rss?sport_id=football'
+  'general': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=0&school_id=0&schedule_id=0',
+  'football': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=1&school_id=0&schedule_id=0',
+  'basketball': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=2&school_id=0&schedule_id=0',
+  'baseball': 'https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=3&school_id=0&schedule_id=0'
   // Can add more sport-specific feeds as they become available
 };
 

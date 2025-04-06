@@ -7,6 +7,7 @@ import { macSchoolSounds } from "../data/macSchoolSounds";
 import { macLocalEats } from "../data/macLocalEats";
 import { scrapeStandingsForSport } from "../services/standingsScraper";
 import { fetchSchoolNewsFeed, fetchAllSchoolsNews, schoolFeedUrls } from "../services/newsFeedParser";
+import { fetchAllMacEvents } from "../services/scheduleFeedParser";
 
 // User preferences
 export async function getFavoriteSchool() {
@@ -89,89 +90,113 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
   return macLocalEats.find(restaurant => restaurant.id === id);
 }
 
-// Games API - Mock implementation
+// Games API - Real implementation using feed
+
 export async function getGames(sportId?: string): Promise<Game[]> {
-  // Generate some mock games for demonstration
-  const now = new Date();
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-  const tomorrow = new Date(now);
-  tomorrow.setDate(now.getDate() + 1);
-  
-  const mockGames: Game[] = [
-    // Live games
-    {
-      id: "game1",
-      sportId: "football",
-      homeTeamId: "toledo",
-      awayTeamId: "bowlinggreen",
-      homeTeamScore: 24,
-      awayTeamScore: 17,
-      startTime: now.toISOString(),
-      status: "live",
-      period: "3rd QTR",
-      situation: "Ball on 34 yard line • 3rd & 8",
-    },
-    {
-      id: "game2",
-      sportId: "wbasketball",
-      homeTeamId: "ohio",
-      awayTeamId: "kentstate",
-      homeTeamScore: 56,
-      awayTeamScore: 42,
-      startTime: now.toISOString(),
-      status: "live",
-      period: "2nd Half",
-      situation: "8:45 remaining • Ohio possession",
-    },
-    // Upcoming games
-    {
-      id: "game3",
-      sportId: "football",
-      homeTeamId: "miamioh",
-      awayTeamId: "ballstate",
-      startTime: tomorrow.toISOString(),
-      status: "scheduled",
-      venue: "Yager Stadium, Oxford OH",
-    },
-    {
-      id: "game4",
-      sportId: "basketball",
-      homeTeamId: "akron",
-      awayTeamId: "northernillinois",
-      startTime: tomorrow.toISOString(),
-      status: "scheduled",
-      venue: "James A. Rhodes Arena, Akron OH",
-    },
-    // Completed games
-    {
-      id: "game5",
-      sportId: "baseball",
-      homeTeamId: "westernmichigan",
-      awayTeamId: "centralmichigan",
-      homeTeamScore: 5,
-      awayTeamScore: 3,
-      startTime: yesterday.toISOString(),
-      status: "final",
-    },
-    {
-      id: "game6",
-      sportId: "football",
-      homeTeamId: "easternmichigan",
-      awayTeamId: "buffalo",
-      homeTeamScore: 21,
-      awayTeamScore: 28,
-      startTime: yesterday.toISOString(),
-      status: "final",
-    },
-  ];
-  
-  // Filter by sport if needed
-  if (sportId && sportId !== "all") {
-    return mockGames.filter(game => game.sportId === sportId);
+  try {
+    // Attempt to fetch real game data from the MAC RSS feed
+    console.log(`Fetching games for sport: ${sportId || 'all'}`);
+    const realGames = await fetchAllMacEvents(sportId || 'all');
+    
+    if (realGames && realGames.length > 0) {
+      console.log(`Successfully fetched ${realGames.length} games from MAC feed`);
+      return realGames;
+    }
+    
+    // If we couldn't get real data, generate demo games as a fallback
+    console.warn("No real games data available, using fallback data");
+    
+    // Generate fallback games for demonstration
+    const now = new Date();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    
+    const fallbackGames: Game[] = [
+      // Live games
+      {
+        id: "game1",
+        sportId: "football",
+        homeTeamId: "toledo",
+        awayTeamId: "bowlinggreen",
+        homeTeamScore: 24,
+        awayTeamScore: 17,
+        startTime: now.toISOString(),
+        scheduledTime: now.toISOString(),
+        status: "live",
+        period: 3,
+        situation: "Ball on 34 yard line • 3rd & 8",
+      },
+      {
+        id: "game2",
+        sportId: "wbasketball",
+        homeTeamId: "ohio",
+        awayTeamId: "kentstate",
+        homeTeamScore: 56,
+        awayTeamScore: 42,
+        startTime: now.toISOString(),
+        scheduledTime: now.toISOString(),
+        status: "live",
+        period: 2,
+        situation: "8:45 remaining • Ohio possession",
+      },
+      // Upcoming games
+      {
+        id: "game3",
+        sportId: "football",
+        homeTeamId: "miamioh",
+        awayTeamId: "ballstate",
+        startTime: tomorrow.toISOString(),
+        scheduledTime: tomorrow.toISOString(),
+        status: "scheduled",
+        venue: "Yager Stadium, Oxford OH",
+      },
+      {
+        id: "game4",
+        sportId: "basketball",
+        homeTeamId: "akron",
+        awayTeamId: "northernillinois",
+        startTime: tomorrow.toISOString(),
+        scheduledTime: tomorrow.toISOString(),
+        status: "scheduled",
+        venue: "James A. Rhodes Arena, Akron OH",
+      },
+      // Completed games
+      {
+        id: "game5",
+        sportId: "baseball",
+        homeTeamId: "westernmichigan",
+        awayTeamId: "centralmichigan",
+        homeTeamScore: 5,
+        awayTeamScore: 3,
+        startTime: yesterday.toISOString(),
+        scheduledTime: yesterday.toISOString(),
+        status: "final",
+      },
+      {
+        id: "game6",
+        sportId: "football",
+        homeTeamId: "easternmichigan",
+        awayTeamId: "buffalo",
+        homeTeamScore: 21,
+        awayTeamScore: 28,
+        startTime: yesterday.toISOString(),
+        scheduledTime: yesterday.toISOString(),
+        status: "final",
+      },
+    ];
+    
+    // Filter by sport if needed
+    if (sportId && sportId !== "all") {
+      return fallbackGames.filter(game => game.sportId === sportId);
+    }
+    
+    return fallbackGames;
+  } catch (error) {
+    console.error("Error fetching games:", error);
+    return [];
   }
-  
-  return mockGames;
 }
 
 export async function getSchoolGames(schoolId: string): Promise<Game[]> {
