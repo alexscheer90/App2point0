@@ -263,7 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Determine if we're fetching an ICS calendar file
-      const isIcsRequest = url.includes('.ics') || url.includes('calendar.ashx');
+      const isIcsRequest = url.includes('.ics') || url.includes('calendar.ashx') || url.includes('responsive-calendar-subscription.ashx');
       
       console.log(`Server fetching ${isIcsRequest ? 'ICS calendar' : 'schedule feed'} from: ${url}`);
       
@@ -272,8 +272,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           'Accept': isIcsRequest 
-            ? 'text/calendar, text/plain, */*' 
-            : 'application/rss+xml, application/xml, text/xml, */*'
+            ? 'text/calendar, application/octet-stream, text/plain, */*' 
+            : 'application/rss+xml, application/xml, text/xml, */*',
+          // Prevent the server from returning HTML instead of the requested format
+          'X-Requested-With': 'XMLHttpRequest'
         },
         maxRedirects: 5, // Allow up to 5 redirects
         validateStatus: function (status) {

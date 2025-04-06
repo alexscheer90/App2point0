@@ -29,7 +29,7 @@ const SchedulePage = () => {
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"all" | "upcoming" | "past">("upcoming");
   
-  const { data: games, isLoading: isGamesLoading } = useGames(selectedSport);
+  const { data: games, isLoading: isGamesLoading, refetch, isRefetching } = useGames(selectedSport);
   const { data: schools } = useMacSchools();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
@@ -327,9 +327,10 @@ const SchedulePage = () => {
             <Button 
               variant="outline" 
               className="mt-4"
-              onClick={() => window.location.reload()}
+              onClick={() => refetch()}
+              disabled={isGamesLoading || isRefetching}
             >
-              Retry
+              {isGamesLoading || isRefetching ? "Loading..." : "Retry"}
             </Button>
           </div>
         ) : Object.keys(gamesByDate).length > 0 ? (

@@ -3,6 +3,7 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import { format } from "date-fns";
 import ShareButton from "./ShareButton";
+import ncaaLogoPath from "@assets/NCAA_logo.svg.png";
 
 interface GenericGameCardProps {
   game: Game;
@@ -128,25 +129,35 @@ const GenericGameCard = ({ game }: GenericGameCardProps) => {
         </div>
       );
     } else if (nonMacTeamName) {
-      // We have a non-MAC team name from the situation field
+      // We have a non-MAC team name from the situation field - use NCAA logo
       return (
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full mr-3 flex items-center justify-center bg-gray-200">
-            <span className="text-xs font-bold text-gray-600">
-              {nonMacTeamName.charAt(0)}
-            </span>
+          <div className="w-8 h-8 mr-3 flex items-center justify-center">
+            <img 
+              src={ncaaLogoPath} 
+              alt="NCAA logo" 
+              className="max-h-full max-w-full object-contain" 
+            />
           </div>
           <span className="font-semibold text-sm">{nonMacTeamName}</span>
         </div>
       );
     } else {
-      // Fallback for unknown team
+      // Fallback for unknown team - use NCAA logo
       return (
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full mr-3 flex items-center justify-center bg-gray-200">
-            <span className="text-xs font-bold text-gray-600">?</span>
+          <div className="w-8 h-8 mr-3 flex items-center justify-center">
+            <img 
+              src={ncaaLogoPath} 
+              alt="NCAA logo" 
+              className="max-h-full max-w-full object-contain" 
+            />
           </div>
-          <span className="font-semibold text-sm">{isHome ? "Home Team" : "Away Team"}</span>
+          <span className="font-semibold text-sm">{
+            game.homeTeamId === 'TBD' || game.awayTeamId === 'TBD' 
+              ? "TBD" 
+              : (isHome ? "Home Team" : "Away Team")
+          }</span>
         </div>
       );
     }

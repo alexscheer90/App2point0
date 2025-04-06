@@ -11,9 +11,9 @@ import { macSports } from "../data/macSports";
  */
 export async function fetchMacCalendar(sportId: string = 'all'): Promise<Game[]> {
   try {
-    // Use the official MAC calendar URL in ICS format
-    // Use https instead of http for more reliable connections
-    const icsUrl = `https://getsomemaction.com/calendar.ashx/calendar.ics?sport_id=${
+    // Use the responsive calendar subscription endpoint for more reliable data
+    // This matches the format of the webcal:// subscription link
+    const icsUrl = `https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.ics?sport_id=${
       sportId === 'all' ? '0' : getMacSportId(sportId)
     }&school_id=0&schedule_id=0&_=${Date.now()}`;
     
@@ -36,11 +36,21 @@ export async function fetchMacCalendar(sportId: string = 'all'): Promise<Game[]>
     const icsContent = response.data;
     
     // Basic validation that we received a valid ICS format
-    if (typeof icsContent !== 'string' || 
-        (!icsContent.includes('BEGIN:VCALENDAR') && !icsContent.includes('BEGIN:VEVENT'))) {
-      console.error('Invalid ICS calendar format received:', 
-        typeof icsContent === 'string' ? icsContent.substring(0, 100) : typeof icsContent);
+    if (typeof icsContent !== 'string') {
+      console.error('Invalid ICS calendar format received: not a string');
       throw new Error('Invalid calendar format received');
+    }
+    
+    // Check if we got HTML instead of calendar data (common error)
+    if (icsContent.includes('<!DOCTYPE html>') || icsContent.includes('<html')) {
+      console.error('Received HTML instead of calendar data:', icsContent.substring(0, 100));
+      throw new Error('Received HTML instead of calendar data');
+    }
+    
+    // Check for calendar markers
+    if (!icsContent.includes('BEGIN:VCALENDAR') && !icsContent.includes('BEGIN:VEVENT')) {
+      console.error('Invalid ICS calendar format received:', icsContent.substring(0, 100));
+      throw new Error('Invalid calendar format received - no VCALENDAR or VEVENT markers found');
     }
     
     return parseCalendarEvents(icsContent, sportId);

@@ -31,7 +31,9 @@ const ScoresPage = () => {
     liveGames, 
     upcomingGames, 
     recentGames, 
-    isLoading 
+    isLoading,
+    refetch, 
+    isRefetching
   } = useScores(selectedSport, favoriteSchoolId);
   
   // Get today's date for header
@@ -185,9 +187,10 @@ const ScoresPage = () => {
               <Button 
                 variant="outline" 
                 className="mt-4"
-                onClick={() => window.location.reload()}
+                onClick={() => refetch()}
+                disabled={isLoading || isRefetching}
               >
-                Refresh
+                {isLoading || isRefetching ? 'Refreshing...' : 'Refresh'}
               </Button>
             </div>
           )}

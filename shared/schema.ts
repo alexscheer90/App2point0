@@ -57,6 +57,8 @@ export const gameSchema = z.object({
   sportId: z.string(),
   homeTeamId: z.string(),
   awayTeamId: z.string(),
+  homeTeamName: z.string().optional(), // For non-MAC opponents
+  awayTeamName: z.string().optional(), // For non-MAC opponents
   homeTeamScore: z.number().optional(),
   awayTeamScore: z.number().optional(),
   startTime: z.string(),

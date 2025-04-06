@@ -15,9 +15,11 @@ function isToday(dateStr: string): boolean {
 }
 
 export function useScores(sportId: string = "all", favoriteSchoolId: string | null = null) {
-  const { data: games, isLoading } = useQuery({
+  const { data: games, isLoading, refetch, isRefetching } = useQuery({
     queryKey: [`/api/games/${sportId === "all" ? "" : sportId}`],
     queryFn: () => getGames(sportId),
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    refetchOnWindowFocus: false,
   });
   
   // Filter for today's games only
@@ -45,14 +47,18 @@ export function useScores(sportId: string = "all", favoriteSchoolId: string | nu
     liveGames,
     upcomingGames,
     recentGames,
-    isLoading,
+    isLoading: isLoading || isRefetching,
+    refetch,
+    isRefetching,
   };
 }
 
 export function useGames(sportId: string = "all") {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: [`/api/games/${sportId === "all" ? "" : sportId}`],
     queryFn: () => getGames(sportId),
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    refetchOnWindowFocus: false,
   });
   
   // Map data to include required fields for schedule
@@ -68,7 +74,9 @@ export function useGames(sportId: string = "all") {
   
   return {
     data: games,
-    isLoading,
+    isLoading: isLoading || isRefetching,
+    refetch,
+    isRefetching
   };
 }
 
