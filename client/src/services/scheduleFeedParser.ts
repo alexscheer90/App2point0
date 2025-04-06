@@ -155,19 +155,30 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
             venue: venue || 'TBD',
           };
           
+          // Store original team names for display purposes when there's no matching MAC school
+          if (!homeTeamId) {
+            game.situation = `Home: ${eventHomeTeam}`;
+          }
+          
+          if (!awayTeamId) {
+            game.situation = game.situation 
+              ? `${game.situation} | Away: ${eventAwayTeam}` 
+              : `Away: ${eventAwayTeam}`;
+          }
+          
           // Add optional fields if available
           if (link) {
             game.ticketUrl = link;
           }
           
-          if (description) {
+          if (description && !game.situation) {
             game.situation = description.substring(0, 100);
           }
           
-          // Only add the game if we identified both teams
-          if (homeTeamId && awayTeamId) {
+          // Add the game if at least one team is a MAC school or if we want to show all games
+          if (homeTeamId || awayTeamId) {
             games.push(game);
-            console.log(`Successfully parsed game: ${homeTeamId} vs ${awayTeamId}`);
+            console.log(`Successfully parsed game: ${eventHomeTeam} vs ${eventAwayTeam}`);
           }
         } catch (itemError) {
           console.error("Error parsing individual schedule event:", itemError);

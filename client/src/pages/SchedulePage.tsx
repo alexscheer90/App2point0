@@ -6,6 +6,7 @@ import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
 import SportSelector from "../components/SportSelector";
+import GenericGameCard from "../components/GenericGameCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -94,12 +95,7 @@ const SchedulePage = () => {
   });
   
   // Create iCalendar file for a specific game
-  const createCalendarFile = (game: Game) => {
-    const homeTeam = schools.find(s => s.id === game.homeTeamId);
-    const awayTeam = schools.find(s => s.id === game.awayTeamId);
-    
-    if (!homeTeam || !awayTeam) return '';
-    
+  const createCalendarFile = (game: Game, homeTeamName: string, awayTeamName: string) => {
     const gameDate = new Date(game.scheduledTime);
     // End time is 3 hours after start for calendar purposes
     const endDate = new Date(gameDate.getTime() + 3 * 60 * 60 * 1000);
@@ -119,9 +115,9 @@ const SchedulePage = () => {
       `DTSTAMP:${formatDate(new Date())}`,
       `DTSTART:${formatDate(gameDate)}`,
       `DTEND:${formatDate(endDate)}`,
-      `SUMMARY:${awayTeam.name} at ${homeTeam.name}`,
-      `DESCRIPTION:${awayTeam.name} ${awayTeam.mascot} vs ${homeTeam.name} ${homeTeam.mascot}`,
-      `LOCATION:${game.location || homeTeam.name + ' Stadium'}`,
+      `SUMMARY:${awayTeamName} at ${homeTeamName}`,
+      `DESCRIPTION:${awayTeamName} vs ${homeTeamName} - MAC Sports game`,
+      `LOCATION:${game.venue || 'TBD'}`,
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n');
@@ -130,29 +126,31 @@ const SchedulePage = () => {
   };
   
   // Function to download the calendar file
-  const downloadCalendarEvent = (game: Game) => {
-    const icsContent = createCalendarFile(game);
-    const homeTeam = schools.find(s => s.id === game.homeTeamId);
-    const awayTeam = schools.find(s => s.id === game.awayTeamId);
+  const downloadCalendarEvent = (game: Game, homeTeamName: string, awayTeamName: string) => {
+    const icsContent = createCalendarFile(game, homeTeamName, awayTeamName);
     
-    if (!icsContent || !homeTeam || !awayTeam) return;
+    if (!icsContent) return;
     
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `${awayTeam.name}_at_${homeTeam.name}.ics`);
+    link.setAttribute('download', `${awayTeamName}_at_${homeTeamName}.ics`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-  
+
   // Component to render each game card
   const GameCard = ({ game }: { game: Game }) => {
     const homeTeam = schools.find(s => s.id === game.homeTeamId);
     const awayTeam = schools.find(s => s.id === game.awayTeamId);
     
-    if (!homeTeam || !awayTeam) return null;
+    // Check if we have at least one MAC team in the game
+    // If not both teams are MAC teams, use the GenericGameCard which can handle non-MAC teams
+    if (!homeTeam || !awayTeam) {
+      return <GenericGameCard game={game} />;
+    }
 
     const gameDate = parseISO(game.scheduledTime);
     const isPastGame = gameDate < new Date();
@@ -173,11 +171,11 @@ const SchedulePage = () => {
             </span>
           </div>
           
-          {game.location && (
+          {game.venue && (
             <div className="flex items-center">
               <MapPin className="h-4 w-4 mr-1 text-gray-500" />
               <span className="text-sm text-gray-600 truncate max-w-[150px]">
-                {game.location}
+                {game.venue}
               </span>
             </div>
           )}
@@ -196,7 +194,7 @@ const SchedulePage = () => {
             <div>
               <p className="font-medium">{awayTeam.name}</p>
               {isPastGame && game.status === "final" && (
-                <p className="text-sm font-bold">{game.awayScore}</p>
+                <p className="text-sm font-bold">{game.awayTeamScore}</p>
               )}
             </div>
           </div>
@@ -210,7 +208,7 @@ const SchedulePage = () => {
             <div>
               <p className="font-medium text-right">{homeTeam.name}</p>
               {isPastGame && game.status === "final" && (
-                <p className="text-sm font-bold text-right">{game.homeScore}</p>
+                <p className="text-sm font-bold text-right">{game.homeTeamScore}</p>
               )}
             </div>
             <div className="w-8 h-8 flex-shrink-0 ml-2">
@@ -242,7 +240,7 @@ const SchedulePage = () => {
                 <div className="flex flex-col space-y-3 mt-4">
                   <Button 
                     variant="outline" 
-                    onClick={() => downloadCalendarEvent(game)}
+                    onClick={() => downloadCalendarEvent(game, homeTeam.name, awayTeam.name)}
                   >
                     <Calendar className="h-4 w-4 mr-2" />
                     Download .ics File
