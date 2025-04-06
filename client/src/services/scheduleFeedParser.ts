@@ -192,6 +192,22 @@ async function parseScheduleFeed(xml: string, sportId: string): Promise<Game[]> 
 function findSchoolId(schoolName: string): string | null {
   if (!schoolName) return null;
   
+  // Special handling for TBD or Unknown opponents
+  if (schoolName.toLowerCase() === 'tbd' || 
+      schoolName.toLowerCase() === 'to be determined' ||
+      schoolName.toLowerCase() === 'tba' ||
+      schoolName.toLowerCase() === 'opponent tbd') {
+    return 'ncaa'; // Use NCAA as a placeholder for TBD opponents
+  }
+  
+  // Special handling for NCAA events
+  if (schoolName.toLowerCase().includes('ncaa') || 
+      schoolName.toLowerCase().includes('national collegiate') ||
+      schoolName.toLowerCase().includes('regional') ||
+      schoolName.toLowerCase().includes('nationals')) {
+    return 'ncaa'; // Return NCAA ID for NCAA events
+  }
+  
   // Special handling for MAC Championship/Tournament games
   if (schoolName.toLowerCase().includes('mac championship') || 
       schoolName.toLowerCase().includes('mid-american conference championship') ||
@@ -244,7 +260,8 @@ function findSchoolId(schoolName: string): string | null {
     'massachusetts': 'umass',
     'umass': 'umass',
     'minutemen': 'umass',
-    'mac': 'mac'  // MAC identifier for championship/tournament games
+    'mac': 'mac',  // MAC identifier for championship/tournament games
+    'ncaa': 'ncaa'  // NCAA identifier for NCAA events
   };
   
   // Check for direct match first
@@ -269,7 +286,8 @@ function findSchoolId(schoolName: string): string | null {
   }
   
   console.warn(`Could not find school ID for: ${schoolName}`);
-  return null;
+  // Return NCAA logo for unrecognized opponents rather than null
+  return 'ncaa';
 }
 
 /**
@@ -281,29 +299,34 @@ function findSportId(sportName: string): string | null {
   // Normalize the name
   const normalizedName = sportName.toLowerCase().trim();
   
+  // Determine if women's sport from the name
+  const isWomensSport = normalizedName.includes("women") || normalizedName.includes("woman");
+  
   // Direct matching against common sport name variations
   const sportMappings: Record<string, string> = {
     'football': 'football',
-    'basketball': 'basketball',
-    'men\'s basketball': 'basketball',
-    'men\'s hoops': 'basketball',
-    'men basketball': 'basketball',
-    'women\'s basketball': 'wbasketball',
-    'women\'s hoops': 'wbasketball',
-    'women basketball': 'wbasketball',
+    'basketball': isWomensSport ? 'wbball' : 'mbball',
+    'men\'s basketball': 'mbball',
+    'men\'s hoops': 'mbball',
+    'men basketball': 'mbball',
+    'women\'s basketball': 'wbball',
+    'women\'s hoops': 'wbball',
+    'women basketball': 'wbball',
     'baseball': 'baseball',
     'softball': 'softball',
-    'volleyball': 'volleyball',
-    'soccer': 'soccer',
-    'men\'s soccer': 'soccer',
-    'women\'s soccer': 'wsoccer',
-    'field hockey': 'fieldhockey',
-    'track': 'track',
-    'cross country': 'crosscountry',
-    'tennis': 'tennis',
-    'swimming': 'swimming',
+    'volleyball': 'wvball',
+    'soccer': isWomensSport ? 'wsoc' : 'msoc',
+    'men\'s soccer': 'msoc',
+    'women\'s soccer': 'wsoc',
+    'field hockey': 'fhockey',
+    'track': isWomensSport ? 'wtrack' : 'mtrack',
+    'cross country': isWomensSport ? 'wxc' : 'mxc',
+    'tennis': isWomensSport ? 'wten' : 'mten',
+    'swimming': isWomensSport ? 'wswim' : 'mswim',
     'wrestling': 'wrestling',
-    'golf': 'golf'
+    'golf': isWomensSport ? 'wgolf' : 'mgolf',
+    'gymnastics': 'gym',
+    'lacrosse': 'wlax'
   };
   
   // Check for direct match first
