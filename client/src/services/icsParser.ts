@@ -110,6 +110,12 @@ function parseCalendarEvents(icsContent: string, sportId: string): Game[] {
           return;
         }
         
+        // Check if this event is within our date range (today through June 30, 2026)
+        if (!isInDateRange(startTime)) {
+          // Skip events outside our date range
+          return;
+        }
+        
         // Log successful date parsing
         console.log(`Parsed date: ${startTime.toISOString()} from ${dtStart}`);
         
@@ -437,4 +443,13 @@ function findSportId(sportName: string, summary?: string, description?: string):
 function isPastEvent(eventDate: Date): boolean {
   const now = new Date();
   return eventDate < now;
+}
+
+/**
+ * Determines if an event is within our allowed date range (today through June 30, 2026)
+ */
+function isInDateRange(eventDate: Date): boolean {
+  const now = new Date();
+  const endDate = new Date(2026, 5, 30); // June 30, 2026
+  return eventDate >= now && eventDate <= endDate;
 }

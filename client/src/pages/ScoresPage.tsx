@@ -21,7 +21,7 @@ const ScoresPage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
   
   // Get favorite school from preferences
-  const { data: favoriteSchoolData } = useQuery({
+  const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
   });
   const favoriteSchoolId = favoriteSchoolData?.favoriteSchool || null;
