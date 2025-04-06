@@ -428,8 +428,8 @@ export const macLocalEats: LocalEats[] = [
   
   // Massachusetts
   {
-    id: "antonios-pizza-umass",
-    schoolId: "umass",
+    id: "antonios-pizza-massachusetts",
+    schoolId: "massachusetts",
     name: "Antonio's Pizza",
     cuisine: "Pizza",
     description: "Famous for their creative pizza slices, Antonio's is a Massachusetts institution. Their unique toppings and combinations make this a must-visit spot for students and visitors alike.",
@@ -440,8 +440,8 @@ export const macLocalEats: LocalEats[] = [
     priceRange: "$"
   },
   {
-    id: "amherst-brewing-umass",
-    schoolId: "umass",
+    id: "amherst-brewing-massachusetts",
+    schoolId: "massachusetts",
     name: "Amherst Brewing",
     cuisine: "American/Brewery",
     description: "Craft beer and elevated pub food make this a popular gathering spot. Their outdoor beer garden is perfect for nice weather, and they often host live music and events.",
@@ -452,8 +452,8 @@ export const macLocalEats: LocalEats[] = [
     priceRange: "$$"
   },
   {
-    id: "mission-cantina-umass",
-    schoolId: "umass",
+    id: "mission-cantina-massachusetts",
+    schoolId: "massachusetts",
     name: "Mission Cantina",
     cuisine: "Mexican",
     description: "Authentic Mexican cuisine with creative cocktails. Their tacos and burritos are made with fresh ingredients, and the festive atmosphere makes it a favorite among students.",
@@ -464,8 +464,8 @@ export const macLocalEats: LocalEats[] = [
     priceRange: "$$"
   },
   {
-    id: "black-sheep-umass",
-    schoolId: "umass",
+    id: "black-sheep-massachusetts",
+    schoolId: "massachusetts",
     name: "The Black Sheep",
     cuisine: "Deli/Bakery",
     description: "Beloved local deli and bakery serving breakfast and lunch. Their signature sandwiches, homemade bread, and pastries are must-tries for Massachusetts students.",
@@ -476,8 +476,8 @@ export const macLocalEats: LocalEats[] = [
     priceRange: "$$"
   },
   {
-    id: "judie-umass",
-    schoolId: "umass",
+    id: "judie-massachusetts",
+    schoolId: "massachusetts",
     name: "Judie's Restaurant",
     cuisine: "American",
     description: "An Amherst institution known for their signature popovers and creative American cuisine. A favorite for Parents Weekend and graduation celebrations.",

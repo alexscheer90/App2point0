@@ -11,7 +11,7 @@ import niuLogo from "@assets/NIU.png";
 import ohioLogo from "@assets/Ohio.png";
 import toledoLogo from "@assets/Toledo.png";
 import wmuLogo from "@assets/WMU.png";
-import umassLogo from "@assets/UMass.png";
+import massachusettsLogo from "@assets/UMass.png";
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
@@ -94,13 +94,13 @@ export const macSchools: School[] = [
     state: "OH",
   },
   {
-    id: "umass",
+    id: "massachusetts",
     name: "Massachusetts",
     shortName: "UMass",
     mascot: "Minutemen",
     primaryColor: "#881c1c",
     secondaryColor: "#FFFFFF",
-    logoUrl: umassLogo,
+    logoUrl: massachusettsLogo,
     city: "Amherst",
     state: "MA",
   },

@@ -245,8 +245,8 @@ export const macSchoolSounds: SchoolSound[] = [
   
   // Massachusetts
   {
-    id: "umass-fight",
-    schoolId: "umass",
+    id: "massachusetts-fight",
+    schoolId: "massachusetts",
     type: "fight_song",
     title: "Fight Mass",
     lyrics: "Fight, fight Massachusetts,\nFight, fight every down,\nFight, fight for the home team,\nWe're out to win this game!\nMarch, march on down the field,\nHail to our heroes bold,\nFor Mass-a-chu-setts,\nFight down the field, fight!\nFight to the goal!\nGO UMASS!",
@@ -254,8 +254,8 @@ export const macSchoolSounds: SchoolSound[] = [
     audioUrl: "/sounds/umass-fight.mp3"
   },
   {
-    id: "umass-alma",
-    schoolId: "umass",
+    id: "massachusetts-alma",
+    schoolId: "massachusetts",
     type: "alma_mater",
     title: "Massachusetts Alma Mater",
     lyrics: "When twilight shadows darken,\nQuest not the reason why,\nOur hearts with pride will harken,\nOld Massachusetts' cry.\n'Tis there where beauty softly lies,\n'Neath the blue New England skies.\nWe'll cherish each day of our college life,\nThe hills, the trees, the rising sun.\nOur hopes, our dreams, for future years\nHave only then begun.",

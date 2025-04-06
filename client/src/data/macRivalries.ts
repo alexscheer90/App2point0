@@ -20,7 +20,7 @@ export const macRivalries: Rivalry[] = [
   {
     id: "battle-for-the-bay-state",
     name: "Battle for the Bay State",
-    team1Id: "umass",
+    team1Id: "massachusetts",
     team2Id: "boston-college",
     series: {
       team1Wins: 5,
@@ -119,7 +119,7 @@ export const macRivalries: Rivalry[] = [
   {
     id: "minuteman-musket",
     name: "Minuteman Musket",
-    team1Id: "umass",
+    team1Id: "massachusetts",
     team2Id: "connecticut",
     series: {
       team1Wins: 38,
