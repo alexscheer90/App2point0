@@ -45,50 +45,50 @@ function getCurrentStandings(sportId: string): StandingsEntry[] {
         {
           schoolId: 'miamioh',
           sportId: 'football',
-          conference: { wins: 7, losses: 1, winningPercentage: 0.875 },
-          overall: { wins: 10, losses: 3, winningPercentage: 0.769 }
+          conference: { wins: 8, losses: 0, winningPercentage: 1.000 },
+          overall: { wins: 11, losses: 2, winningPercentage: 0.846 }
         },
         {
           schoolId: 'ohio',
           sportId: 'football',
           conference: { wins: 7, losses: 1, winningPercentage: 0.875 },
-          overall: { wins: 11, losses: 2, winningPercentage: 0.846 }
+          overall: { wins: 10, losses: 3, winningPercentage: 0.769 }
         },
         {
           schoolId: 'bowlinggreen',
-          sportId: 'football',
-          conference: { wins: 5, losses: 3, winningPercentage: 0.625 },
-          overall: { wins: 6, losses: 7, winningPercentage: 0.462 }
-        },
-        {
-          schoolId: 'buffalo',
-          sportId: 'football',
-          conference: { wins: 4, losses: 4, winningPercentage: 0.500 },
-          overall: { wins: 4, losses: 8, winningPercentage: 0.333 }
-        },
-        {
-          schoolId: 'akron',
-          sportId: 'football',
-          conference: { wins: 2, losses: 6, winningPercentage: 0.250 },
-          overall: { wins: 2, losses: 10, winningPercentage: 0.167 }
-        },
-        {
-          schoolId: 'kentstate',
-          sportId: 'football',
-          conference: { wins: 1, losses: 7, winningPercentage: 0.125 },
-          overall: { wins: 1, losses: 11, winningPercentage: 0.083 }
-        },
-        {
-          schoolId: 'toledo',
           sportId: 'football',
           conference: { wins: 6, losses: 2, winningPercentage: 0.750 },
           overall: { wins: 8, losses: 5, winningPercentage: 0.615 }
         },
         {
+          schoolId: 'buffalo',
+          sportId: 'football',
+          conference: { wins: 3, losses: 5, winningPercentage: 0.375 },
+          overall: { wins: 3, losses: 9, winningPercentage: 0.250 }
+        },
+        {
+          schoolId: 'akron',
+          sportId: 'football',
+          conference: { wins: 1, losses: 7, winningPercentage: 0.125 },
+          overall: { wins: 2, losses: 10, winningPercentage: 0.167 }
+        },
+        {
+          schoolId: 'kentstate',
+          sportId: 'football',
+          conference: { wins: 0, losses: 8, winningPercentage: 0.000 },
+          overall: { wins: 1, losses: 11, winningPercentage: 0.083 }
+        },
+        {
+          schoolId: 'toledo',
+          sportId: 'football',
+          conference: { wins: 8, losses: 0, winningPercentage: 1.000 },
+          overall: { wins: 11, losses: 2, winningPercentage: 0.846 }
+        },
+        {
           schoolId: 'northernillinois',
           sportId: 'football',
-          conference: { wins: 6, losses: 2, winningPercentage: 0.750 },
-          overall: { wins: 7, losses: 6, winningPercentage: 0.538 }
+          conference: { wins: 5, losses: 3, winningPercentage: 0.625 },
+          overall: { wins: 7, losses: 5, winningPercentage: 0.583 }
         },
         {
           schoolId: 'easternmichigan',
@@ -105,14 +105,14 @@ function getCurrentStandings(sportId: string): StandingsEntry[] {
         {
           schoolId: 'centralmichigan',
           sportId: 'football',
-          conference: { wins: 3, losses: 5, winningPercentage: 0.375 },
-          overall: { wins: 5, losses: 7, winningPercentage: 0.417 }
+          conference: { wins: 2, losses: 6, winningPercentage: 0.250 },
+          overall: { wins: 4, losses: 8, winningPercentage: 0.333 }
         },
         {
           schoolId: 'ballstate',
           sportId: 'football',
-          conference: { wins: 0, losses: 8, winningPercentage: 0.000 },
-          overall: { wins: 1, losses: 11, winningPercentage: 0.083 }
+          conference: { wins: 2, losses: 6, winningPercentage: 0.250 },
+          overall: { wins: 4, losses: 8, winningPercentage: 0.333 }
         },
       ];
       

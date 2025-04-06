@@ -186,8 +186,11 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
 // Standings API - Implementation using real data from MAC website
 export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
   try {
+    // Handle special cases where we need to map IDs
+    const mappedSportId = sportId === "basketball" ? "mbball" : sportId;
+    
     // Get the sport details
-    const sport = macSports.find(s => s.id === sportId);
+    const sport = macSports.find(s => s.id === mappedSportId);
     
     if (!sport) {
       console.error(`Sport with ID ${sportId} not found`);
@@ -199,7 +202,7 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return [];
     }
     
-    // Use the scraper to get real-time data
+    // Use the scraper to get the data
     const standings = await scrapeStandingsForSport(sport);
     
     // If we got real data, return it
@@ -207,8 +210,8 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return standings;
     }
     
-    // If scraping failed, return a placeholder message
-    console.error(`Failed to scrape standings for ${sportId}`);
+    // If scraping failed, return empty array
+    console.error(`Failed to get standings for ${sportId}`);
     return [];
   } catch (error) {
     console.error(`Error fetching standings for ${sportId}:`, error);
@@ -239,8 +242,11 @@ export async function getSchoolStandings(schoolId: string): Promise<{ sportId: s
     const filteredStandings = allStandings;
     
     if (filteredStandings.length > 0) {
+      // Use proper display name for the sport ID to match what's in the Sport object
+      const displaySportId = sport === "mbball" ? "basketball" : sport;
+      
       results.push({
-        sportId: sport,
+        sportId: displaySportId,
         entries: filteredStandings
       });
     }
