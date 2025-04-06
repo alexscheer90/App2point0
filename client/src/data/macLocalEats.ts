@@ -27,6 +27,42 @@ export const macLocalEats: LocalEats[] = [
     distanceFromCampus: "0.5 miles",
     priceRange: "$"
   },
+  {
+    id: "nervous-dog-akron",
+    schoolId: "akron",
+    name: "Nervous Dog Coffee Bar",
+    cuisine: "Coffee/Cafe",
+    description: "Popular study spot for Akron students with great coffee, sandwiches, and baked goods. The relaxed atmosphere makes it ideal for hitting the books or casual meetups.",
+    address: "1530 W Market St, Akron, OH 44313",
+    websiteUrl: "https://nervousdog.com/",
+    rating: 4.5,
+    distanceFromCampus: "1.2 miles",
+    priceRange: "$"
+  },
+  {
+    id: "lockview-akron",
+    schoolId: "akron",
+    name: "The Lockview",
+    cuisine: "American",
+    description: "Known for their gourmet grilled cheese sandwiches and extensive craft beer selection. The rooftop patio offers great views of downtown Akron.",
+    address: "207 S Main St, Akron, OH 44308",
+    websiteUrl: "http://www.thelockview.com/",
+    rating: 4.4,
+    distanceFromCampus: "0.6 miles",
+    priceRange: "$$"
+  },
+  {
+    id: "swensons-akron",
+    schoolId: "akron",
+    name: "Swensons Drive-In",
+    cuisine: "American/Burgers",
+    description: "An Akron institution since 1934, Swensons is famous for their Galley Boy burger and milkshakes. The classic drive-in service adds to the nostalgic experience.",
+    address: "40 S Hawkins Ave, Akron, OH 44313",
+    websiteUrl: "https://swensonsdriveins.com/",
+    rating: 4.8,
+    distanceFromCampus: "2.3 miles",
+    priceRange: "$"
+  },
   
   // Ball State
   {
@@ -52,6 +88,40 @@ export const macLocalEats: LocalEats[] = [
     distanceFromCampus: "0.2 miles",
     priceRange: "$"
   },
+  {
+    id: "queer-hummus-muncie",
+    schoolId: "ballstate",
+    name: "Queer Chocolate Cafe",
+    cuisine: "Cafe/Mediterranean",
+    description: "Welcoming cafe known for its homemade hummus, Mediterranean dishes, and excellent coffee. The inclusive atmosphere and cozy interior make it a favorite gathering spot for students.",
+    address: "1624 W University Ave, Muncie, IN 47303",
+    rating: 4.7,
+    distanceFromCampus: "0.3 miles",
+    priceRange: "$$"
+  },
+  {
+    id: "tuhus-muncie",
+    schoolId: "ballstate",
+    name: "Tuhus Thai",
+    cuisine: "Thai",
+    description: "Authentic Thai cuisine with vegetarian and vegan options. The perfect spot for students looking to explore international flavors without breaking the bank.",
+    address: "1606 W University Ave, Muncie, IN 47303",
+    rating: 4.5,
+    distanceFromCampus: "0.3 miles",
+    priceRange: "$$"
+  },
+  {
+    id: "scotty-muncie",
+    schoolId: "ballstate",
+    name: "Scotty's Brewhouse",
+    cuisine: "American/Brewery",
+    description: "Founded by a Ball State alumnus, Scotty's is a Muncie institution known for its extensive beer selection and creative burgers. The game day atmosphere is electric.",
+    address: "1700 W University Ave, Muncie, IN 47303",
+    websiteUrl: "https://www.scottysbrewhouse.com/",
+    rating: 4.2,
+    distanceFromCampus: "0.4 miles",
+    priceRange: "$$"
+  },
   
   // Bowling Green
   {
@@ -75,6 +145,41 @@ export const macLocalEats: LocalEats[] = [
     address: "140 E Wooster St, Bowling Green, OH 43402",
     rating: 4.8,
     distanceFromCampus: "0.4 miles",
+    priceRange: "$$"
+  },
+  {
+    id: "grounds-for-thought-bg",
+    schoolId: "bowlinggreen",
+    name: "Grounds For Thought",
+    cuisine: "Coffee/Cafe",
+    description: "Popular study spot combining a coffee shop, bookstore, and local art gallery. Their house-roasted coffee and homemade pastries make this a BGSU student favorite.",
+    address: "174 S Main St, Bowling Green, OH 43402",
+    websiteUrl: "https://www.groundsforthought.com/",
+    rating: 4.7,
+    distanceFromCampus: "0.6 miles",
+    priceRange: "$"
+  },
+  {
+    id: "rapid-fired-pizza-bg",
+    schoolId: "bowlinggreen",
+    name: "Rapid Fired Pizza",
+    cuisine: "Pizza",
+    description: "Build-your-own personal pizzas cooked in just 180 seconds. Perfect for students on a tight schedule who still want quality food at affordable prices.",
+    address: "852 S Main St, Bowling Green, OH 43402",
+    websiteUrl: "https://rapidfiredpizza.com/",
+    rating: 4.4,
+    distanceFromCampus: "1.2 miles",
+    priceRange: "$"
+  },
+  {
+    id: "kabob-it-bg",
+    schoolId: "bowlinggreen",
+    name: "Kabob It",
+    cuisine: "Middle Eastern",
+    description: "Authentic Middle Eastern cuisine with generous portions. Their shawarma, falafel, and signature garlic sauce have a loyal following among BGSU students.",
+    address: "1616 E Wooster St, Bowling Green, OH 43402",
+    rating: 4.6,
+    distanceFromCampus: "0.5 miles",
     priceRange: "$$"
   },
   
