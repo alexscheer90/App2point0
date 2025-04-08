@@ -29,7 +29,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "ballstate",
     type: "fight_song",
     title: "Fight Song",
-    lyrics: "Fight team fight for Ball State,\nWe must win this game.\nOnward now you Cardinals,\nBring glory to your name.\nFight! Fight! Fight!\nHere's to both our colors,\nCardinal and White.\nPraying for a victory,\nSo fight, fight, fight!",
+    lyrics: "Fight team fight for Ball State\nWe must win this game\nOnward now you Cardinals\nBring glory to your name\nFight! Fight! Fight!\n\nHere's to both our colors\nCardinal and White\nPraying for a victory\nSo fight, fight, fight!",
     description: "Ball State's Fight Song is played at all athletic events.",
     audioUrl: "/sounds/ballstate-fight.mp3"
   },
@@ -69,7 +69,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "buffalo",
     type: "fight_song",
     title: "Victory March",
-    lyrics: "Fight, fight for Buffalo\nFor the Blue and White are on the go\nWe have the spirit, pep, and might\nThe Bulls will win this game tonight\nCome raise a cheer for Buffalo\nHear the crowd roar with thunderous 'Go'\nThough the team may strive with its might and main\nWe back our Bulls through sunshine and rain\nBulls, Bulls, come on you Bulls\nFor Blue and White are on the go\nSo fight, team, fight with all your might\nFor the Blue and White tonight!",
+    lyrics: "Fight, fight for Buffalo\nBe proud to fight for our dear Blue and White\nSo, thunder through, go Blue!\nGive a cheer, never fear!\nDon't stop 'til we have won! (Go! Bulls! Go!)\nCheer, cheer for Buffalo\nOur spirit will be with you 'til the end\nSo show your colors proud and true\nFor the glory of our dear Buffalo!",
     description: "The University at Buffalo Victory March is performed by the Thunder of the East marching band at football games.",
     audioUrl: "/sounds/buffalo-fight.mp3"
   },
