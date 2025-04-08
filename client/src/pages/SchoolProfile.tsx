@@ -40,7 +40,7 @@ import { queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { NewsItem as NewsItemType } from "@shared/schema";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const SchoolProfile = () => {
   const { toast } = useToast();
@@ -562,9 +562,12 @@ const SchoolProfile = () => {
       
       {/* News dialog */}
       <Dialog open={showNewsDialog} onOpenChange={handleCloseNewsDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" aria-describedby="news-dialog-description">
           <DialogHeader>
             <DialogTitle>{selectedNews?.title || "News"}</DialogTitle>
+            <DialogDescription id="news-dialog-description" className="sr-only">
+              News article details from {school?.name}
+            </DialogDescription>
           </DialogHeader>
           
           {selectedNews && (

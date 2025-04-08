@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SchoolSound } from '@shared/schema';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,36 +13,55 @@ interface SchoolSoundCardProps {
 
 const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const { data: school } = useSchool(sound.schoolId);
 
   const handlePlayPause = () => {
-    if (!sound.audioUrl) return;
+    if (!sound.audioUrl || !audioRef.current) return;
     
-    if (!audioElement) {
-      const audio = new Audio(sound.audioUrl);
-      audio.addEventListener('ended', () => setIsPlaying(false));
-      setAudioElement(audio);
-      audio.play();
-      setIsPlaying(true);
+    if (isPlaying) {
+      audioRef.current.pause();
     } else {
-      if (isPlaying) {
-        audioElement.pause();
-      } else {
-        audioElement.play();
+      // Reset the audio to the beginning if it ended
+      if (audioRef.current.ended) {
+        audioRef.current.currentTime = 0;
       }
-      setIsPlaying(!isPlaying);
+      
+      // Play with error handling
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully
+          })
+          .catch(error => {
+            console.error("Audio playback failed:", error);
+            setIsPlaying(false);
+          });
+      }
     }
+    
+    setIsPlaying(!isPlaying);
   };
 
-  React.useEffect(() => {
-    return () => {
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.src = '';
-      }
+  // Handle audio end event
+  useEffect(() => {
+    const audio = audioRef.current;
+    
+    const handleEnded = () => {
+      setIsPlaying(false);
     };
-  }, [audioElement]);
+    
+    if (audio) {
+      audio.addEventListener('ended', handleEnded);
+      
+      // Clean up
+      return () => {
+        audio.removeEventListener('ended', handleEnded);
+      };
+    }
+  }, []);
 
   // Helper function to convert hex color to rgba with opacity
   const getBgColor = (hex: string, opacity: number = 0.15) => {
@@ -136,25 +155,35 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
         
         <div className="flex justify-between">
           {sound.audioUrl && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="flex items-center gap-2"
-              style={getButtonStyle()}
-              onClick={handlePlayPause}
-            >
-              {isPlaying ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Play
-                </>
-              )}
-            </Button>
+            <>
+              <audio 
+                ref={audioRef} 
+                src={sound.audioUrl} 
+                preload="auto" 
+                aria-label={`${sound.title} audio`} 
+              />
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-2"
+                style={getButtonStyle()}
+                onClick={handlePlayPause}
+                aria-label={isPlaying ? `Pause ${sound.title}` : `Play ${sound.title}`}
+                aria-pressed={isPlaying}
+              >
+                {isPlaying ? (
+                  <>
+                    <Pause className="h-4 w-4" />
+                    Pause
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4" />
+                    Play
+                  </>
+                )}
+              </Button>
+            </>
           )}
           
           {sound.lyrics && (
@@ -165,6 +194,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                   size="sm"
                   className="flex items-center gap-2"
                   style={getButtonStyle()}
+                  aria-label={`View lyrics for ${sound.title}`}
                 >
                   <FileText className="h-4 w-4" />
                   View Lyrics

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { setFavoriteSchool, getFavoriteSchool } from "../lib/api";
@@ -59,7 +59,7 @@ const FavoriteSchoolModal = ({ isOpen, onClose }: FavoriteSchoolModalProps) => {
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white">
+      <DialogContent className="sm:max-w-md bg-white" aria-describedby="favorite-school-description">
         <DialogHeader className="border-b pb-2">
           <DialogTitle className="text-xl font-bold flex items-center">
             <span className="text-[#019E4F] mr-1">Select</span> 
@@ -71,6 +71,9 @@ const FavoriteSchoolModal = ({ isOpen, onClose }: FavoriteSchoolModalProps) => {
               />
             )}
           </DialogTitle>
+          <DialogDescription id="favorite-school-description">
+            Choose your favorite MAC school to personalize your experience
+          </DialogDescription>
         </DialogHeader>
         
         <div className="p-1">
@@ -108,6 +111,8 @@ const FavoriteSchoolModal = ({ isOpen, onClose }: FavoriteSchoolModalProps) => {
                         e.currentTarget.style.backgroundColor = isSelected ? `${school.primaryColor}10` : "white";
                         e.currentTarget.style.boxShadow = isSelected ? `0 0 0 1px ${school.primaryColor}20` : "none";
                       }}
+                      aria-label={`Select ${school.name} ${school.mascot} as favorite school`}
+                      aria-pressed={isSelected}
                     >
                       <div className="flex items-center">
                         <div className="w-10 h-10 flex items-center justify-center mr-3 overflow-hidden">
@@ -138,6 +143,7 @@ const FavoriteSchoolModal = ({ isOpen, onClose }: FavoriteSchoolModalProps) => {
             variant="outline"
             onClick={onClose}
             className="w-full bg-white border-gray-300 text-gray-800 hover:bg-gray-50"
+            aria-label="Cancel favorite school selection"
           >
             Cancel
           </Button>
@@ -150,6 +156,7 @@ const FavoriteSchoolModal = ({ isOpen, onClose }: FavoriteSchoolModalProps) => {
               backgroundColor: favoriteSchool ? favoriteSchool.primaryColor : "#ef4444",
               color: favoriteSchool ? favoriteSchool.secondaryColor || "white" : "white"
             }}
+            aria-label={favoriteSchool ? `Remove ${favoriteSchool.name} as favorite school` : `Remove favorite school`}
             onMouseOver={(e) => {
               if (favoriteSchool) {
                 // Darken the primary color by 10% for hover

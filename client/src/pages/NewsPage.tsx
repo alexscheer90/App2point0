@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useMacSchools } from "../hooks/useSchool";
 import { useNews } from "../hooks/useNews";
@@ -110,9 +110,12 @@ const NewsPage = () => {
       
       {/* News dialog */}
       <Dialog open={showNewsDialog} onOpenChange={handleCloseNewsDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" aria-describedby="news-article-description">
           <DialogHeader>
             <DialogTitle>{selectedNews?.title || "News"}</DialogTitle>
+            <DialogDescription id="news-article-description">
+              {selectedNews?.summary || "View the details of this news article"}
+            </DialogDescription>
           </DialogHeader>
           
           {selectedNews && (
