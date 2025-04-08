@@ -9,7 +9,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "akron",
     type: "fight_song",
     title: "Akron Blue and Gold",
-    lyrics: "We cheer the Akron Blue and Gold,\nWe cheer as the colors unfold.\nWe pledge anew, we're all for you,\nAs the team goes crashing through,\nFight! Fight!\nWe cheer the Akron warriors bold,\nFor we expect to win, we're with you to the end!\nFor you are now as ever best team in the land!",
+    lyrics: "We cheer the Akron Blue and Gold,\nWe cheer as the colors unfold.\nWe pledge anew, we're all for you,\nAs the team goes crashing through,\nFight! Fight!\nWe cheer the Akron warriors bold,\nFor a fight that's a sight to behold,\nSo we stand up, and cheer and shout,\nFor the Akron Blue and Gold!\nZzzip! Zip go the Zippers!\nZzzip! Zip go the Zippers!\nAkron U,\nGold and Blue,\nAll for you, and the Zippers too!",
     description: "Akron Blue and Gold is the official fight song of the University of Akron.",
     audioUrl: "/sounds/akron-fight.mp3"
   },
@@ -209,7 +209,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "toledo",
     type: "fight_song",
     title: "U of Toledo Fight Song",
-    lyrics: "U of Toledo, we'll fight for you\nFame and glory for the Gold and Blue!\nRah! Rah! Rah!\nLoyal sons and daughters proud and true,\nWe're on to victory, for T-O-L-E-D-O!\nGO! GO! ROCKETS!",
+    lyrics: "U of Toledo, we'll fight for you!\nFame and glory for the Gold and Blue!\nLoyal sons and daughters standing proud and true,\nOn to victory, T-O-L-E-D-O!\nGo! Go! Rockets!",
     description: "The University of Toledo fight song is played by the Rocket Marching Band.",
     audioUrl: "/sounds/toledo-fight.mp3"
   },
