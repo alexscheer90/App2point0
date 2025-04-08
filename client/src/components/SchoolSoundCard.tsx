@@ -13,14 +13,16 @@ interface SchoolSoundCardProps {
 
 const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { data: school } = useSchool(sound.schoolId);
 
   const handlePlayPause = () => {
-    if (!sound.audioUrl || !audioRef.current) return;
+    if (!sound.audioUrl || !audioRef.current || audioError) return;
     
     if (isPlaying) {
       audioRef.current.pause();
+      setIsPlaying(false);
     } else {
       // Reset the audio to the beginning if it ended
       if (audioRef.current.ended) {
@@ -34,15 +36,17 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
         playPromise
           .then(() => {
             // Playback started successfully
+            setIsPlaying(true);
           })
           .catch(error => {
             console.error("Audio playback failed:", error);
             setIsPlaying(false);
+            setAudioError(true);
           });
+      } else {
+        setIsPlaying(true);
       }
     }
-    
-    setIsPlaying(!isPlaying);
   };
 
   // Handle audio end event
@@ -159,30 +163,38 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
               <audio 
                 ref={audioRef} 
                 src={sound.audioUrl} 
-                preload="auto" 
+                preload="auto"
+                onError={() => setAudioError(true)}
                 aria-label={`${sound.title} audio`} 
               />
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="flex items-center gap-2"
-                style={getButtonStyle()}
-                onClick={handlePlayPause}
-                aria-label={isPlaying ? `Pause ${sound.title}` : `Play ${sound.title}`}
-                aria-pressed={isPlaying}
-              >
-                {isPlaying ? (
-                  <>
-                    <Pause className="h-4 w-4" />
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4" />
-                    Play
-                  </>
-                )}
-              </Button>
+              {audioError ? (
+                <div className="flex items-center text-sm text-red-500">
+                  <span className="h-4 w-4 mr-1">⚠️</span>
+                  Audio not available
+                </div>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center gap-2"
+                  style={getButtonStyle()}
+                  onClick={handlePlayPause}
+                  aria-label={isPlaying ? `Pause ${sound.title}` : `Play ${sound.title}`}
+                  aria-pressed={isPlaying}
+                >
+                  {isPlaying ? (
+                    <>
+                      <Pause className="h-4 w-4" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" />
+                      Play
+                    </>
+                  )}
+                </Button>
+              )}
             </>
           )}
           

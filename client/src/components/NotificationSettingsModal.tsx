@@ -49,10 +49,10 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ c
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" aria-describedby="notification-settings-description">
         <DialogHeader>
           <DialogTitle>Notification Settings</DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="notification-settings-description">
             Customize which notifications you receive from Mobile #MACtion.
           </DialogDescription>
         </DialogHeader>
