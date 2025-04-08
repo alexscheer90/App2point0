@@ -170,7 +170,7 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                   View Lyrics
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md" aria-describedby={`lyrics-description-${sound.id}`}>
                 <DialogHeader>
                   <DialogTitle 
                     className="flex items-center gap-2"
@@ -187,6 +187,9 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                     )}
                     {sound.title} Lyrics
                   </DialogTitle>
+                  <div className="text-sm text-muted-foreground" id={`lyrics-description-${sound.id}`}>
+                    Lyrics for {sound.title}
+                  </div>
                 </DialogHeader>
                 <div 
                   className="mt-4 whitespace-pre-line p-4 rounded-md"
