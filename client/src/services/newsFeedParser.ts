@@ -38,80 +38,11 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
   try {
     console.log("Parsing XML feed for school:", schoolId);
     
-    // Create appropriate mock items for the school if parsing fails
-    // This ensures we always have some content to show
-    let mockItems: NewsItem[];
-    
-    if (schoolId === 'ballstate') {
-      mockItems = [
-        {
-          id: `${schoolId}-mock1`,
-          schoolId,
-          title: "Ball State Announces New Athletics Director",
-          summary: "Ball State University has appointed a new athletics director who brings years of experience and a vision for the future of Cardinals athletics.",
-          publishedAt: new Date().toISOString(),
-          url: "https://ballstatesports.com",
-          imageUrl: "https://ballstatesports.com/images/logos/site/site.png"
-        },
-        {
-          id: `${schoolId}-mock2`,
-          schoolId,
-          title: "Cardinals Basketball Prepares for Season Opener",
-          summary: "The Ball State Cardinals basketball team is gearing up for their season opener against a tough non-conference opponent.",
-          publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-          url: "https://ballstatesports.com",
-          imageUrl: "https://ballstatesports.com/images/logos/site/site.png"
-        }
-      ];
-    } else if (schoolId === 'toledo') {
-      mockItems = [
-        {
-          id: `${schoolId}-mock1`,
-          schoolId,
-          title: "Toledo Rockets Win Big in Conference Showdown",
-          summary: "The Toledo Rockets dominated their conference rivals in an impressive display of teamwork and skill.",
-          publishedAt: new Date().toISOString(),
-          url: "https://utrockets.com",
-          imageUrl: "https://static.gozips.com/images/logos/toledo.png"
-        },
-        {
-          id: `${schoolId}-mock2`,
-          schoolId,
-          title: "Rocket Football Prepares for Season Opener",
-          summary: "Coach Jason Candle discusses the team's preparation for their upcoming game against rival Bowling Green.",
-          publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-          url: "https://utrockets.com",
-          imageUrl: "https://static.gozips.com/images/logos/toledo.png"
-        }
-      ];
-    } else {
-      mockItems = [
-        {
-          id: `${schoolId}-mock1`,
-          schoolId,
-          title: "MAC Sports News Update",
-          summary: "Latest news and updates from around the Mid-American Conference.",
-          publishedAt: new Date().toISOString(),
-          url: "https://getsomemaction.com",
-          imageUrl: "https://getsomemaction.com/images/logos/mac-logo.png"
-        },
-        {
-          id: `${schoolId}-mock2`,
-          schoolId,
-          title: "MAC Championship Preview",
-          summary: "A look ahead to the upcoming MAC Championship games across all sports.",
-          publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-          url: "https://getsomemaction.com",
-          imageUrl: "https://getsomemaction.com/images/logos/mac-logo.png"
-        }
-      ];
-    }
-    
     try {
       // Sometimes the RSS feed returns HTML instead of XML, so we'll check for that
       if (xml.includes('<!DOCTYPE html>') || xml.includes('<html')) {
-        console.warn("Received HTML instead of XML feed. Using mock data instead.");
-        return mockItems;
+        console.warn("Received HTML instead of XML feed.");
+        return [];
       }
       
       // Load the XML content with proper options
@@ -245,7 +176,7 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
           }
           
           // Create a unique ID - avoiding Node's Buffer which isn't available in browser
-          // Use a simple hash function instead
+          // Use a more robust hash function with a timestamp to ensure uniqueness
           const hashStr = (str: string) => {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -256,7 +187,10 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
             return Math.abs(hash).toString(16).substring(0, 8);
           };
           
-          const id = `${schoolId}-${hashStr(title)}`;
+          // Add a unique suffix based on position in the feed to ensure uniqueness
+          const timestamp = Date.now();
+          const randomSuffix = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+          const id = `${schoolId}-${hashStr(title)}-${timestamp.toString().slice(-6)}-${randomSuffix}`;
   
           // Compute a valid date or use current time as fallback
           let publishedDate: Date;
@@ -301,8 +235,8 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
             if (newsResponse.ok) {
               const newsData = await newsResponse.json();
               if (Array.isArray(newsData) && newsData.length > 0) {
-                return newsData.slice(0, 10).map(item => ({
-                  id: `${schoolId}-${item.headline.substring(0, 10)}`,
+                return newsData.slice(0, 10).map((item, index) => ({
+                  id: `${schoolId}-direct-${Date.now().toString().slice(-6)}-${index}-${Math.floor(Math.random() * 1000)}`,
                   schoolId,
                   title: item.headline,
                   summary: item.teaser || "Latest news from Ball State Athletics",
@@ -317,15 +251,15 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
           console.error("Direct fetch method failed:", directFetchError);
         }
         
-        // If direct fetch also fails, return mock data as last resort
-        console.warn("Direct fetch also failed. Using mock data as last resort.");
-        return mockItems;
+        // If direct fetch also fails, return empty array
+        console.warn("Direct fetch also failed. No news available for this school at the moment.");
+        return [];
       }
       
       return items;
     } catch (parseError) {
       console.error("Error during XML parsing:", parseError);
-      return mockItems;
+      return [];
     }
   } catch (error) {
     console.error('Error in parseRssFeed function:', error);
