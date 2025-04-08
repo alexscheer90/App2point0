@@ -251,7 +251,7 @@ export const macSchoolSounds: SchoolSound[] = [
     title: "Fight UMass",
     lyrics: "Fight, fight Massachusetts\nFight, fight every play\nFight, fight for a touchdown\nFight all your might today!\nFight down the field Massachusetts\nThe stars and the stripes will gleam\nFight, fight for old Bay State\nFight for the team, team, team!",
     description: "Fight UMass is the primary fight song of the University of Massachusetts Amherst.",
-    audioUrl: "/sounds/umass-fight.mp3"
+    audioUrl: "/sounds/massachusetts-fight.mp3"
   },
   {
     id: "massachusetts-alma",
@@ -260,6 +260,6 @@ export const macSchoolSounds: SchoolSound[] = [
     title: "When Twilight Shadows Deepen",
     lyrics: "When twilight shadows deepen\nAnd the study hour draws nigh\nWhen shades of night are falling\nAnd the evening breezes sigh\n'Tis then we love to gather\n'Neath the pale moon's sil'very spell\nAnd lift our hearts and voices\nIn the songs we love so well\n\nSons of old Massachusetts\nDevoted daughters true\nBaystate, ol' Baystate\nWe'll give our best to you\nThee, our Alma Mater\nWe'll cherish for all time\nShould auld acquaintance be forgot\nMassachusetts, yours and mine",
     description: "The Massachusetts Alma Mater is performed at university convocations and other formal events.",
-    audioUrl: "/sounds/umass-alma.mp3"
+    audioUrl: "/sounds/massachusetts-alma.mp3"
   }
 ];
