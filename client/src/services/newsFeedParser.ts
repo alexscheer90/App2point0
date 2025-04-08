@@ -12,15 +12,18 @@ export async function fetchSchoolNewsFeed(schoolId: string, feedUrl: string): Pr
   try {
     console.log(`Fetching news for ${schoolId} from ${feedUrl}`);
     
-    // In a production environment, this would call a backend API endpoint to avoid CORS issues
-    // For now, we'll proxy through our server
-    const response = await axios.get(`/api/fetch-rss?url=${encodeURIComponent(feedUrl)}`);
+    // We proxy through our server to avoid CORS issues
+    const response = await axios.get(`/api/fetch-rss?url=${encodeURIComponent(feedUrl)}`, {
+      // Set responseType to 'text' to ensure we get the raw XML
+      responseType: 'text'
+    });
     
     if (response.status !== 200) {
       throw new Error(`Failed to fetch RSS feed, status: ${response.status}`);
     }
 
-    const xml = response.data;
+    // Always use the response.data as a string
+    const xml = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
     return await parseRssFeed(xml, schoolId);
   } catch (error) {
     console.error(`Error fetching news feed for ${schoolId}:`, error);
@@ -241,8 +244,19 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
             summary = description.replace(/<\/?[^>]+(>|$)/g, " ").trim(); // Remove HTML tags
           }
           
-          // Create a unique ID
-          const id = `${schoolId}-${Buffer.from(title).toString('base64').substring(0, 12)}`;
+          // Create a unique ID - avoiding Node's Buffer which isn't available in browser
+          // Use a simple hash function instead
+          const hashStr = (str: string) => {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+              const char = str.charCodeAt(i);
+              hash = ((hash << 5) - hash) + char;
+              hash = hash & hash; // Convert to 32bit integer
+            }
+            return Math.abs(hash).toString(16).substring(0, 8);
+          };
+          
+          const id = `${schoolId}-${hashStr(title)}`;
   
           // Compute a valid date or use current time as fallback
           let publishedDate: Date;
@@ -323,9 +337,19 @@ async function parseRssFeed(xml: string, schoolId: string): Promise<NewsItem[]> 
  * Maps school IDs to their respective RSS feed URLs
  */
 export const schoolFeedUrls: Record<string, string> = {
-  'toledo': 'https://utrockets.com/rss?path=general',
+  'akron': 'https://gozips.com/rss?path=general',
   'ballstate': 'https://ballstatesports.com/rss?path=general',
-  // Add other schools' RSS feed URLs here as we find them
+  'bowlinggreen': 'https://bgsufalcons.com/rss?path=general',
+  'buffalo': 'http://www.ubbulls.com/rss?path=general',
+  'centralmichigan': 'https://cmuchippewas.com/rss?path=general',
+  'easternmichigan': 'https://emueagles.com/rss.aspx?path=gen',
+  'kentstate': 'http://kentstatesports.com/rss.aspx?path=general',
+  'massachusetts': 'https://umassathletics.com/rss?path=general',
+  'miamioh': 'https://miamiredhawks.com/rss?path=general',
+  'northernillinois': 'https://niuhuskies.com/rss?path=general',
+  'ohio': 'https://ohiobobcats.com/rss?path=general',
+  'toledo': 'https://utrockets.com/rss?path=general',
+  'westernmichigan': 'https://wmubroncos.com/rss?path=general'
 };
 
 /**

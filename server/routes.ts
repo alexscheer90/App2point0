@@ -148,10 +148,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'ballstatesports.com', // Ball State (new URL)
         'ohiobobcats.com', // Ohio
         'kentstatesports.com', // Kent State
-        'goniuhuskies.com', // Northern Illinois
+        'niuhuskies.com', // Northern Illinois
         'miamiredhawks.com', // Miami
         'wmubroncos.com', // Western Michigan
-        'buffalo.edu', // Buffalo
+        'ubbulls.com', // Buffalo
+        'umassathletics.com', // Massachusetts
       ];
       
       const urlObj = new URL(url);
@@ -163,9 +164,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Server fetching RSS from: ${url}`);
       
-      // Special handling for Ball State - they have a non-standard feed format
-      const isBallState = url.includes('ballstatesports.com');
-      
       // Make the request to the school website with automatic redirect following
       const response = await axios.get(url, {
         headers: {
@@ -176,15 +174,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         validateStatus: function (status) {
           return status >= 200 && status < 400; // Accept 2xx and 3xx status codes
         },
-        // For Ball State, don't transform the response to avoid XML parsing issues
-        transformResponse: isBallState ? [(data) => data] : axios.defaults.transformResponse
+        // Don't transform the response to avoid XML parsing issues
+        transformResponse: [(data) => data],
+        // Handle XML response with no content type
+        responseType: 'text'
       });
       
-      // Extra logging for Ball State feed
-      if (isBallState) {
-        console.log(`Ball State RSS response type: ${typeof response.data}`);
-        console.log(`Ball State RSS starts with: ${response.data.substring(0, 100)}`);
-      }
+      // Log response info for debugging
+      const schoolName = url.includes('ballstatesports.com') ? 'Ball State' : 
+                         url.includes('utrockets.com') ? 'Toledo' : 
+                         url.includes('bgsufalcons.com') ? 'BGSU' : 
+                         url.includes('ubbulls.com') ? 'Buffalo' : 'Other School';
+                         
+      console.log(`${schoolName} RSS response type: ${typeof response.data}`);
+      console.log(`${schoolName} RSS starts with: ${response.data.substring(0, 100)}`);
       
       // Set the appropriate content type for XML
       res.set('Content-Type', 'application/xml');
@@ -193,7 +196,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.send(response.data);
     } catch (error) {
       console.error("Error fetching RSS feed:", error);
-      res.status(500).json({ message: "Failed to fetch RSS feed" });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ message: "Failed to fetch RSS feed", error: errorMessage });
     }
   });
 
@@ -222,7 +226,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.send(response.data);
     } catch (error) {
       console.error("Error fetching podcast RSS feed:", error);
-      res.status(500).json({ message: "Failed to fetch podcast RSS feed" });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ message: "Failed to fetch podcast RSS feed", error: errorMessage });
     }
   });
 
