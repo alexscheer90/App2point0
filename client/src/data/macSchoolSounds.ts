@@ -78,8 +78,8 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "buffalo",
     type: "alma_mater",
     title: "Alma Mater",
-    lyrics: "All hail to thee, our alma mater\nWith love we pledge to thee\nUpon thy heights, our alma mater\nBeside the inland sea\n\nWe'll e'er recall the inspiration\nOf thy high decree\nTo seek the truth, our alma mater\nForever bold and free!\n\nAnd as we go, our alma mater\nWhere'er the path may lead\nWe'll ne'er forget our alma mater\nThy purpose, truth, and deed!\n\nFor thee we'll strive, our alma mater\nThy heritage proclaim\nWe hail thee now, our alma mater\nAll glory to thy name!",
-    description: "UB's Alma Mater dates back to the early 20th century.",
+    lyrics: "The pride of our spirit and tradition\nOur Alma Mater's truth and name declare\nCelebrate our history and wisdom\nO let us all prepare to sing her glory\n\nTo Buffalo all hail to thee\nNoble and strong it's our university\nTo blue and white pledge loyalty\nSinging, I will always remember thee\n\nWe'll ever keep our standards high\nAnd sing UB's praises to the sky\nReceiving the finest education\nOur knowledge we impart unto the nations\n\nTo Buffalo all hail to thee\nNoble and strong it's our university\nTo blue and white pledge loyalty\nSinging, I will always remember thee\n\nOur friends we've made with ties that bind\nA union of our spirit, heart, and mind\nTogether we'll continue life's journey\nO may dear Buffalo forever be",
+    description: "UB's Alma Mater celebrates the university's traditions and values.",
     audioUrl: "/sounds/buffalo-alma.mp3"
   },
   
@@ -98,7 +98,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "centralmichigan",
     type: "alma_mater",
     title: "CMU Alma Mater",
-    lyrics: "Central, we sing to thee,\nPraise to thy name.\nGraciousness, truth, and love,\nThese we acclaim.\nCherished in memory,\nDear alma mater be,\nOur Central Michigan University.\n\nCentral, we honor thee,\nLoyal and true.\nOur alma mater dear,\nWe pledge to you.\nMay the years bring success,\nGlory and happiness,\nTo our Central Michigan University.",
+    lyrics: "Alma Mater, hear us now; Ever more we praise thee.\nHear us pledge our sacred vow ever to defend thee.\nMighty Mother, Queen of Earth eternal, precious emblem of our lives Supreme; Ever symbolizing truth and knowledge in glorified esteem.\nAlma Mater, hear us now; Ever more we praise thee.\nHear us pledge our sacred vow ever to defend thee.",
     description: "Central Michigan's Alma Mater reflects the university's commitment to knowledge and truth.",
     audioUrl: "/sounds/cmu-alma.mp3"
   },
@@ -209,7 +209,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "toledo",
     type: "fight_song",
     title: "U of Toledo Fight Song",
-    lyrics: "U of Toledo, we'll fight for you!\nFame and glory for the Gold and Blue!\nLoyal sons and daughters standing proud and true,\nOn to victory, T-O-L-E-D-O!\nGo! Go! Rockets!",
+    lyrics: "U of Toledo, we'll fight for you\n(Fight! Fight! Fight!)\nU of Toledo, we love our Gold and Blue\n(Let's go Blue!)\nMen of the Varsity, the enemy must yield,​\nWe'll fight just like our ancestors\nAnd march right down the field!\nT-O-L-E-D-O, Toledo!",
     description: "The University of Toledo fight song is played by the Rocket Marching Band.",
     audioUrl: "/sounds/toledo-fight.mp3"
   },
@@ -217,8 +217,8 @@ export const macSchoolSounds: SchoolSound[] = [
     id: "toledo-alma",
     schoolId: "toledo",
     type: "alma_mater",
-    title: "Fair Toledo",
-    lyrics: "Fair Toledo, we sing to thee\nOur Alma Mater, our toast to thee shall be\nIn mem'ry cherished, thou shalt ever be\nFair Toledo, to thee\n\nFair Toledo, thy name so true\nThy colors, the Old Gold and the Blue\nTo thee our hearts will pledge devotion anew\nFair Toledo, to thee\n\nIn college days into thy halls\nWe gather knowledge to serve thy call\nAround the world thy glory shall be\nThrough thy sons and daughters, ever true to thee",
+    title: "Alma Mater",
+    lyrics: "In tower shadows, voices now raising\nTo Alma Mater, Golden and Blue;​\nFair Toledo, praise to thee,​\nPortal of learning ever be;​\nHallowed halls we shall revere,​\nVow to keep thy memory dear.​​",
     description: "Toledo's Alma Mater reflects the pride and loyalty felt by members of the Rocket community.",
     audioUrl: "/sounds/toledo-alma.mp3"
   },
@@ -229,7 +229,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "westernmichigan",
     type: "fight_song",
     title: "WMU Fight Song",
-    lyrics: "Go Broncos!\nFight on for Western\nTake the ball, make a score, win the game\nFight on for Western\nOnward for the brown and gold\nFight! Fight! Fight! (Fight!)\nFight on for victory\nShout out our battle cry\nOnward for the brown and gold\nWe will win, do or die\nRah! Rah! Rah!",
+    lyrics: "Fight on fight on for Western;\ntake the ball, make a score,\nwin the game.\nOnward for the Brown and Gold;\nPush 'em back, push 'em back\nbring us fame.\nFight on fight on for Western;\nover one, over all we will reign.\nFight, Broncos fight,\nfight with all your might.\nWestern win this game!",
     description: "The Western Michigan University Fight Song is performed by the Bronco Marching Band.",
     audioUrl: "/sounds/wmu-fight.mp3"
   },
@@ -238,7 +238,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "westernmichigan",
     type: "alma_mater",
     title: "WMU Alma Mater",
-    lyrics: "Western, we sing to you, Brown and Gold.\nWestern, we bring to you, faith untold.\nYou give us knowledge, strength that will never fail.\nWe sing to you, our Alma Mater, Western, hail!\n\nWestern, we work for you with our might.\nWestern, we honor you day and night.\nYou give us wisdom, comfort that will never cease.\nWe give to you, our Alma Mater, love and peace!",
+    lyrics: "Western we sing to you, Brown and Gold. Western we bring to you faith untold. You challenge and inspire; your hope is our desire; We sing to you our Alma Mater, Brown and Gold.",
     description: "Western Michigan's Alma Mater is a tribute to the university's mission of providing academic excellence.",
     audioUrl: "/sounds/wmu-alma.mp3"
   },
@@ -249,7 +249,7 @@ export const macSchoolSounds: SchoolSound[] = [
     schoolId: "massachusetts",
     type: "fight_song",
     title: "Fight UMass",
-    lyrics: "Fight! Fight Massachusetts!\nFight! Fight every down!\nFight! Fight for the home team,\nWe're out to win this game!\nFight! Fight Massachusetts!\nWe're going to win this game!\nMarch! March on down the field!\nHail to our heroes bold!\nFor Massachusetts!\nRah! Rah! Rah!\nFight down the field!\nFight! Fight to the goal!\nGo UMass!",
+    lyrics: "Fight, fight Massachusetts\nFight, fight every play\nFight, fight for a touchdown\nFight all your might today!\nFight down the field Massachusetts\nThe stars and the stripes will gleam\nFight, fight for old Bay State\nFight for the team, team, team!",
     description: "Fight UMass is the primary fight song of the University of Massachusetts Amherst.",
     audioUrl: "/sounds/umass-fight.mp3"
   },
@@ -257,8 +257,8 @@ export const macSchoolSounds: SchoolSound[] = [
     id: "massachusetts-alma",
     schoolId: "massachusetts",
     type: "alma_mater",
-    title: "Massachusetts Alma Mater",
-    lyrics: "When Twilight shadows deepen,\nQuest not the reason why,\nOur hearts with pride remember\nHer name who'll never die.\n'Tis there where beauty softly lies,\n'Neath blue New England skies;\nWe'll cherish each day of our college life,\nThe hill, the trees, the rising sun,\nOur hopes, our dreams for future years\nHave only then begun.",
+    title: "When Twilight Shadows Deepen",
+    lyrics: "When twilight shadows deepen\nAnd the study hour draws nigh\nWhen shades of night are falling\nAnd the evening breezes sigh\n'Tis then we love to gather\n'Neath the pale moon's sil'very spell\nAnd lift our hearts and voices\nIn the songs we love so well\n\nSons of old Massachusetts\nDevoted daughters true\nBaystate, ol' Baystate\nWe'll give our best to you\nThee, our Alma Mater\nWe'll cherish for all time\nShould auld acquaintance be forgot\nMassachusetts, yours and mine",
     description: "The Massachusetts Alma Mater is performed at university convocations and other formal events.",
     audioUrl: "/sounds/umass-alma.mp3"
   }
