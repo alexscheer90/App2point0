@@ -26,6 +26,8 @@ import { useSchoolStandings } from "../hooks/useStandings";
 import { useSchoolRivalries } from "../hooks/useRivalries";
 import { useSchoolSounds } from "../hooks/useSchoolSounds";
 import { useLocalEats } from "../hooks/useLocalEats";
+import { useTeamStats } from "../hooks/useTeamStats";
+import { usePlayers } from "../hooks/usePlayers";
 import GameScoreCard from "../components/GameScoreCard";
 import UpcomingGameCard from "../components/UpcomingGameCard";
 import CompletedGameCard from "../components/CompletedGameCard";
@@ -34,6 +36,8 @@ import StandingsTable from "../components/StandingsTable";
 import RivalryCard from "../components/RivalryCard";
 import SchoolSoundCard from "../components/SchoolSoundCard";
 import LocalEatCard from "../components/LocalEatCard";
+import TeamStatsCard from "../components/TeamStatsCard";
+import PlayerRoster from "../components/PlayerRoster";
 import { Skeleton } from "@/components/ui/skeleton";
 import { setFavoriteSchool } from "../lib/api";
 import { queryClient } from "../lib/queryClient";
@@ -58,6 +62,8 @@ const SchoolProfile = () => {
   const { data: rivalries, isLoading: isRivalriesLoading } = useSchoolRivalries(schoolId);
   const { data: schoolSounds, isLoading: isSchoolSoundsLoading } = useSchoolSounds(schoolId);
   const { data: localEats, isLoading: isLocalEatsLoading } = useLocalEats(schoolId);
+  const { data: teamStats, isLoading: isTeamStatsLoading } = useTeamStats(schoolId);
+  const { data: players, isLoading: isPlayersLoading } = usePlayers(schoolId);
   
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
@@ -261,6 +267,18 @@ const SchoolProfile = () => {
               <SelectItem value="games">Games</SelectItem>
               <SelectItem value="news">News</SelectItem>
               <SelectItem value="standings">Standings</SelectItem>
+              <SelectItem value="stats">
+                <div className="flex items-center gap-1">
+                  <BarChart className="h-3 w-3" />
+                  <span>Team Stats</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="players">
+                <div className="flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  <span>Players</span>
+                </div>
+              </SelectItem>
               <SelectItem value="rivalries">
                 <div className="flex items-center gap-1">
                   <Trophy className="h-3 w-3" />
@@ -294,6 +312,8 @@ const SchoolProfile = () => {
           <TabsTrigger value="games" data-value="games">Games</TabsTrigger>
           <TabsTrigger value="news" data-value="news">News</TabsTrigger>
           <TabsTrigger value="standings" data-value="standings">Standings</TabsTrigger>
+          <TabsTrigger value="stats" data-value="stats">Team Stats</TabsTrigger>
+          <TabsTrigger value="players" data-value="players">Players</TabsTrigger>
           <TabsTrigger value="rivalries" data-value="rivalries">Rivalries</TabsTrigger>
           <TabsTrigger value="sounds" data-value="sounds">Sounds</TabsTrigger>
           <TabsTrigger value="eats" data-value="eats">Eats</TabsTrigger>

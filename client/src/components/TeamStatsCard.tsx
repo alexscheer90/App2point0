@@ -2,7 +2,7 @@ import React from 'react';
 import { TeamStat } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChartIcon, TrophyIcon, ListOrderedIcon } from 'lucide-react';
+import { BarChart as ChartIcon, Trophy as TrophyIcon, ListOrdered as ListOrderedIcon } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { Progress } from '@/components/ui/progress';
 

@@ -27,13 +27,23 @@ const PlayerRoster: React.FC<PlayerRosterProps> = ({ players, title = 'Player Ro
   const { data: school } = useSchool(players[0]?.schoolId || '');
   
   // Extract unique positions from players
-  const positions = [...new Set(players.map(p => p.position).filter(Boolean))];
+  const positionsSet = new Set<string>();
+  players.forEach(p => {
+    if (p.position) positionsSet.add(p.position);
+  });
+  const positions = Array.from(positionsSet);
   
   // Extract unique years from players
-  const years = [...new Set(players.map(p => p.year).filter(Boolean))];
+  const yearsSet = new Set<string>();
+  players.forEach(p => {
+    if (p.year) yearsSet.add(p.year);
+  });
+  const years = Array.from(yearsSet);
   
   // Extract unique sports from players
-  const uniqueSports = [...new Set(players.map(p => p.sportId))];
+  const sportsSet = new Set<string>();
+  players.forEach(p => sportsSet.add(p.sportId));
+  const uniqueSports = Array.from(sportsSet);
   
   // Filter players based on search and filters
   const filteredPlayers = players.filter(player => {
