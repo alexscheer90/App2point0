@@ -1,0 +1,210 @@
+import { Player } from "@shared/schema";
+
+export const macPlayers: Player[] = [
+  // Akron Football Players
+  {
+    id: "akron-fb-qb1",
+    schoolId: "akron",
+    name: "DJ Irons",
+    number: "0",
+    position: "QB",
+    year: "SR",
+    height: "6-6",
+    weight: "215",
+    hometown: "Lawrenceville, GA",
+    previousSchool: "Eastern Illinois",
+    bio: "Named to the Johnny Unitas Golden Arm Award watch list. Started all 12 games at quarterback for the Zips. Completed 269-of-393 passes for 2,817 yards and 12 touchdowns. Added 314 yards and four touchdowns on the ground.",
+    imageUrl: "",
+    sportId: "football",
+    stats: {
+      passingYards: 2817,
+      passingTouchdowns: 12,
+      passingCompletions: 269,
+      passingAttempts: 393,
+      completionPercentage: 68.4,
+      rushingYards: 314,
+      rushingTouchdowns: 4
+    }
+  },
+  {
+    id: "akron-fb-rb1",
+    schoolId: "akron",
+    name: "Lorenzo Lingard",
+    number: "1",
+    position: "RB",
+    year: "SR",
+    height: "6-0",
+    weight: "200",
+    hometown: "Orange City, FL",
+    previousSchool: "Florida",
+    bio: "Led the team in rushing with 145 carries for 643 yards and five touchdowns. Added 18 receptions for 271 yards and two touchdowns.",
+    imageUrl: "",
+    sportId: "football",
+    stats: {
+      rushingYards: 643,
+      rushingAttempts: 145,
+      rushingTouchdowns: 5,
+      receptions: 18,
+      receivingYards: 271,
+      receivingTouchdowns: 2
+    }
+  },
+  // Akron Basketball Players
+  {
+    id: "akron-bb-g1",
+    schoolId: "akron",
+    name: "Enrique Freeman",
+    number: "25",
+    position: "F",
+    year: "SR",
+    height: "6-7",
+    weight: "206",
+    hometown: "Cleveland, OH",
+    previousSchool: "",
+    bio: "Named MAC Defensive Player of the Year for the second straight season. Led the team in scoring (16.8 ppg) and rebounding (12.9 rpg). Recorded 23 double-doubles, which ranked second in the NCAA.",
+    imageUrl: "",
+    sportId: "basketball",
+    stats: {
+      pointsPerGame: 16.8,
+      reboundsPerGame: 12.9,
+      assistsPerGame: 1.5,
+      stealsPerGame: 1.2,
+      blocksPerGame: 1.8,
+      fieldGoalPercentage: 58.3,
+      freeThrowPercentage: 68.2,
+      minutesPerGame: 34.5,
+      gamesPlayed: 32
+    }
+  },
+  {
+    id: "akron-bb-g2",
+    schoolId: "akron",
+    name: "Sammy Hunter",
+    number: "32",
+    position: "F",
+    year: "SR",
+    height: "6-9",
+    weight: "227",
+    hometown: "Nassau, Bahamas",
+    previousSchool: "Ole Miss",
+    bio: "Appeared in all 32 games, making 25 starts. Averaged 9.2 points and 3.1 rebounds per game. Shot 40.1% from three-point range.",
+    imageUrl: "",
+    sportId: "basketball",
+    stats: {
+      pointsPerGame: 9.2,
+      reboundsPerGame: 3.1,
+      assistsPerGame: 0.6,
+      stealsPerGame: 0.4,
+      blocksPerGame: 0.3,
+      fieldGoalPercentage: 45.7,
+      threePointPercentage: 40.1,
+      freeThrowPercentage: 76.5,
+      minutesPerGame: 25.8,
+      gamesPlayed: 32
+    }
+  },
+  // Ball State Football Players
+  {
+    id: "ballstate-fb-qb1",
+    schoolId: "ballstate",
+    name: "Kadin Semonza",
+    number: "16",
+    position: "QB",
+    year: "SO",
+    height: "6-1",
+    weight: "195",
+    hometown: "Mission Viejo, CA",
+    previousSchool: "",
+    bio: "Named to the Manning Award watch list. Started all 12 games as a true freshman. Completed 228-of-365 passes for 2,589 yards and 17 touchdowns. Added 153 rushing yards and three touchdowns.",
+    imageUrl: "",
+    sportId: "football",
+    stats: {
+      passingYards: 2589,
+      passingTouchdowns: 17,
+      passingCompletions: 228,
+      passingAttempts: 365,
+      completionPercentage: 62.5,
+      rushingYards: 153,
+      rushingTouchdowns: 3
+    }
+  },
+  {
+    id: "ballstate-fb-rb1",
+    schoolId: "ballstate",
+    name: "Kiael Kelly",
+    number: "2",
+    position: "RB",
+    year: "JR",
+    height: "6-1",
+    weight: "225",
+    hometown: "Tampa, FL",
+    previousSchool: "",
+    bio: "Appeared in all 12 games with 10 starts. Led the team in rushing with 158 carries for 716 yards and eight touchdowns. Added 17 receptions for 183 yards and a touchdown.",
+    imageUrl: "",
+    sportId: "football",
+    stats: {
+      rushingYards: 716,
+      rushingAttempts: 158,
+      rushingTouchdowns: 8,
+      receptions: 17,
+      receivingYards: 183,
+      receivingTouchdowns: 1
+    }
+  },
+  // Ball State Basketball Players
+  {
+    id: "ballstate-bb-g1",
+    schoolId: "ballstate",
+    name: "Basheer Jihad",
+    number: "12",
+    position: "F",
+    year: "SR",
+    height: "6-9",
+    weight: "225",
+    hometown: "North Farmington, MI",
+    previousSchool: "",
+    bio: "Named to the All-MAC First Team. Led the team in scoring (18.2 ppg) and rebounding (7.6 rpg). Scored in double figures in 29 of 32 games, including 14 games with 20+ points.",
+    imageUrl: "",
+    sportId: "basketball",
+    stats: {
+      pointsPerGame: 18.2,
+      reboundsPerGame: 7.6,
+      assistsPerGame: 1.8,
+      stealsPerGame: 0.9,
+      blocksPerGame: 0.7,
+      fieldGoalPercentage: 47.8,
+      threePointPercentage: 36.5,
+      freeThrowPercentage: 81.2,
+      minutesPerGame: 33.1,
+      gamesPlayed: 32
+    }
+  },
+  {
+    id: "ballstate-bb-g2",
+    schoolId: "ballstate",
+    name: "Jalin Anderson",
+    number: "1",
+    position: "G",
+    year: "SO",
+    height: "6-4",
+    weight: "185",
+    hometown: "Fishers, IN",
+    previousSchool: "",
+    bio: "Named to the MAC All-Freshman Team. Started 28 of 32 games played. Averaged 11.8 points, 3.7 rebounds, and 3.5 assists per game. Shot 37.2% from three-point range.",
+    imageUrl: "",
+    sportId: "basketball",
+    stats: {
+      pointsPerGame: 11.8,
+      reboundsPerGame: 3.7,
+      assistsPerGame: 3.5,
+      stealsPerGame: 1.3,
+      blocksPerGame: 0.2,
+      fieldGoalPercentage: 43.2,
+      threePointPercentage: 37.2,
+      freeThrowPercentage: 72.5,
+      minutesPerGame: 30.5,
+      gamesPlayed: 32
+    }
+  },
+  // Additional players can be added for other schools and sports
+];

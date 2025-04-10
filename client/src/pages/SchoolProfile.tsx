@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause } from "lucide-react";
+import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause, Users, BarChart } from "lucide-react";
 
 // Import school logo images
 import akronLogo from "@assets/Akron.png";

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Player } from "@shared/schema";
-import { macPlayers } from "@/data/macPlayers";
+import { macPlayers } from "../data/macPlayers";
 
 /**
  * Hook to fetch players for a specific school
@@ -10,7 +10,7 @@ export function usePlayers(schoolId: string, sportId: string = "all") {
     queryKey: ['/api/schools', schoolId, 'players', sportId],
     queryFn: async () => {
       // Filter players by schoolId and sportId (if not 'all')
-      return macPlayers.filter(player => {
+      return macPlayers.filter((player: Player) => {
         if (player.schoolId !== schoolId) return false;
         if (sportId !== "all" && player.sportId !== sportId) return false;
         return true;

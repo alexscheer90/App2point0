@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { TeamStat } from "@shared/schema";
-import { macTeamStats } from "@/data/macTeamStats";
+import { macTeamStats } from "../data/macTeamStats";
 
 /**
  * Hook to fetch team statistics for a specific school
@@ -10,7 +10,7 @@ export function useTeamStats(schoolId: string, sportId: string = "all") {
     queryKey: ['/api/schools', schoolId, 'stats', sportId],
     queryFn: async () => {
       // Filter stats by schoolId and sportId (if not 'all')
-      return macTeamStats.filter(stat => {
+      return macTeamStats.filter((stat: TeamStat) => {
         if (stat.schoolId !== schoolId) return false;
         if (sportId !== "all" && stat.sportId !== sportId) return false;
         return true;
@@ -26,7 +26,7 @@ export function useSportTeamStats(sportId: string) {
   return useQuery<TeamStat[]>({
     queryKey: ['/api/sports', sportId, 'stats'],
     queryFn: async () => {
-      return macTeamStats.filter(stat => stat.sportId === sportId);
+      return macTeamStats.filter((stat: TeamStat) => stat.sportId === sportId);
     }
   });
 }
