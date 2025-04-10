@@ -52,6 +52,8 @@ const SchoolProfile = () => {
   const schoolId = id || "";
   const [selectedNews, setSelectedNews] = useState<NewsItemType | null>(null);
   const [showNewsDialog, setShowNewsDialog] = useState(false);
+  const [selectedSportForStats, setSelectedSportForStats] = useState<string | null>(null);
+  const [selectedSportForPlayers, setSelectedSportForPlayers] = useState<string | null>(null);
   
   const { data: school, isLoading: isSchoolLoading } = useSchool(schoolId);
   const { liveGames, upcomingGames, recentGames, isLoading: isGamesLoading } = useSchoolGames(schoolId);
@@ -408,6 +410,105 @@ const SchoolProfile = () => {
           ) : (
             <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200">
               <p className="text-gray-500">No standings available for {school.name}.</p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="stats">
+          {isTeamStatsLoading ? (
+            <>
+              <Skeleton className="h-48 w-full mb-3" />
+              <Skeleton className="h-48 w-full mb-3" />
+            </>
+          ) : teamStats && teamStats.length > 0 ? (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-lg flex items-center">
+                  <BarChart className="h-5 w-5 mr-2 text-blue-500" />
+                  Team Statistics
+                </h3>
+                
+                {teamStats.length > 1 && (
+                  <Select 
+                    defaultValue={teamStats[0].sportId} 
+                    value={selectedSportForStats || teamStats[0].sportId}
+                    onValueChange={setSelectedSportForStats}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select sport" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teamStats.map(stat => (
+                        <SelectItem key={stat.id} value={stat.sportId}>
+                          {stat.sportId.charAt(0).toUpperCase() + stat.sportId.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+              
+              {teamStats
+                .filter(stat => !selectedSportForStats || stat.sportId === selectedSportForStats)
+                .map(stat => (
+                  <TeamStatsCard key={stat.id} stats={stat} />
+                ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200">
+              <p className="text-gray-500">No team statistics available for {school.name}.</p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="players">
+          {isPlayersLoading ? (
+            <>
+              <Skeleton className="h-48 w-full mb-3" />
+              <Skeleton className="h-48 w-full mb-3" />
+            </>
+          ) : players && players.length > 0 ? (
+            <>
+              {/* Sport filter for players */}
+              {players.filter(player => player.sportId).length > 1 && (
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-lg flex items-center">
+                    <Users className="h-5 w-5 mr-2 text-indigo-500" />
+                    {school.name} Players
+                  </h3>
+                  
+                  <Select 
+                    defaultValue="all" 
+                    value={selectedSportForPlayers || "all"}
+                    onValueChange={setSelectedSportForPlayers}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="All Sports" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Sports</SelectItem>
+                      {Array.from(new Set(players.map(player => player.sportId))).map(sportId => (
+                        <SelectItem key={sportId} value={sportId}>
+                          {sportId.charAt(0).toUpperCase() + sportId.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              <PlayerRoster 
+                players={
+                  selectedSportForPlayers && selectedSportForPlayers !== "all" 
+                    ? players.filter(player => player.sportId === selectedSportForPlayers)
+                    : players
+                } 
+                title={`${school.name} ${selectedSportForPlayers && selectedSportForPlayers !== "all" ? selectedSportForPlayers.charAt(0).toUpperCase() + selectedSportForPlayers.slice(1) : ""} Players`}
+              />
+            </>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200">
+              <p className="text-gray-500">No player information available for {school.name}.</p>
             </div>
           )}
         </TabsContent>
