@@ -27,7 +27,7 @@ export const macTeamStats: TeamStat[] = [
   {
     id: "akron-basketball-2024",
     schoolId: "akron",
-    sportId: "basketball",
+    sportId: "mbball",
     season: "2024-25",
     stats: {
       wins: 21,
