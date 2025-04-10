@@ -71,7 +71,7 @@ export const macTeamStats: TeamStat[] = [
   {
     id: "ballstate-basketball-2024",
     schoolId: "ballstate",
-    sportId: "basketball",
+    sportId: "mbball",
     season: "2024-25",
     stats: {
       wins: 18,
@@ -115,7 +115,7 @@ export const macTeamStats: TeamStat[] = [
   {
     id: "bowlinggreen-basketball-2024",
     schoolId: "bowlinggreen",
-    sportId: "basketball",
+    sportId: "mbball",
     season: "2024-25",
     stats: {
       wins: 20,
@@ -159,7 +159,7 @@ export const macTeamStats: TeamStat[] = [
   {
     id: "buffalo-basketball-2024",
     schoolId: "buffalo",
-    sportId: "basketball",
+    sportId: "mbball",
     season: "2024-25",
     stats: {
       wins: 19,
@@ -203,7 +203,7 @@ export const macTeamStats: TeamStat[] = [
   {
     id: "centralmichigan-basketball-2024",
     schoolId: "centralmichigan",
-    sportId: "basketball",
+    sportId: "mbball",
     season: "2024-25",
     stats: {
       wins: 16,
@@ -247,7 +247,7 @@ export const macTeamStats: TeamStat[] = [
   {
     id: "easternmichigan-basketball-2024",
     schoolId: "easternmichigan",
-    sportId: "basketball",
+    sportId: "mbball",
     season: "2024-25",
     stats: {
       wins: 17,

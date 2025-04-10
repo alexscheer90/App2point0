@@ -63,7 +63,7 @@ export const macPlayers: Player[] = [
     previousSchool: "",
     bio: "Named MAC Defensive Player of the Year for the second straight season. Led the team in scoring (16.8 ppg) and rebounding (12.9 rpg). Recorded 23 double-doubles, which ranked second in the NCAA.",
     imageUrl: "",
-    sportId: "basketball",
+    sportId: "mbball",
     stats: {
       pointsPerGame: 16.8,
       reboundsPerGame: 12.9,
@@ -89,7 +89,7 @@ export const macPlayers: Player[] = [
     previousSchool: "Ole Miss",
     bio: "Appeared in all 32 games, making 25 starts. Averaged 9.2 points and 3.1 rebounds per game. Shot 40.1% from three-point range.",
     imageUrl: "",
-    sportId: "basketball",
+    sportId: "mbball",
     stats: {
       pointsPerGame: 9.2,
       reboundsPerGame: 3.1,
@@ -165,7 +165,7 @@ export const macPlayers: Player[] = [
     previousSchool: "",
     bio: "Named to the All-MAC First Team. Led the team in scoring (18.2 ppg) and rebounding (7.6 rpg). Scored in double figures in 29 of 32 games, including 14 games with 20+ points.",
     imageUrl: "",
-    sportId: "basketball",
+    sportId: "mbball",
     stats: {
       pointsPerGame: 18.2,
       reboundsPerGame: 7.6,
@@ -192,7 +192,7 @@ export const macPlayers: Player[] = [
     previousSchool: "",
     bio: "Named to the MAC All-Freshman Team. Started 28 of 32 games played. Averaged 11.8 points, 3.7 rebounds, and 3.5 assists per game. Shot 37.2% from three-point range.",
     imageUrl: "",
-    sportId: "basketball",
+    sportId: "mbball",
     stats: {
       pointsPerGame: 11.8,
       reboundsPerGame: 3.7,
