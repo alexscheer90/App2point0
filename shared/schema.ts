@@ -150,5 +150,33 @@ export type GameStatus = z.infer<typeof gameStatusSchema>;
 export type StandingsEntry = z.infer<typeof standingsEntrySchema>;
 export type NewsItem = z.infer<typeof newsItemSchema>;
 export type Rivalry = z.infer<typeof rivalrySchema>;
+export const playerSchema = z.object({
+  id: z.string(),
+  schoolId: z.string(),
+  name: z.string(),
+  number: z.string().optional(),
+  position: z.string().optional(),
+  year: z.enum(["FR", "SO", "JR", "SR", "GR"]).optional(),
+  height: z.string().optional(),
+  weight: z.string().optional(),
+  hometown: z.string().optional(),
+  previousSchool: z.string().optional(),
+  bio: z.string().optional(),
+  imageUrl: z.string().optional(),
+  sportId: z.string(),
+  stats: z.record(z.string(), z.number()).optional(),
+});
+
+export const teamStatSchema = z.object({
+  id: z.string(),
+  schoolId: z.string(),
+  sportId: z.string(),
+  season: z.string().optional(),
+  stats: z.record(z.string(), z.number()),
+  lastUpdated: z.string().optional(),
+});
+
 export type SchoolSound = z.infer<typeof schoolSoundSchema>;
 export type LocalEats = z.infer<typeof localEatsSchema>;
+export type Player = z.infer<typeof playerSchema>;
+export type TeamStat = z.infer<typeof teamStatSchema>;
