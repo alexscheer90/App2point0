@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Users, UserPlus, Search, Filter } from 'lucide-react';
-import { useMacSports } from '@/hooks/useStandings';
+import { useMacSports } from '@/hooks/useMacSports';
 import { useSchool } from '@/hooks/useSchool';
 
 interface PlayerRosterProps {
