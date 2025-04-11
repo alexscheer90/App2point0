@@ -357,7 +357,7 @@ export class DataImporter {
       'Last School': 'lastSchool'
     };
     
-    const results = await this.importHtmlTable<Partial<Player>>(
+    const results = await this.importHtmlTable<RosterTableRow>(
       url,
       'table.roster, .roster-table, .player-table', // Common CSS selectors for roster tables
       headerMapping
@@ -488,10 +488,13 @@ export class DataImporter {
             homeTeamScore: homeScore,
             awayTeamScore: awayScore,
             status: status,
-            period: status === 'final' ? 'Final' : '',
+            period: status === 'final' ? 4 : undefined, // For final games, assume 4 periods (for basketball/football)
             clock: '',
-            broadcast: '',
-            opponentDetails: opponentName
+            venue: location,
+            location: location,
+            startTime: gameDate.toISOString(),
+            scheduledTime: gameDate.toISOString(),
+            isRivalryGame: false
           });
         }
       });

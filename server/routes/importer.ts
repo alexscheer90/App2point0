@@ -89,4 +89,63 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Import standings data for a specific sport from a URL
+ * GET /api/import/standings/:sportId
+ */
+router.get('/standings/:sportId', async (req: Request, res: Response) => {
+  try {
+    const { sportId } = req.params;
+    const url = req.query.url as string;
+    
+    if (!url) {
+      return res.status(400).json({ error: 'Missing required query parameter: url' });
+    }
+    
+    console.log(`Importing standings for sport ${sportId} from ${url}`);
+    const result = await dataImporter.importStandings(url, sportId);
+    
+    return res.json({ 
+      success: true, 
+      data: result,
+      count: result.length,
+      message: `Successfully imported ${result.length} standings entries for ${sportId}`
+    });
+  } catch (error) {
+    console.error('Standings import error:', error);
+    return res.status(500).json({ 
+      error: "Standings import failed", 
+      message: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+/**
+ * Import baseball standings directly from MAC website
+ * This endpoint is a convenience method for testing the import functionality
+ * GET /api/import/baseball-standings
+ */
+router.get('/baseball-standings', async (req: Request, res: Response) => {
+  try {
+    const url = 'https://getsomemaction.com/standings.aspx?path=baseball';
+    const sportId = 'baseball';
+    
+    console.log(`Importing baseball standings from ${url}`);
+    const result = await dataImporter.importStandings(url, sportId);
+    
+    return res.json({ 
+      success: true, 
+      data: result,
+      count: result.length,
+      message: `Successfully imported ${result.length} baseball standings entries`
+    });
+  } catch (error) {
+    console.error('Baseball standings import error:', error);
+    return res.status(500).json({ 
+      error: "Baseball standings import failed", 
+      message: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
 export default router;
