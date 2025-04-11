@@ -5,8 +5,12 @@ import { z } from "zod";
 import { insertUserPreferencesSchema, Game, NewsItem } from "@shared/schema";
 import axios from "axios";
 import { WebSocketServer, WebSocket } from "ws";
+import importerRoutes from "./routes/importer";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Register data importer routes
+  app.use('/api/import', importerRoutes);
+  
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {
     try {
