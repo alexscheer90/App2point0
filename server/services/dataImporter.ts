@@ -113,42 +113,164 @@ export class DataImporter {
       const $ = cheerio.load(response.data);
       const results: T[] = [];
       
-      // Find the table
-      const table = $(tableSelector);
-      if (table.length === 0) {
+      // Find all tables matching the selector
+      const tables = $(tableSelector);
+      if (tables.length === 0) {
         console.warn(`No table found at selector: ${tableSelector}`);
         return [];
       }
       
-      // Extract headers
-      const headers: string[] = [];
-      table.find('tr:first-child th, tr:first-child td').each((_, el) => {
-        headers.push($(el).text().trim());
-      });
+      console.log(`Found ${tables.length} tables matching selector`);
       
-      console.log(`Table headers found: ${headers.join(', ')}`);
-      
-      // Process each row
-      table.find('tr:not(:first-child)').each((_, row) => {
-        const rowData: Record<string, any> = {};
+      // Process each table that matches our selector
+      tables.each((tableIndex, tableElement) => {
+        const table = $(tableElement);
         
-        $(row).find('td').each((colIndex, cell) => {
-          if (colIndex < headers.length) {
-            const header = headers[colIndex];
-            const mappedKey = headerMapping[header];
+        // For MAC website, we need to handle complex tables
+        // First, let's check if we have a section header row (like CONFERENCE and OVERALL headers)
+        const theadRows = table.find('thead tr');
+        const sectionHeaderRow = theadRows.first();
+        const hasTheadSections = theadRows.length > 1;
+        
+        // Determine columns and their meanings based on table structure
+        let columnMapping: { [index: number]: keyof T } = {};
+        
+        if (hasTheadSections) {
+          // Complex MAC-style table with multiple header rows
+          console.log(`Processing complex table with multiple header rows`);
+          
+          // First, process the section headers (CONFERENCE, OVERALL)
+          const sectionHeaders: { [index: number]: string } = {};
+          let currentColIndex = 0;
+          
+          sectionHeaderRow.find('th').each((_, cell) => {
+            const colspan = parseInt($(cell).attr('colspan') || '1');
+            const sectionText = $(cell).text().trim().toUpperCase();
+            
+            // Map this section to multiple columns based on colspan
+            for (let i = 0; i < colspan; i++) {
+              sectionHeaders[currentColIndex + i] = sectionText;
+            }
+            
+            currentColIndex += colspan;
+          });
+          
+          // Now process the actual column headers from the next row
+          const columnHeaderRow = theadRows.eq(1);
+          currentColIndex = 0;
+          
+          columnHeaderRow.find('th').each((_, cell) => {
+            const colspan = parseInt($(cell).attr('colspan') || '1');
+            const headerText = $(cell).text().trim();
+            const section = sectionHeaders[currentColIndex] || '';
+            
+            let mappedKey: keyof T | undefined;
+            
+            // Special handling for MAC website
+            if (section === 'CONFERENCE' || section === 'CONF') {
+              // These are conference columns
+              if (headerText === 'W') {
+                mappedKey = headerMapping['Conf W'];
+              } else if (headerText === 'L') {
+                mappedKey = headerMapping['Conf L'];
+              } else if (headerText === 'PCT' || headerText === 'PCT.') {
+                mappedKey = headerMapping['Win %'];
+              } else {
+                mappedKey = headerMapping[headerText];
+              }
+            } else if (section === 'OVERALL') {
+              // These are overall columns
+              if (headerText === 'W') {
+                mappedKey = headerMapping['W'];
+              } else if (headerText === 'L') {
+                mappedKey = headerMapping['L'];
+              } else if (headerText === 'PCT' || headerText === 'PCT.') {
+                mappedKey = headerMapping['Win %'];
+              } else {
+                mappedKey = headerMapping[headerText];
+              }
+            } else {
+              // Regular column header
+              mappedKey = headerMapping[headerText];
+            }
             
             if (mappedKey) {
-              rowData[mappedKey as string] = $(cell).text().trim();
+              for (let i = 0; i < colspan; i++) {
+                columnMapping[currentColIndex + i] = mappedKey;
+              }
+            }
+            
+            currentColIndex += colspan;
+          });
+        } else {
+          // Simple table with a single header row
+          console.log(`Processing simple table with single header row`);
+          
+          // Find all headers in the first row
+          const headerRow = table.find('tr').first();
+          const headers: string[] = [];
+          
+          headerRow.find('th').each((_, cell) => {
+            headers.push($(cell).text().trim());
+          });
+          
+          console.log(`Table headers found: ${headers.join(', ')}`);
+          
+          // Map each column to the appropriate property
+          headers.forEach((header, index) => {
+            const mappedKey = headerMapping[header];
+            if (mappedKey) {
+              columnMapping[index] = mappedKey;
+            }
+          });
+        }
+        
+        // Find all data rows - skip header rows
+        let dataRows = table.find('tbody tr');
+        if (dataRows.length === 0) {
+          // If no tbody, just get all rows except the header row(s)
+          dataRows = table.find('tr').slice(theadRows.length || 1);
+        }
+        
+        // Process each data row
+        dataRows.each((_, row) => {
+          const rowData = {} as any;
+          
+          // Special handling for MAC website - check for team name in a nested div
+          const cells = $(row).find('td');
+          const firstCell = cells.first();
+          const teamNameElement = firstCell.find('.sidearm-table-team-name');
+          
+          if (teamNameElement.length > 0) {
+            // Found a team name in a special element
+            const teamName = teamNameElement.text().trim();
+            const teamLogo = firstCell.find('img').attr('src');
+            const schoolIdKey = columnMapping[0] as keyof T;
+            
+            if (schoolIdKey) {
+              rowData[schoolIdKey] = teamName;
             }
           }
+          
+          // Process all cells in the row
+          cells.each((colIndex, cell) => {
+            // Skip the first cell if we already processed it for a team name
+            if (colIndex === 0 && teamNameElement.length > 0) return;
+            
+            const mappedKey = columnMapping[colIndex];
+            if (mappedKey) {
+              rowData[mappedKey] = $(cell).text().trim();
+            }
+          });
+          
+          // Only add non-empty rows
+          if (Object.keys(rowData).length > 0) {
+            results.push(rowData as T);
+          }
         });
-        
-        if (Object.keys(rowData).length > 0) {
-          results.push(rowData as unknown as T);
-        }
       });
       
-      console.log(`Imported ${results.length} rows from table`);
+      console.log(`Imported ${results.length} total rows from all tables`);
       return results;
     } catch (error) {
       console.error('Error importing HTML table:', error);
@@ -185,12 +307,18 @@ export class DataImporter {
     const headerMapping: Record<string, keyof HtmlStandingsRow> = {
       'School': 'schoolId',
       'Team': 'teamName',
-      'W': 'wins',
-      'L': 'losses',
-      'Conf W': 'conferenceWins',
-      'Conf L': 'conferenceLosses',
+      'TEAM': 'schoolId', // MAC website uses uppercase
+      // Conference columns
+      'W': 'conferenceWins', // In the Conference section this is conf wins
+      'L': 'conferenceLosses', // In the Conference section this is conf losses
       'PCT': 'winPercentage',
+      'Pct': 'winPercentage',
       'Win %': 'winPercentage',
+      'Conf': 'conferenceWins', // Some tables use this for conference record
+      'CONF': 'conferenceWins', // MAC website uses uppercase
+      // Overall columns
+      'Overall': 'wins', // Some tables use this for overall record
+      'OVERALL': 'wins', // MAC website uses uppercase
       'Home': 'homeRecord',
       'Away': 'awayRecord',
       'Streak': 'streak',
@@ -200,7 +328,7 @@ export class DataImporter {
     
     const results = await this.importHtmlTable<HtmlStandingsRow>(
       url,
-      'table.standings, table.conference-standings, .table-standings', // Common CSS selectors for standings tables
+      'table.sidearm-standings-table, table.sidearm-table, table.standings, table.conference-standings, .table-standings', // Updated MAC website selectors
       headerMapping
     );
     
