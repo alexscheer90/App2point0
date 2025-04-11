@@ -131,7 +131,45 @@ router.get('/baseball-standings', async (req: Request, res: Response) => {
     const sportId = 'baseball';
     
     console.log(`Importing baseball standings from ${url}`);
+    
+    // First, fetch the raw HTML to inspect its structure
+    const axios = require('axios');
+    const cheerio = require('cheerio');
+    
+    console.log('Directly fetching HTML to analyze structure...');
+    const response = await axios.get(url, {
+      headers: { 'User-Agent': 'Mobile-MACtion-App/1.0' }
+    });
+    
+    const html = response.data;
+    // Log first 1000 characters of the HTML to see what we're dealing with
+    console.log(`HTML received (first 1000 chars): ${html.substring(0, 1000)}`);
+    
+    // Use cheerio to find the table elements
+    const $ = cheerio.load(html);
+    
+    // Look for tables that might contain the standings
+    console.log('Looking for standings tables...');
+    $('.sidearm-table').each((i, el) => {
+      console.log(`Found table ${i+1}`);
+      // Count rows in table
+      const rows = $(el).find('tr').length;
+      console.log(`Table ${i+1} has ${rows} rows`);
+      // Count header rows
+      const theadRows = $(el).find('thead tr').length;
+      console.log(`Table ${i+1} has ${theadRows} header rows`);
+      
+      // Look at first few columns in first data row
+      const firstDataRow = $(el).find('tbody tr').first();
+      console.log('First data row first few cells:');
+      firstDataRow.find('td').slice(0, 3).each((j, cell) => {
+        console.log(`  Cell ${j+1}: ${$(cell).text().trim()}`);
+      });
+    });
+    
+    // Now try the actual import
     const result = await dataImporter.importStandings(url, sportId);
+    console.log(`Standings import result: ${JSON.stringify(result)}`);
     
     return res.json({ 
       success: true, 
