@@ -132,50 +132,132 @@ router.get('/baseball-standings', async (req: Request, res: Response) => {
     
     console.log(`Importing baseball standings from ${url}`);
     
-    // First, fetch the raw HTML to inspect its structure
+    // Import axios and cheerio directly
     const axios = require('axios');
     const cheerio = require('cheerio');
     
-    console.log('Directly fetching HTML to analyze structure...');
+    console.log('Directly fetching and parsing HTML...');
     const response = await axios.get(url, {
-      headers: { 'User-Agent': 'Mobile-MACtion-App/1.0' }
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
     });
     
     const html = response.data;
-    // Log first 1000 characters of the HTML to see what we're dealing with
-    console.log(`HTML received (first 1000 chars): ${html.substring(0, 1000)}`);
-    
-    // Use cheerio to find the table elements
     const $ = cheerio.load(html);
     
-    // Look for tables that might contain the standings
-    console.log('Looking for standings tables...');
-    $('.sidearm-table').each((i, el) => {
-      console.log(`Found table ${i+1}`);
-      // Count rows in table
-      const rows = $(el).find('tr').length;
-      console.log(`Table ${i+1} has ${rows} rows`);
-      // Count header rows
-      const theadRows = $(el).find('thead tr').length;
-      console.log(`Table ${i+1} has ${theadRows} header rows`);
-      
-      // Look at first few columns in first data row
-      const firstDataRow = $(el).find('tbody tr').first();
-      console.log('First data row first few cells:');
-      firstDataRow.find('td').slice(0, 3).each((j, cell) => {
-        console.log(`  Cell ${j+1}: ${$(cell).text().trim()}`);
+    // Direct parsing of standings
+    console.log('Manually parsing baseball standings table...');
+    const standings: any[] = [];
+    
+    // Find the standings table
+    const table = $('.sidearm-standings-table, .sidearm-table');
+    if (table.length === 0) {
+      console.error('No standings table found!');
+      return res.json({ 
+        success: true, 
+        data: [],
+        count: 0,
+        message: `No standings table found on the page`
       });
+    }
+    
+    console.log(`Found ${table.length} tables with the sidearm classes`);
+    
+    // Get all rows in the table body
+    const rows = table.find('tbody tr');
+    console.log(`Found ${rows.length} data rows in the table`);
+    
+    // Parse each row
+    rows.each((index, row) => {
+      try {
+        const cells = $(row).find('td');
+        
+        // Get team name from first cell - look for the team name span
+        const teamNameCell = cells.first();
+        const teamNameElement = teamNameCell.find('.sidearm-table-team-name');
+        const teamName = teamNameElement.length ? teamNameElement.text().trim() : teamNameCell.text().trim();
+        
+        console.log(`Processing team: ${teamName}`);
+        
+        // Need to figure out which columns are conference wins/losses and which are overall
+        // This depends on the table structure
+        // Find the column positions from header
+        let confWinsCol = 1; // Default positions, may need adjustment
+        let confLossesCol = 2;
+        let overallWinsCol = 4;
+        let overallLossesCol = 5;
+        
+        // Get header text to determine column positions
+        const headerRows = table.find('thead tr');
+        if (headerRows.length > 1) {
+          // Complex header with sections
+          const sectionRow = headerRows.first();
+          const sectionCells = sectionRow.find('th');
+          
+          // Find the section indices
+          let confSectionStart = -1;
+          let overallSectionStart = -1;
+          let currentIndex = 0;
+          
+          sectionCells.each((i, cell) => {
+            const sectionText = $(cell).text().trim().toUpperCase();
+            const colspan = parseInt($(cell).attr('colspan') || '1');
+            
+            if (sectionText.includes('CONF')) {
+              confSectionStart = currentIndex;
+            } else if (sectionText.includes('OVERALL')) {
+              overallSectionStart = currentIndex;
+            }
+            
+            currentIndex += colspan;
+          });
+          
+          if (confSectionStart >= 0) {
+            confWinsCol = confSectionStart;
+            confLossesCol = confSectionStart + 1;
+          }
+          
+          if (overallSectionStart >= 0) {
+            overallWinsCol = overallSectionStart;
+            overallLossesCol = overallSectionStart + 1;
+          }
+        }
+        
+        // Extract wins and losses based on determined positions
+        const confWins = parseInt($(cells.eq(confWinsCol)).text().trim()) || 0;
+        const confLosses = parseInt($(cells.eq(confLossesCol)).text().trim()) || 0;
+        const overallWins = parseInt($(cells.eq(overallWinsCol)).text().trim()) || 0;
+        const overallLosses = parseInt($(cells.eq(overallLossesCol)).text().trim()) || 0;
+        
+        console.log(`  Conference: ${confWins}-${confLosses}, Overall: ${overallWins}-${overallLosses}`);
+        
+        // Create standings entry
+        standings.push({
+          id: `baseball-${Date.now()}-${index}`,
+          schoolId: teamName.toLowerCase().replace(/[^a-z0-9]/g, ''),
+          sportId: 'baseball',
+          conference: {
+            wins: confWins,
+            losses: confLosses,
+            winningPercentage: confWins + confLosses > 0 ? confWins / (confWins + confLosses) : 0
+          },
+          overall: {
+            wins: overallWins,
+            losses: overallLosses,
+            winningPercentage: overallWins + overallLosses > 0 ? overallWins / (overallWins + overallLosses) : 0
+          }
+        });
+      } catch (rowError) {
+        console.error(`Error processing row ${index}:`, rowError);
+      }
     });
     
-    // Now try the actual import
-    const result = await dataImporter.importStandings(url, sportId);
-    console.log(`Standings import result: ${JSON.stringify(result)}`);
+    console.log(`Manually parsed ${standings.length} standings entries`);
     
     return res.json({ 
       success: true, 
-      data: result,
-      count: result.length,
-      message: `Successfully imported ${result.length} baseball standings entries`
+      data: standings,
+      count: standings.length,
+      message: `Successfully imported ${standings.length} baseball standings entries`
     });
   } catch (error) {
     console.error('Baseball standings import error:', error);
