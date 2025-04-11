@@ -247,7 +247,7 @@ const SchoolProfile = () => {
         </CardHeader>
       </Card>
       
-      <Tabs defaultValue="games" className="w-full">
+      <Tabs defaultValue="stats" className="w-full">
         <div className="mb-4">
           <Select
             onValueChange={(value) => {
@@ -257,7 +257,7 @@ const SchoolProfile = () => {
                 tabElement.click();
               }
             }}
-            defaultValue="games"
+            defaultValue="stats"
           >
             <SelectTrigger 
               className="w-full bg-white border border-gray-300 text-gray-700 rounded leading-tight focus:outline-none focus:bg-white focus:border-[#019E4F]"
@@ -266,9 +266,6 @@ const SchoolProfile = () => {
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="games">Games</SelectItem>
-              <SelectItem value="news">News</SelectItem>
-              <SelectItem value="standings">Standings</SelectItem>
               <SelectItem value="stats">
                 <div className="flex items-center gap-1">
                   <BarChart className="h-3 w-3" />
@@ -281,45 +278,14 @@ const SchoolProfile = () => {
                   <span>Players</span>
                 </div>
               </SelectItem>
-              <SelectItem value="rivalries">
-                <div className="flex items-center gap-1">
-                  <Trophy className="h-3 w-3" />
-                  <span>Rivalries</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="sounds">
-                <div className="flex items-center gap-1">
-                  <Music className="h-3 w-3" />
-                  <span>Sounds</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="eats">
-                <div className="flex items-center gap-1">
-                  <Utensils className="h-3 w-3" />
-                  <span>Eats</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="podcast">
-                <div className="flex items-center gap-1">
-                  <Headphones className="h-3 w-3" />
-                  <span>Podcast</span>
-                </div>
-              </SelectItem>
             </SelectContent>
           </Select>
         </div>
         
         {/* Hidden TabsList for Tabs functionality to work properly */}
         <TabsList className="hidden">
-          <TabsTrigger value="games" data-value="games">Games</TabsTrigger>
-          <TabsTrigger value="news" data-value="news">News</TabsTrigger>
-          <TabsTrigger value="standings" data-value="standings">Standings</TabsTrigger>
           <TabsTrigger value="stats" data-value="stats">Team Stats</TabsTrigger>
           <TabsTrigger value="players" data-value="players">Players</TabsTrigger>
-          <TabsTrigger value="rivalries" data-value="rivalries">Rivalries</TabsTrigger>
-          <TabsTrigger value="sounds" data-value="sounds">Sounds</TabsTrigger>
-          <TabsTrigger value="eats" data-value="eats">Eats</TabsTrigger>
-          <TabsTrigger value="podcast" data-value="podcast">Podcast</TabsTrigger>
         </TabsList>
         
         <TabsContent value="games">
