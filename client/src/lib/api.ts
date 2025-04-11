@@ -98,7 +98,8 @@ export async function getGames(sportId?: string): Promise<Game[]> {
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
   
-  const mockGames: Game[] = [
+  // We need to cast our mock games to Game type to ensure they match the schema
+  const mockGames = [
     // Live games
     {
       id: "game1",
@@ -108,9 +109,14 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeTeamScore: 24,
       awayTeamScore: 17,
       startTime: now.toISOString(),
-      status: "live",
-      period: "3rd QTR",
+      scheduledTime: now.toISOString(),
+      status: "live" as const,
+      period: 3,
+      clock: "8:45",
       situation: "Ball on 34 yard line • 3rd & 8",
+      location: "Glass Bowl, Toledo OH",
+      homeScore: 24,
+      awayScore: 17,
     },
     {
       id: "game2",
@@ -120,9 +126,14 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeTeamScore: 56,
       awayTeamScore: 42,
       startTime: now.toISOString(),
-      status: "live",
-      period: "2nd Half",
+      scheduledTime: now.toISOString(),
+      status: "live" as const,
+      period: 2,
+      clock: "8:45",
       situation: "8:45 remaining • Ohio possession",
+      location: "Convocation Center, Athens OH",
+      homeScore: 56,
+      awayScore: 42,
     },
     // Upcoming games
     {
@@ -131,17 +142,29 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeTeamId: "miamioh",
       awayTeamId: "ballstate",
       startTime: tomorrow.toISOString(),
-      status: "scheduled",
+      scheduledTime: tomorrow.toISOString(),
+      status: "scheduled" as const,
       venue: "Yager Stadium, Oxford OH",
+      location: "Yager Stadium, Oxford OH",
+      homeTeamScore: 0,
+      awayTeamScore: 0,
+      homeScore: 0,
+      awayScore: 0,
     },
     {
       id: "game4",
-      sportId: "basketball",
+      sportId: "mbball",
       homeTeamId: "akron",
       awayTeamId: "northernillinois",
       startTime: tomorrow.toISOString(),
-      status: "scheduled",
+      scheduledTime: tomorrow.toISOString(),
+      status: "scheduled" as const,
       venue: "James A. Rhodes Arena, Akron OH",
+      location: "James A. Rhodes Arena, Akron OH",
+      homeTeamScore: 0,
+      awayTeamScore: 0,
+      homeScore: 0,
+      awayScore: 0,
     },
     // Completed games
     {
@@ -152,7 +175,11 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeTeamScore: 5,
       awayTeamScore: 3,
       startTime: yesterday.toISOString(),
-      status: "final",
+      scheduledTime: yesterday.toISOString(),
+      status: "final" as const,
+      location: "Hyames Field, Kalamazoo MI",
+      homeScore: 5,
+      awayScore: 3,
     },
     {
       id: "game6",
@@ -162,7 +189,11 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeTeamScore: 21,
       awayTeamScore: 28,
       startTime: yesterday.toISOString(),
-      status: "final",
+      scheduledTime: yesterday.toISOString(),
+      status: "final" as const,
+      location: "Rynearson Stadium, Ypsilanti MI",
+      homeScore: 21,
+      awayScore: 28,
     },
   ];
   
@@ -250,7 +281,7 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
 
 // Get all standings for a specific school
 export async function getSchoolStandings(schoolId: string): Promise<{ sportId: string, entries: StandingsEntry[] }[]> {
-  const sports = ["football", "basketball", "baseball"];
+  const sports = ["football", "mbball", "baseball"];
   const results = [];
   
   for (const sport of sports) {

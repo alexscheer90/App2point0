@@ -40,14 +40,11 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <NotificationProvider>
           <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-lg">
-            {console.log("Rendering Header")}
             <Header />
             
-            {console.log("Rendering FavoriteSchoolBanner")}
             <FavoriteSchoolBanner onChangeFavorite={() => setShowFavoriteModal(true)} />
             
             <main className="flex-1 overflow-y-auto pb-16">
-              {console.log("Setting up routes")}
               <Switch>
                 <Route path="/" component={ScoresPage} />
                 <Route path="/scores" component={ScoresPage} />
@@ -65,10 +62,8 @@ function App() {
               </Switch>
             </main>
             
-            {console.log("Rendering BottomNav")}
             <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
             
-            {console.log("Rendering FavoriteSchoolModal")}
             <FavoriteSchoolModal 
               isOpen={showFavoriteModal} 
               onClose={() => setShowFavoriteModal(false)}
