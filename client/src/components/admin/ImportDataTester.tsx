@@ -11,7 +11,7 @@ import { Loader2 } from 'lucide-react';
 const ImportDataTester = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [importType, setImportType] = useState<string>('standings');
+  const [importType, setImportType] = useState<'standings' | 'roster' | 'schedule' | 'stats' | 'rss' | 'baseball-standings'>('standings');
   const [sportId, setSportId] = useState<string>('baseball');
   const [url, setUrl] = useState<string>('https://getsomemaction.com/standings.aspx?path=baseball');
   const [schoolId, setSchoolId] = useState<string>('');
@@ -124,7 +124,7 @@ const ImportDataTester = () => {
           <Label htmlFor="import-type">Import Type</Label>
           <Select
             value={importType}
-            onValueChange={setImportType}
+            onValueChange={(value) => setImportType(value as any)}
             disabled={isLoading}
           >
             <SelectTrigger id="import-type">
@@ -162,7 +162,7 @@ const ImportDataTester = () => {
               value={sportId}
               onChange={(e) => setSportId(e.target.value)}
               placeholder="Enter Sport ID"
-              disabled={isLoading || importType === 'baseball-standings'}
+              disabled={isLoading || importType === 'baseball-standings' as any}
             />
           </div>
         )}

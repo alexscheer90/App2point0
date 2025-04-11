@@ -481,8 +481,6 @@ export class DataImporter {
           games.push({
             id: `imported-${schoolId}-${sportId}-${games.length}-${Date.now()}`,
             sportId: sportId,
-            date: gameDate.toISOString(),
-            location: location,
             homeTeamId: homeTeamId,
             awayTeamId: awayTeamId,
             homeTeamScore: homeScore,
@@ -494,6 +492,7 @@ export class DataImporter {
             location: location,
             startTime: gameDate.toISOString(),
             scheduledTime: gameDate.toISOString(),
+            situation: opponentName, // Use opponent name as situation
             isRivalryGame: false
           });
         }
