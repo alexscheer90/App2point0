@@ -20,6 +20,7 @@ import LocalEatsPage from "./pages/LocalEatsPage";
 import PodcastPage from "./pages/PodcastPage";
 import SchedulePage from "./pages/SchedulePage";
 import TestNotificationsPage from "./pages/TestNotificationsPage";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "@/pages/not-found";
 import { useState } from "react";
 
@@ -58,6 +59,7 @@ function App() {
                 <Route path="/eats" component={LocalEatsPage} />
                 <Route path="/podcast" component={PodcastPage} />
                 <Route path="/test-notifications" component={TestNotificationsPage} />
+                <Route path="/admin" component={AdminPage} />
                 <Route component={NotFound} />
               </Switch>
             </main>

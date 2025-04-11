@@ -14,7 +14,8 @@ import {
   Music, 
   Utensils, 
   Headphones,
-  Settings
+  Settings,
+  Database
 } from "lucide-react";
 
 // MAC colors
@@ -52,6 +53,11 @@ const MoreMenu = ({ open, onOpenChange }: MoreMenuProps) => {
       icon: <Headphones className="h-5 w-5" />,
       label: "Podcast",
       path: "/podcast",
+    },
+    {
+      icon: <Database className="h-5 w-5" />,
+      label: "Admin",
+      path: "/admin",
     }
   ];
 
