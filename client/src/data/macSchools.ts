@@ -13,6 +13,15 @@ import toledoLogo from "@assets/Toledo.png";
 import wmuLogo from "@assets/WMU.png";
 import massachusettsLogo from "@assets/UMass.png";
 
+// Affiliate school logos
+import jmuLogo from "@assets/JMU.webp";
+import appStateLogo from "@assets/Appalachian_State_Mountaineers_logo.svg.png";
+import longwoodLogo from "@assets/Longwood_Lancers_logo.svg.png";
+import bellarmineLogo from "@assets/Bellarmine.png";
+import chicagoStateLogo from "@assets/Chicago_State_Cougars_logo.svg.png";
+import siuEdwardsvilleLogo from "@assets/SIU Edwardsville.png";
+import georgeMasonLogo from "@assets/George Mason.png";
+
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
 export const macSchools: School[] = [
@@ -165,9 +174,9 @@ export const macSchools: School[] = [
     name: "James Madison",
     shortName: "JMU",
     mascot: "Dukes",
-    primaryColor: "#450084",
-    secondaryColor: "#CBB677",
-    logoUrl: "", // No logo yet
+    primaryColor: "#450084", // Purple
+    secondaryColor: "#CBB677", // Gold
+    logoUrl: jmuLogo,
     city: "Harrisonburg",
     state: "VA",
     affiliate: true
@@ -177,9 +186,9 @@ export const macSchools: School[] = [
     name: "Appalachian State",
     shortName: "App State",
     mascot: "Mountaineers",
-    primaryColor: "#000000",
-    secondaryColor: "#FFCC00",
-    logoUrl: "", // No logo yet
+    primaryColor: "#000000", // Black
+    secondaryColor: "#FFCC00", // Gold
+    logoUrl: appStateLogo,
     city: "Boone",
     state: "NC",
     affiliate: true
@@ -189,9 +198,9 @@ export const macSchools: School[] = [
     name: "Longwood",
     shortName: "Longwood",
     mascot: "Lancers",
-    primaryColor: "#00559A",
-    secondaryColor: "#B9B9B9",
-    logoUrl: "", // No logo yet
+    primaryColor: "#00559A", // Blue
+    secondaryColor: "#9DA5A8", // Gray
+    logoUrl: longwoodLogo,
     city: "Farmville",
     state: "VA",
     affiliate: true
@@ -201,9 +210,9 @@ export const macSchools: School[] = [
     name: "Bellarmine",
     shortName: "Bellarmine",
     mascot: "Knights",
-    primaryColor: "#231F20",
-    secondaryColor: "#AE9142",
-    logoUrl: "", // No logo yet
+    primaryColor: "#B01E24", // Red
+    secondaryColor: "#FFFFFF", // White
+    logoUrl: bellarmineLogo,
     city: "Louisville",
     state: "KY",
     affiliate: true
@@ -213,9 +222,9 @@ export const macSchools: School[] = [
     name: "Chicago State",
     shortName: "Chicago St",
     mascot: "Cougars",
-    primaryColor: "#006747",
-    secondaryColor: "#989898",
-    logoUrl: "", // No logo yet
+    primaryColor: "#006747", // Green
+    secondaryColor: "#FFFFFF", // White
+    logoUrl: chicagoStateLogo,
     city: "Chicago",
     state: "IL",
     affiliate: true
@@ -225,9 +234,9 @@ export const macSchools: School[] = [
     name: "SIU Edwardsville",
     shortName: "SIUE",
     mascot: "Cougars",
-    primaryColor: "#CC0000",
-    secondaryColor: "#000000",
-    logoUrl: "", // No logo yet
+    primaryColor: "#CC0000", // Red
+    secondaryColor: "#000000", // Black
+    logoUrl: siuEdwardsvilleLogo,
     city: "Edwardsville",
     state: "IL",
     affiliate: true
@@ -249,9 +258,9 @@ export const macSchools: School[] = [
     name: "George Mason",
     shortName: "GMU",
     mascot: "Patriots",
-    primaryColor: "#006633",
-    secondaryColor: "#FFCC33",
-    logoUrl: "", // No logo yet
+    primaryColor: "#006633", // Green
+    secondaryColor: "#FFCC33", // Gold
+    logoUrl: georgeMasonLogo,
     city: "Fairfax",
     state: "VA",
     affiliate: true
