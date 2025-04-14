@@ -41,6 +41,7 @@ export const schoolSchema = z.object({
   logoUrl: z.any(), // Changed to any to support imported images
   city: z.string().optional(),
   state: z.string().optional(),
+  affiliate: z.boolean().optional(), // To mark schools that are MAC affiliates
 });
 
 export const sportSchema = z.object({

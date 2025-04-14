@@ -51,9 +51,9 @@ export class GoogleSheetsService {
     'wmu': 'westernmichigan',
     'broncos': 'westernmichigan',
     // Add affiliate schools
-    'james madison': 'jamesmadison',
-    'jmu': 'jamesmadison',
-    'dukes': 'jamesmadison',
+    'james madison': 'jmu',
+    'jmu': 'jmu',
+    'dukes': 'jmu',
     'app state': 'appstate',
     'appalachian state': 'appstate',
     'appalachian': 'appstate',
@@ -61,7 +61,9 @@ export class GoogleSheetsService {
     'longwood': 'longwood',
     'lancers': 'longwood',
     'bellarmine': 'bellarmine',
-    'knights': 'bellarmine'
+    'knights': 'bellarmine',
+    'chicago state': 'chicagostate',
+    'chicago state university': 'chicagostate'
   };
 
   /**
