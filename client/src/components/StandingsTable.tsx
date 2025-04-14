@@ -12,9 +12,15 @@ interface StandingsTableProps {
   favoriteSchoolId?: string | null;
 }
 
+// Extend StandingsEntry to include division information for wrestling
+interface ExtendedStandingsEntry extends StandingsEntry {
+  division?: 'East' | 'West';
+}
+
 const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProps) => {
   const { data: schools } = useMacSchools();
   
+  // Handle loading state
   if (!schools) {
     return (
       <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 p-4 animate-pulse">
@@ -29,10 +35,133 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.conference.wins}-${e.conference.losses})`));
   console.log("Available school IDs:", schools.map(s => s.id));
   
-  // Sort entries by conference winning percentage (descending)
-  const sortedEntries = [...entries].sort((a, b) => {
-    return b.conference.winningPercentage - a.conference.winningPercentage;
-  });
+  // Check if this sport shows ties (soccer)
+  const showTies = sport === 'soccer' || sport === 'wsoc' || sport === 'msoc';
+  
+  // Check if this is wrestling (which has East/West divisions)
+  const hasEastWestDivision = sport === 'wrestling';
+
+  // Calculate column span for table headers
+  const conferenceColSpan = showTies ? 4 : 3;
+  const overallColSpan = showTies ? 4 : 3;
+  
+  // Process entries based on sport
+  let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
+  
+  if (hasEastWestDivision) {
+    // Define East and West division schools for wrestling
+    const eastSchools = ['kentstate', 'ohio', 'edinboro', 'clarion', 'bloomsburg', 'lockhaven', 'clevelandstate', 'georgemason', 'rider'];
+    const westSchools = ['northernillinois', 'centralmichigan', 'siuedwardsville', 'buffalo'];
+    
+    // Categorize and sort entries by division
+    const eastEntries = processedEntries
+      .filter(entry => eastSchools.includes(entry.schoolId))
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage)
+      .map(entry => ({ ...entry, division: 'East' as const }));
+    
+    const westEntries = processedEntries
+      .filter(entry => westSchools.includes(entry.schoolId))
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage)
+      .map(entry => ({ ...entry, division: 'West' as const }));
+    
+    // Other entries that don't fit in either division
+    const otherEntries = processedEntries
+      .filter(entry => !eastSchools.includes(entry.schoolId) && !westSchools.includes(entry.schoolId))
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
+    
+    // Combine entries in division order
+    processedEntries = [...eastEntries, ...westEntries, ...otherEntries];
+  } else {
+    // For other sports, just sort by winning percentage
+    processedEntries.sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
+  }
+  
+  // Render team row
+  const renderTeamRow = (entry: ExtendedStandingsEntry) => {
+    const school = schools.find(s => s.id === entry.schoolId);
+    if (!school) return null;
+    
+    const isFavorite = favoriteSchoolId === school.id;
+    
+    return (
+      <tr 
+        key={entry.schoolId} 
+        className="hover:bg-gray-50"
+        style={isFavorite ? { backgroundColor: `${MAC_GREEN}20` } : {}}
+      >
+        <td className="px-2 py-3">
+          <div className="flex items-center">
+            {school.logoUrl ? (
+              <div className="w-6 h-6 mr-2 flex-shrink-0 flex items-center justify-center">
+                <img 
+                  src={school.logoUrl} 
+                  alt={`${school.name} logo`} 
+                  className="max-h-full max-w-full object-contain" 
+                />
+              </div>
+            ) : (
+              <div 
+                className="w-6 h-6 mr-2 flex-shrink-0 rounded-full flex items-center justify-center" 
+                style={{ backgroundColor: school.primaryColor }}
+              >
+                <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
+                  {school.shortName.charAt(0)}
+                </span>
+              </div>
+            )}
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-gray-900 truncate">{school.name}</span>
+              {school.affiliate && (
+                <span className="text-xs text-gray-500 italic">Affiliate Member</span>
+              )}
+            </div>
+          </div>
+        </td>
+        {/* Conference Record */}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.conference.wins}
+        </td>
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.conference.losses}
+        </td>
+        {showTies && (
+          <td className="px-1 py-3 text-center text-sm">
+            {entry.conference.ties || 0}
+          </td>
+        )}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
+        </td>
+        {/* Overall Record */}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.overall.wins}
+        </td>
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.overall.losses}
+        </td>
+        {showTies && (
+          <td className="px-1 py-3 text-center text-sm">
+            {entry.overall.ties || 0}
+          </td>
+        )}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.overall.winningPercentage.toFixed(3).replace(/^0+/, '')}
+        </td>
+      </tr>
+    );
+  };
+  
+  // Render division header
+  const renderDivisionHeader = (divisionName: string) => (
+    <tr className="bg-gray-100">
+      <td
+        colSpan={showTies ? 9 : 7}
+        className="px-3 py-2 text-sm font-medium text-gray-700"
+      >
+        {divisionName} DIVISION
+      </td>
+    </tr>
+  );
   
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
@@ -43,10 +172,10 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
                 Team
               </th>
-              <th colSpan={sport === 'soccer' || sport === 'wsoc' || sport === 'msoc' ? 4 : 3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+              <th colSpan={conferenceColSpan} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Conference
               </th>
-              <th colSpan={sport === 'soccer' || sport === 'wsoc' || sport === 'msoc' ? 4 : 3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+              <th colSpan={overallColSpan} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Overall
               </th>
             </tr>
@@ -54,92 +183,49 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
-              {(sport === 'soccer' || sport === 'wsoc' || sport === 'msoc') && 
+              {showTies && (
                 <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
-              }
+              )}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
-              {(sport === 'soccer' || sport === 'wsoc' || sport === 'msoc') && 
+              {showTies && (
                 <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
-              }
+              )}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {sortedEntries.map(entry => {
-              // Add debugging for missing schools
-              if (!schools.some(s => s.id === entry.schoolId)) {
-                console.log(`WARNING: No school found for ID: ${entry.schoolId} with record ${entry.conference.wins}-${entry.conference.losses}`);
-              }
-              
-              const school = schools.find(s => s.id === entry.schoolId);
-              if (!school) {
-                console.log(`SKIPPING entry for school ID ${entry.schoolId} - no matching school found`);
-                return null;
-              }
-              
-              const isFavorite = favoriteSchoolId === school.id;
-              
-              return (
-                <tr 
-                  key={entry.schoolId} 
-                  className={`hover:bg-gray-50`}
-                  style={isFavorite ? { backgroundColor: `${MAC_GREEN}20` } : {}}
-                >
-                  <td className="px-2 py-3">
-                    <div className="flex items-center">
-                      {school.logoUrl ? (
-                        // When logo is available
-                        <div className="w-6 h-6 mr-2 flex-shrink-0 flex items-center justify-center">
-                          <img 
-                            src={school.logoUrl} 
-                            alt={`${school.name} logo`} 
-                            className="max-h-full max-w-full object-contain" 
-                          />
-                        </div>
-                      ) : (
-                        // Fallback to circular initial when no logo
-                        <div 
-                          className="w-6 h-6 mr-2 flex-shrink-0 rounded-full flex items-center justify-center" 
-                          style={{ backgroundColor: school.primaryColor }}
-                        >
-                          <span className="text-xs font-bold" style={{ color: school.secondaryColor }}>
-                            {school.shortName.charAt(0)}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 truncate">{school.name}</span>
-                        {school.affiliate && (
-                          <span className="text-xs text-gray-500 italic">Affiliate Member</span>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  {/* Conference Record */}
-                  <td className="px-1 py-3 text-center text-sm">
-                    {entry.conference.wins}
-                  </td>
-                  <td className="px-1 py-3 text-center text-sm">
-                    {entry.conference.losses}
-                  </td>
-                  <td className="px-1 py-3 text-center text-sm">
-                    {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
-                  </td>
-                  {/* Overall Record */}
-                  <td className="px-1 py-3 text-center text-sm">
-                    {entry.overall.wins}
-                  </td>
-                  <td className="px-1 py-3 text-center text-sm">
-                    {entry.overall.losses}
-                  </td>
-                  <td className="px-1 py-3 text-center text-sm">
-                    {entry.overall.winningPercentage.toFixed(3).replace(/^0+/, '')}
-                  </td>
-                </tr>
-              );
-            })}
+            {hasEastWestDivision ? (
+              <>
+                {/* East Division */}
+                {renderDivisionHeader('EAST')}
+                {processedEntries
+                  .filter(entry => entry.division === 'East')
+                  .map(entry => renderTeamRow(entry))}
+                
+                {/* West Division */}
+                {renderDivisionHeader('WEST')}
+                {processedEntries
+                  .filter(entry => entry.division === 'West')
+                  .map(entry => renderTeamRow(entry))}
+                
+                {/* Other entries (if any) */}
+                {processedEntries
+                  .filter(entry => !entry.division)
+                  .length > 0 && (
+                    <>
+                      {renderDivisionHeader('OTHER')}
+                      {processedEntries
+                        .filter(entry => !entry.division)
+                        .map(entry => renderTeamRow(entry))}
+                    </>
+                  )}
+              </>
+            ) : (
+              // Regular standings without divisions
+              processedEntries.map(entry => renderTeamRow(entry))
+            )}
           </tbody>
         </table>
       </div>

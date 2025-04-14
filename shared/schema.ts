@@ -78,6 +78,7 @@ export const standingsEntrySchema = z.object({
   id: z.string(),
   schoolId: z.string(),
   sportId: z.string(),
+  division: z.enum(["East", "West"]).optional(),
   conference: z.object({
     wins: z.number(),
     losses: z.number(),

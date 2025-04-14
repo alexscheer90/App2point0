@@ -54,7 +54,7 @@ const NewsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Schools</SelectItem>
-              {schools?.map(school => (
+              {schools?.filter(school => !school.affiliate).map(school => (
                 <SelectItem key={school.id} value={school.id}>
                   {school.name}
                 </SelectItem>
