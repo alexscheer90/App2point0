@@ -44,38 +44,51 @@ const AffiliateSchoolCard = ({ school }: { school: School }) => {
       className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300 cursor-pointer relative"
       onClick={handleClick}
     >
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center">
-            {school.logoUrl ? (
-              <img src={school.logoUrl} alt={`${school.name} logo`} className="w-8 h-8 mr-2 object-contain" />
-            ) : (
-              <div 
-                className="w-8 h-8 rounded-full mr-2 flex items-center justify-center" 
-                style={{ backgroundColor: school.primaryColor }}
-              >
-                <span className="text-sm font-bold" style={{ color: school.secondaryColor }}>
-                  {school.shortName.charAt(0)}
-                </span>
-              </div>
-            )}
-            <h3 className="font-bold text-sm">{school.name}</h3>
+      <div 
+        className="h-24 flex items-center justify-center relative"
+        style={{ 
+          backgroundColor: 
+            school.id === "bowlinggreen" ? school.secondaryColor :
+            school.id === "centralmichigan" ? school.secondaryColor :
+            school.id === "buffalo" || 
+            school.id === "easternmichigan" ? 
+              "white" : school.primaryColor
+        }}
+      >
+        {school.logoUrl ? (
+          // When logo is available
+          <div className="h-16 w-16 flex items-center justify-center">
+            <img 
+              src={school.logoUrl} 
+              alt={`${school.name} logo`} 
+              className="max-h-full max-w-full object-contain"
+            />
           </div>
-          <ExternalLink size={16} className="text-gray-500" />
-        </div>
+        ) : (
+          // Fallback to circular initial when no logo
+          <div 
+            className="h-16 w-16 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: school.secondaryColor }}
+          >
+            <span 
+              className="text-2xl font-bold"
+              style={{ color: school.primaryColor }}
+            >
+              {school.shortName.charAt(0)}
+            </span>
+          </div>
+        )}
         
-        <div className="text-xs text-gray-600 mb-1">{school.mascot}</div>
-        
-        <div className="text-xs text-gray-500">{school.city}, {school.state}</div>
-        
-        <div className="absolute bottom-2 right-2 text-xs italic text-gray-400">
-          Affiliate
+        <div className="absolute top-1 right-1">
+          <ExternalLink size={16} className="text-white drop-shadow-sm" />
         </div>
       </div>
-      <div 
-        className="h-2" 
-        style={{ background: `linear-gradient(to right, ${school.primaryColor}, ${school.secondaryColor})` }}
-      ></div>
+      
+      <div className="p-3 text-center">
+        <h3 className="font-bold italic">{school.name}</h3>
+        <p className="text-xs text-gray-600">{school.mascot}</p>
+        <p className="text-xs text-gray-500 mt-1">{school.city}, {school.state}</p>
+      </div>
     </div>
   );
 };
