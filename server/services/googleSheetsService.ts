@@ -6,6 +6,13 @@ import { StandingsEntry } from '@shared/schema';
  * Service for fetching and processing data from Google Sheets or directly from MAC website
  */
 export class GoogleSheetsService {
+  // Temporary storage for ties data while processing
+  private tempTies: {
+    schoolId: string;
+    confTies: number;
+    overallTies: number;
+  } | null = null;
+  
   // Known school name to ID mapping
   private readonly schoolNameToId: Record<string, string> = {
     'akron': 'akron',
@@ -42,7 +49,19 @@ export class GoogleSheetsService {
     'rockets': 'toledo',
     'western michigan': 'westernmichigan',
     'wmu': 'westernmichigan',
-    'broncos': 'westernmichigan'
+    'broncos': 'westernmichigan',
+    // Add affiliate schools
+    'james madison': 'jamesmadison',
+    'jmu': 'jamesmadison',
+    'dukes': 'jamesmadison',
+    'app state': 'appstate',
+    'appalachian state': 'appstate',
+    'appalachian': 'appstate',
+    'mountaineers': 'appstate',
+    'longwood': 'longwood',
+    'lancers': 'longwood',
+    'bellarmine': 'bellarmine',
+    'knights': 'bellarmine'
   };
 
   /**
@@ -155,18 +174,49 @@ export class GoogleSheetsService {
           for (let i = 1; i < cells.length; i++) {
             const cellText = cells[i].textContent?.trim() || '';
             
-            // Look for W-L format (e.g., "8-0" or "8 - 0")
-            const wlMatch = cellText.match(/(\d+)\s*-\s*(\d+)/);
-            if (wlMatch) {
-              // Found a W-L record, determine if it's conference or overall
+            // Look for W-L-T format (e.g., "8-0-2" or "8 - 0 - 2") for sports with ties
+            const wltMatch = cellText.match(/(\d+)\s*-\s*(\d+)(?:\s*-\s*(\d+))?/);
+            if (wltMatch) {
+              // Found a record, determine if it's conference or overall
               // Conference record is typically before overall record
               if (confWins === 0 && confLosses === 0) {
-                confWins = parseInt(wlMatch[1]);
-                confLosses = parseInt(wlMatch[2]);
+                confWins = parseInt(wltMatch[1]);
+                confLosses = parseInt(wltMatch[2]);
+                const confTies = wltMatch[3] ? parseInt(wltMatch[3]) : 0;
+                
+                // Create partial standings entry to store the tie value
+                const entry = standings.find(s => s.schoolId === schoolId);
+                if (entry) {
+                  entry.conference.ties = confTies;
+                } else {
+                  console.log(`Adding conference ties: ${confTies} for ${schoolId}`);
+                  // Store ties temporarily
+                  this.tempTies = {
+                    schoolId,
+                    confTies,
+                    overallTies: 0
+                  };
+                }
+                
                 confWinsCol = i;
               } else if (overallWins === 0 && overallLosses === 0) {
-                overallWins = parseInt(wlMatch[1]);
-                overallLosses = parseInt(wlMatch[2]);
+                overallWins = parseInt(wltMatch[1]);
+                overallLosses = parseInt(wltMatch[2]);
+                const overallTies = wltMatch[3] ? parseInt(wltMatch[3]) : 0;
+                
+                // Store overall ties
+                if (this.tempTies && this.tempTies.schoolId === schoolId) {
+                  this.tempTies.overallTies = overallTies;
+                } else {
+                  console.log(`Adding overall ties: ${overallTies} for ${schoolId}`);
+                  // Create new temp ties object if needed
+                  this.tempTies = {
+                    schoolId,
+                    confTies: 0,
+                    overallTies
+                  };
+                }
+                
                 overallWinsCol = i;
               }
             }
@@ -211,17 +261,22 @@ export class GoogleSheetsService {
           
           console.log(`Conference: ${confWins}-${confLosses}, Overall: ${overallWins}-${overallLosses}`);
           
-          // Calculate winning percentages
-          const confTotal = confWins + confLosses;
-          const overallTotal = overallWins + overallLosses;
+          // Get the ties data if we stored it earlier
+          const confTies = this.tempTies?.schoolId === schoolId ? this.tempTies.confTies : 0;
+          const overallTies = this.tempTies?.schoolId === schoolId ? this.tempTies.overallTies : 0;
           
-          const confWinPct = confTotal > 0 ? confWins / confTotal : 0;
-          const overallWinPct = overallTotal > 0 ? overallWins / overallTotal : 0;
+          // Calculate winning percentages (for sports with ties, tie = 0.5 win)
+          const confTotal = confWins + confLosses + (confTies || 0);
+          const overallTotal = overallWins + overallLosses + (overallTies || 0);
+          
+          // In sports with ties, the formula is (W + T/2) / (W + L + T)
+          const confWinPct = confTotal > 0 ? (confWins + (confTies || 0) * 0.5) / confTotal : 0;
+          const overallWinPct = overallTotal > 0 ? (overallWins + (overallTies || 0) * 0.5) / overallTotal : 0;
           
           // Create unique ID for this standing entry
           const entryId = `${sportId}-${schoolId}-${Date.now()}-${index}`;
           
-          // Create standings entry
+          // Create standings entry with ties if applicable
           standings.push({
             id: entryId,
             schoolId,
@@ -229,11 +284,13 @@ export class GoogleSheetsService {
             conference: {
               wins: confWins,
               losses: confLosses,
+              ties: confTies || undefined,
               winningPercentage: confWinPct
             },
             overall: {
               wins: overallWins,
               losses: overallLosses,
+              ties: overallTies || undefined,
               winningPercentage: overallWinPct
             }
           });

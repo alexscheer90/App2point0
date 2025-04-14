@@ -388,8 +388,13 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     
     console.log(`Fetching ${sportId} standings from MAC website`);
     
-    // Map mbball to men's basketball on the MAC website
-    const macSportId = sportId === 'mbball' ? 'basketball' : sportId;
+    // Map sport IDs to the correct paths on the MAC website
+    let macSportId = sportId;
+    if (sportId === 'mbball') {
+      macSportId = 'basketball/m';
+    } else if (sportId === 'wbball') {
+      macSportId = 'basketball/w';
+    }
     
     // First try to get data from the MAC website
     let standings = await googleSheetsService.fetchStandings(macSportId);
