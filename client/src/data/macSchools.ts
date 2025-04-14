@@ -22,6 +22,15 @@ import chicagoStateLogo from "@assets/Chicago_State_Cougars_logo.svg.png";
 import siuEdwardsvilleLogo from "@assets/SIU Edwardsville.png";
 import georgeMasonLogo from "@assets/George Mason.png";
 import riderLogo from "@assets/Rider_Broncs.svg.png";
+import lockHavenLogo from "@assets/Lock_Haven_Bald_Eagles_logo.svg.png";
+import edinboroLogo from "@assets/Edinboro_Fighting_Scots_current_logo.svg.png";
+import clevelandStateLogo from "@assets/Cleveland State.png";
+import clarionLogo from "@assets/Clarion_Golden_Eagles_logo.svg.png";
+import bloomsburgLogo from "@assets/Bloomsburg Huskies Logo-01.png";
+import robertMorrisLogo from "@assets/rmu_logo_1.png";
+import youngstownStateLogo from "@assets/Youngstown state.png";
+import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
+import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
@@ -249,7 +258,7 @@ export const macSchools: School[] = [
     mascot: "Bald Eagles",
     primaryColor: "#B31B1B",
     secondaryColor: "#FFFFFF",
-    logoUrl: "", // No logo yet
+    logoUrl: lockHavenLogo,
     city: "Lock Haven",
     state: "PA",
     affiliate: true
@@ -285,7 +294,7 @@ export const macSchools: School[] = [
     mascot: "Fighting Scots",
     primaryColor: "#AF1E2D",
     secondaryColor: "#FFFFFF",
-    logoUrl: "", // No logo yet
+    logoUrl: edinboroLogo,
     city: "Edinboro",
     state: "PA",
     affiliate: true
@@ -295,9 +304,9 @@ export const macSchools: School[] = [
     name: "Cleveland State",
     shortName: "CSU",
     mascot: "Vikings",
-    primaryColor: "#006A4D",
-    secondaryColor: "#000000",
-    logoUrl: "", // No logo yet
+    primaryColor: "#006A4D", // Green
+    secondaryColor: "#000000", // Black
+    logoUrl: clevelandStateLogo,
     city: "Cleveland",
     state: "OH",
     affiliate: true
@@ -307,9 +316,9 @@ export const macSchools: School[] = [
     name: "Clarion",
     shortName: "Clarion",
     mascot: "Golden Eagles",
-    primaryColor: "#003976",
-    secondaryColor: "#FFD900",
-    logoUrl: "", // No logo yet
+    primaryColor: "#0055a5", // Lighter Blue
+    secondaryColor: "#FFD900", // Gold
+    logoUrl: clarionLogo,
     city: "Clarion",
     state: "PA",
     affiliate: true
@@ -319,9 +328,9 @@ export const macSchools: School[] = [
     name: "Bloomsburg",
     shortName: "Bloomsburg",
     mascot: "Huskies",
-    primaryColor: "#9E1B32",
-    secondaryColor: "#F1C400",
-    logoUrl: "", // No logo yet
+    primaryColor: "#9E1B32", // Maroon
+    secondaryColor: "#F1C400", // Gold
+    logoUrl: bloomsburgLogo,
     city: "Bloomsburg",
     state: "PA",
     affiliate: true
@@ -331,9 +340,9 @@ export const macSchools: School[] = [
     name: "Robert Morris",
     shortName: "RMU",
     mascot: "Colonials",
-    primaryColor: "#14234B",
-    secondaryColor: "#A6192E",
-    logoUrl: "", // No logo yet
+    primaryColor: "#14234B", // Navy
+    secondaryColor: "#A6192E", // Red
+    logoUrl: robertMorrisLogo,
     city: "Moon Township",
     state: "PA",
     affiliate: true
@@ -343,9 +352,9 @@ export const macSchools: School[] = [
     name: "Detroit Mercy",
     shortName: "Detroit",
     mascot: "Titans",
-    primaryColor: "#E51636",
-    secondaryColor: "#041E42",
-    logoUrl: "", // No logo yet
+    primaryColor: "#E51636", // Red
+    secondaryColor: "#041E42", // Navy
+    logoUrl: detroitMercyLogo,
     city: "Detroit",
     state: "MI",
     affiliate: true
