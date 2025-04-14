@@ -364,9 +364,9 @@ export const macSchools: School[] = [
     name: "Youngstown State",
     shortName: "YSU",
     mascot: "Penguins",
-    primaryColor: "#C8102E",
-    secondaryColor: "#000000",
-    logoUrl: "", // No logo yet
+    primaryColor: "#C8102E", // Red
+    secondaryColor: "#000000", // Black
+    logoUrl: youngstownStateLogo,
     city: "Youngstown",
     state: "OH",
     affiliate: true
@@ -376,9 +376,9 @@ export const macSchools: School[] = [
     name: "UIC",
     shortName: "UIC",
     mascot: "Flames",
-    primaryColor: "#D50032",
-    secondaryColor: "#001E62",
-    logoUrl: "", // No logo yet
+    primaryColor: "#D50032", // Red
+    secondaryColor: "#001E62", // Navy
+    logoUrl: uicLogo,
     city: "Chicago",
     state: "IL",
     affiliate: true
