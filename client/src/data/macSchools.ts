@@ -21,6 +21,7 @@ import bellarmineLogo from "@assets/Bellarmine.png";
 import chicagoStateLogo from "@assets/Chicago_State_Cougars_logo.svg.png";
 import siuEdwardsvilleLogo from "@assets/SIU Edwardsville.png";
 import georgeMasonLogo from "@assets/George Mason.png";
+import riderLogo from "@assets/Rider_Broncs.svg.png";
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
@@ -258,7 +259,7 @@ export const macSchools: School[] = [
     name: "George Mason",
     shortName: "GMU",
     mascot: "Patriots",
-    primaryColor: "#006633", // Green
+    primaryColor: "#008844", // Lighter Green
     secondaryColor: "#FFCC33", // Gold
     logoUrl: georgeMasonLogo,
     city: "Fairfax",
@@ -270,9 +271,9 @@ export const macSchools: School[] = [
     name: "Rider",
     shortName: "Rider",
     mascot: "Broncs",
-    primaryColor: "#98002E",
-    secondaryColor: "#6B6B6B",
-    logoUrl: "", // No logo yet
+    primaryColor: "#98002E", // Crimson
+    secondaryColor: "#6B6B6B", // Gray
+    logoUrl: riderLogo,
     city: "Lawrenceville",
     state: "NJ",
     affiliate: true

@@ -50,7 +50,7 @@ const AffiliateSchoolCard = ({ school }: { school: School }) => {
           backgroundColor: 
             school.id === "bowlinggreen" ? school.secondaryColor :
             school.id === "centralmichigan" ? school.secondaryColor :
-            school.id === "georgemason" ? school.secondaryColor :
+            school.id === "georgemason" ? school.primaryColor :
             school.id === "buffalo" || 
             school.id === "easternmichigan" ? 
               "white" : school.primaryColor
