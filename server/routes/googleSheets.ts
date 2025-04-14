@@ -379,21 +379,24 @@ const backupStandings: Record<string, StandingsEntry[]> = {
 };
 
 /**
- * Get standings for a specific sport from Google Sheets
+ * Get standings for a specific sport from MAC website
  * GET /api/sheets/standings/:sportId
  */
 router.get('/standings/:sportId', async (req: Request, res: Response) => {
   try {
     const { sportId } = req.params;
     
-    console.log(`Fetching ${sportId} standings from Google Sheets`);
+    console.log(`Fetching ${sportId} standings from MAC website`);
     
-    // First try to get data from Google Sheets
-    let standings = await googleSheetsService.fetchStandings(sportId);
+    // Map mbball to men's basketball on the MAC website
+    const macSportId = sportId === 'mbball' ? 'basketball' : sportId;
     
-    // If Google Sheets returned no data, use our backup data
+    // First try to get data from the MAC website
+    let standings = await googleSheetsService.fetchStandings(macSportId);
+    
+    // If we got no data, use our backup data
     if (standings.length === 0 && backupStandings[sportId]) {
-      console.log(`No data returned from Google Sheets. Using backup data for ${sportId}`);
+      console.log(`No data returned from MAC website. Using backup data for ${sportId}`);
       standings = backupStandings[sportId];
     }
     
@@ -404,12 +407,12 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
       message: `Successfully fetched ${standings.length} standings entries for ${sportId}`
     });
   } catch (error) {
-    console.error('Error fetching standings from Google Sheets:', error);
+    console.error('Error fetching standings from MAC website:', error);
     
     // On error, check if we have backup data for this sport
     const sportId = req.params.sportId;
     if (backupStandings[sportId]) {
-      console.log(`Error with Google Sheets. Using backup data for ${sportId}`);
+      console.log(`Error with MAC website. Using backup data for ${sportId}`);
       
       return res.json({
         success: true,
@@ -420,7 +423,7 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     }
     
     return res.status(500).json({
-      error: 'Failed to fetch standings from Google Sheets',
+      error: 'Failed to fetch standings from MAC website',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
