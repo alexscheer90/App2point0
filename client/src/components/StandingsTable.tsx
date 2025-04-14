@@ -91,7 +91,12 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                           </span>
                         </div>
                       )}
-                      <span className="text-sm font-medium text-gray-900 truncate">{school.name}</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900 truncate">{school.name}</span>
+                        {school.affiliate && (
+                          <span className="text-xs text-gray-500 italic">Affiliate Member</span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   {/* Conference Record */}

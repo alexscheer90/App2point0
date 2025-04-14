@@ -159,7 +159,7 @@ export const macSchools: School[] = [
     city: "Kalamazoo",
     state: "MI",
   },
-  // Affiliate schools
+  // Affiliate schools - Field Hockey (MAC affiliate members)
   {
     id: "jmu",
     name: "James Madison",
@@ -206,6 +206,150 @@ export const macSchools: School[] = [
     logoUrl: "", // No logo yet
     city: "Louisville",
     state: "KY",
+    affiliate: true
+  },
+  {
+    id: "chicagostate",
+    name: "Chicago State",
+    shortName: "Chicago St",
+    mascot: "Cougars",
+    primaryColor: "#006747",
+    secondaryColor: "#989898",
+    logoUrl: "", // No logo yet
+    city: "Chicago",
+    state: "IL",
+    affiliate: true
+  },
+  {
+    id: "siuedwardsville",
+    name: "SIU Edwardsville",
+    shortName: "SIUE",
+    mascot: "Cougars",
+    primaryColor: "#CC0000",
+    secondaryColor: "#000000",
+    logoUrl: "", // No logo yet
+    city: "Edwardsville",
+    state: "IL",
+    affiliate: true
+  },
+  {
+    id: "lockhaven",
+    name: "Lock Haven",
+    shortName: "Lock Haven",
+    mascot: "Bald Eagles",
+    primaryColor: "#B31B1B",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "", // No logo yet
+    city: "Lock Haven",
+    state: "PA",
+    affiliate: true
+  },
+  {
+    id: "georgemason",
+    name: "George Mason",
+    shortName: "GMU",
+    mascot: "Patriots",
+    primaryColor: "#006633",
+    secondaryColor: "#FFCC33",
+    logoUrl: "", // No logo yet
+    city: "Fairfax",
+    state: "VA",
+    affiliate: true
+  },
+  {
+    id: "rider",
+    name: "Rider",
+    shortName: "Rider",
+    mascot: "Broncs",
+    primaryColor: "#98002E",
+    secondaryColor: "#6B6B6B",
+    logoUrl: "", // No logo yet
+    city: "Lawrenceville",
+    state: "NJ",
+    affiliate: true
+  },
+  {
+    id: "edinboro",
+    name: "Edinboro",
+    shortName: "Edinboro",
+    mascot: "Fighting Scots",
+    primaryColor: "#AF1E2D",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "", // No logo yet
+    city: "Edinboro",
+    state: "PA",
+    affiliate: true
+  },
+  {
+    id: "clevelandstate",
+    name: "Cleveland State",
+    shortName: "CSU",
+    mascot: "Vikings",
+    primaryColor: "#006A4D",
+    secondaryColor: "#000000",
+    logoUrl: "", // No logo yet
+    city: "Cleveland",
+    state: "OH",
+    affiliate: true
+  },
+  {
+    id: "clarion",
+    name: "Clarion",
+    shortName: "Clarion",
+    mascot: "Golden Eagles",
+    primaryColor: "#003976",
+    secondaryColor: "#FFD900",
+    logoUrl: "", // No logo yet
+    city: "Clarion",
+    state: "PA",
+    affiliate: true
+  },
+  {
+    id: "bloomsburg",
+    name: "Bloomsburg",
+    shortName: "Bloomsburg",
+    mascot: "Huskies",
+    primaryColor: "#9E1B32",
+    secondaryColor: "#F1C400",
+    logoUrl: "", // No logo yet
+    city: "Bloomsburg",
+    state: "PA",
+    affiliate: true
+  },
+  {
+    id: "robertmorris",
+    name: "Robert Morris",
+    shortName: "RMU",
+    mascot: "Colonials",
+    primaryColor: "#14234B",
+    secondaryColor: "#A6192E",
+    logoUrl: "", // No logo yet
+    city: "Moon Township",
+    state: "PA",
+    affiliate: true
+  },
+  {
+    id: "detroitmercy",
+    name: "Detroit Mercy",
+    shortName: "Detroit",
+    mascot: "Titans",
+    primaryColor: "#E51636",
+    secondaryColor: "#041E42",
+    logoUrl: "", // No logo yet
+    city: "Detroit",
+    state: "MI",
+    affiliate: true
+  },
+  {
+    id: "youngstownstate",
+    name: "Youngstown State",
+    shortName: "YSU",
+    mascot: "Penguins",
+    primaryColor: "#C8102E",
+    secondaryColor: "#000000",
+    logoUrl: "", // No logo yet
+    city: "Youngstown",
+    state: "OH",
     affiliate: true
   }
 ];

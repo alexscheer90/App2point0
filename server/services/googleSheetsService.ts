@@ -63,7 +63,23 @@ export class GoogleSheetsService {
     'bellarmine': 'bellarmine',
     'knights': 'bellarmine',
     'chicago state': 'chicagostate',
-    'chicago state university': 'chicagostate'
+    'chicago state university': 'chicagostate',
+    'siu edwardsville': 'siuedwardsville',
+    'siue': 'siuedwardsville',
+    'lock haven': 'lockhaven',
+    'george mason': 'georgemason',
+    'gmu': 'georgemason',
+    'rider': 'rider',
+    'edinboro': 'edinboro',
+    'cleveland state': 'clevelandstate',
+    'csu': 'clevelandstate',
+    'clarion': 'clarion',
+    'bloomsburg': 'bloomsburg',
+    'youngstown state': 'youngstownstate',
+    'youngstown': 'youngstownstate',
+    'detroit mercy': 'detroitmercy',
+    'detroit': 'detroitmercy',
+    'robert morris': 'robertmorris'
   };
 
   /**
