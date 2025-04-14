@@ -6,10 +6,14 @@ import { insertUserPreferencesSchema, Game, NewsItem } from "@shared/schema";
 import axios from "axios";
 import { WebSocketServer, WebSocket } from "ws";
 import importerRoutes from "./routes/importer";
+import googleSheetsRoutes from "./routes/googleSheets";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register data importer routes
   app.use('/api/import', importerRoutes);
+  
+  // Register Google Sheets routes
+  app.use('/api/sheets', googleSheetsRoutes);
   
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {
