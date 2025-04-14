@@ -49,24 +49,37 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
   
   if (hasEastWestDivision) {
-    // Define East and West division schools for wrestling
+    // Define East and West division schools for wrestling if not already specified in the data
     const eastSchools = ['kentstate', 'ohio', 'edinboro', 'clarion', 'bloomsburg', 'lockhaven', 'clevelandstate', 'georgemason', 'rider'];
     const westSchools = ['northernillinois', 'centralmichigan', 'siuedwardsville', 'buffalo'];
     
-    // Categorize and sort entries by division
+    // First check if division information is already in the entries
+    const hasDivisionData = processedEntries.some(entry => entry.division !== undefined);
+    
+    if (!hasDivisionData) {
+      // If division data is not available in the entries, set it based on school lists
+      processedEntries = processedEntries.map(entry => {
+        if (eastSchools.includes(entry.schoolId)) {
+          return { ...entry, division: 'East' as const };
+        } else if (westSchools.includes(entry.schoolId)) {
+          return { ...entry, division: 'West' as const };
+        }
+        return entry;
+      });
+    }
+    
+    // Sort entries within each division by winning percentage
     const eastEntries = processedEntries
-      .filter(entry => eastSchools.includes(entry.schoolId))
-      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage)
-      .map(entry => ({ ...entry, division: 'East' as const }));
+      .filter(entry => entry.division === 'East')
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
     
     const westEntries = processedEntries
-      .filter(entry => westSchools.includes(entry.schoolId))
-      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage)
-      .map(entry => ({ ...entry, division: 'West' as const }));
+      .filter(entry => entry.division === 'West')
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
     
-    // Other entries that don't fit in either division
+    // Other entries that don't have a division
     const otherEntries = processedEntries
-      .filter(entry => !eastSchools.includes(entry.schoolId) && !westSchools.includes(entry.schoolId))
+      .filter(entry => !entry.division)
       .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
     
     // Combine entries in division order
