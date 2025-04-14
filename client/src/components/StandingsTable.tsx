@@ -50,8 +50,8 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   
   if (hasEastWestDivision) {
     // Define East and West division schools for wrestling if not already specified in the data
-    const eastSchools = ['kentstate', 'ohio', 'edinboro', 'clarion', 'bloomsburg', 'lockhaven', 'clevelandstate', 'georgemason', 'rider'];
-    const westSchools = ['northernillinois', 'centralmichigan', 'siuedwardsville', 'buffalo'];
+    const eastSchools = ['lockhaven', 'georgemason', 'rider', 'edinboro', 'clevelandstate', 'clarion', 'bloomsburg'];
+    const westSchools = ['northernillinois', 'centralmichigan', 'ohio', 'siuedwardsville', 'buffalo', 'kentstate'];
     
     // First check if division information is already in the entries
     const hasDivisionData = processedEntries.some(entry => entry.division !== undefined);
