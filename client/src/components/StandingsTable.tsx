@@ -62,8 +62,16 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {sortedEntries.map(entry => {
+              // Add debugging for missing schools
+              if (!schools.some(s => s.id === entry.schoolId)) {
+                console.log(`WARNING: No school found for ID: ${entry.schoolId} with record ${entry.conference.wins}-${entry.conference.losses}`);
+              }
+              
               const school = schools.find(s => s.id === entry.schoolId);
-              if (!school) return null;
+              if (!school) {
+                console.log(`SKIPPING entry for school ID ${entry.schoolId} - no matching school found`);
+                return null;
+              }
               
               const isFavorite = favoriteSchoolId === school.id;
               
