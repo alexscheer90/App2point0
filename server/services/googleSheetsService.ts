@@ -262,16 +262,16 @@ export class GoogleSheetsService {
           console.log(`Conference: ${confWins}-${confLosses}, Overall: ${overallWins}-${overallLosses}`);
           
           // Get the ties data if we stored it earlier
-          const confTies = this.tempTies?.schoolId === schoolId ? this.tempTies.confTies : 0;
-          const overallTies = this.tempTies?.schoolId === schoolId ? this.tempTies.overallTies : 0;
+          const tempConfTies = this.tempTies?.schoolId === schoolId ? this.tempTies.confTies : 0;
+          const tempOverallTies = this.tempTies?.schoolId === schoolId ? this.tempTies.overallTies : 0;
           
           // Calculate winning percentages (for sports with ties, tie = 0.5 win)
-          const confTotal = confWins + confLosses + (confTies || 0);
-          const overallTotal = overallWins + overallLosses + (overallTies || 0);
+          const confTotal = confWins + confLosses + tempConfTies;
+          const overallTotal = overallWins + overallLosses + tempOverallTies;
           
           // In sports with ties, the formula is (W + T/2) / (W + L + T)
-          const confWinPct = confTotal > 0 ? (confWins + (confTies || 0) * 0.5) / confTotal : 0;
-          const overallWinPct = overallTotal > 0 ? (overallWins + (overallTies || 0) * 0.5) / overallTotal : 0;
+          const confWinPct = confTotal > 0 ? (confWins + tempConfTies * 0.5) / confTotal : 0;
+          const overallWinPct = overallTotal > 0 ? (overallWins + tempOverallTies * 0.5) / overallTotal : 0;
           
           // Create unique ID for this standing entry
           const entryId = `${sportId}-${schoolId}-${Date.now()}-${index}`;
@@ -284,13 +284,13 @@ export class GoogleSheetsService {
             conference: {
               wins: confWins,
               losses: confLosses,
-              ties: confTies || undefined,
+              ties: tempConfTies > 0 ? tempConfTies : undefined,
               winningPercentage: confWinPct
             },
             overall: {
               wins: overallWins,
               losses: overallLosses,
-              ties: overallTies || undefined,
+              ties: tempOverallTies > 0 ? tempOverallTies : undefined,
               winningPercentage: overallWinPct
             }
           });
