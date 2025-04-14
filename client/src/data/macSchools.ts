@@ -351,5 +351,17 @@ export const macSchools: School[] = [
     city: "Youngstown",
     state: "OH",
     affiliate: true
+  },
+  {
+    id: "uic",
+    name: "UIC",
+    shortName: "UIC",
+    mascot: "Flames",
+    primaryColor: "#D50032",
+    secondaryColor: "#001E62",
+    logoUrl: "", // No logo yet
+    city: "Chicago",
+    state: "IL",
+    affiliate: true
   }
 ];
