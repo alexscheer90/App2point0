@@ -391,9 +391,11 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     // Map sport IDs to the correct paths on the MAC website
     let macSportId = sportId;
     if (sportId === 'mbball') {
-      macSportId = 'basketball/m';
+      // For men's basketball, try the direct ID
+      macSportId = 'mbball';
     } else if (sportId === 'wbball') {
-      macSportId = 'basketball/w';
+      // For women's basketball, try the direct ID
+      macSportId = 'wbball';
     }
     
     // First try to get data from the MAC website

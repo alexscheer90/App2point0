@@ -9,6 +9,12 @@ export const macSports: Sport[] = [
     officialUrl: "https://getsomemaction.com/standings.aspx?path=football"
   },
   {
+    id: "msoc",
+    name: "Soccer",
+    gender: "men",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=msoc"
+  },
+  {
     id: "mbball",
     name: "Basketball",
     gender: "men",

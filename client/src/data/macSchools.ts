@@ -158,5 +158,54 @@ export const macSchools: School[] = [
     logoUrl: wmuLogo,
     city: "Kalamazoo",
     state: "MI",
+  },
+  // Affiliate schools
+  {
+    id: "jmu",
+    name: "James Madison",
+    shortName: "JMU",
+    mascot: "Dukes",
+    primaryColor: "#450084",
+    secondaryColor: "#CBB677",
+    logoUrl: "", // No logo yet
+    city: "Harrisonburg",
+    state: "VA",
+    affiliate: true
+  },
+  {
+    id: "appstate",
+    name: "Appalachian State",
+    shortName: "App State",
+    mascot: "Mountaineers",
+    primaryColor: "#000000",
+    secondaryColor: "#FFCC00",
+    logoUrl: "", // No logo yet
+    city: "Boone",
+    state: "NC",
+    affiliate: true
+  },
+  {
+    id: "longwood",
+    name: "Longwood",
+    shortName: "Longwood",
+    mascot: "Lancers",
+    primaryColor: "#00559A",
+    secondaryColor: "#B9B9B9",
+    logoUrl: "", // No logo yet
+    city: "Farmville",
+    state: "VA",
+    affiliate: true
+  },
+  {
+    id: "bellarmine",
+    name: "Bellarmine",
+    shortName: "Bellarmine",
+    mascot: "Knights",
+    primaryColor: "#231F20",
+    secondaryColor: "#AE9142",
+    logoUrl: "", // No logo yet
+    city: "Louisville",
+    state: "KY",
+    affiliate: true
   }
 ];
