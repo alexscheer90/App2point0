@@ -52,6 +52,7 @@ export class GoogleSheetsService {
     'broncos': 'westernmichigan',
     // Add affiliate schools
     'james madison': 'jmu',
+    'jamesmadison': 'jmu', // Add this to fix mapping
     'jmu': 'jmu',
     'dukes': 'jmu',
     'app state': 'appstate',
