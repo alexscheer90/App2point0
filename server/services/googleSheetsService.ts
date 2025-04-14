@@ -35,7 +35,8 @@ export class GoogleSheetsService {
       const gid = this.sportToGidMap[sportId] || '0';
       
       // Construct the URL to fetch the CSV format of the specific sheet
-      const url = `https://docs.google.com/spreadsheets/d/${this.spreadsheetId}/export?format=csv&gid=${gid}`;
+      // Using the "pub" endpoint which works better for publicly shared sheets
+      const url = `https://docs.google.com/spreadsheets/d/${this.spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${sportId}&gid=${gid}`;
       
       console.log(`Fetching data from URL: ${url}`);
       
