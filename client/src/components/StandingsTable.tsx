@@ -25,6 +25,10 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     );
   }
   
+  // Log the entries and school IDs for debugging
+  console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.conference.wins}-${e.conference.losses})`));
+  console.log("Available school IDs:", schools.map(s => s.id));
+  
   // Sort entries by conference winning percentage (descending)
   const sortedEntries = [...entries].sort((a, b) => {
     return b.conference.winningPercentage - a.conference.winningPercentage;
