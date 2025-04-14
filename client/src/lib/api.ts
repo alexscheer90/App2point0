@@ -246,10 +246,22 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
   }
 }
 
-// Standings API - Implementation using real data from MAC website
+// Standings API - Implementation using real data from Google Sheets
 export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
   try {
-    // Get the sport details
+    console.log(`Fetching standings for: ${sportId}`);
+    
+    // Try to get standings from our Google Sheets API endpoint
+    const response = await apiRequest("GET", `/api/sheets/standings/${sportId}`);
+    const result = await response.json();
+    
+    if (result.success && result.data && Array.isArray(result.data)) {
+      console.log(`Successfully fetched ${result.data.length} standings entries from Google Sheets`);
+      return result.data;
+    }
+    
+    // If Google Sheets fetch failed, fall back to scraper
+    console.log("Google Sheets data not available, falling back to scraper");
     const sport = macSports.find(s => s.id === sportId);
     
     if (!sport) {
@@ -262,7 +274,7 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return [];
     }
     
-    // Use the scraper to get real-time data
+    // Use the scraper to get real-time data as a backup
     const standings = await scrapeStandingsForSport(sport);
     
     // If we got real data, return it
@@ -270,8 +282,8 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return standings;
     }
     
-    // If scraping failed, return a placeholder message
-    console.error(`Failed to scrape standings for ${sportId}`);
+    // If all methods failed, return empty array
+    console.error(`Failed to fetch standings for ${sportId} from all sources`);
     return [];
   } catch (error) {
     console.error(`Error fetching standings for ${sportId}:`, error);
