@@ -52,7 +52,8 @@ const SoundsPage = () => {
   const soundsBySchool: Record<string, SchoolSounds> = {};
   
   if (!selectedSchool && sounds) {
-    schools.forEach(school => {
+    // Only include non-affiliate schools
+    schools.filter(school => !school.affiliate).forEach(school => {
       const schoolSounds = sounds.filter(s => s.schoolId === school.id);
       
       const filteredSchoolSounds = schoolSounds.filter(sound => {
@@ -101,7 +102,7 @@ const SoundsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All MAC Schools</SelectItem>
-              {schools.map(school => (
+              {schools.filter(school => !school.affiliate).map(school => (
                 <SelectItem key={school.id} value={school.id}>
                   <div className="flex items-center">
                     {school.logoUrl && (

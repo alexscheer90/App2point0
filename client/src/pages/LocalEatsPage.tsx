@@ -53,7 +53,8 @@ const LocalEatsPage = () => {
   const restaurantsBySchool: Record<string, SchoolRestaurants> = {};
   
   if (!selectedSchool && restaurants) {
-    schools.forEach(school => {
+    // Only include non-affiliate schools
+    schools.filter(school => !school.affiliate).forEach(school => {
       const schoolRestaurants = restaurants.filter(r => r.schoolId === school.id);
       
       const filteredSchoolRestaurants = schoolRestaurants.filter(restaurant => {
@@ -103,7 +104,7 @@ const LocalEatsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All MAC Cities</SelectItem>
-              {schools.map(school => (
+              {schools.filter(school => !school.affiliate).map(school => (
                 <SelectItem key={school.id} value={school.id}>
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-2 text-gray-500" />
