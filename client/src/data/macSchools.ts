@@ -28,7 +28,7 @@ import clevelandStateLogo from "@assets/Cleveland State.png";
 import clarionLogo from "@assets/Clarion_Golden_Eagles_logo.svg.png";
 import bloomsburgLogo from "@assets/Bloomsburg Huskies Logo-01.png";
 import robertMorrisLogo from "@assets/rmu_logo_1.png";
-import youngstownStateLogo from "@assets/Youngstown state.png";
+import youngstownStateLogo from "@assets/Youngstown_State_Penguins_logo.svg.png";
 import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
 import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
 
