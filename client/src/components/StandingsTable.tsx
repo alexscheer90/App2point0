@@ -43,10 +43,10 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
                 Team
               </th>
-              <th colSpan={3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+              <th colSpan={sport === 'soccer' || sport === 'wsoc' || sport === 'msoc' ? 4 : 3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Conference
               </th>
-              <th colSpan={3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+              <th colSpan={sport === 'soccer' || sport === 'wsoc' || sport === 'msoc' ? 4 : 3} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Overall
               </th>
             </tr>
@@ -54,9 +54,15 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+              {(sport === 'soccer' || sport === 'wsoc' || sport === 'msoc') && 
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
+              }
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+              {(sport === 'soccer' || sport === 'wsoc' || sport === 'msoc') && 
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
+              }
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
             </tr>
           </thead>
