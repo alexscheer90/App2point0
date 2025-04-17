@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -309,18 +311,51 @@ const SchedulePage = () => {
       </div>
       
       {/* View Tabs */}
-      <Tabs
-        defaultValue="upcoming"
-        value={currentView}
-        onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "past")}
-        className="mb-6"
-      >
-        <TabsList className="grid grid-cols-3 w-full md:w-[360px]">
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="past">Completed</TabsTrigger>
-          <TabsTrigger value="all">All Games</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <Tabs
+          defaultValue="upcoming"
+          value={currentView}
+          onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "past")}
+          className="mb-4 md:mb-0"
+        >
+          <TabsList className="grid grid-cols-3 w-full md:w-[360px]">
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="past">Completed</TabsTrigger>
+            <TabsTrigger value="all">All Games</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        
+        <div className="flex items-center space-x-2">
+          <Label htmlFor="data-source" className="text-sm text-gray-700">
+            Use Official MAC Calendar
+          </Label>
+          <Switch 
+            id="data-source" 
+            checked={dataSource === "mac"}
+            onCheckedChange={(checked) => setDataSource(checked ? "mac" : "local")}
+          />
+          {dataSource === "mac" && (
+            <RefreshCw 
+              className="h-4 w-4 ml-2 cursor-pointer text-gray-500 hover:text-gray-700" 
+              onClick={() => {
+                // Refresh the MAC calendar data
+                window.location.reload();
+              }}
+            />
+          )}
+        </div>
+      </div>
+      
+      {/* Data Source Badge */}
+      <div className="mb-4">
+        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+          dataSource === "mac" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
+        }`}>
+          <span>
+            {dataSource === "mac" ? "Official MAC Calendar Data" : "App Calendar Data"}
+          </span>
+        </div>
+      </div>
       
       {/* Game List */}
       <div>
@@ -340,6 +375,11 @@ const SchedulePage = () => {
         ) : (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <p className="text-gray-500">No games found for the selected filters.</p>
+            {dataSource === "mac" && (
+              <p className="text-sm text-gray-400 mt-2">
+                Try switching to the app calendar data or changing your filters.
+              </p>
+            )}
           </div>
         )}
       </div>
