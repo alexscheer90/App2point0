@@ -7,7 +7,7 @@ interface SportSelectorProps {
   showAllOption?: boolean;
 }
 
-const SportSelector = ({ selectedSport, onChange, showAllOption = false }: SportSelectorProps) => {
+const SportSelector = ({ selectedSport, onChange, showAllOption = true }: SportSelectorProps) => {
   const { data: sports, isLoading } = useMacSports();
   
   return (

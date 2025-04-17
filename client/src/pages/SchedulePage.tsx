@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Calendar, Clock, MapPin, RefreshCw, List, CalendarIcon, Grid, Tag } from "lucide-react";
+import { Calendar, Clock, MapPin, CalendarIcon, Tag } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
 import { useMacCalendar } from "../hooks/useMacCalendar";
+import { queryClient } from "../lib/queryClient";
 import SportSelector from "../components/SportSelector";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,10 +27,34 @@ const MAC_NAVY = "#0B213E";
 const MAC_GREEN = "#019E4F";
 
 const SchedulePage = () => {
-  const [selectedSport, setSelectedSport] = useState<string>("football");
+  const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"all" | "upcoming" | "past">("upcoming");
   const [groupBy, setGroupBy] = useState<"date" | "sport">("date");
+  
+  // Effect to auto-refresh data when component mounts
+  useEffect(() => {
+    const loadData = () => {
+      // Using the queryClient to invalidate and refetch data
+      // This will cause a refresh of the calendar data
+      queryClient.invalidateQueries({ queryKey: ['/api/import/mac-calendar'] });
+    };
+    
+    loadData();
+    
+    // Set up auto-refresh when app regains focus or visibility
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadData();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
   
   // Only use MAC calendar data now
   const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(selectedSport, selectedTeam !== "all" ? selectedTeam : undefined);
@@ -316,57 +341,44 @@ const SchedulePage = () => {
         </Select>
       </div>
       
-      {/* View Tabs */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+      {/* View Tabs - Upcoming/Completed/All Games */}
+      <div className="mb-4">
         <Tabs
           defaultValue="upcoming"
           value={currentView}
           onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "past")}
-          className="mb-4 md:mb-0"
         >
-          <TabsList className="grid grid-cols-3 w-full md:w-[360px]">
+          <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
             <TabsTrigger value="past">Completed</TabsTrigger>
             <TabsTrigger value="all">All Games</TabsTrigger>
           </TabsList>
         </Tabs>
-        
-        <div className="flex items-center">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="text-xs flex items-center gap-1"
-            onClick={() => window.location.reload()}
-          >
-            <RefreshCw className="h-3 w-3" />
-            Refresh Calendar
-          </Button>
-        </div>
       </div>
       
-      {/* Calendar Data Badge and Group By Options */}
-      <div className="mb-4 flex justify-between items-center">
-        <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+      {/* Data Source and View Toggle */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
           <span>Official MAC Calendar Data</span>
         </div>
         
-        <div className="flex gap-1 border rounded-md overflow-hidden">
+        <div className="flex border rounded-md overflow-hidden">
           <Button 
             variant={groupBy === "date" ? "default" : "ghost"}
             size="sm" 
-            className="rounded-none border-0 text-xs"
+            className="rounded-none border-0 text-sm px-4"
             onClick={() => setGroupBy("date")}
           >
-            <CalendarIcon className="h-3 w-3 mr-1" />
+            <CalendarIcon className="h-4 w-4 mr-1.5" />
             By Date
           </Button>
           <Button 
             variant={groupBy === "sport" ? "default" : "ghost"}
             size="sm" 
-            className="rounded-none border-0 text-xs"
+            className="rounded-none border-0 text-sm px-4"
             onClick={() => setGroupBy("sport")}
           >
-            <Tag className="h-3 w-3 mr-1" />
+            <Tag className="h-4 w-4 mr-1.5" />
             By Sport
           </Button>
         </div>
