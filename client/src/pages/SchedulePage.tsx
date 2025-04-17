@@ -26,67 +26,155 @@ import {
 const MAC_NAVY = "#0B213E";
 const MAC_GREEN = "#019E4F";
 
-// Function to get sport name
+// Function to get sport name and handle all variants of IDs
 const getSportName = (sportId: string): string => {
-  switch(sportId) {
-    case 'football': return 'Football';
-    case 'basketball': return 'Basketball';
-    case 'baseball': return 'Baseball';
-    case 'softball': return 'Softball';
-    case 'volleyball': return 'Volleyball';
-    case 'soccer': return 'Soccer';
-    case 'fieldhockey': return 'Field Hockey';
-    case 'wrestling': return 'Wrestling';
-    case 'swimming': return 'Swimming';
-    case 'track': return 'Track & Field';
-    case 'crosscountry': return 'Cross Country';
-    case 'golf': return 'Golf';
-    case 'tennis': return 'Tennis';
-    case 'gymnastics': return 'Gymnastics';
-    case 'lacrosse': return 'Lacrosse';
-    case 'rowing': return 'Rowing';
-    default: return sportId.charAt(0).toUpperCase() + sportId.slice(1);
+  // Normalize the sport ID for consistent matching
+  const normalizedId = sportId.toLowerCase().trim();
+  
+  // Handle men's and women's basketball IDs
+  if (normalizedId === 'mbball' || normalizedId === 'm-basketball' || 
+    (normalizedId.includes('basketball') && normalizedId.includes('men'))) {
+    return "Men's Basketball";
   }
+  
+  if (normalizedId === 'wbball' || normalizedId === 'w-basketball' || 
+    (normalizedId.includes('basketball') && normalizedId.includes('women'))) {
+    return "Women's Basketball";
+  }
+  
+  // Handle other common variants
+  if (normalizedId === 'football' || normalizedId.includes('football')) return 'Football';
+  if (normalizedId === 'baseball' || normalizedId.includes('baseball')) return 'Baseball';
+  if (normalizedId === 'softball' || normalizedId.includes('softball')) return 'Softball';
+  if (normalizedId === 'volleyball' || normalizedId.includes('volleyball')) return 'Volleyball';
+  
+  // Soccer variants
+  if (normalizedId === 'msoccer' || normalizedId === 'm-soccer' || 
+    (normalizedId.includes('soccer') && normalizedId.includes('men'))) {
+    return "Men's Soccer";
+  }
+  
+  if (normalizedId === 'wsoccer' || normalizedId === 'w-soccer' || 
+    (normalizedId.includes('soccer') && normalizedId.includes('women'))) {
+    return "Women's Soccer";
+  }
+  
+  // Other sports
+  if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) return 'Field Hockey';
+  if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) return 'Wrestling';
+  if (normalizedId === 'swimming' || normalizedId.includes('swimming')) return 'Swimming';
+  if (normalizedId === 'track' || normalizedId.includes('track')) return 'Track & Field';
+  if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) return 'Cross Country';
+  if (normalizedId === 'golf' || normalizedId.includes('golf')) return 'Golf';
+  if (normalizedId === 'tennis' || normalizedId.includes('tennis')) return 'Tennis';
+  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return 'Gymnastics';
+  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) return 'Lacrosse';
+  if (normalizedId === 'rowing' || normalizedId.includes('rowing')) return 'Rowing';
+  
+  // Default formatting for unknown sports
+  return sportId.charAt(0).toUpperCase() + sportId.slice(1);
 };
 
 // Function to get badge style based on sport
 const getSportBadgeStyle = (sportId: string): string => {
-  switch(sportId) {
-    case 'football': 
-      return 'bg-amber-50 text-amber-800 border-amber-200';
-    case 'basketball': 
-      return 'bg-orange-50 text-orange-800 border-orange-200';
-    case 'baseball': 
-      return 'bg-green-50 text-green-800 border-green-200';
-    case 'softball': 
-      return 'bg-yellow-50 text-yellow-800 border-yellow-200';
-    case 'volleyball': 
-      return 'bg-purple-50 text-purple-800 border-purple-200';
-    case 'soccer': 
-      return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-    case 'fieldhockey': 
-      return 'bg-lime-50 text-lime-800 border-lime-200';
-    case 'wrestling': 
-      return 'bg-red-50 text-red-800 border-red-200';
-    case 'swimming': 
-      return 'bg-sky-50 text-sky-800 border-sky-200';
-    case 'track': 
-      return 'bg-indigo-50 text-indigo-800 border-indigo-200';
-    case 'crosscountry': 
-      return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
-    case 'golf': 
-      return 'bg-teal-50 text-teal-800 border-teal-200';
-    case 'tennis': 
-      return 'bg-cyan-50 text-cyan-800 border-cyan-200';
-    case 'gymnastics': 
-      return 'bg-pink-50 text-pink-800 border-pink-200';
-    case 'lacrosse': 
-      return 'bg-violet-50 text-violet-800 border-violet-200';
-    case 'rowing': 
-      return 'bg-slate-50 text-slate-800 border-slate-200';
-    default: 
-      return 'bg-blue-50 text-blue-800 border-blue-200';
+  // Normalize the sport ID for consistent matching
+  const normalizedId = sportId.toLowerCase().trim();
+  
+  // Football variants
+  if (normalizedId === 'football' || normalizedId.includes('football')) {
+    return 'bg-amber-50 text-amber-800 border-amber-200';
   }
+  
+  // Men's and women's basketball variants
+  if (normalizedId === 'mbball' || normalizedId === 'm-basketball' || 
+      (normalizedId.includes('basketball') && normalizedId.includes('men'))) {
+    return 'bg-orange-50 text-orange-800 border-orange-200';
+  }
+  
+  if (normalizedId === 'wbball' || normalizedId === 'w-basketball' || 
+      (normalizedId.includes('basketball') && normalizedId.includes('women'))) {
+    return 'bg-pink-50 text-pink-800 border-pink-200';
+  }
+  
+  // Generic basketball
+  if (normalizedId === 'basketball' || normalizedId.includes('basketball')) {
+    return 'bg-orange-50 text-orange-800 border-orange-200';
+  }
+  
+  // Baseball variants
+  if (normalizedId === 'baseball' || normalizedId.includes('baseball')) {
+    return 'bg-green-50 text-green-800 border-green-200';
+  }
+  
+  // Softball variants
+  if (normalizedId === 'softball' || normalizedId.includes('softball')) {
+    return 'bg-yellow-50 text-yellow-800 border-yellow-200';
+  }
+  
+  // Volleyball variants
+  if (normalizedId === 'volleyball' || normalizedId.includes('volleyball')) {
+    return 'bg-purple-50 text-purple-800 border-purple-200';
+  }
+  
+  // Soccer variants
+  if (normalizedId === 'msoccer' || normalizedId === 'm-soccer' || 
+      (normalizedId.includes('soccer') && normalizedId.includes('men'))) {
+    return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+  }
+  
+  if (normalizedId === 'wsoccer' || normalizedId === 'w-soccer' || 
+      (normalizedId.includes('soccer') && normalizedId.includes('women'))) {
+    return 'bg-emerald-100 text-emerald-900 border-emerald-300';
+  }
+  
+  // Generic soccer
+  if (normalizedId === 'soccer' || normalizedId.includes('soccer')) {
+    return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+  }
+  
+  // Other sports
+  if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) {
+    return 'bg-lime-50 text-lime-800 border-lime-200';
+  }
+  
+  if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) {
+    return 'bg-red-50 text-red-800 border-red-200';
+  }
+  
+  if (normalizedId === 'swimming' || normalizedId.includes('swimming')) {
+    return 'bg-sky-50 text-sky-800 border-sky-200';
+  }
+  
+  if (normalizedId === 'track' || normalizedId.includes('track')) {
+    return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+  }
+  
+  if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) {
+    return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
+  }
+  
+  if (normalizedId === 'golf' || normalizedId.includes('golf')) {
+    return 'bg-teal-50 text-teal-800 border-teal-200';
+  }
+  
+  if (normalizedId === 'tennis' || normalizedId.includes('tennis')) {
+    return 'bg-cyan-50 text-cyan-800 border-cyan-200';
+  }
+  
+  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) {
+    return 'bg-pink-50 text-pink-800 border-pink-200';
+  }
+  
+  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) {
+    return 'bg-violet-50 text-violet-800 border-violet-200';
+  }
+  
+  if (normalizedId === 'rowing' || normalizedId.includes('rowing')) {
+    return 'bg-slate-50 text-slate-800 border-slate-200';
+  }
+  
+  // Default style for unknown sports
+  return 'bg-blue-50 text-blue-800 border-blue-200';
 };
 
 const SchedulePage = () => {
@@ -140,6 +228,17 @@ const SchedulePage = () => {
         sportIdsMap[game.sportId] = true;
       }
     });
+    
+    // Debug log to see what sport IDs we have
+    console.log("Available sport IDs:", Object.keys(sportIdsMap));
+    console.log("Calendar data sample:", macCalendarGames.slice(0, 5).map(g => ({
+      id: g.id,
+      sportId: g.sportId,
+      homeTeam: g.homeTeamId,
+      awayTeam: g.awayTeamId,
+      time: g.scheduledTime
+    })));
+    
     const uniqueSportIds = Object.keys(sportIdsMap);
     
     // Transform into a format that SportSelector expects
@@ -180,10 +279,47 @@ const SchedulePage = () => {
       game.homeTeamId === selectedTeam || 
       game.awayTeamId === selectedTeam;
     
-    // Filter by sport
-    const sportFilter = 
-      selectedSport === "all" || 
-      game.sportId === selectedSport;
+    // Filter by sport - add more robust matching for all sports
+    const sportFilter = selectedSport === "all" || (() => {
+      // Debug info
+      console.log(`Filtering: Selected sport="${selectedSport}", Game sport="${game.sportId}"`);
+      
+      // Normalize both sport IDs for consistent matching
+      const normalizedSelectedSport = selectedSport.toLowerCase().trim();
+      const normalizedGameSport = game.sportId?.toLowerCase()?.trim() || '';
+      
+      // Handle football
+      if (normalizedSelectedSport === 'football') {
+        return normalizedGameSport.includes('football');
+      }
+      
+      // Handle basketball variants
+      if (normalizedSelectedSport === 'mbball' || normalizedSelectedSport === 'basketball') {
+        return (normalizedGameSport.includes('basketball') && normalizedGameSport.includes('men')) || 
+               normalizedGameSport === 'mbball' || 
+               normalizedGameSport === 'basketball';
+      }
+      
+      if (normalizedSelectedSport === 'wbball') {
+        return (normalizedGameSport.includes('basketball') && normalizedGameSport.includes('women')) || 
+               normalizedGameSport === 'wbball';
+      }
+      
+      // Handle soccer variants
+      if (normalizedSelectedSport === 'msoccer' || normalizedSelectedSport === 'soccer') {
+        return (normalizedGameSport.includes('soccer') && normalizedGameSport.includes('men')) || 
+               normalizedGameSport === 'msoccer' || 
+               normalizedGameSport === 'soccer';
+      }
+      
+      if (normalizedSelectedSport === 'wsoccer') {
+        return (normalizedGameSport.includes('soccer') && normalizedGameSport.includes('women')) || 
+               normalizedGameSport === 'wsoccer';
+      }
+      
+      // For all other sports, check for inclusion
+      return normalizedGameSport.includes(normalizedSelectedSport) || normalizedGameSport === normalizedSelectedSport;
+    })();
       
     // Filter by past, upcoming, or all
     const now = new Date();
