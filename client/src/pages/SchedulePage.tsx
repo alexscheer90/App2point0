@@ -409,10 +409,66 @@ const SchedulePage = () => {
   
   // Component to render each game card
   const GameCard = ({ game }: { game: Game }) => {
+    // Get home and away teams - they may be null if not in the database
     const homeTeam = schools.find(s => s.id === game.homeTeamId);
     const awayTeam = schools.find(s => s.id === game.awayTeamId);
     
-    if (!homeTeam || !awayTeam) return null;
+    // Create placeholder objects for unknown teams
+    const defaultHomeTeam = homeTeam || {
+      id: game.homeTeamId || 'unknown',
+      name: game.homeTeamName || 'Unknown Team',
+      shortName: game.homeTeamName?.split(' ').pop() || 'UNK',
+      mascot: '',
+      primaryColor: '#cccccc',
+      secondaryColor: '#666666',
+      logoUrl: '/placeholder-logo.svg'
+    };
+    
+    const defaultAwayTeam = awayTeam || {
+      id: game.awayTeamId || 'unknown',
+      name: game.awayTeamName || 'Unknown Team',
+      shortName: game.awayTeamName?.split(' ').pop() || 'UNK',
+      mascot: '',
+      primaryColor: '#cccccc',
+      secondaryColor: '#666666',
+      logoUrl: '/placeholder-logo.svg'
+    };
+    
+    // Special handling for Youngstown State logo if found in our assets
+    if (defaultHomeTeam.name?.includes('Youngstown') || defaultHomeTeam.id?.includes('youngstown')) {
+      defaultHomeTeam.logoUrl = '/attached_assets/Youngstown_State_Penguins_logo.svg.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Youngstown') || defaultAwayTeam.id?.includes('youngstown')) {
+      defaultAwayTeam.logoUrl = '/attached_assets/Youngstown_State_Penguins_logo.svg.png';
+    }
+    
+    // Special handling for Detroit logo if found in our assets
+    if (defaultHomeTeam.name?.includes('Detroit') || defaultHomeTeam.id?.includes('detroit')) {
+      defaultHomeTeam.logoUrl = '/attached_assets/Detroit_Titans_logo.svg.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Detroit') || defaultAwayTeam.id?.includes('detroit')) {
+      defaultAwayTeam.logoUrl = '/attached_assets/Detroit_Titans_logo.svg.png';
+    }
+    
+    // Special handling for UIC logo if found in our assets
+    if (defaultHomeTeam.name?.includes('UIC') || defaultHomeTeam.id?.includes('uic')) {
+      defaultHomeTeam.logoUrl = '/attached_assets/UIC_Flames_wordmark.svg.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('UIC') || defaultAwayTeam.id?.includes('uic')) {
+      defaultAwayTeam.logoUrl = '/attached_assets/UIC_Flames_wordmark.svg.png';
+    }
+    
+    // Special handling for RMU logo if found in our assets
+    if (defaultHomeTeam.name?.includes('Robert Morris') || defaultHomeTeam.id?.includes('robertmorris')) {
+      defaultHomeTeam.logoUrl = '/attached_assets/rmu_logo_1.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Robert Morris') || defaultAwayTeam.id?.includes('robertmorris')) {
+      defaultAwayTeam.logoUrl = '/attached_assets/rmu_logo_1.png';
+    }
 
     const gameDate = parseISO(game.scheduledTime);
     const isPastGame = gameDate < new Date();
@@ -454,14 +510,26 @@ const SchedulePage = () => {
           {/* Away Team */}
           <div className="flex items-center">
             <div className="w-8 h-8 flex-shrink-0 mr-2">
-              <img 
-                src={awayTeam.logoUrl} 
-                alt={`${awayTeam.name} logo`} 
-                className="w-full h-full object-contain"
-              />
+              {defaultAwayTeam.logoUrl ? (
+                <img 
+                  src={defaultAwayTeam.logoUrl} 
+                  alt={`${defaultAwayTeam.name} logo`} 
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                // Fallback to initial when no logo
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center" 
+                  style={{ backgroundColor: defaultAwayTeam.primaryColor }}
+                >
+                  <span className="text-xs font-bold" style={{ color: defaultAwayTeam.secondaryColor }}>
+                    {defaultAwayTeam.shortName.charAt(0)}
+                  </span>
+                </div>
+              )}
             </div>
             <div>
-              <p className="font-medium">{awayTeam.name}</p>
+              <p className="font-medium">{defaultAwayTeam.name}</p>
               {isPastGame && game.status === "final" && (
                 <p className="text-sm font-bold">{game.awayScore}</p>
               )}
@@ -475,17 +543,29 @@ const SchedulePage = () => {
           {/* Home Team */}
           <div className="flex items-center justify-end">
             <div>
-              <p className="font-medium text-right">{homeTeam.name}</p>
+              <p className="font-medium text-right">{defaultHomeTeam.name}</p>
               {isPastGame && game.status === "final" && (
                 <p className="text-sm font-bold text-right">{game.homeScore}</p>
               )}
             </div>
             <div className="w-8 h-8 flex-shrink-0 ml-2">
-              <img 
-                src={homeTeam.logoUrl} 
-                alt={`${homeTeam.name} logo`} 
-                className="w-full h-full object-contain"
-              />
+              {defaultHomeTeam.logoUrl ? (
+                <img 
+                  src={defaultHomeTeam.logoUrl} 
+                  alt={`${defaultHomeTeam.name} logo`} 
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                // Fallback to initial when no logo
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center" 
+                  style={{ backgroundColor: defaultHomeTeam.primaryColor }}
+                >
+                  <span className="text-xs font-bold" style={{ color: defaultHomeTeam.secondaryColor }}>
+                    {defaultHomeTeam.shortName.charAt(0)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -503,7 +583,7 @@ const SchedulePage = () => {
                 <DialogHeader>
                   <DialogTitle>Add to Calendar</DialogTitle>
                   <DialogDescription>
-                    {awayTeam.name} at {homeTeam.name} on {format(gameDate, 'MMMM d, yyyy')}
+                    {defaultAwayTeam.name} at {defaultHomeTeam.name} on {format(gameDate, 'MMMM d, yyyy')}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col space-y-3 mt-4">
