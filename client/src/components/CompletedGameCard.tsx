@@ -28,7 +28,34 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
   const awayTeam = schools.find(school => school.id === game.awayTeamId);
   const sport = sports.find(sport => sport.id === game.sportId);
   
-  if (!homeTeam || !awayTeam || !sport) {
+  // Extract team names from the game data
+  const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
+  const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
+  
+  // Get short names for the teams
+  const homeShortName = homeTeamName.split(' ').pop() || 'UNK';
+  const awayShortName = awayTeamName.split(' ').pop() || 'UNK';
+  
+  // Create placeholder objects for unknown teams if needed
+  const defaultHomeTeam = homeTeam || {
+    id: game.homeTeamId || 'unknown',
+    name: homeTeamName,
+    shortName: homeShortName,
+    primaryColor: '#0099D8', // NCAA blue color
+    secondaryColor: '#ffffff',
+    logoUrl: '/ncaa-logo.png'
+  };
+  
+  const defaultAwayTeam = awayTeam || {
+    id: game.awayTeamId || 'unknown',
+    name: awayTeamName,
+    shortName: awayShortName,
+    primaryColor: '#0099D8', // NCAA blue color
+    secondaryColor: '#ffffff',
+    logoUrl: '/ncaa-logo.png'
+  };
+  
+  if (!sport) {
     return null;
   }
   
@@ -40,7 +67,7 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
   const shareUrl = `/games/${game.id}`;
   
   // Create share content
-  const shareTitle = `Final: ${homeTeam.name} ${game.homeTeamScore}, ${awayTeam.name} ${game.awayTeamScore}`;
+  const shareTitle = `Final: ${defaultHomeTeam.name} ${game.homeTeamScore}, ${defaultAwayTeam.name} ${game.awayTeamScore}`;
   const description = `Check out the final score of this ${sport.name} game from Mobile #MACtion!`;
   
   const handleShareClick = (e: React.MouseEvent) => {
@@ -79,12 +106,12 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
       <div className="p-3">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            {homeTeam.logoUrl ? (
+            {defaultHomeTeam.logoUrl ? (
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
-                  src={homeTeam.logoUrl} 
-                  alt={`${homeTeam.name} logo`} 
+                  src={defaultHomeTeam.logoUrl} 
+                  alt={`${defaultHomeTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
                 />
               </div>
@@ -92,25 +119,25 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
               // Fallback to circular initial when no logo
               <div 
                 className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: homeTeam.primaryColor }}
+                style={{ backgroundColor: defaultHomeTeam.primaryColor }}
               >
-                <span className="text-xs font-bold" style={{ color: homeTeam.secondaryColor }}>
-                  {homeTeam.shortName.charAt(0)}
+                <span className="text-xs font-bold" style={{ color: defaultHomeTeam.secondaryColor }}>
+                  {defaultHomeTeam.shortName.charAt(0)}
                 </span>
               </div>
             )}
-            <span className="font-semibold text-sm">{homeTeam.name}</span>
+            <span className="font-semibold text-sm">{defaultHomeTeam.name}</span>
           </div>
           <span className="font-bold text-lg">{game.homeTeamScore}</span>
         </div>
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            {awayTeam.logoUrl ? (
+            {defaultAwayTeam.logoUrl ? (
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
-                  src={awayTeam.logoUrl} 
-                  alt={`${awayTeam.name} logo`} 
+                  src={defaultAwayTeam.logoUrl} 
+                  alt={`${defaultAwayTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
                 />
               </div>
@@ -118,14 +145,14 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
               // Fallback to circular initial when no logo
               <div 
                 className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: awayTeam.primaryColor }}
+                style={{ backgroundColor: defaultAwayTeam.primaryColor }}
               >
-                <span className="text-xs font-bold" style={{ color: awayTeam.secondaryColor }}>
-                  {awayTeam.shortName.charAt(0)}
+                <span className="text-xs font-bold" style={{ color: defaultAwayTeam.secondaryColor }}>
+                  {defaultAwayTeam.shortName.charAt(0)}
                 </span>
               </div>
             )}
-            <span className="font-semibold text-sm">{awayTeam.name}</span>
+            <span className="font-semibold text-sm">{defaultAwayTeam.name}</span>
           </div>
           <span className="font-bold text-lg">{game.awayTeamScore}</span>
         </div>
