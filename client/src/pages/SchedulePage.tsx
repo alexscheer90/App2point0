@@ -172,13 +172,18 @@ const SchedulePage = () => {
   // Use MAC calendar data
   const activeGames = macCalendarGames;
   
-  // Filter games based on selected team and view
+  // Filter games based on selected team, sport, and view
   const filteredGames = activeGames?.filter((game: Game) => {
     // Filter by team
     const teamFilter = 
       selectedTeam === "all" || 
       game.homeTeamId === selectedTeam || 
       game.awayTeamId === selectedTeam;
+    
+    // Filter by sport
+    const sportFilter = 
+      selectedSport === "all" || 
+      game.sportId === selectedSport;
       
     // Filter by past, upcoming, or all
     const now = new Date();
@@ -189,7 +194,7 @@ const SchedulePage = () => {
       (currentView === "upcoming" && gameDate >= now) || 
       (currentView === "past" && gameDate < now);
       
-    return teamFilter && viewFilter;
+    return teamFilter && sportFilter && viewFilter;
   }).sort((a: Game, b: Game) => {
     // Sort by date - upcoming games sorted by ascending date, past games by descending date
     const dateA = new Date(a.scheduledTime);
