@@ -633,6 +633,283 @@ export class DataImporter {
       return [];
     }
   }
+  
+  /**
+   * Imports the MAC sports calendar from the official RSS feed
+   * 
+   * @param url The URL of the MAC calendar RSS feed
+   * @param filterSportId Optional ID to filter games for a specific sport
+   * @param filterSchoolId Optional ID to filter games for a specific school
+   * @returns Array of game objects
+   */
+  async importMacCalendar(
+    url: string = "https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=0&school_id=0&schedule_id=0",
+    filterSportId?: string,
+    filterSchoolId?: string
+  ): Promise<Partial<Game>[]> {
+    try {
+      console.log(`Fetching MAC calendar from: ${url}`);
+      
+      // Add or modify sport_id and school_id parameters in the URL if provided
+      const urlObj = new URL(url);
+      if (filterSportId) {
+        urlObj.searchParams.set('sport_id', filterSportId);
+      }
+      if (filterSchoolId) {
+        urlObj.searchParams.set('school_id', filterSchoolId);
+      }
+      
+      const response = await axios.get(urlObj.toString(), {
+        headers: {
+          'User-Agent': 'Mobile-MACtion-App/1.0'
+        }
+      });
+      
+      const parser = new Parser({
+        customFields: {
+          item: [
+            ['ev:location', 'evLocation'],
+            ['ev:startdate', 'evStartDate'],
+            ['ev:enddate', 'evEndDate'],
+            ['s:localstartdate', 'localStartDate'],
+            ['s:localenddate', 'localEndDate'],
+            ['s:teamlogo', 'teamLogo'],
+            ['s:opponentlogo', 'opponentLogo'],
+            ['s:gameid', 'gameId'],
+            ['s:links', 'links'],
+            ['s:links.s:livestats', 'liveStatsUrl']
+          ]
+        }
+      });
+      
+      const result = await parser.parseString(response.data);
+      if (!result.items || result.items.length === 0) {
+        console.warn('No items found in MAC calendar RSS feed');
+        return [];
+      }
+      
+      console.log(`Found ${result.items.length} events in MAC calendar RSS feed`);
+      
+      const games: Partial<Game>[] = [];
+      
+      for (const item of result.items) {
+        try {
+          // Parse the title to extract date, time, sport, and teams
+          // Format: "4/17 3:00 PM Baseball Bowling Green vs Ball State"
+          const titleParts = item.title.split(' ');
+          
+          // Find the sport (usually after date/time)
+          let sportId = '';
+          let sportIndex = 0;
+          for (let i = 0; i < titleParts.length; i++) {
+            // Check for common sports names
+            const part = titleParts[i].toLowerCase();
+            if (['baseball', 'basketball', 'football', 'soccer', 'volleyball', 'tennis', 
+                 'track', 'golf', 'swimming', 'softball', 'wrestling'].includes(part)) {
+              sportId = part;
+              sportIndex = i;
+              break;
+            }
+          }
+          
+          // If a specific sport filter was set and this doesn't match, skip
+          if (filterSportId && sportId !== filterSportId) {
+            continue;
+          }
+          
+          // Parse the teams - they come after the sport
+          const teamsText = titleParts.slice(sportIndex + 1).join(' ');
+          const teamMatch = teamsText.match(/(.+?)\s+(?:vs\.?|at|@)\s+(.+)/i);
+          
+          if (!teamMatch) {
+            console.warn(`Could not parse teams from: ${teamsText}`);
+            continue;
+          }
+          
+          const homeTeamName = teamMatch[1].trim();
+          const awayTeamName = teamMatch[2].trim();
+          
+          // Convert team names to IDs based on our known schools
+          // This is simplified and might need more sophisticated matching
+          const homeTeamId = this.getSchoolIdFromName(homeTeamName);
+          const awayTeamId = this.getSchoolIdFromName(awayTeamName);
+          
+          // If a school filter was set and neither team matches, skip
+          if (filterSchoolId && homeTeamId !== filterSchoolId && awayTeamId !== filterSchoolId) {
+            continue;
+          }
+          
+          // Parse the start time
+          const startTime = item.evStartDate || item.localStartDate || new Date().toISOString();
+          const gameDate = new Date(startTime);
+          
+          // Check for live stats URL
+          let liveStatsUrl = '';
+          if (item.links && item.links.s_livestats) {
+            liveStatsUrl = item.links.s_livestats;
+          }
+          
+          // Determine game status based on date
+          const now = new Date();
+          let status: 'scheduled' | 'live' | 'final' = 'scheduled';
+          
+          if (gameDate < now) {
+            // Game date is in the past
+            status = 'final';
+          } else if (Math.abs(gameDate.getTime() - now.getTime()) < 4 * 60 * 60 * 1000) {
+            // Game is within a 4-hour window of current time (potentially live)
+            status = 'live';
+          }
+          
+          // Create the game object
+          games.push({
+            id: `mac-${item.gameId || games.length + 1}-${Date.now()}`,
+            sportId: this.normalizeSportId(sportId),
+            homeTeamId,
+            awayTeamId,
+            homeTeamScore: 0, // Will be updated for in-progress or completed games
+            awayTeamScore: 0,
+            status,
+            clock: '',
+            venue: item.evLocation || '',
+            location: item.evLocation || '',
+            startTime: gameDate.toISOString(),
+            scheduledTime: gameDate.toISOString(),
+            liveStatsUrl,
+            isRivalryGame: false // Would need additional logic to determine this
+          });
+          
+        } catch (err) {
+          console.warn(`Error parsing MAC calendar item: ${err}`);
+          // Continue with next item
+        }
+      }
+      
+      console.log(`Successfully imported ${games.length} games from MAC calendar`);
+      return games;
+      
+    } catch (error) {
+      console.error('Error importing MAC calendar:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Helper method to convert a school name to a school ID
+   * 
+   * @param schoolName The name of the school from the calendar
+   * @returns The corresponding school ID in our system
+   */
+  private getSchoolIdFromName(schoolName: string): string {
+    // Normalize the school name
+    const normalizedName = schoolName.toLowerCase().trim();
+    
+    // Map of common MAC school names to our internal IDs
+    const schoolNameMap: Record<string, string> = {
+      'akron': 'akron',
+      'zips': 'akron',
+      'ball state': 'ballstate',
+      'cardinals': 'ballstate',
+      'bowling green': 'bowlinggreen',
+      'bgsu': 'bowlinggreen',
+      'falcons': 'bowlinggreen',
+      'buffalo': 'buffalo',
+      'bulls': 'buffalo',
+      'central michigan': 'centralmichigan',
+      'cmu': 'centralmichigan',
+      'chippewas': 'centralmichigan',
+      'eastern michigan': 'easternmichigan',
+      'emu': 'easternmichigan',
+      'eagles': 'easternmichigan',
+      'kent state': 'kentstate',
+      'ksu': 'kentstate',
+      'golden flashes': 'kentstate',
+      'miami': 'miamioh',
+      'miami (oh)': 'miamioh',
+      'redhawks': 'miamioh',
+      'northern illinois': 'northernillinois',
+      'niu': 'northernillinois',
+      'huskies': 'northernillinois',
+      'ohio': 'ohio',
+      'bobcats': 'ohio',
+      'toledo': 'toledo',
+      'rockets': 'toledo',
+      'western michigan': 'westernmichigan',
+      'wmu': 'westernmichigan',
+      'broncos': 'westernmichigan',
+      'massachusetts': 'massachusetts',
+      'umass': 'massachusetts',
+      'minutemen': 'massachusetts',
+      'george mason': 'georgemason',
+      'patriots': 'georgemason',
+      'cleveland state': 'clevelandstate',
+      'vikings': 'clevelandstate'
+    };
+    
+    // Try to find a match in our map
+    for (const [key, value] of Object.entries(schoolNameMap)) {
+      if (normalizedName.includes(key)) {
+        return value;
+      }
+    }
+    
+    // If no match is found, return a placeholder ID
+    console.warn(`Could not map school name to ID: ${schoolName}`);
+    return `unknown-${normalizedName.replace(/\s+/g, '-')}`;
+  }
+  
+  /**
+   * Helper method to normalize sport IDs
+   * 
+   * @param sportName The sport name from the calendar
+   * @returns The normalized sport ID
+   */
+  private normalizeSportId(sportName: string): string {
+    // Normalize the sport name
+    const normalizedName = sportName.toLowerCase().trim();
+    
+    // Map of common sport names to our internal IDs
+    const sportIdMap: Record<string, string> = {
+      'baseball': 'baseball',
+      'mens basketball': 'mbball',
+      'men basketball': 'mbball',
+      'm basketball': 'mbball',
+      'womens basketball': 'wbball',
+      'women basketball': 'wbball',
+      'w basketball': 'wbball',
+      'football': 'football',
+      'mens soccer': 'msoccer',
+      'men soccer': 'msoccer',
+      'm soccer': 'msoccer',
+      'womens soccer': 'wsoccer',
+      'women soccer': 'wsoccer',
+      'w soccer': 'wsoccer',
+      'softball': 'softball',
+      'volleyball': 'volleyball',
+      'track': 'track',
+      'track and field': 'track',
+      'wrestling': 'wrestling',
+      'tennis': 'tennis',
+      'golf': 'golf',
+      'swimming': 'swimming',
+      'cross country': 'crosscountry'
+    };
+    
+    // Try to find a match in our map
+    for (const [key, value] of Object.entries(sportIdMap)) {
+      if (normalizedName.includes(key)) {
+        return value;
+      }
+    }
+    
+    // If the sport name is just 'basketball', try to determine gender from context
+    if (normalizedName === 'basketball') {
+      return 'mbball'; // Default to men's basketball if not specified
+    }
+    
+    // If no match found, use the normalized name
+    return normalizedName.replace(/\s+/g, '-');
+  }
 }
 
 // Export a singleton instance
