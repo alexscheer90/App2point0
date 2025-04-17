@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Calendar, Clock, MapPin, RefreshCw } from "lucide-react";
+import { Calendar, Clock, MapPin, RefreshCw, List, CalendarIcon, Grid, Tag } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -30,9 +29,9 @@ const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("football");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"all" | "upcoming" | "past">("upcoming");
-  const [dataSource, setDataSource] = useState<"local" | "mac">("local");
+  const [groupBy, setGroupBy] = useState<"date" | "sport">("date");
   
-  const { data: games, isLoading: isGamesLoading } = useGames(selectedSport);
+  // Only use MAC calendar data now
   const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(selectedSport, selectedTeam !== "all" ? selectedTeam : undefined);
   const { data: schools } = useMacSchools();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
@@ -44,9 +43,7 @@ const SchedulePage = () => {
     setSelectedSport(sportId);
   };
   
-  if ((isGamesLoading && dataSource === "local") || 
-      (isMacCalendarLoading && dataSource === "mac") || 
-      !schools) {
+  if (isMacCalendarLoading || !schools) {
     return (
       <div className="py-4 px-4">
         <div className="mb-4">
@@ -61,8 +58,8 @@ const SchedulePage = () => {
     );
   }
   
-  // Determine which data source to use
-  const activeGames = dataSource === "local" ? games : macCalendarGames;
+  // Use MAC calendar data
+  const activeGames = macCalendarGames;
   
   // Filter games based on selected team and view
   const filteredGames = activeGames?.filter((game: Game) => {
@@ -92,15 +89,24 @@ const SchedulePage = () => {
       : dateA.getTime() - dateB.getTime(); // Upcoming games: soonest first
   });
   
-  // Group games by date for better visual organization
+  // Group games by date or sport
   const gamesByDate: { [key: string]: Game[] } = {};
+  const gamesBySport: { [key: string]: Game[] } = {};
   
   filteredGames?.forEach((game: Game) => {
+    // Group by date
     const dateStr = format(parseISO(game.scheduledTime), 'yyyy-MM-dd');
     if (!gamesByDate[dateStr]) {
       gamesByDate[dateStr] = [];
     }
     gamesByDate[dateStr].push(game);
+    
+    // Group by sport
+    const sportId = game.sportId || "unknown";
+    if (!gamesBySport[sportId]) {
+      gamesBySport[sportId] = [];
+    }
+    gamesBySport[sportId].push(game);
   });
   
   // Create iCalendar file for a specific game
@@ -325,61 +331,124 @@ const SchedulePage = () => {
           </TabsList>
         </Tabs>
         
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="data-source" className="text-sm text-gray-700">
-            Use Official MAC Calendar
-          </Label>
-          <Switch 
-            id="data-source" 
-            checked={dataSource === "mac"}
-            onCheckedChange={(checked) => setDataSource(checked ? "mac" : "local")}
-          />
-          {dataSource === "mac" && (
-            <RefreshCw 
-              className="h-4 w-4 ml-2 cursor-pointer text-gray-500 hover:text-gray-700" 
-              onClick={() => {
-                // Refresh the MAC calendar data
-                window.location.reload();
-              }}
-            />
-          )}
+        <div className="flex items-center">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="text-xs flex items-center gap-1"
+            onClick={() => window.location.reload()}
+          >
+            <RefreshCw className="h-3 w-3" />
+            Refresh Calendar
+          </Button>
         </div>
       </div>
       
-      {/* Data Source Badge */}
-      <div className="mb-4">
-        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-          dataSource === "mac" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-        }`}>
-          <span>
-            {dataSource === "mac" ? "Official MAC Calendar Data" : "App Calendar Data"}
-          </span>
+      {/* Calendar Data Badge and Group By Options */}
+      <div className="mb-4 flex justify-between items-center">
+        <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          <span>Official MAC Calendar Data</span>
+        </div>
+        
+        <div className="flex gap-1 border rounded-md overflow-hidden">
+          <Button 
+            variant={groupBy === "date" ? "default" : "ghost"}
+            size="sm" 
+            className="rounded-none border-0 text-xs"
+            onClick={() => setGroupBy("date")}
+          >
+            <CalendarIcon className="h-3 w-3 mr-1" />
+            By Date
+          </Button>
+          <Button 
+            variant={groupBy === "sport" ? "default" : "ghost"}
+            size="sm" 
+            className="rounded-none border-0 text-xs"
+            onClick={() => setGroupBy("sport")}
+          >
+            <Tag className="h-3 w-3 mr-1" />
+            By Sport
+          </Button>
         </div>
       </div>
       
       {/* Game List */}
       <div>
-        {Object.keys(gamesByDate).length > 0 ? (
-          Object.keys(gamesByDate).map(dateStr => (
-            <div key={dateStr} className="mb-6">
-              <h3 className="text-sm font-medium text-gray-500 mb-2">
-                {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
-              </h3>
-              <div>
-                {gamesByDate[dateStr].map(game => (
-                  <GameCard key={game.id} game={game} />
-                ))}
-              </div>
-            </div>
-          ))
+        {filteredGames && filteredGames.length > 0 ? (
+          groupBy === "date" ? (
+            // Group by date
+            Object.keys(gamesByDate)
+              .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
+              .map(dateStr => (
+                <div key={dateStr} className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
+                  </h3>
+                  <div>
+                    {gamesByDate[dateStr].map(game => (
+                      <GameCard key={game.id} game={game} />
+                    ))}
+                  </div>
+                </div>
+              ))
+          ) : (
+            // Group by sport
+            Object.keys(gamesBySport).map(sportId => {
+              // Get sport name for display
+              const sportName = (() => {
+                switch(sportId) {
+                  case 'football': return 'Football';
+                  case 'basketball': return 'Basketball';
+                  case 'baseball': return 'Baseball';
+                  case 'softball': return 'Softball';
+                  case 'volleyball': return 'Volleyball';
+                  case 'soccer': return 'Soccer';
+                  case 'fieldhockey': return 'Field Hockey';
+                  case 'wrestling': return 'Wrestling';
+                  case 'swimming': return 'Swimming & Diving';
+                  case 'track': return 'Track & Field';
+                  case 'crosscountry': return 'Cross Country';
+                  case 'golf': return 'Golf';
+                  case 'tennis': return 'Tennis';
+                  case 'gymnastics': return 'Gymnastics';
+                  case 'lacrosse': return 'Lacrosse';
+                  case 'rowing': return 'Rowing';
+                  default: return sportId.charAt(0).toUpperCase() + sportId.slice(1);
+                }
+              })();
+              
+              return (
+                <div key={sportId} className="mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="bg-gray-50 text-gray-700">
+                      {sportName}
+                    </Badge>
+                    <span className="text-xs text-gray-500">({gamesBySport[sportId].length} games)</span>
+                  </div>
+                  <div>
+                    {gamesBySport[sportId]
+                      .sort((a, b) => {
+                        const dateA = new Date(a.scheduledTime);
+                        const dateB = new Date(b.scheduledTime);
+                        return currentView === "past" 
+                          ? dateB.getTime() - dateA.getTime() 
+                          : dateA.getTime() - dateB.getTime();
+                      })
+                      .map(game => (
+                        <GameCard key={game.id} game={game} />
+                      ))
+                    }
+                  </div>
+                </div>
+              );
+            })
+          )
         ) : (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <p className="text-gray-500">No games found for the selected filters.</p>
-            {dataSource === "mac" && (
-              <p className="text-sm text-gray-400 mt-2">
-                Try switching to the app calendar data or changing your filters.
-              </p>
-            )}
+            <p className="text-sm text-gray-400 mt-2">
+              Try selecting a different sport or team.
+            </p>
           </div>
         )}
       </div>
