@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { ncaaLogoUrl } from "../data/macSchools";
 import {
   Dialog,
   DialogContent,
@@ -429,7 +430,7 @@ const SchedulePage = () => {
       mascot: '',
       primaryColor: '#0099D8', // NCAA blue color from the logo
       secondaryColor: '#ffffff',
-      logoUrl: '/assets/ncaa-logo.png'
+      logoUrl: ncaaLogoUrl
     };
     
     const defaultAwayTeam = awayTeam || {
@@ -439,7 +440,7 @@ const SchedulePage = () => {
       mascot: '',
       primaryColor: '#0099D8', // NCAA blue color from the logo
       secondaryColor: '#ffffff',
-      logoUrl: '/assets/ncaa-logo.png'
+      logoUrl: ncaaLogoUrl
     };
     
     // Special handling for Youngstown State logo if found in our assets
