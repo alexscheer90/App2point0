@@ -3,8 +3,8 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import { format, formatDistanceToNow } from "date-fns";
 import ShareButton from "./ShareButton";
-import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
-import { ExternalLink } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface CompletedGameCardProps {
   game: Game;
@@ -48,20 +48,19 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
     e.stopPropagation();
   };
   
-  // Generate live stats URL if not already provided in the game data
-  const liveStatsUrl = game.liveStatsUrl || generateLiveStatsUrl(homeTeam, sport);
+  // Set up navigation
+  const [_, setLocation] = useLocation();
   
-  // Handle click to open live stats in a new tab
+  // Handle click to navigate to game stats page
   const handleGameClick = () => {
-    if (liveStatsUrl) {
-      window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
-    }
+    // For completed games, we'll always show stats
+    setLocation(`/games/${game.id}`);
   };
   
   return (
     <div 
-      className={`bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200 ${liveStatsUrl ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
-      onClick={liveStatsUrl ? handleGameClick : undefined}
+      className="bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={handleGameClick}
     >
       <div className="bg-gray-100 text-xs font-semibold px-3 py-1 flex justify-between items-center">
         <span>{sport.name}</span>
@@ -132,15 +131,13 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
         </div>
         
         <div className="flex justify-between pt-2 border-t border-gray-100 mt-2">
-          {liveStatsUrl && (
-            <span className="text-blue-600 flex items-center gap-1 text-xs" onClick={(e) => {
-              e.stopPropagation();
-              window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
-            }}>
-              <ExternalLink size={12} />
-              Box Score
-            </span>
-          )}
+          <span className="text-blue-600 flex items-center gap-1 text-xs" onClick={(e) => {
+            e.stopPropagation();
+            setLocation(`/games/${game.id}`);
+          }}>
+            <ChevronRight size={12} />
+            Box Score
+          </span>
           <div onClick={handleShareClick} className="hidden md:block">
             <ShareButton 
               url={shareUrl}
