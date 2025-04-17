@@ -3,6 +3,7 @@ import { XMLParser } from 'fast-xml-parser';
 import * as cheerio from 'cheerio';
 import { Game, NewsItem, StandingsEntry, Player, TeamStat } from '@shared/schema';
 import { JSDOM } from 'jsdom';
+import RssParser from 'rss-parser';
 
 /**
  * Data Importer Service
