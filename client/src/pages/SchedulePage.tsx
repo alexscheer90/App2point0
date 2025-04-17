@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { Calendar, Clock, MapPin, CalendarIcon, Tag } from "lucide-react";
@@ -25,6 +25,69 @@ import {
 // MAC colors
 const MAC_NAVY = "#0B213E";
 const MAC_GREEN = "#019E4F";
+
+// Function to get sport name
+const getSportName = (sportId: string): string => {
+  switch(sportId) {
+    case 'football': return 'Football';
+    case 'basketball': return 'Basketball';
+    case 'baseball': return 'Baseball';
+    case 'softball': return 'Softball';
+    case 'volleyball': return 'Volleyball';
+    case 'soccer': return 'Soccer';
+    case 'fieldhockey': return 'Field Hockey';
+    case 'wrestling': return 'Wrestling';
+    case 'swimming': return 'Swimming';
+    case 'track': return 'Track & Field';
+    case 'crosscountry': return 'Cross Country';
+    case 'golf': return 'Golf';
+    case 'tennis': return 'Tennis';
+    case 'gymnastics': return 'Gymnastics';
+    case 'lacrosse': return 'Lacrosse';
+    case 'rowing': return 'Rowing';
+    default: return sportId.charAt(0).toUpperCase() + sportId.slice(1);
+  }
+};
+
+// Function to get badge style based on sport
+const getSportBadgeStyle = (sportId: string): string => {
+  switch(sportId) {
+    case 'football': 
+      return 'bg-amber-50 text-amber-800 border-amber-200';
+    case 'basketball': 
+      return 'bg-orange-50 text-orange-800 border-orange-200';
+    case 'baseball': 
+      return 'bg-green-50 text-green-800 border-green-200';
+    case 'softball': 
+      return 'bg-yellow-50 text-yellow-800 border-yellow-200';
+    case 'volleyball': 
+      return 'bg-purple-50 text-purple-800 border-purple-200';
+    case 'soccer': 
+      return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+    case 'fieldhockey': 
+      return 'bg-lime-50 text-lime-800 border-lime-200';
+    case 'wrestling': 
+      return 'bg-red-50 text-red-800 border-red-200';
+    case 'swimming': 
+      return 'bg-sky-50 text-sky-800 border-sky-200';
+    case 'track': 
+      return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+    case 'crosscountry': 
+      return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
+    case 'golf': 
+      return 'bg-teal-50 text-teal-800 border-teal-200';
+    case 'tennis': 
+      return 'bg-cyan-50 text-cyan-800 border-cyan-200';
+    case 'gymnastics': 
+      return 'bg-pink-50 text-pink-800 border-pink-200';
+    case 'lacrosse': 
+      return 'bg-violet-50 text-violet-800 border-violet-200';
+    case 'rowing': 
+      return 'bg-slate-50 text-slate-800 border-slate-200';
+    default: 
+      return 'bg-blue-50 text-blue-800 border-blue-200';
+  }
+};
 
 const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
@@ -65,6 +128,22 @@ const SchedulePage = () => {
     queryKey: ['/api/preferences/favorite-school'],
     select: (data) => data || { favoriteSchool: null }
   });
+  
+  // Extract unique sports from the calendar data for the SportSelector
+  const availableSports = useMemo(() => {
+    if (!macCalendarGames) return [];
+    
+    // Get unique sport IDs from the calendar
+    const sportIds = macCalendarGames.map(game => game.sportId).filter(Boolean);
+    const uniqueSportIds = Array.from(new Set(sportIds));
+    
+    // Transform into a format that SportSelector expects
+    return uniqueSportIds.map(sportId => ({
+      id: sportId as string,
+      name: getSportName(sportId as string),
+      gender: sportId === "basketball" || sportId === "soccer" ? "mixed" : "mens" // Simplification, we'll treat most as men's sports for now
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [macCalendarGames]);
   
   const handleChangeSport = (sportId: string) => {
     setSelectedSport(sportId);
@@ -207,30 +286,10 @@ const SchedulePage = () => {
               {format(gameDate, 'h:mm a')}
             </span>
             
-            {/* Sport Badge */}
+            {/* Sport Badge with different colors for each sport */}
             {game.sportId && (
-              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                {(() => {
-                  switch(game.sportId) {
-                    case 'football': return 'Football';
-                    case 'basketball': return 'Basketball';
-                    case 'baseball': return 'Baseball';
-                    case 'softball': return 'Softball';
-                    case 'volleyball': return 'Volleyball';
-                    case 'soccer': return 'Soccer';
-                    case 'fieldhockey': return 'Field Hockey';
-                    case 'wrestling': return 'Wrestling';
-                    case 'swimming': return 'Swimming';
-                    case 'track': return 'Track & Field';
-                    case 'crosscountry': return 'Cross Country';
-                    case 'golf': return 'Golf';
-                    case 'tennis': return 'Tennis';
-                    case 'gymnastics': return 'Gymnastics';
-                    case 'lacrosse': return 'Lacrosse';
-                    case 'rowing': return 'Rowing';
-                    default: return game.sportId.charAt(0).toUpperCase() + game.sportId.slice(1);
-                  }
-                })()}
+              <Badge variant="outline" className={`text-xs ${getSportBadgeStyle(game.sportId)}`}>
+                {getSportName(game.sportId)}
               </Badge>
             )}
           </div>
@@ -340,6 +399,7 @@ const SchedulePage = () => {
         <SportSelector 
           selectedSport={selectedSport}
           onChange={handleChangeSport}
+          sports={availableSports}
         />
         
         <Select value={selectedTeam} onValueChange={(value) => setSelectedTeam(value)}>

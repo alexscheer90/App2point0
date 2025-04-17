@@ -1,21 +1,37 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMacSports } from "../hooks/useStandings";
 
+interface Sport {
+  id: string;
+  name: string;
+  gender: string;
+}
+
 interface SportSelectorProps {
   selectedSport: string;
   onChange: (sportId: string) => void;
   showAllOption?: boolean;
+  sports?: Sport[]; // Optional array of sports to show instead of fetching from API
 }
 
-const SportSelector = ({ selectedSport, onChange, showAllOption = true }: SportSelectorProps) => {
-  const { data: sports, isLoading } = useMacSports();
+const SportSelector = ({ 
+  selectedSport, 
+  onChange, 
+  showAllOption = true,
+  sports: providedSports
+}: SportSelectorProps) => {
+  // If sports are provided, use them; otherwise, fetch from API
+  const { data: apiSports, isLoading } = useMacSports();
+  
+  // Use provided sports if available, otherwise use API data
+  const sports = providedSports || apiSports;
   
   return (
     <div className="relative">
       <Select
         value={selectedSport}
         onValueChange={onChange}
-        disabled={isLoading}
+        disabled={!providedSports && isLoading}
       >
         <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 rounded leading-tight focus:outline-none focus:bg-white focus:border-[#C8102E]">
           <SelectValue placeholder="Select a sport" />
