@@ -3,6 +3,8 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import { format } from "date-fns";
 import ShareButton from "./ShareButton";
+import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
+import { ExternalLink, Ticket } from "lucide-react";
 
 interface UpcomingGameCardProps {
   game: Game;
@@ -57,8 +59,25 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
     e.stopPropagation();
   };
   
+  // Generate live stats URL for using on game day
+  const liveStatsUrl = game.liveStatsUrl || generateLiveStatsUrl(homeTeam, sport);
+  
+  // Handle click to open tickets or game info in a new tab
+  const handleGameClick = () => {
+    if (game.ticketUrl) {
+      window.open(game.ticketUrl, '_blank', 'noopener,noreferrer');
+    } else if (liveStatsUrl) {
+      window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+  
+  const isClickable = game.ticketUrl || liveStatsUrl;
+  
   return (
-    <div className="bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200">
+    <div 
+      className={`bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200 ${isClickable ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+      onClick={isClickable ? handleGameClick : undefined}
+    >
       <div className="bg-gray-100 text-xs font-semibold px-3 py-1 flex justify-between items-center">
         <span>{sport.name} • {sport.gender !== "mixed" ? sport.gender.charAt(0).toUpperCase() + sport.gender.slice(1) : "Mixed"}</span>
         <div className="flex items-center space-x-2">
@@ -130,7 +149,27 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
           </div>
         </div>
         
-        <div className="flex justify-end pt-2 border-t border-gray-100 mt-2">
+        <div className="flex justify-between pt-2 border-t border-gray-100 mt-2">
+          <div className="flex items-center gap-3">
+            {game.ticketUrl && (
+              <span className="text-green-600 flex items-center gap-1 text-xs" onClick={(e) => {
+                e.stopPropagation();
+                window.open(game.ticketUrl, '_blank', 'noopener,noreferrer');
+              }}>
+                <Ticket size={12} />
+                Tickets
+              </span>
+            )}
+            {liveStatsUrl && (
+              <span className="text-blue-600 flex items-center gap-1 text-xs" onClick={(e) => {
+                e.stopPropagation();
+                window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
+              }}>
+                <ExternalLink size={12} />
+                Game Info
+              </span>
+            )}
+          </div>
           <div onClick={handleShareClick} className="hidden md:block">
             <ShareButton 
               url={shareUrl}

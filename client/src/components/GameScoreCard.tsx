@@ -3,6 +3,8 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import ShareButton from "./ShareButton";
 import { format } from "date-fns";
+import { generateLiveStatsUrl, shouldShowLiveStats } from "../utils/liveStatsUtils";
+import { ExternalLink } from "lucide-react";
 
 interface GameScoreCardProps {
   game: Game;
@@ -54,8 +56,21 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     e.stopPropagation();
   };
   
+  // Generate live stats URL if not already provided in the game data
+  const liveStatsUrl = game.liveStatsUrl || (shouldShowLiveStats(game.status) ? generateLiveStatsUrl(homeTeam, sport) : undefined);
+  
+  // Handle click to open live stats in a new tab
+  const handleGameClick = () => {
+    if (liveStatsUrl) {
+      window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+  
   return (
-    <div className="bg-white rounded-lg shadow-md mb-3 overflow-hidden border border-gray-200">
+    <div 
+      className={`bg-white rounded-lg shadow-md mb-3 overflow-hidden border border-gray-200 ${liveStatsUrl ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`} 
+      onClick={liveStatsUrl ? handleGameClick : undefined}
+    >
       <div className="bg-[#0C2340] text-white text-xs font-semibold px-3 py-1 flex justify-between">
         <span>{sport.name} • {sport.gender !== "mixed" ? sport.gender.charAt(0).toUpperCase() + sport.gender.slice(1) : "Mixed"}</span>
         <div className="flex items-center space-x-2">
@@ -129,21 +144,40 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
           <span className="font-bold text-lg">{game.awayTeamScore}</span>
         </div>
       </div>
-      {game.situation && (
+      {game.situation ? (
         <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
           <span>{game.situation}</span>
-          <div onClick={handleShareClick} className="hidden md:block">
-            <ShareButton 
-              url={shareUrl}
-              title={shareTitle}
-              description={description}
-              compact={true}
-            />
+          <div className="flex items-center gap-2">
+            {liveStatsUrl && (
+              <span className="text-blue-600 flex items-center gap-1" onClick={(e) => {
+                e.stopPropagation();
+                window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
+              }}>
+                <ExternalLink size={12} />
+                Stats
+              </span>
+            )}
+            <div onClick={handleShareClick} className="hidden md:block">
+              <ShareButton 
+                url={shareUrl}
+                title={shareTitle}
+                description={description}
+                compact={true}
+              />
+            </div>
           </div>
         </div>
-      )}
-      {!game.situation && (
-        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-end">
+      ) : (
+        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
+          {liveStatsUrl && (
+            <span className="text-blue-600 flex items-center gap-1" onClick={(e) => {
+              e.stopPropagation();
+              window.open(liveStatsUrl, '_blank', 'noopener,noreferrer');
+            }}>
+              <ExternalLink size={12} />
+              Live Stats
+            </span>
+          )}
           <div onClick={handleShareClick} className="hidden md:block">
             <ShareButton 
               url={shareUrl}
