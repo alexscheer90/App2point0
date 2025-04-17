@@ -36,23 +36,32 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
   const homeShortName = homeTeamName.split(' ').pop() || 'UNK';
   const awayShortName = awayTeamName.split(' ').pop() || 'UNK';
   
+  // Check if this is a MAC tournament/championship game
+  const isMacConferenceGame = 
+    homeTeamName.includes('Mid-American Conference') || 
+    awayTeamName.includes('Mid-American Conference');
+  
   // Create placeholder objects for unknown teams if needed
   const defaultHomeTeam = homeTeam || {
     id: game.homeTeamId || 'unknown',
     name: homeTeamName,
     shortName: homeShortName,
-    primaryColor: '#0099D8', // NCAA blue color
+    primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
-    logoUrl: '/attached_assets/IMG_0788.png' // Direct path to NCAA logo
+    logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
+      ? '/attached_assets/Screenshot 2025-04-17 112540.png' // MAC logo
+      : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
   const defaultAwayTeam = awayTeam || {
     id: game.awayTeamId || 'unknown',
     name: awayTeamName,
     shortName: awayShortName,
-    primaryColor: '#0099D8', // NCAA blue color
+    primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
-    logoUrl: '/attached_assets/IMG_0788.png' // Direct path to NCAA logo
+    logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
+      ? '/attached_assets/Screenshot 2025-04-17 112540.png' // MAC logo
+      : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
   if (!sport) {
