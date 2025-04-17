@@ -429,7 +429,7 @@ const SchedulePage = () => {
       mascot: '',
       primaryColor: '#0099D8', // NCAA blue color from the logo
       secondaryColor: '#ffffff',
-      logoUrl: '/ncaa-logo.png'
+      logoUrl: '/assets/ncaa-logo.png'
     };
     
     const defaultAwayTeam = awayTeam || {
@@ -439,7 +439,7 @@ const SchedulePage = () => {
       mascot: '',
       primaryColor: '#0099D8', // NCAA blue color from the logo
       secondaryColor: '#ffffff',
-      logoUrl: '/ncaa-logo.png'
+      logoUrl: '/assets/ncaa-logo.png'
     };
     
     // Special handling for Youngstown State logo if found in our assets
