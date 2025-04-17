@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, RefreshCw } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
+import { useMacCalendar } from "../hooks/useMacCalendar";
 import SportSelector from "../components/SportSelector";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,8 +28,10 @@ const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("football");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"all" | "upcoming" | "past">("upcoming");
+  const [dataSource, setDataSource] = useState<"local" | "mac">("local");
   
   const { data: games, isLoading: isGamesLoading } = useGames(selectedSport);
+  const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(selectedSport, selectedTeam !== "all" ? selectedTeam : undefined);
   const { data: schools } = useMacSchools();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
@@ -39,7 +42,9 @@ const SchedulePage = () => {
     setSelectedSport(sportId);
   };
   
-  if (isGamesLoading || !schools) {
+  if ((isGamesLoading && dataSource === "local") || 
+      (isMacCalendarLoading && dataSource === "mac") || 
+      !schools) {
     return (
       <div className="py-4 px-4">
         <div className="mb-4">
@@ -54,8 +59,11 @@ const SchedulePage = () => {
     );
   }
   
+  // Determine which data source to use
+  const activeGames = dataSource === "local" ? games : macCalendarGames;
+  
   // Filter games based on selected team and view
-  const filteredGames = games?.filter((game: Game) => {
+  const filteredGames = activeGames?.filter((game: Game) => {
     // Filter by team
     const teamFilter = 
       selectedTeam === "all" || 

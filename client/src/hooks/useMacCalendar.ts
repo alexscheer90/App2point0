@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { Game } from "@shared/schema";
-import { apiRequest } from "../lib/apiUtils";
 
 /**
  * Custom hook to fetch MAC calendar data from the official MAC website
@@ -24,10 +23,9 @@ export const useMacCalendar = (sportId?: string, schoolId?: string) => {
   
   return useQuery<Game[]>({
     queryKey: ['/api/import/mac-calendar', sportId, schoolId],
-    queryFn: async () => {
-      const response = await apiRequest(`/api/import/mac-calendar${queryString}`);
-      if (response.success && response.data) {
-        return response.data;
+    select: (data: any) => {
+      if (data && data.success && Array.isArray(data.data)) {
+        return data.data;
       }
       return [];
     },
