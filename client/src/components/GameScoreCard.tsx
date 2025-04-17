@@ -50,7 +50,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
-      ? '/attached_assets/Screenshot 2025-04-17 112540.png' // MAC logo
+      ? '/attached_assets/mac-logo.png' // MAC logo
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
@@ -61,7 +61,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue 
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
-      ? '/attached_assets/Screenshot 2025-04-17 112540.png' // MAC logo
+      ? '/attached_assets/mac-logo.png' // MAC logo
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
