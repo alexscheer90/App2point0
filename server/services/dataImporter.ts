@@ -666,7 +666,7 @@ export class DataImporter {
         }
       });
       
-      const parser = new Parser({
+      const parser = new (RssParser as any)({
         customFields: {
           item: [
             ['ev:location', 'evLocation'],
@@ -697,7 +697,8 @@ export class DataImporter {
         try {
           // Parse the title to extract date, time, sport, and teams
           // Format: "4/17 3:00 PM Baseball Bowling Green vs Ball State"
-          const titleParts = item.title.split(' ');
+          const title = item.title || '';
+          const titleParts = title.split(' ');
           
           // Find the sport (usually after date/time)
           let sportId = '';

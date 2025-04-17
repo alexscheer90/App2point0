@@ -328,4 +328,38 @@ router.get('/baseball-standings', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Import MAC Sports calendar directly from the official RSS feed
+ * GET /api/import/mac-calendar
+ * Optional query parameters:
+ * - sportId: Filter events for a specific sport
+ * - schoolId: Filter events for a specific school
+ */
+router.get('/mac-calendar', async (req: Request, res: Response) => {
+  try {
+    const sportId = req.query.sportId as string | undefined;
+    const schoolId = req.query.schoolId as string | undefined;
+    
+    // Default MAC calendar URL
+    const calendarUrl = "https://getsomemaction.com/services/responsive-calendar-subscription.ashx/calendar.rss?sport_id=0&school_id=0&schedule_id=0";
+    
+    console.log(`Importing MAC calendar${sportId ? ` for sport ${sportId}` : ''}${schoolId ? ` and school ${schoolId}` : ''}`);
+    
+    const result = await dataImporter.importMacCalendar(calendarUrl, sportId, schoolId);
+    
+    return res.json({ 
+      success: true, 
+      data: result,
+      count: result.length,
+      message: `Successfully imported ${result.length} events from MAC calendar`
+    });
+  } catch (error) {
+    console.error('MAC calendar import error:', error);
+    return res.status(500).json({ 
+      error: "MAC calendar import failed", 
+      message: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
 export default router;
