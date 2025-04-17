@@ -133,14 +133,19 @@ const SchedulePage = () => {
   const availableSports = useMemo(() => {
     if (!macCalendarGames) return [];
     
-    // Get unique sport IDs from the calendar
-    const sportIds = macCalendarGames.map(game => game.sportId).filter(Boolean);
-    const uniqueSportIds = Array.from(new Set(sportIds));
+    // Get unique sport IDs from the calendar - using Object.keys on a map for IE compatibility
+    const sportIdsMap: Record<string, boolean> = {};
+    macCalendarGames.forEach(game => {
+      if (game.sportId) {
+        sportIdsMap[game.sportId] = true;
+      }
+    });
+    const uniqueSportIds = Object.keys(sportIdsMap);
     
     // Transform into a format that SportSelector expects
     return uniqueSportIds.map(sportId => ({
-      id: sportId as string,
-      name: getSportName(sportId as string),
+      id: sportId,
+      name: getSportName(sportId),
       gender: sportId === "basketball" || sportId === "soccer" ? "mixed" : "mens" // Simplification, we'll treat most as men's sports for now
     })).sort((a, b) => a.name.localeCompare(b.name));
   }, [macCalendarGames]);
