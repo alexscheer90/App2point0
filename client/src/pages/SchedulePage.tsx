@@ -217,36 +217,52 @@ const SchedulePage = () => {
     select: (data) => data || { favoriteSchool: null }
   });
   
-  // Extract unique sports from the calendar data for the SportSelector
+  // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
   const availableSports = useMemo(() => {
-    if (!macCalendarGames) return [];
+    // Complete list of MAC sports with proper IDs and genders
+    const allMacSports = [
+      { id: "baseball", name: "Baseball", gender: "mens" },
+      { id: "cross-country", name: "Cross Country", gender: "mens" },
+      { id: "field-hockey", name: "Field Hockey", gender: "womens" },
+      { id: "football", name: "Football", gender: "mens" },
+      { id: "gymnastics", name: "Gymnastics", gender: "womens" },
+      { id: "mbball", name: "Men's Basketball", gender: "mens" },
+      { id: "mgolf", name: "Men's Golf", gender: "mens" },
+      { id: "msoccer", name: "Men's Soccer", gender: "mens" },
+      { id: "mswim", name: "Men's Swimming & Diving", gender: "mens" },
+      { id: "mtennis", name: "Men's Tennis", gender: "mens" },
+      { id: "softball", name: "Softball", gender: "womens" },
+      { id: "track", name: "Track and Field", gender: "mixed" },
+      { id: "wbball", name: "Women's Basketball", gender: "womens" },
+      { id: "wgolf", name: "Women's Golf", gender: "womens" },
+      { id: "wlacrosse", name: "Women's Lacrosse", gender: "womens" },
+      { id: "wsoccer", name: "Women's Soccer", gender: "womens" },
+      { id: "wswim", name: "Women's Swimming & Diving", gender: "womens" },
+      { id: "wtennis", name: "Women's Tennis", gender: "womens" },
+      { id: "wvolleyball", name: "Women's Volleyball", gender: "womens" },
+      { id: "wrestling", name: "Wrestling", gender: "mens" }
+    ];
     
-    // Get unique sport IDs from the calendar - using Object.keys on a map for IE compatibility
-    const sportIdsMap: Record<string, boolean> = {};
-    macCalendarGames.forEach(game => {
-      if (game.sportId) {
-        sportIdsMap[game.sportId] = true;
-      }
-    });
+    // Log available sports from calendar data for debugging
+    if (macCalendarGames) {
+      const sportIdsMap: Record<string, boolean> = {};
+      macCalendarGames.forEach(game => {
+        if (game.sportId) {
+          sportIdsMap[game.sportId] = true;
+        }
+      });
+      
+      console.log("Available sport IDs from calendar:", Object.keys(sportIdsMap));
+      console.log("Calendar data sample:", macCalendarGames.slice(0, 5).map(g => ({
+        id: g.id,
+        sportId: g.sportId,
+        homeTeam: g.homeTeamId,
+        awayTeam: g.awayTeamId,
+        time: g.scheduledTime
+      })));
+    }
     
-    // Debug log to see what sport IDs we have
-    console.log("Available sport IDs:", Object.keys(sportIdsMap));
-    console.log("Calendar data sample:", macCalendarGames.slice(0, 5).map(g => ({
-      id: g.id,
-      sportId: g.sportId,
-      homeTeam: g.homeTeamId,
-      awayTeam: g.awayTeamId,
-      time: g.scheduledTime
-    })));
-    
-    const uniqueSportIds = Object.keys(sportIdsMap);
-    
-    // Transform into a format that SportSelector expects
-    return uniqueSportIds.map(sportId => ({
-      id: sportId,
-      name: getSportName(sportId),
-      gender: sportId === "basketball" || sportId === "soccer" ? "mixed" : "mens" // Simplification, we'll treat most as men's sports for now
-    })).sort((a, b) => a.name.localeCompare(b.name));
+    return allMacSports.sort((a, b) => a.name.localeCompare(b.name));
   }, [macCalendarGames]);
   
   const handleChangeSport = (sportId: string) => {
@@ -647,7 +663,8 @@ const SchedulePage = () => {
                 My Team
               </SelectItem>
             )}
-            {schools.map((school) => (
+            {/* Filter out affiliate members */}
+            {schools.filter(school => !school.affiliate).map((school) => (
               <SelectItem key={school.id} value={school.id}>
                 {school.name}
               </SelectItem>
@@ -656,16 +673,15 @@ const SchedulePage = () => {
         </Select>
       </div>
       
-      {/* View Tabs - Upcoming/Completed/All Games */}
+      {/* View Tabs - Upcoming/All Games */}
       <div className="mb-4">
         <Tabs
           defaultValue="upcoming"
           value={currentView}
           onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "past")}
         >
-          <TabsList className="grid grid-cols-3 w-full">
+          <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="past">Completed</TabsTrigger>
             <TabsTrigger value="all">All Games</TabsTrigger>
           </TabsList>
         </Tabs>
