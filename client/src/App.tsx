@@ -19,6 +19,7 @@ import SoundsPage from "./pages/SoundsPage";
 import LocalEatsPage from "./pages/LocalEatsPage";
 import PodcastPage from "./pages/PodcastPage";
 import SchedulePage from "./pages/SchedulePage";
+import GameStatsPage from "./pages/GameStatsPage";
 import TestNotificationsPage from "./pages/TestNotificationsPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "@/pages/not-found";
@@ -58,6 +59,7 @@ function App() {
                 <Route path="/sounds" component={SoundsPage} />
                 <Route path="/eats" component={LocalEatsPage} />
                 <Route path="/podcast" component={PodcastPage} />
+                <Route path="/games/:gameId" component={GameStatsPage} />
                 <Route path="/test-notifications" component={TestNotificationsPage} />
                 <Route path="/admin" component={AdminPage} />
                 <Route component={NotFound} />
