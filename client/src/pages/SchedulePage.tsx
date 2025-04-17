@@ -30,7 +30,9 @@ const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"all" | "upcoming" | "past">("upcoming");
-  const [groupBy, setGroupBy] = useState<"date" | "sport">("date");
+  
+  // Always use "date" as our grouping method
+  const groupBy = "date";
   
   // Effect to auto-refresh data when component mounts
   useEffect(() => {
@@ -114,9 +116,8 @@ const SchedulePage = () => {
       : dateA.getTime() - dateB.getTime(); // Upcoming games: soonest first
   });
   
-  // Group games by date or sport
+  // Group games by date
   const gamesByDate: { [key: string]: Game[] } = {};
-  const gamesBySport: { [key: string]: Game[] } = {};
   
   filteredGames?.forEach((game: Game) => {
     // Group by date
@@ -125,13 +126,6 @@ const SchedulePage = () => {
       gamesByDate[dateStr] = [];
     }
     gamesByDate[dateStr].push(game);
-    
-    // Group by sport
-    const sportId = game.sportId || "unknown";
-    if (!gamesBySport[sportId]) {
-      gamesBySport[sportId] = [];
-    }
-    gamesBySport[sportId].push(game);
   });
   
   // Create iCalendar file for a specific game
@@ -207,11 +201,38 @@ const SchedulePage = () => {
         style={{ backgroundColor: isFavoriteTeamGame ? `${MAC_GREEN}10` : 'white' }}
       >
         <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 mr-1 text-gray-500" />
             <span className="text-sm text-gray-600">
               {format(gameDate, 'h:mm a')}
             </span>
+            
+            {/* Sport Badge */}
+            {game.sportId && (
+              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                {(() => {
+                  switch(game.sportId) {
+                    case 'football': return 'Football';
+                    case 'basketball': return 'Basketball';
+                    case 'baseball': return 'Baseball';
+                    case 'softball': return 'Softball';
+                    case 'volleyball': return 'Volleyball';
+                    case 'soccer': return 'Soccer';
+                    case 'fieldhockey': return 'Field Hockey';
+                    case 'wrestling': return 'Wrestling';
+                    case 'swimming': return 'Swimming';
+                    case 'track': return 'Track & Field';
+                    case 'crosscountry': return 'Cross Country';
+                    case 'golf': return 'Golf';
+                    case 'tennis': return 'Tennis';
+                    case 'gymnastics': return 'Gymnastics';
+                    case 'lacrosse': return 'Lacrosse';
+                    case 'rowing': return 'Rowing';
+                    default: return game.sportId.charAt(0).toUpperCase() + game.sportId.slice(1);
+                  }
+                })()}
+              </Badge>
+            )}
           </div>
           
           {game.location && (
@@ -356,105 +377,31 @@ const SchedulePage = () => {
         </Tabs>
       </div>
       
-      {/* Data Source and View Toggle */}
-      <div className="flex justify-between items-center mb-4">
+      {/* Data Source Badge */}
+      <div className="mb-4">
         <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
           <span>Official MAC Calendar Data</span>
-        </div>
-        
-        <div className="flex border rounded-md overflow-hidden">
-          <Button 
-            variant={groupBy === "date" ? "default" : "ghost"}
-            size="sm" 
-            className="rounded-none border-0 text-sm px-4"
-            onClick={() => setGroupBy("date")}
-          >
-            <CalendarIcon className="h-4 w-4 mr-1.5" />
-            By Date
-          </Button>
-          <Button 
-            variant={groupBy === "sport" ? "default" : "ghost"}
-            size="sm" 
-            className="rounded-none border-0 text-sm px-4"
-            onClick={() => setGroupBy("sport")}
-          >
-            <Tag className="h-4 w-4 mr-1.5" />
-            By Sport
-          </Button>
         </div>
       </div>
       
       {/* Game List */}
       <div>
         {filteredGames && filteredGames.length > 0 ? (
-          groupBy === "date" ? (
-            // Group by date
-            Object.keys(gamesByDate)
-              .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
-              .map(dateStr => (
-                <div key={dateStr} className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
-                  </h3>
-                  <div>
-                    {gamesByDate[dateStr].map(game => (
-                      <GameCard key={game.id} game={game} />
-                    ))}
-                  </div>
+          // Group by date
+          Object.keys(gamesByDate)
+            .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
+            .map(dateStr => (
+              <div key={dateStr} className="mb-6">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                  {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
+                </h3>
+                <div>
+                  {gamesByDate[dateStr].map(game => (
+                    <GameCard key={game.id} game={game} />
+                  ))}
                 </div>
-              ))
-          ) : (
-            // Group by sport
-            Object.keys(gamesBySport).map(sportId => {
-              // Get sport name for display
-              const sportName = (() => {
-                switch(sportId) {
-                  case 'football': return 'Football';
-                  case 'basketball': return 'Basketball';
-                  case 'baseball': return 'Baseball';
-                  case 'softball': return 'Softball';
-                  case 'volleyball': return 'Volleyball';
-                  case 'soccer': return 'Soccer';
-                  case 'fieldhockey': return 'Field Hockey';
-                  case 'wrestling': return 'Wrestling';
-                  case 'swimming': return 'Swimming & Diving';
-                  case 'track': return 'Track & Field';
-                  case 'crosscountry': return 'Cross Country';
-                  case 'golf': return 'Golf';
-                  case 'tennis': return 'Tennis';
-                  case 'gymnastics': return 'Gymnastics';
-                  case 'lacrosse': return 'Lacrosse';
-                  case 'rowing': return 'Rowing';
-                  default: return sportId.charAt(0).toUpperCase() + sportId.slice(1);
-                }
-              })();
-              
-              return (
-                <div key={sportId} className="mb-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="bg-gray-50 text-gray-700">
-                      {sportName}
-                    </Badge>
-                    <span className="text-xs text-gray-500">({gamesBySport[sportId].length} games)</span>
-                  </div>
-                  <div>
-                    {gamesBySport[sportId]
-                      .sort((a, b) => {
-                        const dateA = new Date(a.scheduledTime);
-                        const dateB = new Date(b.scheduledTime);
-                        return currentView === "past" 
-                          ? dateB.getTime() - dateA.getTime() 
-                          : dateA.getTime() - dateB.getTime();
-                      })
-                      .map(game => (
-                        <GameCard key={game.id} game={game} />
-                      ))
-                    }
-                  </div>
-                </div>
-              );
-            })
-          )
+              </div>
+            ))
         ) : (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <p className="text-gray-500">No games found for the selected filters.</p>
