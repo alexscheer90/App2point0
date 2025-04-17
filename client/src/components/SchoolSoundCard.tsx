@@ -124,31 +124,20 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
   return (
     <Card className="overflow-hidden" style={getCardStyle()}>
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            {school?.logoUrl && (
-              <div className="w-8 h-8 flex-shrink-0">
-                <img 
-                  src={school.logoUrl} 
-                  alt={`${school.name} logo`} 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            )}
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Music className="h-4 w-4" />
-              {sound.title}
-            </CardTitle>
-          </div>
-          <span 
-            className="text-xs font-medium capitalize px-2 py-1 rounded-full"
-            style={{
-              backgroundColor: school ? getBgColor(school.primaryColor, 0.12) : '#f1f1f1',
-              color: school ? school.primaryColor : 'inherit'
-            }}
-          >
-            {sound.type.replace("_", " ")}
-          </span>
+        <div className="flex items-center gap-3">
+          {school?.logoUrl && (
+            <div className="w-8 h-8 flex-shrink-0">
+              <img 
+                src={school.logoUrl} 
+                alt={`${school.name} logo`} 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+          <CardTitle className="text-lg font-semibold flex items-center gap-2">
+            <Music className="h-4 w-4" />
+            {sound.title}
+          </CardTitle>
         </div>
       </CardHeader>
       
