@@ -44,7 +44,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     shortName: homeShortName,
     primaryColor: '#0099D8', // NCAA blue color
     secondaryColor: '#ffffff',
-    logoUrl: '/assets/ncaa-logo.png'
+    logoUrl: '/attached_assets/IMG_0788.png' // Direct path to NCAA logo
   };
   
   const defaultAwayTeam = awayTeam || {
@@ -53,7 +53,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     shortName: awayShortName,
     primaryColor: '#0099D8', // NCAA blue color
     secondaryColor: '#ffffff',
-    logoUrl: '/assets/ncaa-logo.png'
+    logoUrl: '/attached_assets/IMG_0788.png' // Direct path to NCAA logo
   };
   
   if (!sport) {
