@@ -69,6 +69,7 @@ export const gameSchema = z.object({
   venue: z.string().optional(),
   location: z.string().optional(),  // Added for full location name
   ticketUrl: z.string().optional(), // Added for ticket purchase link
+  liveStatsUrl: z.string().optional(), // Added for Sidearm live stats link
   isRivalryGame: z.boolean().optional(),
   homeScore: z.number().optional(), // Alias for homeTeamScore for consistency
   awayScore: z.number().optional(), // Alias for awayTeamScore for consistency
