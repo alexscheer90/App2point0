@@ -73,6 +73,8 @@ export const gameSchema = z.object({
   isRivalryGame: z.boolean().optional(),
   homeScore: z.number().optional(), // Alias for homeTeamScore for consistency
   awayScore: z.number().optional(), // Alias for awayTeamScore for consistency
+  homeTeamName: z.string().optional(), // For teams not in our database
+  awayTeamName: z.string().optional(), // For teams not in our database
 });
 
 export const standingsEntrySchema = z.object({

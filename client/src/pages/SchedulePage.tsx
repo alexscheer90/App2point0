@@ -413,11 +413,19 @@ const SchedulePage = () => {
     const homeTeam = schools.find(s => s.id === game.homeTeamId);
     const awayTeam = schools.find(s => s.id === game.awayTeamId);
     
+    // Extract team names from the game data
+    const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
+    const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
+    
+    // Get short names for the teams
+    const homeShortName = homeTeamName.split(' ').pop() || 'UNK';
+    const awayShortName = awayTeamName.split(' ').pop() || 'UNK';
+    
     // Create placeholder objects for unknown teams
     const defaultHomeTeam = homeTeam || {
       id: game.homeTeamId || 'unknown',
-      name: game.homeTeamName || 'Unknown Team',
-      shortName: game.homeTeamName?.split(' ').pop() || 'UNK',
+      name: homeTeamName,
+      shortName: homeShortName,
       mascot: '',
       primaryColor: '#cccccc',
       secondaryColor: '#666666',
@@ -426,8 +434,8 @@ const SchedulePage = () => {
     
     const defaultAwayTeam = awayTeam || {
       id: game.awayTeamId || 'unknown',
-      name: game.awayTeamName || 'Unknown Team',
-      shortName: game.awayTeamName?.split(' ').pop() || 'UNK',
+      name: awayTeamName,
+      shortName: awayShortName,
       mascot: '',
       primaryColor: '#cccccc',
       secondaryColor: '#666666',

@@ -769,6 +769,9 @@ export class DataImporter {
             sportId: this.normalizeSportId(sportId),
             homeTeamId,
             awayTeamId,
+            // Add team names for teams that might not be in our database
+            homeTeamName: homeTeamName,
+            awayTeamName: awayTeamName,
             homeTeamScore: 0, // Will be updated for in-progress or completed games
             awayTeamScore: 0,
             status,
