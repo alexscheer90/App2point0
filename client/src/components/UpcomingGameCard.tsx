@@ -62,7 +62,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
   
   // Create share content
   const readableDate = format(gameDate, "MMMM d, yyyy 'at' h:mm a");
-  const shareTitle = `${homeTeam.name} vs ${awayTeam.name} - ${readableDate}`;
+  const shareTitle = `${homeTeam?.name || game.homeTeamName || 'Home Team'} vs ${awayTeam?.name || game.awayTeamName || 'Away Team'} - ${readableDate}`;
   const description = `Don't miss this upcoming ${sport.name} matchup on Mobile #MACtion!`;
   
   const handleShareClick = (e: React.MouseEvent) => {
@@ -71,7 +71,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
   };
   
   // Generate live stats URL for using on game day
-  const liveStatsUrl = game.liveStatsUrl || generateLiveStatsUrl(homeTeam, sport);
+  const liveStatsUrl = game.liveStatsUrl || (homeTeam ? generateLiveStatsUrl(homeTeam, sport) : '');
   
   // Handle click to open tickets or game info in a new tab
   const handleGameClick = () => {
@@ -106,7 +106,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
       <div className="p-3">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            {homeTeam.logoUrl ? (
+            {homeTeam && homeTeam.logoUrl ? (
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
@@ -115,7 +115,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                   className="max-h-full max-w-full object-contain" 
                 />
               </div>
-            ) : (
+            ) : homeTeam ? (
               // Fallback to circular initial when no logo
               <div 
                 className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
@@ -125,8 +125,13 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                   {homeTeam.shortName.charAt(0)}
                 </span>
               </div>
+            ) : (
+              // Generic placeholder when no team info
+              <div className="w-8 h-8 rounded-full mr-3 bg-gray-300 flex items-center justify-center">
+                <span className="text-xs font-bold text-gray-700">?</span>
+              </div>
             )}
-            <span className="font-semibold text-sm">{homeTeam.name}</span>
+            <span className="font-semibold text-sm">{homeTeam?.name || game.homeTeamName || 'Home Team'}</span>
           </div>
           {game.isRivalryGame && (
             <span className="text-xs font-semibold text-[#C8102E] flex items-center">
@@ -136,7 +141,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
         </div>
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            {awayTeam.logoUrl ? (
+            {awayTeam && awayTeam.logoUrl ? (
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
@@ -145,7 +150,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                   className="max-h-full max-w-full object-contain" 
                 />
               </div>
-            ) : (
+            ) : awayTeam ? (
               // Fallback to circular initial when no logo
               <div 
                 className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
@@ -155,8 +160,13 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                   {awayTeam.shortName.charAt(0)}
                 </span>
               </div>
+            ) : (
+              // Generic placeholder when no team info
+              <div className="w-8 h-8 rounded-full mr-3 bg-gray-300 flex items-center justify-center">
+                <span className="text-xs font-bold text-gray-700">?</span>
+              </div>
             )}
-            <span className="font-semibold text-sm">{awayTeam.name}</span>
+            <span className="font-semibold text-sm">{awayTeam?.name || game.awayTeamName || 'Away Team'}</span>
           </div>
         </div>
         

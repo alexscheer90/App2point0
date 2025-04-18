@@ -5,6 +5,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import ShareButton from "./ShareButton";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
+import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
 
 interface CompletedGameCardProps {
   game: Game;
@@ -24,17 +25,23 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
     );
   }
   
-  const homeTeam = schools.find(school => school.id === game.homeTeamId);
-  const awayTeam = schools.find(school => school.id === game.awayTeamId);
+  // Get team data, first try to match by ID from our MAC schools
+  let homeTeam = schools.find(school => school.id === game.homeTeamId);
+  let awayTeam = schools.find(school => school.id === game.awayTeamId);
   const sport = sports.find(sport => sport.id === game.sportId);
   
   // Extract team names from the game data
   const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
   const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
   
-  // Get short names for the teams
-  const homeShortName = homeTeamName.split(' ').pop() || 'UNK';
-  const awayShortName = awayTeamName.split(' ').pop() || 'UNK';
+  // For non-MAC teams, try to find by name using the logo utility
+  if (!homeTeam && game.homeTeamName) {
+    homeTeam = findSchoolByName(game.homeTeamName);
+  }
+  
+  if (!awayTeam && game.awayTeamName) {
+    awayTeam = findSchoolByName(game.awayTeamName);
+  }
   
   // Check if this is a MAC tournament/championship game
   const isMacConferenceGame = 
@@ -45,7 +52,8 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
   const defaultHomeTeam = homeTeam || {
     id: game.homeTeamId || 'unknown',
     name: homeTeamName,
-    shortName: homeShortName,
+    shortName: homeTeamName.split(' ').pop() || 'UNK',
+    mascot: "",
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
@@ -56,7 +64,8 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
   const defaultAwayTeam = awayTeam || {
     id: game.awayTeamId || 'unknown',
     name: awayTeamName,
-    shortName: awayShortName,
+    shortName: awayTeamName.split(' ').pop() || 'UNK',
+    mascot: "",
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
