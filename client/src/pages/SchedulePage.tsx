@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
-import { Calendar, Clock, MapPin, CalendarIcon, Tag } from "lucide-react";
+import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getMonth, getYear, addMonths, subMonths, isSameDay } from "date-fns";
+import { Calendar, Clock, MapPin, CalendarIcon, Tag, ChevronLeft, ChevronRight } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
@@ -181,6 +181,7 @@ const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"upcoming" | "calendar" | "all">("upcoming");
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   
   // Always use "date" as our grouping method
   const groupBy = "date";
@@ -267,6 +268,14 @@ const SchedulePage = () => {
   
   const handleChangeSport = (sportId: string) => {
     setSelectedSport(sportId);
+  };
+  
+  const nextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
+  };
+  
+  const prevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
   };
   
   if (isMacCalendarLoading || !schools) {
@@ -686,7 +695,7 @@ const SchedulePage = () => {
         <Tabs
           defaultValue="upcoming"
           value={currentView}
-          onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "past")}
+          onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "calendar")}
         >
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
@@ -703,31 +712,178 @@ const SchedulePage = () => {
         </div>
       </div>
       
-      {/* Game List */}
+      {/* Game List or Calendar View */}
       <div>
-        {filteredGames && filteredGames.length > 0 ? (
-          // Group by date
-          Object.keys(gamesByDate)
-            .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
-            .map(dateStr => (
-              <div key={dateStr} className="mb-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
-                  {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
-                </h3>
-                <div>
-                  {gamesByDate[dateStr].map(game => (
-                    <GameCard key={game.id} game={game} />
-                  ))}
+        {currentView === "calendar" ? (
+          // Calendar View
+          <div className="calendar-view">
+            {/* Month Navigation */}
+            <div className="flex items-center justify-between mb-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center" 
+                onClick={prevMonth}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Prev
+              </Button>
+              <h2 className="text-lg font-medium">
+                {format(currentMonth, 'MMMM yyyy')}
+              </h2>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center" 
+                onClick={nextMonth}
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+            
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 text-center mb-2">
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+                <div key={day} className="py-2 font-medium text-sm">
+                  {day}
                 </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1">
+              {eachDayOfInterval({
+                start: startOfMonth(currentMonth),
+                end: endOfMonth(currentMonth)
+              }).map(day => {
+                // Find games for this day
+                const dayStr = format(day, 'yyyy-MM-dd');
+                const gamesOnThisDay = gamesByDate[dayStr] || [];
+                
+                // Determine if there are games from the favorite team today
+                const hasFavoriteTeamGames = favoriteSchoolData?.favoriteSchool && gamesOnThisDay.some(
+                  game => game.homeTeamId === favoriteSchoolData.favoriteSchool || 
+                          game.awayTeamId === favoriteSchoolData.favoriteSchool
+                );
+                
+                // Create day cell with appropriate styling
+                return (
+                  <div 
+                    key={dayStr}
+                    className={`
+                      min-h-[90px] p-1 border rounded relative
+                      ${gamesOnThisDay.length ? 'bg-blue-50' : 'bg-white'} 
+                      ${hasFavoriteTeamGames ? 'border-green-500' : 'border-gray-200'}
+                    `}
+                  >
+                    <div className="text-right text-sm p-1">
+                      {format(day, 'd')}
+                    </div>
+                    
+                    {/* Game dots/indicators */}
+                    <div className="absolute bottom-1 left-1 right-1">
+                      {gamesOnThisDay.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {gamesOnThisDay.length <= 3 ? (
+                            // Show individual mini-indicators for each game
+                            gamesOnThisDay.map(game => {
+                              const sportColor = getSportBadgeStyle(game.sportId || "");
+                              const isFavTeamGame = favoriteSchoolData?.favoriteSchool && 
+                                (game.homeTeamId === favoriteSchoolData.favoriteSchool || 
+                                game.awayTeamId === favoriteSchoolData.favoriteSchool);
+                              
+                              return (
+                                <div 
+                                  key={game.id} 
+                                  className={`
+                                    text-xs px-1 truncate rounded-sm
+                                    ${sportColor}
+                                    ${isFavTeamGame ? 'font-bold' : ''}
+                                  `}
+                                  title={`${game.awayTeamName || game.awayTeamId} at ${game.homeTeamName || game.homeTeamId}`}
+                                >
+                                  {format(parseISO(game.scheduledTime), 'h:mm')}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            // Show count of games when there are many
+                            <div className="text-xs font-semibold text-blue-600">
+                              {gamesOnThisDay.length} games
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Game details for selected day - shown when clicking on a day */}
+            {Object.keys(gamesByDate).length > 0 ? (
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                  Games This Month
+                </h3>
+                
+                {/* Only show games from the current month */}
+                {Object.keys(gamesByDate)
+                  .filter(dateStr => {
+                    const date = parseISO(dateStr);
+                    return getMonth(date) === getMonth(currentMonth) && 
+                           getYear(date) === getYear(currentMonth);
+                  })
+                  .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
+                  .map(dateStr => (
+                    <div key={dateStr} className="mb-4">
+                      <h4 className="text-sm font-medium text-gray-500 mb-1">
+                        {format(parseISO(dateStr), 'EEEE, MMMM d')}
+                      </h4>
+                      <div>
+                        {gamesByDate[dateStr].map(game => (
+                          <GameCard key={game.id} game={game} />
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                }
               </div>
-            ))
-        ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No games found for the selected filters.</p>
-            <p className="text-sm text-gray-400 mt-2">
-              Try selecting a different sport or team.
-            </p>
+            ) : (
+              <div className="text-center py-8 mt-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">No games found for this month.</p>
+                <p className="text-sm text-gray-400 mt-2">
+                  Try selecting a different month, sport, or team.
+                </p>
+              </div>
+            )}
           </div>
+        ) : (
+          // Regular Game List View
+          filteredGames && filteredGames.length > 0 ? (
+            // Group by date
+            Object.keys(gamesByDate)
+              .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
+              .map(dateStr => (
+                <div key={dateStr} className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                    {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
+                  </h3>
+                  <div>
+                    {gamesByDate[dateStr].map(game => (
+                      <GameCard key={game.id} game={game} />
+                    ))}
+                  </div>
+                </div>
+              ))
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">No games found for the selected filters.</p>
+              <p className="text-sm text-gray-400 mt-2">
+                Try selecting a different sport or team.
+              </p>
+            </div>
+          )
         )}
       </div>
     </div>
