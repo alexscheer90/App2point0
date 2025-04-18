@@ -520,7 +520,7 @@ const SchedulePage = () => {
       primaryColor: isHomeTeamMacConference ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
       secondaryColor: '#ffffff',
       logoUrl: isHomeTeamMacConference
-        ? '/mac-logo-official.png' // Official MAC logo
+        ? '/school-logos/mac-conference.png' // Official MAC logo
         : '/attached_assets/IMG_0788.png' // NCAA logo
     };
     
@@ -532,9 +532,67 @@ const SchedulePage = () => {
       primaryColor: isAwayTeamMacConference ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
       secondaryColor: '#ffffff',
       logoUrl: isAwayTeamMacConference
-        ? '/mac-logo-official.png' // Official MAC logo
+        ? '/school-logos/mac-conference.png' // Official MAC logo
         : '/attached_assets/IMG_0788.png' // NCAA logo
     };
+
+    // Check for school-specific logos in our library (both MAC and non-MAC)
+    const schoolLogoMap: Record<string, string> = {
+      // MAC Schools
+      'akron': '/school-logos/akron.png',
+      'ballstate': '/school-logos/ballstate.png',
+      'bowlinggreen': '/school-logos/bowlinggreen.png',
+      'buffalo': '/school-logos/buffalo.png',
+      'centralmichigan': '/school-logos/centralmichigan.png',
+      'easternmichigan': '/school-logos/easternmichigan.png',
+      'kentstate': '/school-logos/kentstate.png',
+      'miamioh': '/school-logos/miamioh.png',
+      'northernillinois': '/school-logos/northernillinois.png',
+      'ohio': '/school-logos/ohio.png',
+      'toledo': '/school-logos/toledo.png',
+      'westernmichigan': '/school-logos/westernmichigan.png',
+      'massachusetts': '/school-logos/massachusetts.png',
+      
+      // Common non-MAC opponents
+      'alabama': '/school-logos/non-mac/alabama.png',
+      'arizonastate': '/school-logos/non-mac/arizonastate.png',
+      'army': '/school-logos/non-mac/army.png',
+      'boisestate': '/school-logos/non-mac/boisestate.png',
+      'byu': '/school-logos/non-mac/byu.png',
+      'cincinnati': '/school-logos/non-mac/cincinnati.png',
+      'connecticut': '/school-logos/non-mac/connecticut.png',
+      'georgiastate': '/school-logos/non-mac/georgiastate.png',
+      'illinois': '/school-logos/non-mac/illinois.png',
+      'indiana': '/school-logos/non-mac/indiana.png',
+      'iowa': '/school-logos/non-mac/iowa.png',
+      'iowastate': '/school-logos/non-mac/iowastate.png',
+      'kansas': '/school-logos/non-mac/kansas.png',
+      'marshall': '/school-logos/non-mac/marshall.png',
+      'michigan': '/school-logos/non-mac/michigan.png',
+      'michiganstate': '/school-logos/non-mac/michiganstate.png',
+      'minnesota': '/school-logos/non-mac/minnesota.png',
+      'navy': '/school-logos/non-mac/navy.png',
+      'northwestern': '/school-logos/non-mac/northwestern.png',
+      'notredame': '/school-logos/non-mac/notredame.png',
+      'ohiostate': '/school-logos/non-mac/ohiostate.png',
+      'pennstate': '/school-logos/non-mac/pennstate.png',
+      'purdue': '/school-logos/non-mac/purdue.png',
+      'rutgers': '/school-logos/non-mac/rutgers.png',
+      'sandiegostate': '/school-logos/non-mac/sandiegostate.png',
+      'syracuse': '/school-logos/non-mac/syracuse.png',
+      'temple': '/school-logos/non-mac/temple.png',
+      'washingtonstate': '/school-logos/non-mac/washingtonstate.png',
+      'wisconsin': '/school-logos/non-mac/wisconsin.png'
+    };
+
+    // Apply MAC school logos if available
+    if (game.homeTeamId && schoolLogoMap[game.homeTeamId]) {
+      defaultHomeTeam.logoUrl = schoolLogoMap[game.homeTeamId];
+    }
+    
+    if (game.awayTeamId && schoolLogoMap[game.awayTeamId]) {
+      defaultAwayTeam.logoUrl = schoolLogoMap[game.awayTeamId];
+    }
     
     // Special handling for Youngstown State logo if found in our assets
     if (defaultHomeTeam.name?.includes('Youngstown') || defaultHomeTeam.id?.includes('youngstown')) {
