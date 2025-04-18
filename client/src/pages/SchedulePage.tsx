@@ -379,18 +379,69 @@ const SchedulePage = () => {
     
     // Check for location information which sometimes contains sport info
     if (game.location) {
-      // Check for court/venue names that indicate tennis
+      const locationLower = game.location.toLowerCase();
+      
+      // Check for tennis venues
       const tennisVenues = ['tennis', 'court', 'courts'];
-      if (tennisVenues.some(venue => game.location?.toLowerCase().includes(venue))) {
-        // Check if it's men's or women's tennis based on team names or other indicators
-        // Note: This heuristic might need refinement based on actual data patterns
-        if (game.homeTeamName?.includes("Women's") || game.awayTeamName?.includes("Women's")) {
+      if (tennisVenues.some(venue => locationLower.includes(venue))) {
+        // Check if it's men's or women's tennis based on team names or location
+        if (locationLower.includes("women") || 
+            game.homeTeamName?.toLowerCase().includes("women") || 
+            game.awayTeamName?.toLowerCase().includes("women")) {
           return 'wtennis';
-        } else if (game.homeTeamName?.includes("Men's") || game.awayTeamName?.includes("Men's")) {
+        } else if (locationLower.includes("men") || 
+                  game.homeTeamName?.toLowerCase().includes("men") || 
+                  game.awayTeamName?.toLowerCase().includes("men")) {
           return 'mtennis';
         }
-        // Generic tennis - default to men's for now but could be refined
-        return 'tennis';
+        // If no gender indicator, default to the original sport ID if it has one
+        if (game.sportId?.includes('tennis')) {
+          return game.sportId;
+        }
+        // Still no match - default to men's tennis for now
+        return 'mtennis';
+      }
+      
+      // Check for golf venues
+      const golfVenues = ['golf', 'course', 'club', 'country club'];
+      if (golfVenues.some(venue => locationLower.includes(venue))) {
+        // Check gender the same way as tennis
+        if (locationLower.includes("women") || 
+            game.homeTeamName?.toLowerCase().includes("women") || 
+            game.awayTeamName?.toLowerCase().includes("women")) {
+          return 'wgolf';
+        } else if (locationLower.includes("men") || 
+                  game.homeTeamName?.toLowerCase().includes("men") || 
+                  game.awayTeamName?.toLowerCase().includes("men")) {
+          return 'mgolf';
+        }
+        // If no gender indicator, default to the original sport ID if it has one
+        if (game.sportId?.includes('golf')) {
+          return game.sportId;
+        }
+        // Still no match - default to men's golf for now
+        return 'mgolf';
+      }
+      
+      // Check for swimming venues
+      const swimVenues = ['pool', 'natatorium', 'aquatic', 'swimming', 'swim'];
+      if (swimVenues.some(venue => locationLower.includes(venue))) {
+        // Check gender the same way as tennis
+        if (locationLower.includes("women") || 
+            game.homeTeamName?.toLowerCase().includes("women") || 
+            game.awayTeamName?.toLowerCase().includes("women")) {
+          return 'wswim';
+        } else if (locationLower.includes("men") || 
+                  game.homeTeamName?.toLowerCase().includes("men") || 
+                  game.awayTeamName?.toLowerCase().includes("men")) {
+          return 'mswim';
+        }
+        // If no gender indicator, default to the original sport ID if it has one
+        if (game.sportId?.includes('swim')) {
+          return game.sportId;
+        }
+        // Still no match - default to women's swimming for now (more common in MAC)
+        return 'wswim';
       }
     }
     
@@ -399,7 +450,7 @@ const SchedulePage = () => {
     if (game.id === 'mac-118340-1744942929170' || // Use the actual ID from your data
         (game.homeTeamId === 'miami' && game.awayTeamId === 'northern-illinois' && 
          game.scheduledTime && game.scheduledTime.includes('2025-04-18'))) {
-      return 'tennis'; // or 'mtennis' if it's men's tennis
+      return 'mtennis'; // It's men's tennis based on the data
     }
     
     return game.sportId;

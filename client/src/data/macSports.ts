@@ -79,5 +79,29 @@ export const macSports: Sport[] = [
     name: "Wrestling",
     gender: "men",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wrestling"
+  },
+  {
+    id: "mgolf",
+    name: "Golf",
+    gender: "men",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf"
+  },
+  {
+    id: "wgolf",
+    name: "Golf",
+    gender: "women",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wgolf"
+  },
+  {
+    id: "mswim",
+    name: "Swimming & Diving",
+    gender: "men",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim"
+  },
+  {
+    id: "wswim",
+    name: "Swimming & Diving",
+    gender: "women",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wswim"
   }
 ];
