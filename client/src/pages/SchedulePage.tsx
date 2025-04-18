@@ -361,11 +361,12 @@ const SchedulePage = () => {
     // Filter by sport - add more robust matching for all sports
     const sportFilter = selectedSport === "all" || (() => {
       // Debug info
-      console.log(`Filtering: Selected sport="${selectedSport}", Game sport="${game.sportId}"`);
+      const gameActualSportId = extractedSportId || game.sportId;
+      console.log(`Filtering: Selected sport="${selectedSport}", Game sport="${gameActualSportId}"`);
       
       // Normalize both sport IDs for consistent matching
       const normalizedSelectedSport = selectedSport.toLowerCase().trim();
-      const normalizedGameSport = game.sportId?.toLowerCase()?.trim() || '';
+      const normalizedGameSport = gameActualSportId?.toLowerCase()?.trim() || '';
       
       // Handle football
       if (normalizedSelectedSport === 'football') {
@@ -394,6 +395,13 @@ const SchedulePage = () => {
       if (normalizedSelectedSport === 'wsoccer') {
         return (normalizedGameSport.includes('soccer') && normalizedGameSport.includes('women')) || 
                normalizedGameSport === 'wsoccer';
+      }
+      
+      // Special handling for Women's Lacrosse
+      if (normalizedSelectedSport === 'lacrosse') {
+        return normalizedGameSport.includes('lacrosse') || 
+               normalizedGameSport === 'wlacrosse' || 
+               normalizedGameSport === 'w-lacrosse';
       }
       
       // For all other sports, check for inclusion
