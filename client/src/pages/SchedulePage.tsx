@@ -486,6 +486,9 @@ const SchedulePage = () => {
     const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
     const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
     
+    // Log team names - for debugging MAC logo issue
+    console.log(`Game ID: ${game.id}, Home: "${homeTeamName}", Away: "${awayTeamName}"`);
+    
     // Get short names for the teams
     const homeShortName = homeTeamName.split(' ').pop() || 'UNK';
     const awayShortName = awayTeamName.split(' ').pop() || 'UNK';
@@ -495,9 +498,18 @@ const SchedulePage = () => {
       homeTeamName.includes('Mid-American Conference') || 
       awayTeamName.includes('Mid-American Conference');
     
-    // Check if teams are MAC Conference
-    const isHomeTeamMacConference = homeTeamName?.includes('Mid-American Conference');
-    const isAwayTeamMacConference = awayTeamName?.includes('Mid-American Conference');
+    // Check if teams are MAC Conference - looking for various patterns in both name and ID
+    const isHomeTeamMacConference = 
+      homeTeamName?.includes('Mid-American Conference') || 
+      game.homeTeamId?.includes('mac-conference') || 
+      game.homeTeamId?.includes('mid-american') ||
+      (homeTeamName === 'MAC' || homeTeamName === 'MAC Championships');
+
+    const isAwayTeamMacConference = 
+      awayTeamName?.includes('Mid-American Conference') || 
+      game.awayTeamId?.includes('mac-conference') || 
+      game.awayTeamId?.includes('mid-american') ||
+      (awayTeamName === 'MAC' || awayTeamName === 'MAC Championships');
     
     // Create placeholder objects for unknown teams
     const defaultHomeTeam = homeTeam || {
