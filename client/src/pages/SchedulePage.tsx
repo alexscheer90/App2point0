@@ -180,7 +180,7 @@ const getSportBadgeStyle = (sportId: string): string => {
 const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
-  const [currentView, setCurrentView] = useState<"all" | "upcoming" | "past">("upcoming");
+  const [currentView, setCurrentView] = useState<"upcoming" | "calendar" | "all">("upcoming");
   
   // Always use "date" as our grouping method
   const groupBy = "date";
@@ -343,8 +343,8 @@ const SchedulePage = () => {
     
     const viewFilter = 
       currentView === "all" || 
-      (currentView === "upcoming" && gameDate >= now) || 
-      (currentView === "past" && gameDate < now);
+      currentView === "calendar" || // Show all games in calendar view
+      (currentView === "upcoming" && gameDate >= now);
       
     return teamFilter && sportFilter && viewFilter;
   }).sort((a: Game, b: Game) => {
@@ -352,9 +352,8 @@ const SchedulePage = () => {
     const dateA = new Date(a.scheduledTime);
     const dateB = new Date(b.scheduledTime);
     
-    return currentView === "past" 
-      ? dateB.getTime() - dateA.getTime() // Past games: most recent first
-      : dateA.getTime() - dateB.getTime(); // Upcoming games: soonest first
+    // In all views, sort chronologically
+    return dateA.getTime() - dateB.getTime(); // Upcoming games: soonest first
   });
   
   // Group games by date
@@ -689,8 +688,9 @@ const SchedulePage = () => {
           value={currentView}
           onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "past")}
         >
-          <TabsList className="grid grid-cols-2 w-full">
+          <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="calendar">Calendar View</TabsTrigger>
             <TabsTrigger value="all">All Games</TabsTrigger>
           </TabsList>
         </Tabs>
