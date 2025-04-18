@@ -33,6 +33,7 @@ const StandingsPage = () => {
         <SportSelector 
           selectedSport={selectedSport}
           onChange={handleChangeSport}
+          standingsView={true}
         />
       </div>
       

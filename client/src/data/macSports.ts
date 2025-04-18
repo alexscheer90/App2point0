@@ -63,10 +63,23 @@ export const macSports: Sport[] = [
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wlax"
   },
   {
+    id: "mten",
+    name: "Tennis",
+    gender: "men",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mten"
+  },
+  {
+    id: "wten",
+    name: "Tennis",
+    gender: "women",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wten"
+  },
+  {
     id: "tennis",
     name: "Tennis",
     gender: "mixed",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=mten"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mten",
+    scheduleOnly: true // Only show in schedule, not in standings
   },
   {
     id: "wrestling",
@@ -75,15 +88,41 @@ export const macSports: Sport[] = [
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wrestling"
   },
   {
+    id: "mgolf",
+    name: "Golf",
+    gender: "men",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf"
+  },
+  {
+    id: "wgolf",
+    name: "Golf",
+    gender: "women",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wgolf"
+  },
+  {
     id: "golf",
     name: "Golf",
     gender: "mixed",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf",
+    scheduleOnly: true // Only show in schedule, not in standings
+  },
+  {
+    id: "mswim",
+    name: "Swimming & Diving",
+    gender: "men",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim"
+  },
+  {
+    id: "wswim",
+    name: "Swimming & Diving",
+    gender: "women",
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wswim"
   },
   {
     id: "swimming",
     name: "Swimming & Diving",
     gender: "mixed",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim",
+    scheduleOnly: true // Only show in schedule, not in standings
   }
 ];

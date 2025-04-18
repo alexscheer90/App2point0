@@ -49,6 +49,7 @@ export const sportSchema = z.object({
   name: z.string(),
   gender: z.enum(["men", "women", "mixed"]),
   officialUrl: z.string().optional(),
+  scheduleOnly: z.boolean().optional(), // Used to mark sports that should only appear in schedule views
 });
 
 export const gameStatusSchema = z.enum(["scheduled", "live", "final", "postponed", "cancelled"]);

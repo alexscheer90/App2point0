@@ -5,6 +5,7 @@ interface Sport {
   id: string;
   name: string;
   gender: string;
+  scheduleOnly?: boolean;
 }
 
 interface SportSelectorProps {
@@ -12,19 +13,26 @@ interface SportSelectorProps {
   onChange: (sportId: string) => void;
   showAllOption?: boolean;
   sports?: Sport[]; // Optional array of sports to show instead of fetching from API
+  standingsView?: boolean; // If true, hide scheduleOnly sports
 }
 
 const SportSelector = ({ 
   selectedSport, 
   onChange, 
   showAllOption = true,
-  sports: providedSports
+  sports: providedSports,
+  standingsView = false
 }: SportSelectorProps) => {
   // If sports are provided, use them; otherwise, fetch from API
   const { data: apiSports, isLoading } = useMacSports();
   
   // Use provided sports if available, otherwise use API data
-  const sports = providedSports || apiSports;
+  let sports = providedSports || apiSports || [];
+  
+  // If in standings view, filter out scheduleOnly sports
+  if (standingsView) {
+    sports = sports.filter(sport => !sport.scheduleOnly);
+  }
   
   return (
     <div className="relative">
