@@ -390,7 +390,9 @@ const SchedulePage = () => {
     const sportFilter = selectedSport === "all" || (() => {
       // Get the actual sport ID from the game, looking for embedded info in team names
       const gameActualSportId = extractSportFromGame(game) || game.sportId;
-      console.log(`Filtering: Selected sport="${selectedSport}", Game sport="${gameActualSportId}"`);
+      // Detailed debugging info
+      const gameTeams = `${game.homeTeamName || ""} vs ${game.awayTeamName || ""}`;
+      console.log(`Filtering: Sport="${selectedSport}" vs Game="${gameActualSportId}" in ${gameTeams}`);
       
       // Normalize both sport IDs for consistent matching
       const normalizedSelectedSport = selectedSport.toLowerCase().trim();
