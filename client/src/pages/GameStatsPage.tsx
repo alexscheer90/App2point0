@@ -5,7 +5,7 @@ import { useMacSports } from "../hooks/useStandings";
 import { Game } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share } from "lucide-react";
+import { ArrowLeft, Share, ChevronRight, ExternalLink } from "lucide-react";
 import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -391,9 +391,24 @@ const GameStatsPage = () => {
         </TabsContent>
       </Tabs>
       
-      <div className="my-4 text-center text-xs text-gray-500">
-        <p>Data is for demonstration purposes only.</p>
-        <p>In production, this would show real-time data from official sources.</p>
+      <div className="my-4 text-center">
+        {(homeTeam.sidearmUrl || homeTeam.sidearmScoresApi) && (
+          <div className="mb-2">
+            <a 
+              href={externalStatsUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-blue-600 hover:underline text-sm flex items-center justify-center"
+            >
+              View Full Stats on {homeTeam.name} Official Site
+              <ExternalLink className="ml-1 h-4 w-4" />
+            </a>
+          </div>
+        )}
+        <div className="text-xs text-gray-500">
+          <p>Data is for demonstration purposes only.</p>
+          <p>In production, this would show real-time data from official sources.</p>
+        </div>
       </div>
     </div>
   );

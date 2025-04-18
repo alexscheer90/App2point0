@@ -135,6 +135,12 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
   // Check if stats are available for this game
   const hasStats = shouldShowLiveStats(game.status);
   
+  // Check if the home team has a Sidearm URL for fetching live stats
+  const hasSidearmStats = Boolean(
+    (homeTeam?.sidearmUrl || homeTeam?.sidearmScoresApi) &&
+    hasStats
+  );
+  
   // Handle click to navigate to game stats page
   const handleGameClick = () => {
     if (hasStats) {
@@ -227,12 +233,15 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
           <span>{game.situation}</span>
           <div className="flex items-center gap-2">
             {hasStats && (
-              <span className="text-blue-600 flex items-center gap-1" onClick={(e) => {
-                e.stopPropagation();
-                setLocation(`/games/${game.id}`);
-              }}>
+              <span 
+                className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/games/${game.id}`);
+                }}
+              >
                 <ChevronRight size={12} />
-                Stats
+                {hasSidearmStats ? 'Live Stats' : 'Stats'}
               </span>
             )}
             <div onClick={handleShareClick} className="hidden md:block">
@@ -248,12 +257,15 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       ) : (
         <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
           {hasStats && (
-            <span className="text-blue-600 flex items-center gap-1" onClick={(e) => {
-              e.stopPropagation();
-              setLocation(`/games/${game.id}`);
-            }}>
+            <span 
+              className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
+              onClick={(e) => {
+                e.stopPropagation();
+                setLocation(`/games/${game.id}`);
+              }}
+            >
               <ChevronRight size={12} />
-              View Stats
+              {hasSidearmStats ? 'Live Stats' : 'View Stats'}
             </span>
           )}
           <div onClick={handleShareClick} className="hidden md:block">
