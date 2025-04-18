@@ -89,8 +89,34 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
   return macLocalEats.find(restaurant => restaurant.id === id);
 }
 
-// Games API - Mock implementation
+// Import the live score service
+import { getTodaysGames } from "../services/liveScoreService";
+
+// Games API - Uses real-time data when available
 export async function getGames(sportId?: string): Promise<Game[]> {
+  try {
+    // Try to get real-time games that are happening today
+    console.log("Fetching today's games with real-time data...");
+    const todaysGames = await getTodaysGames();
+    
+    // If we got games, use them
+    if (todaysGames.length > 0) {
+      console.log(`Found ${todaysGames.length} games happening today!`);
+      
+      // If a sport filter was provided, apply it
+      if (sportId) {
+        return todaysGames.filter(game => game.sportId === sportId);
+      }
+      
+      return todaysGames;
+    }
+  } catch (error) {
+    console.error("Error fetching real-time games:", error);
+  }
+  
+  // Fallback to mock data if needed
+  console.log("No live games found, using backup data");
+  
   // Generate some mock games for demonstration
   const now = new Date();
   const yesterday = new Date(now);
@@ -100,27 +126,28 @@ export async function getGames(sportId?: string): Promise<Game[]> {
   
   // We need to cast our mock games to Game type to ensure they match the schema
   const mockGames = [
-    // Live games
+    // Live games happening NOW
     {
       id: "game1",
-      sportId: "football",
+      sportId: "mbball",
       homeTeamId: "toledo",
       awayTeamId: "bowlinggreen",
-      homeTeamScore: 24,
-      awayTeamScore: 17,
+      homeTeamScore: 64,
+      awayTeamScore: 58,
       startTime: now.toISOString(),
       scheduledTime: now.toISOString(),
       status: "live" as const,
-      period: 3,
-      clock: "8:45",
-      situation: "Ball on 34 yard line • 3rd & 8",
-      location: "Glass Bowl, Toledo OH",
-      homeScore: 24,
-      awayScore: 17,
+      period: 2,
+      clock: "4:22",
+      situation: "Toledo timeout • Under 5 TV timeout",
+      location: "Savage Arena, Toledo OH",
+      homeScore: 64,
+      awayScore: 58,
+      liveStatsUrl: "https://utrockets.com/sidearmstats/mbball/summary",
     },
     {
       id: "game2",
-      sportId: "wbasketball",
+      sportId: "wbball",
       homeTeamId: "ohio",
       awayTeamId: "kentstate",
       homeTeamScore: 56,
@@ -128,24 +155,25 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       startTime: now.toISOString(),
       scheduledTime: now.toISOString(),
       status: "live" as const,
-      period: 2,
-      clock: "8:45",
-      situation: "8:45 remaining • Ohio possession",
+      period: 3,
+      clock: "1:56",
+      situation: "3rd Quarter • Kent St. possession",
       location: "Convocation Center, Athens OH",
       homeScore: 56,
       awayScore: 42,
+      liveStatsUrl: "https://ohiobobcats.com/sidearmstats/wbball/summary",
     },
     // Upcoming games
     {
       id: "game3",
-      sportId: "football",
+      sportId: "baseball",
       homeTeamId: "miamioh",
       awayTeamId: "ballstate",
       startTime: tomorrow.toISOString(),
       scheduledTime: tomorrow.toISOString(),
       status: "scheduled" as const,
-      venue: "Yager Stadium, Oxford OH",
-      location: "Yager Stadium, Oxford OH",
+      venue: "McKie Field at Hayden Park, Oxford OH",
+      location: "McKie Field at Hayden Park, Oxford OH",
       homeTeamScore: 0,
       awayTeamScore: 0,
       homeScore: 0,
@@ -153,14 +181,14 @@ export async function getGames(sportId?: string): Promise<Game[]> {
     },
     {
       id: "game4",
-      sportId: "mbball",
+      sportId: "softball",
       homeTeamId: "akron",
       awayTeamId: "northernillinois",
       startTime: tomorrow.toISOString(),
       scheduledTime: tomorrow.toISOString(),
       status: "scheduled" as const,
-      venue: "James A. Rhodes Arena, Akron OH",
-      location: "James A. Rhodes Arena, Akron OH",
+      venue: "Lee R. Jackson Field, Akron OH",
+      location: "Lee R. Jackson Field, Akron OH",
       homeTeamScore: 0,
       awayTeamScore: 0,
       homeScore: 0,
@@ -183,17 +211,17 @@ export async function getGames(sportId?: string): Promise<Game[]> {
     },
     {
       id: "game6",
-      sportId: "football",
+      sportId: "msoc",
       homeTeamId: "easternmichigan",
       awayTeamId: "buffalo",
-      homeTeamScore: 21,
-      awayTeamScore: 28,
+      homeTeamScore: 1,
+      awayTeamScore: 2,
       startTime: yesterday.toISOString(),
       scheduledTime: yesterday.toISOString(),
       status: "final" as const,
-      location: "Rynearson Stadium, Ypsilanti MI",
-      homeScore: 21,
-      awayScore: 28,
+      location: "Scicluna Field, Ypsilanti MI",
+      homeScore: 1,
+      awayScore: 2,
     },
   ];
   
