@@ -1,44 +1,37 @@
 import { School } from "@shared/schema";
-
-// Use direct paths to the logo files instead of imports
-// MAC School logos (main conference members)
-const akronLogo = "/school-logos/akron.png";
-const ballStateLogo = "/school-logos/ballstate.png";
-const bgsuLogo = "/school-logos/bowlinggreen.png";
-const buffaloLogo = "/school-logos/buffalo.png";
-const cmuLogo = "/school-logos/centralmichigan.png";
-const emuLogo = "/school-logos/easternmichigan.png";
-const kentStateLogo = "/school-logos/kentstate.png";
-const miamiLogo = "/school-logos/miamioh.png";
-const niuLogo = "/school-logos/northernillinois.png";
-const ohioLogo = "/school-logos/ohio.png";
-const toledoLogo = "/school-logos/toledo.png";
-const wmuLogo = "/school-logos/westernmichigan.png";
-const massachusettsLogo = "/school-logos/massachusetts.png";
-
-// MAC conference logo
-const macConferenceLogo = "/school-logos/mac-conference.png";
+import akronLogo from "@assets/Akron.png";
+import ballStateLogo from "@assets/Ball State.png";
+import bgsuLogo from "@assets/BGSU.png";
+import buffaloLogo from "@assets/Buffalo.png";
+import cmuLogo from "@assets/CMU.png";
+import emuLogo from "@assets/EMU.png";
+import kentStateLogo from "@assets/Kent State.png";
+import miamiLogo from "@assets/Miami.png";
+import niuLogo from "@assets/NIU.png";
+import ohioLogo from "@assets/Ohio.png";
+import toledoLogo from "@assets/Toledo.png";
+import wmuLogo from "@assets/WMU.png";
+import massachusettsLogo from "@assets/UMass.png";
 
 // Affiliate school logos
-// We'll keep the existing ones in the attached_assets directory for now
-const jmuLogo = "/attached_assets/JMU_Duke_Dog_Head_logo.png";
-const appStateLogo = "/attached_assets/Appalachian_State_Mountaineers_logo.svg.png";
-const longwoodLogo = "/attached_assets/Longwood_Lancers_logo.svg.png";
-const bellarmineLogo = "/attached_assets/Bellarmine.png";
-const chicagoStateLogo = "/attached_assets/Chicago_State_Cougars_logo.svg.png";
-const siuEdwardsvilleLogo = "/attached_assets/SIU Edwardsville.png";
-const georgeMasonLogo = "/attached_assets/George Mason.png";
-const riderLogo = "/attached_assets/Rider_Broncs.svg.png";
-const lockHavenLogo = "/attached_assets/Lock_Haven_Bald_Eagles_logo.svg.png";
-const edinboroLogo = "/attached_assets/Edinboro_Fighting_Scots_current_logo.svg.png";
-const clevelandStateLogo = "/attached_assets/Cleveland State.png";
-const clarionLogo = "/attached_assets/Clarion_Golden_Eagles_logo.svg.png";
-const bloomsburgLogo = "/attached_assets/Bloomsburg Huskies Logo-01.png";
-const robertMorrisLogo = "/attached_assets/rmu_logo_1.png";
-const youngstownStateLogo = "/attached_assets/Youngstown_State_Penguins_logo.svg.png";
-const detroitMercyLogo = "/attached_assets/Detroit_Titans_logo.svg.png";
-const uicLogo = "/attached_assets/UIC_Flames_wordmark.svg.png";
-const ncaaLogo = "/attached_assets/IMG_0788.png"; // NCAA logo for non-MAC schools
+import jmuLogo from "@assets/JMU.webp";
+import appStateLogo from "@assets/Appalachian_State_Mountaineers_logo.svg.png";
+import longwoodLogo from "@assets/Longwood_Lancers_logo.svg.png";
+import bellarmineLogo from "@assets/Bellarmine.png";
+import chicagoStateLogo from "@assets/Chicago_State_Cougars_logo.svg.png";
+import siuEdwardsvilleLogo from "@assets/SIU Edwardsville.png";
+import georgeMasonLogo from "@assets/George Mason.png";
+import riderLogo from "@assets/Rider_Broncs.svg.png";
+import lockHavenLogo from "@assets/Lock_Haven_Bald_Eagles_logo.svg.png";
+import edinboroLogo from "@assets/Edinboro_Fighting_Scots_current_logo.svg.png";
+import clevelandStateLogo from "@assets/Cleveland State.png";
+import clarionLogo from "@assets/Clarion_Golden_Eagles_logo.svg.png";
+import bloomsburgLogo from "@assets/Bloomsburg Huskies Logo-01.png";
+import robertMorrisLogo from "@assets/rmu_logo_1.png";
+import youngstownStateLogo from "@assets/Youngstown_State_Penguins_logo.svg.png";
+import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
+import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
+import ncaaLogo from "@assets/IMG_0788.png"; // NCAA logo for non-MAC schools
 
 // Export the NCAA logo for use in other components
 export const ncaaLogoUrl = ncaaLogo;
