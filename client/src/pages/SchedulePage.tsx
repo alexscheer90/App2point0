@@ -1174,6 +1174,7 @@ const SchedulePage = () => {
         'miami oh': 'miamioh',
         'miami (oh)': 'miamioh',
         'miami ohio': 'miamioh',
+        'miami redhawks': 'miamioh',
         'redhawks': 'miamioh',
         'northern illinois': 'northernillinois',
         'niu': 'northernillinois',
@@ -1218,6 +1219,16 @@ const SchedulePage = () => {
         'scarlet knights': 'rutgers',
         'wisconsin': 'wisconsin',
         'badgers': 'wisconsin',
+        'maryland': 'maryland',
+        'terps': 'maryland',
+        'terrapins': 'maryland',
+        'university of maryland': 'maryland',
+        
+        // ACC schools
+        'florida state': 'floridastate',
+        'fsu': 'floridastate',
+        'seminoles': 'floridastate',
+        'noles': 'floridastate',
         
         // SEC schools
         'alabama': 'alabama',
@@ -1227,22 +1238,22 @@ const SchedulePage = () => {
         'razorbacks': 'arkansas',
         'hogs': 'arkansas',
         'auburn': 'auburn',
-        'tigers': 'auburn',
+        'auburn tigers': 'auburn',
         'florida': 'florida',
         'gators': 'florida',
         'georgia': 'georgia',
-        'bulldogs': 'georgia',
+        'georgia bulldogs': 'georgia',
         'dawgs': 'georgia',
         'kentucky': 'kentucky',
-        'wildcats': 'kentucky',
+        'kentucky wildcats': 'kentucky',
         'lsu': 'lsu',
         'louisiana state': 'lsu',
-        'tigers': 'lsu',
+        'louisiana state tigers': 'lsu',
         'mississippi state': 'mississippistate',
-        'bulldogs': 'mississippistate',
+        'mississippi state bulldogs': 'mississippistate',
         'missouri': 'missouri',
         'mizzou': 'missouri',
-        'tigers': 'missouri',
+        'missouri tigers': 'missouri',
         'ole miss': 'olemiss',
         'rebels': 'olemiss',
         'south carolina': 'southcarolina',
@@ -1255,13 +1266,24 @@ const SchedulePage = () => {
         'vanderbilt': 'vanderbilt',
         'commodores': 'vanderbilt',
         'vandy': 'vanderbilt',
+        'troy': 'troy',
+        'troy university': 'troy',
+        'trojans': 'troy',
+        
+        // Miami FL vs Miami OH differentiation
+        'miami fl': 'miamiflorida',
+        'miami (fl)': 'miamiflorida',
+        'miami florida': 'miamiflorida',
+        'miami hurricanes': 'miamiflorida',
+        'the u': 'miamiflorida',
+        'hurricanes': 'miamiflorida',
         
         // Other common non-conference opponents
         'uconn': 'connecticut',
-        'connecticut': 'connecticut',
-        'huskies': 'connecticut',
+        'connecticut': 'connecticut', 
+        'connecticut huskies': 'connecticut',
         'washington state': 'washingtonstate',
-        'cougars': 'washingtonstate',
+        'washington state cougars': 'washingtonstate',
         'wsu': 'washingtonstate',
         'western kentucky': 'westernkentucky',
         'hilltoppers': 'westernkentucky',
@@ -1380,6 +1402,43 @@ const SchedulePage = () => {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
     }
     
+    // Special handling for Miami (OH) vs Miami (FL)
+    if (defaultHomeTeam.name?.includes('Miami') || defaultHomeTeam.id?.includes('miami')) {
+      // Check if it's Miami (OH)
+      if (defaultHomeTeam.name?.includes('OH') || defaultHomeTeam.name?.includes('RedHawks') || 
+          defaultHomeTeam.name?.includes('Redhawks') || defaultHomeTeam.name?.includes('Ohio') || 
+          defaultHomeTeam.id?.includes('miamioh')) {
+        defaultHomeTeam.logoUrl = '/school-logos/miamioh.png';
+      }
+      // Check if it's specifically Miami (FL) Hurricanes
+      else if (defaultHomeTeam.name?.includes('FL') || defaultHomeTeam.name?.includes('Hurricanes') || 
+               defaultHomeTeam.name?.includes('Florida')) {
+        defaultHomeTeam.logoUrl = '/school-logos/non-mac/miamiflorida.png';
+      }
+      // If just "Miami" with no other indicators, use MAC school logo (Miami OH) as default for MAC-related games
+      else if (defaultHomeTeam.name === 'Miami') {
+        defaultHomeTeam.logoUrl = '/school-logos/miamioh.png';
+      }
+    }
+    
+    if (defaultAwayTeam.name?.includes('Miami') || defaultAwayTeam.id?.includes('miami')) {
+      // Check if it's Miami (OH)
+      if (defaultAwayTeam.name?.includes('OH') || defaultAwayTeam.name?.includes('RedHawks') || 
+          defaultAwayTeam.name?.includes('Redhawks') || defaultAwayTeam.name?.includes('Ohio') || 
+          defaultAwayTeam.id?.includes('miamioh')) {
+        defaultAwayTeam.logoUrl = '/school-logos/miamioh.png';
+      }
+      // Check if it's specifically Miami (FL) Hurricanes
+      else if (defaultAwayTeam.name?.includes('FL') || defaultAwayTeam.name?.includes('Hurricanes') || 
+               defaultAwayTeam.name?.includes('Florida')) {
+        defaultAwayTeam.logoUrl = '/school-logos/non-mac/miamiflorida.png';
+      }
+      // If just "Miami" with no other indicators, use MAC school logo (Miami OH) as default for MAC-related games
+      else if (defaultAwayTeam.name === 'Miami') {
+        defaultAwayTeam.logoUrl = '/school-logos/miamioh.png';
+      }
+    }
+    
     // Special handling for Western Kentucky
     if (defaultHomeTeam.name?.includes('Western Kentucky') || defaultHomeTeam.id?.includes('westernkentucky') || 
         defaultHomeTeam.name?.includes('WKU')) {
@@ -1389,6 +1448,39 @@ const SchedulePage = () => {
     if (defaultAwayTeam.name?.includes('Western Kentucky') || defaultAwayTeam.id?.includes('westernkentucky') || 
         defaultAwayTeam.name?.includes('WKU')) {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
+    }
+    
+    // Special handling for Maryland
+    if (defaultHomeTeam.name?.includes('Maryland') || defaultHomeTeam.id?.includes('maryland') || 
+        defaultHomeTeam.name?.includes('Terrapins') || defaultHomeTeam.name?.includes('Terps')) {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/maryland.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Maryland') || defaultAwayTeam.id?.includes('maryland') || 
+        defaultAwayTeam.name?.includes('Terrapins') || defaultAwayTeam.name?.includes('Terps')) {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/maryland.png';
+    }
+    
+    // Special handling for Florida State
+    if (defaultHomeTeam.name?.includes('Florida State') || defaultHomeTeam.id?.includes('floridastate') || 
+        defaultHomeTeam.name?.includes('FSU') || defaultHomeTeam.name?.includes('Seminoles')) {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/floridastate.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Florida State') || defaultAwayTeam.id?.includes('floridastate') || 
+        defaultAwayTeam.name?.includes('FSU') || defaultAwayTeam.name?.includes('Seminoles')) {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/floridastate.png';
+    }
+    
+    // Special handling for Troy
+    if (defaultHomeTeam.name?.includes('Troy') || defaultHomeTeam.id?.includes('troy') || 
+        defaultHomeTeam.name?.includes('Trojans') && !defaultHomeTeam.name?.includes('USC')) {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/troy.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Troy') || defaultAwayTeam.id?.includes('troy') || 
+        defaultAwayTeam.name?.includes('Trojans') && !defaultAwayTeam.name?.includes('USC')) {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/troy.png';
     }
     
     // Add special handling for other affiliate schools
