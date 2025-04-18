@@ -58,24 +58,142 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "Cornhuskers": "Nebraska",
   "Trojans": "Troy",
   "WKU": "Western Kentucky",
-  "Hilltoppers": "Western Kentucky"
+  "Hilltoppers": "Western Kentucky",
+  "Notre Dame": "Notre Dame",
+  "Fighting Irish": "Notre Dame",
+  "UND": "Notre Dame"
 };
 
-// Map of common school names to their logo URLs
-const NON_MAC_LOGOS: Record<string, string> = {
-  "Michigan": "/attached_assets/michigan.png",
-  "Michigan State": "/attached_assets/michigan-state.png",
-  "Ohio State": "/attached_assets/ohio-state.png",
-  "Texas": "/attached_assets/texas.png",
-  "Texas Tech": "/attached_assets/texas-tech.png",
-  "North Texas": "/attached_assets/north-texas.png",
-  "Kentucky": "/attached_assets/kentucky.png",
-  "Cincinnati": "/attached_assets/cincinnati.png",
-  "Western Kentucky": "/attached_assets/western-kentucky.png",
-  "Maryland": "/attached_assets/maryland.png",
-  "Nebraska": "/attached_assets/nebraska.png",
-  "Troy": "/attached_assets/troy.png",
-  // Add more non-MAC schools as needed
+// Create a comprehensive list of non-MAC schools with their colors and logo paths
+interface NonMacSchool {
+  name: string;
+  shortName: string;
+  primaryColor: string;
+  secondaryColor: string;
+  logoUrl: string;
+}
+
+// Define common non-MAC schools data
+const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
+  "Michigan": {
+    name: "Michigan",
+    shortName: "Michigan",
+    primaryColor: "#00274C",
+    secondaryColor: "#FFCB05",
+    logoUrl: "/school-logos/non-mac/michigan.svg"
+  },
+  "Michigan State": {
+    name: "Michigan State",
+    shortName: "MSU",
+    primaryColor: "#18453B",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/michigan-state.svg"
+  },
+  "Notre Dame": {
+    name: "Notre Dame",
+    shortName: "Notre Dame",
+    primaryColor: "#0C2340",
+    secondaryColor: "#C99700",
+    logoUrl: "/school-logos/non-mac/notre-dame.svg"
+  },
+  "Ohio State": {
+    name: "Ohio State",
+    shortName: "OSU",
+    primaryColor: "#BB0000",
+    secondaryColor: "#666666",
+    logoUrl: "/school-logos/non-mac/ohio-state.svg"
+  },
+  "Texas": {
+    name: "Texas",
+    shortName: "Texas",
+    primaryColor: "#BF5700",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/texas.svg"
+  },
+  "Texas Tech": {
+    name: "Texas Tech",
+    shortName: "Texas Tech",
+    primaryColor: "#CC0000",
+    secondaryColor: "#000000",
+    logoUrl: "/school-logos/non-mac/texas-tech.svg"
+  },
+  "North Texas": {
+    name: "North Texas",
+    shortName: "UNT",
+    primaryColor: "#00853E",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/north-texas.svg"
+  },
+  "Kentucky": {
+    name: "Kentucky",
+    shortName: "UK",
+    primaryColor: "#0033A0",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/kentucky.svg"
+  },
+  "Cincinnati": {
+    name: "Cincinnati",
+    shortName: "Cincinnati",
+    primaryColor: "#E00122",
+    secondaryColor: "#000000",
+    logoUrl: "/school-logos/non-mac/cincinnati.svg"
+  },
+  "Western Kentucky": {
+    name: "Western Kentucky",
+    shortName: "WKU",
+    primaryColor: "#C8102E",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/western-kentucky.svg"
+  },
+  "Maryland": {
+    name: "Maryland",
+    shortName: "Maryland",
+    primaryColor: "#E03a3e",
+    secondaryColor: "#FFD520",
+    logoUrl: "/school-logos/non-mac/maryland.svg"
+  },
+  "Nebraska": {
+    name: "Nebraska",
+    shortName: "Nebraska",
+    primaryColor: "#E41C38",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/nebraska.svg"
+  },
+  "Troy": {
+    name: "Troy",
+    shortName: "Troy",
+    primaryColor: "#8A2432",
+    secondaryColor: "#C3C5C8",
+    logoUrl: "/school-logos/non-mac/troy.svg"
+  },
+  "Washington State": {
+    name: "Washington State",
+    shortName: "WSU",
+    primaryColor: "#981E32",
+    secondaryColor: "#5E6A71",
+    logoUrl: "/school-logos/non-mac/washington-state.svg"
+  },
+  "Purdue": {
+    name: "Purdue",
+    shortName: "Purdue",
+    primaryColor: "#CFB991",
+    secondaryColor: "#000000",
+    logoUrl: "/school-logos/non-mac/purdue.svg"
+  },
+  "Penn State": {
+    name: "Penn State",
+    shortName: "PSU",
+    primaryColor: "#041E42",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/penn-state.svg"
+  },
+  "Youngstown State": {
+    name: "Youngstown State",
+    shortName: "YSU",
+    primaryColor: "#C8102E",
+    secondaryColor: "#000000",
+    logoUrl: "/school-logos/non-mac/youngstown-state.svg"
+  }
 };
 
 /**
@@ -100,31 +218,49 @@ export function findSchoolByName(name: string): School | undefined {
   );
   if (macMatch) return macMatch;
   
-  // Step 4: Check if it's a non-MAC school with a logo
-  const logoUrl = NON_MAC_LOGOS[normalizedName];
-  if (logoUrl) {
-    // Create a temporary school object with basic info
+  // Step 4: Check if it's a non-MAC school in our database
+  const nonMacSchool = NON_MAC_SCHOOLS[normalizedName];
+  if (nonMacSchool) {
+    // Create a proper School object from our nonMacSchool data
     return {
-      id: name.toLowerCase().replace(/\s+/g, "-"),
-      name: normalizedName,
-      shortName: name,
+      id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
+      name: nonMacSchool.name,
+      shortName: nonMacSchool.shortName,
       mascot: "",
-      primaryColor: "#0099D8", // Default NCAA blue
-      secondaryColor: "#FFFFFF",
-      logoUrl: logoUrl,
+      primaryColor: nonMacSchool.primaryColor,
+      secondaryColor: nonMacSchool.secondaryColor,
+      logoUrl: nonMacSchool.logoUrl,
       city: "",
       state: ""
     };
   }
   
-  // Step 5: Try partial matching (contains)
+  // Step 5: Try partial matching with non-MAC schools
+  for (const [schoolName, schoolData] of Object.entries(NON_MAC_SCHOOLS)) {
+    if (schoolName.toLowerCase().includes(normalizedName.toLowerCase()) ||
+        normalizedName.toLowerCase().includes(schoolName.toLowerCase())) {
+      return {
+        id: schoolData.name.toLowerCase().replace(/\s+/g, "-"),
+        name: schoolData.name,
+        shortName: schoolData.shortName,
+        mascot: "",
+        primaryColor: schoolData.primaryColor,
+        secondaryColor: schoolData.secondaryColor,
+        logoUrl: schoolData.logoUrl,
+        city: "",
+        state: ""
+      };
+    }
+  }
+  
+  // Step 6: Try partial matching with MAC schools
   const partialMatch = macSchools.find(
     school => name.toLowerCase().includes(school.name.toLowerCase()) ||
               school.name.toLowerCase().includes(name.toLowerCase())
   );
   if (partialMatch) return partialMatch;
   
-  // Step 6: If all else fails, create a generic school object with NCAA logo
+  // Step 7: If all else fails, create a generic school object with NCAA logo
   return {
     id: name.toLowerCase().replace(/\s+/g, "-"),
     name: name,
