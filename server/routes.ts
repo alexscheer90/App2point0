@@ -7,8 +7,13 @@ import axios from "axios";
 import { WebSocketServer, WebSocket } from "ws";
 import importerRoutes from "./routes/importer";
 import googleSheetsRoutes from "./routes/googleSheets";
+import express from "express";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve static files from the public directory
+  app.use(express.static(path.join(process.cwd(), 'public')));
+  
   // Register data importer routes
   app.use('/api/import', importerRoutes);
   
