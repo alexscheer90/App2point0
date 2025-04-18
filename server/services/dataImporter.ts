@@ -958,6 +958,16 @@ export class DataImporter {
       'w golf': 'wgolf',
       'wgolf': 'wgolf',
       'swimming': 'swimming',
+      'mens swimming': 'mswim',
+      'men swimming': 'mswim',
+      'm swimming': 'mswim',
+      'mswim': 'mswim',
+      'mens swimming & diving': 'mswim',
+      'womens swimming': 'wswim',
+      'women swimming': 'wswim',
+      'w swimming': 'wswim',
+      'wswim': 'wswim',
+      'womens swimming & diving': 'wswim',
       'cross country': 'crosscountry'
     };
     
