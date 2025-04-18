@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getMonth, getYear, addMonths, subMonths, isSameDay } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getMonth, getYear, addMonths, subMonths, isSameDay, getDay } from "date-fns";
 import { Calendar, Clock, MapPin, CalendarIcon, Tag, ChevronLeft, ChevronRight } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
@@ -800,7 +800,22 @@ const SchedulePage = () => {
               ))}
             </div>
             
+            {/* Day of week headers */}
+            <div className="grid grid-cols-7 gap-1 mb-1">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(dayName => (
+                <div key={dayName} className="text-center text-xs font-medium text-gray-500">
+                  {dayName}
+                </div>
+              ))}
+            </div>
+            
             <div className="grid grid-cols-7 gap-1">
+              {/* Add empty cells for days before the first of the month */}
+              {Array.from({ length: getDay(startOfMonth(currentMonth)) }).map((_, index) => (
+                <div key={`empty-start-${index}`} className="min-h-[90px] p-1 border border-gray-100 rounded bg-gray-50 opacity-50"></div>
+              ))}
+              
+              {/* Actual days of the month */}
               {eachDayOfInterval({
                 start: startOfMonth(currentMonth),
                 end: endOfMonth(currentMonth)
@@ -872,6 +887,17 @@ const SchedulePage = () => {
                   </div>
                 );
               })}
+              
+              {/* Add empty cells for days after the end of the month to complete the grid */}
+              {Array.from(
+                { length: (7 - getDay(endOfMonth(currentMonth))) % 7 },
+                (_, index) => (
+                  <div 
+                    key={`empty-end-${index}`} 
+                    className="min-h-[90px] p-1 border border-gray-100 rounded bg-gray-50 opacity-50"
+                  ></div>
+                )
+              )}
             </div>
             
             {/* Game details for selected day - shown when clicking on a day */}
