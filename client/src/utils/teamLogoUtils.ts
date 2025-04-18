@@ -92,7 +92,7 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "MSU",
     primaryColor: "#18453B",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/attached_assets/Michigan_State_Spartans_logo-300x300.png"
+    logoUrl: "/school-logos/non-mac/michigan-state.png"
   },
   "Notre Dame": {
     name: "Notre Dame",
@@ -120,14 +120,14 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Texas Tech",
     primaryColor: "#CC0000",
     secondaryColor: "#000000",
-    logoUrl: "/attached_assets/Texas_Tech_Red_Raiders_logo-300x300.png"
+    logoUrl: "/school-logos/non-mac/texas-tech.png"
   },
   "North Texas": {
     name: "North Texas",
     shortName: "UNT",
     primaryColor: "#00853E",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/attached_assets/North_Texas_Mean_Green_logo-300x300.png"
+    logoUrl: "/school-logos/non-mac/north-texas.png"
   },
   "Kentucky": {
     name: "Kentucky",
@@ -155,7 +155,7 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Maryland",
     primaryColor: "#E03a3e",
     secondaryColor: "#FFD520",
-    logoUrl: "/attached_assets/Maryland_Terrapins_logo-300x300.png"
+    logoUrl: "/school-logos/non-mac/maryland.png"
   },
   "Nebraska": {
     name: "Nebraska",
@@ -217,7 +217,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Spartans",
       primaryColor: "#18453B",
       secondaryColor: "#FFFFFF",
-      logoUrl: "/attached_assets/Michigan_State_Spartans_logo-300x300.png",
+      logoUrl: "/school-logos/non-mac/michigan-state.png",
       city: "East Lansing",
       state: "MI"
     };
@@ -231,7 +231,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Red Raiders",
       primaryColor: "#CC0000",
       secondaryColor: "#000000",
-      logoUrl: "/attached_assets/Texas_Tech_Red_Raiders_logo-300x300.png",
+      logoUrl: "/school-logos/non-mac/texas-tech.png",
       city: "Lubbock",
       state: "TX"
     };
@@ -245,7 +245,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Mean Green",
       primaryColor: "#00853E",
       secondaryColor: "#FFFFFF",
-      logoUrl: "/attached_assets/North_Texas_Mean_Green_logo-300x300.png",
+      logoUrl: "/school-logos/non-mac/north-texas.png",
       city: "Denton",
       state: "TX"
     };
@@ -259,7 +259,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Terrapins",
       primaryColor: "#E03a3e",
       secondaryColor: "#FFD520",
-      logoUrl: "/attached_assets/Maryland_Terrapins_logo-300x300.png",
+      logoUrl: "/school-logos/non-mac/maryland.png",
       city: "College Park",
       state: "MD"
     };
