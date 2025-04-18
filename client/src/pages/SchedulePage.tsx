@@ -998,12 +998,65 @@ const SchedulePage = () => {
       }
     }
     
-    // Apply MAC school logos if available
-    if (game.homeTeamId && schoolLogoMap[game.homeTeamId]) {
+    // Apply school logos using exact name matching for common problem cases
+    // For home team
+    if (homeTeamName === 'Kentucky' || homeTeamName === 'University of Kentucky' || homeTeamName === 'UK') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
+      game.homeTeamId = 'kentucky';
+    }
+    else if (homeTeamName === 'Western Kentucky' || homeTeamName === 'Western Kentucky University' || 
+             homeTeamName === 'WKU') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
+      game.homeTeamId = 'westernkentucky';
+    }
+    else if (homeTeamName === 'Ohio State' || homeTeamName === 'Ohio State University' || 
+             homeTeamName === 'OSU') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/ohiostate.png';
+      game.homeTeamId = 'ohiostate';
+    }
+    else if (homeTeamName === 'Illinois' || homeTeamName === 'University of Illinois' || 
+             homeTeamName === 'Fighting Illini') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/illinois.png';
+      game.homeTeamId = 'illinois';
+    }
+    else if (homeTeamName === 'Iowa' || homeTeamName === 'University of Iowa' || 
+             homeTeamName === 'Hawkeyes') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/iowa.png';
+      game.homeTeamId = 'iowa';
+    }
+    
+    // For away team
+    if (awayTeamName === 'Kentucky' || awayTeamName === 'University of Kentucky' || awayTeamName === 'UK') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
+      game.awayTeamId = 'kentucky';
+    }
+    else if (awayTeamName === 'Western Kentucky' || awayTeamName === 'Western Kentucky University' || 
+             awayTeamName === 'WKU') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
+      game.awayTeamId = 'westernkentucky';
+    }
+    else if (awayTeamName === 'Ohio State' || awayTeamName === 'Ohio State University' || 
+             awayTeamName === 'OSU') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/ohiostate.png';
+      game.awayTeamId = 'ohiostate';
+    }
+    else if (awayTeamName === 'Illinois' || awayTeamName === 'University of Illinois' || 
+             awayTeamName === 'Fighting Illini') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/illinois.png';
+      game.awayTeamId = 'illinois';
+    }
+    else if (awayTeamName === 'Iowa' || awayTeamName === 'University of Iowa' || 
+             awayTeamName === 'Hawkeyes') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/iowa.png';
+      game.awayTeamId = 'iowa';
+    }
+    
+    // Apply MAC school logos if available (as a fallback)
+    if (game.homeTeamId && schoolLogoMap[game.homeTeamId] && !defaultHomeTeam.logoUrl.includes('non-mac')) {
       defaultHomeTeam.logoUrl = schoolLogoMap[game.homeTeamId];
     }
     
-    if (game.awayTeamId && schoolLogoMap[game.awayTeamId]) {
+    if (game.awayTeamId && schoolLogoMap[game.awayTeamId] && !defaultAwayTeam.logoUrl.includes('non-mac')) {
       defaultAwayTeam.logoUrl = schoolLogoMap[game.awayTeamId];
     }
     
@@ -1216,7 +1269,7 @@ const SchedulePage = () => {
           </div>
           
           <div className="text-xs text-gray-500 font-medium">
-            {isPastGame ? 'FINAL' : 'AT'}
+            {isPastGame ? 'FINAL' : 'VS'}
           </div>
           
           {/* Home Team */}
@@ -1262,7 +1315,7 @@ const SchedulePage = () => {
                 <DialogHeader>
                   <DialogTitle>Add to Calendar</DialogTitle>
                   <DialogDescription>
-                    {defaultAwayTeam.name} at {defaultHomeTeam.name} on {format(gameDate, 'MMMM d, yyyy')}
+                    {defaultAwayTeam.name} vs {defaultHomeTeam.name} on {format(gameDate, 'MMMM d, yyyy')}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex flex-col space-y-3 mt-4">
@@ -1457,7 +1510,7 @@ const SchedulePage = () => {
                                     ${sportColor}
                                     ${isFavTeamGame ? 'font-bold' : ''}
                                   `}
-                                  title={`${game.awayTeamName || game.awayTeamId} at ${game.homeTeamName || game.homeTeamId}`}
+                                  title={`${game.awayTeamName || game.awayTeamId} vs ${game.homeTeamName || game.homeTeamId}`}
                                 >
                                   {format(parseISO(game.scheduledTime), 'h:mm')}
                                 </div>
