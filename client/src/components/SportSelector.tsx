@@ -42,7 +42,7 @@ const SportSelector = ({
           )}
           {sports?.map((sport) => (
             <SelectItem key={sport.id} value={sport.id}>
-              {sport.name} {sport.gender !== "mixed" ? `• ${sport.gender.charAt(0).toUpperCase() + sport.gender.slice(1)}` : ""}
+              {sport.name} {sport.gender !== "mixed" ? `• ${sport.gender === "mens" ? "Men" : "Women"}` : ""}
             </SelectItem>
           ))}
         </SelectContent>

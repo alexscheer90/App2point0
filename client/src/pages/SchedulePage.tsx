@@ -274,26 +274,26 @@ const SchedulePage = () => {
   
   // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
   const availableSports = useMemo(() => {
-    // Complete list of MAC sports (gender only specified where both men's and women's versions exist)
+    // Complete list of MAC sports (gender only specified where multiple versions exist)
     const allMacSports = [
       { id: "baseball", name: "Baseball", gender: "mens" },
       { id: "cross-country", name: "Cross Country", gender: "mixed" },
       { id: "field-hockey", name: "Field Hockey", gender: "womens" },
       { id: "football", name: "Football", gender: "mens" },
       { id: "gymnastics", name: "Gymnastics", gender: "womens" },
-      { id: "mbball", name: "Men's Basketball", gender: "mens" },
-      { id: "mgolf", name: "Men's Golf", gender: "mens" },
-      { id: "msoccer", name: "Men's Soccer", gender: "mens" },
-      { id: "mswim", name: "Men's Swimming & Diving", gender: "mens" },
-      { id: "mtennis", name: "Men's Tennis", gender: "mens" },
+      { id: "mbball", name: "Basketball", gender: "mens" },
+      { id: "mgolf", name: "Golf", gender: "mens" },
+      // Removed Men's Soccer as requested
+      { id: "mswim", name: "Swimming & Diving", gender: "mens" },
+      { id: "mtennis", name: "Tennis", gender: "mens" },
       { id: "softball", name: "Softball", gender: "womens" },
       { id: "track", name: "Track and Field", gender: "mixed" },
-      { id: "wbball", name: "Women's Basketball", gender: "womens" },
-      { id: "wgolf", name: "Women's Golf", gender: "womens" },
-      { id: "lacrosse", name: "Women's Lacrosse", gender: "womens" },
+      { id: "wbball", name: "Basketball", gender: "womens" },
+      { id: "wgolf", name: "Golf", gender: "womens" },
+      { id: "lacrosse", name: "Lacrosse", gender: "womens" },
       { id: "soccer", name: "Soccer", gender: "womens" },
-      { id: "wswim", name: "Women's Swimming & Diving", gender: "womens" },
-      { id: "wtennis", name: "Women's Tennis", gender: "womens" },
+      { id: "wswim", name: "Swimming & Diving", gender: "womens" },
+      { id: "wtennis", name: "Tennis", gender: "womens" },
       { id: "volleyball", name: "Volleyball", gender: "womens" },
       { id: "wrestling", name: "Wrestling", gender: "mens" }
     ];
