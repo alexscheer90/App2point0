@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import ShareButton from "./ShareButton";
 import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { ExternalLink, Ticket } from "lucide-react";
+import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
 
 interface UpcomingGameCardProps {
   game: Game;
@@ -24,11 +25,21 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
     );
   }
   
-  const homeTeam = schools.find(school => school.id === game.homeTeamId);
-  const awayTeam = schools.find(school => school.id === game.awayTeamId);
+  // Get team data, first try to match by ID from our MAC schools
+  let homeTeam = schools.find(school => school.id === game.homeTeamId);
+  let awayTeam = schools.find(school => school.id === game.awayTeamId);
   const sport = sports.find(sport => sport.id === game.sportId);
   
-  if (!homeTeam || !awayTeam || !sport) {
+  // For non-MAC teams, try to find by name using the logo utility
+  if (!homeTeam && game.homeTeamName) {
+    homeTeam = findSchoolByName(game.homeTeamName);
+  }
+  
+  if (!awayTeam && game.awayTeamName) {
+    awayTeam = findSchoolByName(game.awayTeamName);
+  }
+  
+  if (!sport) {
     return null;
   }
   
