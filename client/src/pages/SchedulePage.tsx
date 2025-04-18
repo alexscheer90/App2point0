@@ -31,7 +31,7 @@ const getSportName = (sportId: string): string => {
   // Normalize the sport ID for consistent matching
   const normalizedId = sportId.toLowerCase().trim();
   
-  // Handle men's and women's basketball IDs
+  // Handle men's and women's basketball IDs (both genders exist in MAC)
   if (normalizedId === 'mbball' || normalizedId === 'm-basketball' || 
     (normalizedId.includes('basketball') && normalizedId.includes('men'))) {
     return "Men's Basketball";
@@ -42,13 +42,19 @@ const getSportName = (sportId: string): string => {
     return "Women's Basketball";
   }
   
-  // Handle other common variants
+  // Generic basketball (need specific gender)
+  if (normalizedId === 'basketball' || normalizedId.includes('basketball')) {
+    return "Basketball";
+  }
+  
+  // Handle sports with no gender specification needed (only one gender in the MAC)
   if (normalizedId === 'football' || normalizedId.includes('football')) return 'Football';
   if (normalizedId === 'baseball' || normalizedId.includes('baseball')) return 'Baseball';
   if (normalizedId === 'softball' || normalizedId.includes('softball')) return 'Softball';
   if (normalizedId === 'volleyball' || normalizedId.includes('volleyball')) return 'Volleyball';
+  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) return 'Lacrosse';
   
-  // Soccer variants
+  // Soccer - men's and women's versions in MAC
   if (normalizedId === 'msoccer' || normalizedId === 'm-soccer' || 
     (normalizedId.includes('soccer') && normalizedId.includes('men'))) {
     return "Men's Soccer";
@@ -56,19 +62,54 @@ const getSportName = (sportId: string): string => {
   
   if (normalizedId === 'wsoccer' || normalizedId === 'w-soccer' || 
     (normalizedId.includes('soccer') && normalizedId.includes('women'))) {
-    return "Women's Soccer";
+    return "Soccer";  // Women's soccer referred to as just "Soccer"
+  }
+  
+  // Generic soccer (assumes women's in MAC context)
+  if (normalizedId === 'soccer' || normalizedId.includes('soccer')) {
+    return "Soccer";
+  }
+  
+  // Golf - men's and women's versions in MAC
+  if (normalizedId === 'mgolf' || normalizedId === 'm-golf' || 
+    (normalizedId.includes('golf') && normalizedId.includes('men'))) {
+    return "Men's Golf";
+  }
+  
+  if (normalizedId === 'wgolf' || normalizedId === 'w-golf' || 
+    (normalizedId.includes('golf') && normalizedId.includes('women'))) {
+    return "Women's Golf";
+  }
+  
+  // Tennis - men's and women's versions in MAC
+  if (normalizedId === 'mtennis' || normalizedId === 'm-tennis' || 
+    (normalizedId.includes('tennis') && normalizedId.includes('men'))) {
+    return "Men's Tennis";
+  }
+  
+  if (normalizedId === 'wtennis' || normalizedId === 'w-tennis' || 
+    (normalizedId.includes('tennis') && normalizedId.includes('women'))) {
+    return "Women's Tennis";
+  }
+  
+  // Swimming - men's and women's versions in MAC
+  if (normalizedId === 'mswim' || normalizedId === 'm-swimming' || 
+    (normalizedId.includes('swimming') && normalizedId.includes('men'))) {
+    return "Men's Swimming & Diving";
+  }
+  
+  if (normalizedId === 'wswim' || normalizedId === 'w-swimming' || 
+    (normalizedId.includes('swimming') && normalizedId.includes('women'))) {
+    return "Women's Swimming & Diving";
   }
   
   // Other sports
   if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) return 'Field Hockey';
   if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) return 'Wrestling';
-  if (normalizedId === 'swimming' || normalizedId.includes('swimming')) return 'Swimming';
+  if (normalizedId === 'swimming' || normalizedId.includes('swimming')) return 'Swimming & Diving';
   if (normalizedId === 'track' || normalizedId.includes('track')) return 'Track & Field';
   if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) return 'Cross Country';
-  if (normalizedId === 'golf' || normalizedId.includes('golf')) return 'Golf';
-  if (normalizedId === 'tennis' || normalizedId.includes('tennis')) return 'Tennis';
   if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return 'Gymnastics';
-  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) return 'Lacrosse';
   if (normalizedId === 'rowing' || normalizedId.includes('rowing')) return 'Rowing';
   
   // Default formatting for unknown sports
@@ -182,6 +223,7 @@ const SchedulePage = () => {
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [currentView, setCurrentView] = useState<"upcoming" | "calendar" | "all">("upcoming");
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   
   // Always use "date" as our grouping method
   const groupBy = "date";
@@ -220,10 +262,10 @@ const SchedulePage = () => {
   
   // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
   const availableSports = useMemo(() => {
-    // Complete list of MAC sports with proper IDs and genders
+    // Complete list of MAC sports (gender only specified where both men's and women's versions exist)
     const allMacSports = [
       { id: "baseball", name: "Baseball", gender: "mens" },
-      { id: "cross-country", name: "Cross Country", gender: "mens" },
+      { id: "cross-country", name: "Cross Country", gender: "mixed" },
       { id: "field-hockey", name: "Field Hockey", gender: "womens" },
       { id: "football", name: "Football", gender: "mens" },
       { id: "gymnastics", name: "Gymnastics", gender: "womens" },
@@ -236,11 +278,11 @@ const SchedulePage = () => {
       { id: "track", name: "Track and Field", gender: "mixed" },
       { id: "wbball", name: "Women's Basketball", gender: "womens" },
       { id: "wgolf", name: "Women's Golf", gender: "womens" },
-      { id: "wlacrosse", name: "Women's Lacrosse", gender: "womens" },
-      { id: "wsoccer", name: "Women's Soccer", gender: "womens" },
+      { id: "lacrosse", name: "Lacrosse", gender: "womens" },
+      { id: "soccer", name: "Soccer", gender: "womens" },
       { id: "wswim", name: "Women's Swimming & Diving", gender: "womens" },
       { id: "wtennis", name: "Women's Tennis", gender: "womens" },
-      { id: "wvolleyball", name: "Women's Volleyball", gender: "womens" },
+      { id: "volleyball", name: "Volleyball", gender: "womens" },
       { id: "wrestling", name: "Wrestling", gender: "mens" }
     ];
     
@@ -766,14 +808,19 @@ const SchedulePage = () => {
                           game.awayTeamId === favoriteSchoolData.favoriteSchool
                 );
                 
+                // Check if this day is currently selected
+                const isSelected = selectedDay ? isSameDay(day, selectedDay) : false;
+                
                 // Create day cell with appropriate styling
                 return (
                   <div 
                     key={dayStr}
+                    onClick={() => setSelectedDay(gamesOnThisDay.length > 0 ? day : null)}
                     className={`
-                      min-h-[90px] p-1 border rounded relative
-                      ${gamesOnThisDay.length ? 'bg-blue-50' : 'bg-white'} 
+                      min-h-[90px] p-1 border rounded relative cursor-pointer transition-all
+                      ${gamesOnThisDay.length ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white'} 
                       ${hasFavoriteTeamGames ? 'border-green-500' : 'border-gray-200'}
+                      ${isSelected ? 'ring-2 ring-blue-500 shadow-md' : ''}
                     `}
                   >
                     <div className="text-right text-sm p-1">
@@ -821,41 +868,35 @@ const SchedulePage = () => {
             </div>
             
             {/* Game details for selected day - shown when clicking on a day */}
-            {Object.keys(gamesByDate).length > 0 ? (
+            {selectedDay && gamesByDate[format(selectedDay, 'yyyy-MM-dd')] ? (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
-                  Games This Month
-                </h3>
-                
-                {/* Only show games from the current month */}
-                {Object.keys(gamesByDate)
-                  .filter(dateStr => {
-                    const date = parseISO(dateStr);
-                    return getMonth(date) === getMonth(currentMonth) && 
-                           getYear(date) === getYear(currentMonth);
-                  })
-                  .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
-                  .map(dateStr => (
-                    <div key={dateStr} className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-500 mb-1">
-                        {format(parseISO(dateStr), 'EEEE, MMMM d')}
-                      </h4>
-                      <div>
-                        {gamesByDate[dateStr].map(game => (
-                          <GameCard key={game.id} game={game} />
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                }
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base font-medium text-gray-800">
+                    Games on {format(selectedDay, 'EEEE, MMMM d, yyyy')}
+                  </h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setSelectedDay(null)}
+                  >
+                    Close
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {gamesByDate[format(selectedDay, 'yyyy-MM-dd')].map(game => (
+                    <GameCard key={game.id} game={game} />
+                  ))}
+                </div>
               </div>
             ) : (
-              <div className="text-center py-8 mt-4 bg-gray-50 rounded-lg">
-                <p className="text-gray-500">No games found for this month.</p>
-                <p className="text-sm text-gray-400 mt-2">
-                  Try selecting a different month, sport, or team.
-                </p>
-              </div>
+              selectedDay ? (
+                <div className="text-center py-8 mt-4 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">No games found for {format(selectedDay, 'MMMM d, yyyy')}.</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    Try selecting a different day.
+                  </p>
+                </div>
+              ) : null
             )}
           </div>
         ) : (

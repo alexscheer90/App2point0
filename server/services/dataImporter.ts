@@ -743,7 +743,12 @@ export class DataImporter {
           
           // Parse the start time
           const startTime = item.evStartDate || item.localStartDate || new Date().toISOString();
+          console.log(`Raw startTime from MAC feed: ${startTime}`);
           const gameDate = new Date(startTime);
+          console.log(`Parsed gameDate: ${gameDate.toISOString()}, Day: ${gameDate.toLocaleDateString(undefined, { weekday: 'long' })}`);
+          // Account for timezone if needed
+          const gameDateUTC = new Date(gameDate.getTime());
+          console.log(`Game date (UTC): ${gameDateUTC.toISOString()}, Day: ${gameDateUTC.toLocaleDateString(undefined, { weekday: 'long' })}`);
           
           // Check for live stats URL
           let liveStatsUrl = '';
