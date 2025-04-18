@@ -702,12 +702,14 @@ const SchedulePage = () => {
     // Check if teams are MAC Conference - looking for various patterns in both name and ID
     const isHomeTeamMacConference = 
       homeTeamName?.includes('Mid-American Conference') || 
+      homeTeamName?.includes('MAC Championship') ||
       game.homeTeamId?.includes('mac-conference') || 
       game.homeTeamId?.includes('mid-american') ||
       (homeTeamName === 'MAC' || homeTeamName === 'MAC Championships');
 
     const isAwayTeamMacConference = 
       awayTeamName?.includes('Mid-American Conference') || 
+      awayTeamName?.includes('MAC Championship') ||
       game.awayTeamId?.includes('mac-conference') || 
       game.awayTeamId?.includes('mid-american') ||
       (awayTeamName === 'MAC' || awayTeamName === 'MAC Championships');
