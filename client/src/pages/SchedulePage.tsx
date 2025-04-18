@@ -785,7 +785,9 @@ const SchedulePage = () => {
       'auburn': '/school-logos/non-mac/auburn.png',
       'florida': '/school-logos/non-mac/florida.png',
       'georgia': '/school-logos/non-mac/georgia.png',
-      'kentucky': '/school-logos/non-mac/kentucky.png',
+      'kentucky': '/school-logos/non-mac/kentucky.png', 
+      'uk': '/school-logos/non-mac/kentucky.png',
+      'universityofkentucky': '/school-logos/non-mac/kentucky.png',
       'lsu': '/school-logos/non-mac/lsu.png',
       'mississippistate': '/school-logos/non-mac/mississippistate.png',
       'missouri': '/school-logos/non-mac/missouri.png',
@@ -892,6 +894,8 @@ const SchedulePage = () => {
       'utep': '/school-logos/non-mac/utep.png',
       'utsa': '/school-logos/non-mac/utsa.png',
       'westernkentucky': '/school-logos/non-mac/westernkentucky.png',
+      'wku': '/school-logos/non-mac/westernkentucky.png',
+      'western ky': '/school-logos/non-mac/westernkentucky.png',
       
       // Independent
       'connecticut': '/school-logos/non-mac/connecticut.png',
@@ -955,7 +959,15 @@ const SchedulePage = () => {
       
       'Ohio State': 'ohiostate',
       'Ohio State University': 'ohiostate',
-      'OSU': 'ohiostate'
+      'OSU': 'ohiostate',
+      
+      'Kentucky': 'kentucky',
+      'University of Kentucky': 'kentucky',
+      'UK': 'kentucky',
+      
+      'Western Kentucky': 'westernkentucky',
+      'Western Kentucky University': 'westernkentucky',
+      'WKU': 'westernkentucky'
     };
     
     // Try to match by homeTeamName if available
@@ -1046,6 +1058,30 @@ const SchedulePage = () => {
     
     if (defaultAwayTeam.name?.includes('Oklahoma') || defaultAwayTeam.id?.includes('oklahoma')) {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/oklahoma.png';
+    }
+    
+    // Special handling for Kentucky
+    if (defaultHomeTeam.name?.includes('Kentucky') && !defaultHomeTeam.name?.includes('Western') && 
+        !defaultHomeTeam.name?.includes('Eastern') || defaultHomeTeam.id?.includes('kentucky') && 
+        !defaultHomeTeam.id?.includes('western') && !defaultHomeTeam.id?.includes('eastern')) {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Kentucky') && !defaultAwayTeam.name?.includes('Western') && 
+        !defaultAwayTeam.name?.includes('Eastern') || defaultAwayTeam.id?.includes('kentucky') && 
+        !defaultAwayTeam.id?.includes('western') && !defaultAwayTeam.id?.includes('eastern')) {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
+    }
+    
+    // Special handling for Western Kentucky
+    if (defaultHomeTeam.name?.includes('Western Kentucky') || defaultHomeTeam.id?.includes('westernkentucky') || 
+        defaultHomeTeam.name?.includes('WKU')) {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Western Kentucky') || defaultAwayTeam.id?.includes('westernkentucky') || 
+        defaultAwayTeam.name?.includes('WKU')) {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
     }
     
     // Add special handling for other affiliate schools
