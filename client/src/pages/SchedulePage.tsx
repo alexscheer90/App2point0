@@ -512,7 +512,7 @@ const SchedulePage = () => {
       primaryColor: isHomeTeamMacConference ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
       secondaryColor: '#ffffff',
       logoUrl: isHomeTeamMacConference
-        ? '/mac-logo.png' // MAC logo
+        ? '/mac-logo-new.png' // New MAC logo
         : '/attached_assets/IMG_0788.png' // NCAA logo
     };
     
@@ -524,7 +524,7 @@ const SchedulePage = () => {
       primaryColor: isAwayTeamMacConference ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
       secondaryColor: '#ffffff',
       logoUrl: isAwayTeamMacConference
-        ? '/mac-logo.png' // MAC logo
+        ? '/mac-logo-new.png' // New MAC logo
         : '/attached_assets/IMG_0788.png' // NCAA logo
     };
     
