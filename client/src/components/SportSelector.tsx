@@ -6,6 +6,7 @@ interface Sport {
   name: string;
   gender: string;
   scheduleOnly?: boolean;
+  displayName?: string;
 }
 
 interface SportSelectorProps {
@@ -15,6 +16,31 @@ interface SportSelectorProps {
   sports?: Sport[]; // Optional array of sports to show instead of fetching from API
   standingsView?: boolean; // If true, hide scheduleOnly sports
 }
+
+const SPORT_DISPLAY_NAMES: Record<string, string> = {
+  "baseball": "Baseball",
+  "mbball": "Basketball - Men",
+  "wbball": "Basketball - Women",
+  "xc": "Cross Country",
+  "fhockey": "Field Hockey",
+  "football": "Football",
+  "golf": "Golf",
+  "mgolf": "Golf",
+  "wgolf": "Golf",
+  "gym": "Gymnastics",
+  "wlax": "Lacrosse",
+  "wsoc": "Soccer - Women",
+  "softball": "Softball",
+  "swimming": "Swimming & Diving",
+  "mswim": "Swimming & Diving",
+  "wswim": "Swimming & Diving",
+  "tennis": "Tennis",
+  "mten": "Tennis",
+  "wten": "Tennis",
+  "track": "Track & Field",
+  "wvball": "Volleyball",
+  "wrestling": "Wrestling"
+};
 
 const SportSelector = ({ 
   selectedSport, 
@@ -50,7 +76,7 @@ const SportSelector = ({
           )}
           {sports?.map((sport) => (
             <SelectItem key={sport.id} value={sport.id}>
-              {sport.displayName || (sport.name + (sport.gender !== "mixed" ? ` • ${sport.gender === "men" ? "Men" : "Women"}` : ""))}
+              {SPORT_DISPLAY_NAMES[sport.id] || sport.name}
             </SelectItem>
           ))}
         </SelectContent>
