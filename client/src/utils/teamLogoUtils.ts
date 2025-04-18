@@ -61,7 +61,12 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "Hilltoppers": "Western Kentucky",
   "Notre Dame": "Notre Dame",
   "Fighting Irish": "Notre Dame",
-  "UND": "Notre Dame"
+  "UND": "Notre Dame",
+  // Exact mappings from full names to prevent confusion
+  "Michigan State University": "Michigan State",
+  "University of Maryland": "Maryland",
+  "Texas Tech University": "Texas Tech",
+  "Michigan State": "Michigan State"
 };
 
 // Create a comprehensive list of non-MAC schools with their colors and logo paths
@@ -202,6 +207,63 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
  */
 export function findSchoolByName(name: string): School | undefined {
   if (!name) return undefined;
+  
+  // Special case handling for specific schools appearing in the screenshots
+  if (name.includes("Michigan State") || name === "Michigan State University") {
+    return {
+      id: "michigan-state",
+      name: "Michigan State",
+      shortName: "MSU",
+      mascot: "Spartans",
+      primaryColor: "#18453B",
+      secondaryColor: "#FFFFFF",
+      logoUrl: "/attached_assets/Michigan_State_Spartans_logo-300x300.png",
+      city: "East Lansing",
+      state: "MI"
+    };
+  }
+  
+  if (name.includes("Texas Tech") || name === "Texas Tech University") {
+    return {
+      id: "texas-tech",
+      name: "Texas Tech",
+      shortName: "TTU",
+      mascot: "Red Raiders",
+      primaryColor: "#CC0000",
+      secondaryColor: "#000000",
+      logoUrl: "/attached_assets/Texas_Tech_Red_Raiders_logo-300x300.png",
+      city: "Lubbock",
+      state: "TX"
+    };
+  }
+  
+  if (name.includes("North Texas") || name === "University of North Texas") {
+    return {
+      id: "north-texas",
+      name: "North Texas",
+      shortName: "UNT",
+      mascot: "Mean Green",
+      primaryColor: "#00853E",
+      secondaryColor: "#FFFFFF",
+      logoUrl: "/attached_assets/North_Texas_Mean_Green_logo-300x300.png",
+      city: "Denton",
+      state: "TX"
+    };
+  }
+  
+  if (name.includes("Maryland") || name === "University of Maryland") {
+    return {
+      id: "maryland",
+      name: "Maryland",
+      shortName: "UMD",
+      mascot: "Terrapins",
+      primaryColor: "#E03a3e",
+      secondaryColor: "#FFD520",
+      logoUrl: "/attached_assets/Maryland_Terrapins_logo-300x300.png",
+      city: "College Park",
+      state: "MD"
+    };
+  }
   
   // Step 1: Direct match in MAC schools
   const directMatch = macSchools.find(
