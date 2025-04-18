@@ -221,7 +221,7 @@ const getSportBadgeStyle = (sportId: string): string => {
 const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
-  const [currentView, setCurrentView] = useState<"upcoming" | "calendar" | "all">("upcoming");
+  const [currentView, setCurrentView] = useState<"calendar" | "all">("calendar");
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   
@@ -388,14 +388,10 @@ const SchedulePage = () => {
       return normalizedGameSport.includes(normalizedSelectedSport) || normalizedGameSport === normalizedSelectedSport;
     })();
       
-    // Filter by past, upcoming, or all
-    const now = new Date();
-    const gameDate = new Date(game.scheduledTime);
-    
+    // Filter by view (calendar view or all games)
     const viewFilter = 
       currentView === "all" || 
-      currentView === "calendar" || // Show all games in calendar view
-      (currentView === "upcoming" && gameDate >= now);
+      currentView === "calendar"; // Show all games in calendar view
       
     return teamFilter && sportFilter && viewFilter;
   }).sort((a: Game, b: Game) => {
@@ -512,7 +508,7 @@ const SchedulePage = () => {
       primaryColor: isHomeTeamMacConference ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
       secondaryColor: '#ffffff',
       logoUrl: isHomeTeamMacConference
-        ? '/mac-logo-new.png' // New MAC logo
+        ? '/mac-logo-official.png' // Official MAC logo
         : '/attached_assets/IMG_0788.png' // NCAA logo
     };
     
@@ -524,7 +520,7 @@ const SchedulePage = () => {
       primaryColor: isAwayTeamMacConference ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
       secondaryColor: '#ffffff',
       logoUrl: isAwayTeamMacConference
-        ? '/mac-logo-new.png' // New MAC logo
+        ? '/mac-logo-official.png' // Official MAC logo
         : '/attached_assets/IMG_0788.png' // NCAA logo
     };
     
@@ -743,15 +739,14 @@ const SchedulePage = () => {
         </Select>
       </div>
       
-      {/* View Tabs - Upcoming/All Games */}
+      {/* View Tabs - Calendar View/All Games */}
       <div className="mb-4">
         <Tabs
-          defaultValue="upcoming"
+          defaultValue="calendar"
           value={currentView}
-          onValueChange={(value) => setCurrentView(value as "all" | "upcoming" | "calendar")}
+          onValueChange={(value) => setCurrentView(value as "all" | "calendar")}
         >
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="calendar">Calendar View</TabsTrigger>
             <TabsTrigger value="all">All Games</TabsTrigger>
           </TabsList>
