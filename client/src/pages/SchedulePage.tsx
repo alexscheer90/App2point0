@@ -699,6 +699,13 @@ const SchedulePage = () => {
       homeTeamName.includes('Mid-American Conference') || 
       awayTeamName.includes('Mid-American Conference');
     
+    // Special handling for the Ohio vs Ohio State case
+    if (homeTeamName === 'Ohio' && awayTeamName === 'Ohio' && game.location?.includes('Columbus')) {
+      // This is actually Ohio at Ohio State
+      awayTeamName = 'Ohio State';
+      game.awayTeamId = 'ohiostate';
+    }
+    
     // Check if teams are MAC Conference - looking for various patterns in both name and ID
     const isHomeTeamMacConference = 
       homeTeamName?.includes('Mid-American Conference') || 
@@ -890,6 +897,60 @@ const SchedulePage = () => {
       'notredame': '/school-logos/non-mac/notredame.png'
     };
 
+    // Better matching for team names to IDs based on location and name
+    // First try to use name-based matching for common non-MAC schools
+    const knownSchoolMatches: Record<string, string> = {
+      'University of Illinois': 'illinois',
+      'Illinois': 'illinois',
+      'Iowa': 'iowa',
+      'University of Iowa': 'iowa',
+      'Washington State': 'washingtonstate',
+      'Auburn University': 'auburn',
+      'Auburn': 'auburn',
+      'Nebraska': 'nebraska',
+      'Pittsburgh': 'pitt',
+      'Pitt': 'pitt',
+      'Cincinnati': 'cincinnati',
+      'Rutgers': 'rutgers',
+      'Texas Tech University': 'texastech',
+      'Texas Tech': 'texastech',
+      'Stanford': 'stanford',
+      'University of Texas': 'texas',
+      'Texas': 'texas',
+      'Maryland': 'maryland',
+      'West Virginia': 'westvirginia',
+      'Santa Clara': 'santaclara',
+      'Oklahoma': 'oklahoma'
+    };
+    
+    // Try to match by homeTeamName if available
+    if (homeTeamName && knownSchoolMatches[homeTeamName] && schoolLogoMap[knownSchoolMatches[homeTeamName]]) {
+      game.homeTeamId = knownSchoolMatches[homeTeamName];
+    }
+    
+    // Try to match by awayTeamName if available
+    if (awayTeamName && knownSchoolMatches[awayTeamName] && schoolLogoMap[knownSchoolMatches[awayTeamName]]) {
+      game.awayTeamId = knownSchoolMatches[awayTeamName];
+    }
+    
+    // Handle specific location-based matching - look for location to detect team
+    if (game.location) {
+      // Illinois at Urbana-Champaign
+      if (game.location.toLowerCase().includes('urbana-champaign') || 
+          game.location.toLowerCase().includes('champaign')) {
+        if (homeTeamName.includes('Illinois') || homeTeamName.includes('University of Illinois')) {
+          game.homeTeamId = 'illinois';
+        }
+      }
+      
+      // Iowa City, Iowa
+      if (game.location.toLowerCase().includes('iowa city')) {
+        if (homeTeamName.includes('Iowa') || homeTeamName.includes('University of Iowa')) {
+          game.homeTeamId = 'iowa';
+        }
+      }
+    }
+    
     // Apply MAC school logos if available
     if (game.homeTeamId && schoolLogoMap[game.homeTeamId]) {
       defaultHomeTeam.logoUrl = schoolLogoMap[game.homeTeamId];
