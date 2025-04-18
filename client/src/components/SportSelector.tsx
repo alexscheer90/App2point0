@@ -50,7 +50,7 @@ const SportSelector = ({
           )}
           {sports?.map((sport) => (
             <SelectItem key={sport.id} value={sport.id}>
-              {sport.name} {sport.gender !== "mixed" ? `• ${sport.gender === "men" ? "Men" : "Women"}` : ""}
+              {sport.displayName || (sport.name + (sport.gender !== "mixed" ? ` • ${sport.gender === "men" ? "Men" : "Women"}` : ""))}
             </SelectItem>
           ))}
         </SelectContent>
