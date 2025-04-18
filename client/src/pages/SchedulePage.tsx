@@ -523,17 +523,53 @@ const SchedulePage = () => {
         return normalizedGameSport.includes('swimming') && normalizedGameSport.includes('women');
       }
       
-      // Handle golf variants
+      // Handle golf variants - improved detection logic
       if (normalizedSelectedSport === 'mgolf') {
-        return (normalizedGameSport.includes('golf') && normalizedGameSport.includes('men')) || 
-               normalizedGameSport === 'mgolf' || 
-               normalizedGameSport === 'm-golf';
+        // Check for exact match on the ID
+        if (normalizedGameSport === 'mgolf' || normalizedGameSport === 'm-golf') {
+          return true;
+        }
+        
+        // Check if it's a generic golf ID but has men's in the name or location
+        if (normalizedGameSport === 'golf') {
+          const hasTeamMensIndicator = 
+            (game.homeTeamName?.toLowerCase().includes("men") || 
+             game.awayTeamName?.toLowerCase().includes("men"));
+          
+          const hasLocationMensIndicator = 
+            game.location?.toLowerCase().includes("men") || 
+            game.venue?.toLowerCase().includes("men");
+          
+          // If golf is in the game description and it has men's indicators
+          return hasTeamMensIndicator || hasLocationMensIndicator;
+        }
+        
+        // Otherwise, check for combined indicators
+        return normalizedGameSport.includes('golf') && normalizedGameSport.includes('men');
       }
       
       if (normalizedSelectedSport === 'wgolf') {
-        return (normalizedGameSport.includes('golf') && normalizedGameSport.includes('women')) || 
-               normalizedGameSport === 'wgolf' || 
-               normalizedGameSport === 'w-golf';
+        // Check for exact match on the ID
+        if (normalizedGameSport === 'wgolf' || normalizedGameSport === 'w-golf') {
+          return true;
+        }
+        
+        // Check if it's a generic golf ID but has women's in the name or location
+        if (normalizedGameSport === 'golf') {
+          const hasTeamWomensIndicator = 
+            (game.homeTeamName?.toLowerCase().includes("women") || 
+             game.awayTeamName?.toLowerCase().includes("women"));
+          
+          const hasLocationWomensIndicator = 
+            game.location?.toLowerCase().includes("women") || 
+            game.venue?.toLowerCase().includes("women");
+          
+          // If golf is in the game description and it has women's indicators
+          return hasTeamWomensIndicator || hasLocationWomensIndicator;
+        }
+        
+        // Otherwise, check for combined indicators
+        return normalizedGameSport.includes('golf') && normalizedGameSport.includes('women');
       }
       
       // Handle football

@@ -63,13 +63,13 @@ export const macSports: Sport[] = [
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wlax"
   },
   {
-    id: "mten",
+    id: "mtennis",
     name: "Tennis",
     gender: "men",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=mten"
   },
   {
-    id: "wten",
+    id: "wtennis",
     name: "Tennis",
     gender: "women",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wten"
