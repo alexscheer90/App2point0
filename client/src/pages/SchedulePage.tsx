@@ -495,8 +495,49 @@ const SchedulePage = () => {
     const awayTeam = schools.find(s => s.id === game.awayTeamId);
     
     // Extract team names from the game data
-    const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
-    const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
+    let homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
+    let awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
+    
+    // Special handling for Women's Lacrosse games where sport is included in team name
+    let extractedSportId = game.sportId;
+    
+    // Helper function to clean team names that contain time and sport information
+    const cleanTeamName = (name: string): string => {
+      // First check if the name includes "Women's Lacrosse"
+      if (name.includes("Women's Lacrosse")) {
+        // Remove time part (like "12:00 PM") if present
+        let cleaned = name;
+        const timeRegex = /\d{1,2}:\d{2}\s?(?:AM|PM|am|pm)/;
+        cleaned = cleaned.replace(timeRegex, '');
+        
+        // Remove "Women's Lacrosse" text
+        cleaned = cleaned.replace("Women's Lacrosse", '');
+        
+        // Clean up any extra spaces and return
+        return cleaned.trim();
+      }
+      return name;
+    };
+    
+    if (homeTeamName.includes("Women's Lacrosse")) {
+      // Clean the home team name
+      homeTeamName = cleanTeamName(homeTeamName);
+      
+      // Set the sport ID for proper badge display if not already set
+      if (!game.sportId || game.sportId === '') {
+        extractedSportId = 'wlacrosse';
+      }
+    }
+    
+    if (awayTeamName.includes("Women's Lacrosse")) {
+      // Clean the away team name
+      awayTeamName = cleanTeamName(awayTeamName);
+      
+      // Set the sport ID for proper badge display if not already set
+      if (!game.sportId || game.sportId === '') {
+        extractedSportId = 'wlacrosse';
+      }
+    }
     
     // Log team names - for debugging MAC logo issue
     console.log(`Game ID: ${game.id}, Home: "${homeTeamName}", Away: "${awayTeamName}"`);
@@ -845,9 +886,9 @@ const SchedulePage = () => {
             </span>
             
             {/* Sport Badge with different colors for each sport */}
-            {game.sportId && (
-              <Badge variant="outline" className={`text-xs ${getSportBadgeStyle(game.sportId)}`}>
-                {getSportName(game.sportId)}
+            {(extractedSportId || game.sportId) && (
+              <Badge variant="outline" className={`text-xs ${getSportBadgeStyle(extractedSportId || game.sportId)}`}>
+                {getSportName(extractedSportId || game.sportId)}
               </Badge>
             )}
           </div>
