@@ -350,6 +350,15 @@ const SchedulePage = () => {
   // Use MAC calendar data
   const activeGames = macCalendarGames;
   
+  // Helper function to detect and extract Women's Lacrosse info from team names
+  const extractSportFromGame = (game: Game): string | undefined => {
+    if ((game.homeTeamName && game.homeTeamName.includes("Women's Lacrosse")) ||
+        (game.awayTeamName && game.awayTeamName.includes("Women's Lacrosse"))) {
+      return 'lacrosse';
+    }
+    return game.sportId;
+  };
+
   // Filter games based on selected team, sport, and view
   const filteredGames = activeGames?.filter((game: Game) => {
     // Filter by team
@@ -358,10 +367,10 @@ const SchedulePage = () => {
       game.homeTeamId === selectedTeam || 
       game.awayTeamId === selectedTeam;
     
-    // Filter by sport - add more robust matching for all sports
+    // Filter by sport - add robust matching for all sports
     const sportFilter = selectedSport === "all" || (() => {
-      // Debug info
-      const gameActualSportId = extractedSportId || game.sportId;
+      // Get the actual sport ID from the game, looking for embedded info in team names
+      const gameActualSportId = extractSportFromGame(game) || game.sportId;
       console.log(`Filtering: Selected sport="${selectedSport}", Game sport="${gameActualSportId}"`);
       
       // Normalize both sport IDs for consistent matching
@@ -506,9 +515,6 @@ const SchedulePage = () => {
     let homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
     let awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
     
-    // Special handling for Women's Lacrosse games where sport is included in team name
-    let extractedSportId = game.sportId;
-    
     // Helper function to clean team names that contain time and sport information
     const cleanTeamName = (name: string): string => {
       // First check if the name includes "Women's Lacrosse"
@@ -527,24 +533,23 @@ const SchedulePage = () => {
       return name;
     };
     
+    // Check if this is a Women's Lacrosse game by examining team names
+    const isWomensLacrosseGame = homeTeamName.includes("Women's Lacrosse") || 
+                                awayTeamName.includes("Women's Lacrosse");
+    
+    // Modify the game object directly to set the sport ID for filtering
+    if (isWomensLacrosseGame) {
+      // Use non-null assertion because we know we're inside a component that has a game
+      game.sportId = "lacrosse";  // Use lacrosse for filtering
+    }
+    
+    // Now clean the team names
     if (homeTeamName.includes("Women's Lacrosse")) {
-      // Clean the home team name
       homeTeamName = cleanTeamName(homeTeamName);
-      
-      // Set the sport ID for proper badge display if not already set
-      if (!game.sportId || game.sportId === '') {
-        extractedSportId = 'wlacrosse';
-      }
     }
     
     if (awayTeamName.includes("Women's Lacrosse")) {
-      // Clean the away team name
       awayTeamName = cleanTeamName(awayTeamName);
-      
-      // Set the sport ID for proper badge display if not already set
-      if (!game.sportId || game.sportId === '') {
-        extractedSportId = 'wlacrosse';
-      }
     }
     
     // Log team names - for debugging MAC logo issue
@@ -894,9 +899,9 @@ const SchedulePage = () => {
             </span>
             
             {/* Sport Badge with different colors for each sport */}
-            {(extractedSportId || game.sportId) && (
-              <Badge variant="outline" className={`text-xs ${getSportBadgeStyle(extractedSportId || game.sportId)}`}>
-                {getSportName(extractedSportId || game.sportId)}
+            {game.sportId && (
+              <Badge variant="outline" className={`text-xs ${getSportBadgeStyle(game.sportId)}`}>
+                {getSportName(game.sportId)}
               </Badge>
             )}
           </div>
