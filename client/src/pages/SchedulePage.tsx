@@ -52,7 +52,14 @@ const getSportName = (sportId: string): string => {
   if (normalizedId === 'baseball' || normalizedId.includes('baseball')) return 'Baseball';
   if (normalizedId === 'softball' || normalizedId.includes('softball')) return 'Softball';
   if (normalizedId === 'volleyball' || normalizedId.includes('volleyball')) return 'Volleyball';
-  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) return 'Lacrosse';
+  
+  // Handle lacrosse - only women's lacrosse in MAC, but the data might include "Women's" in the name
+  if (normalizedId === 'wlacrosse' || normalizedId === 'w-lacrosse' || 
+      (normalizedId.includes('lacrosse') && normalizedId.includes('women'))) {
+    return "Women's Lacrosse";
+  }
+  
+  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) return "Women's Lacrosse";
   
   // Soccer - men's and women's versions in MAC
   if (normalizedId === 'msoccer' || normalizedId === 'm-soccer' || 
@@ -206,6 +213,11 @@ const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-pink-50 text-pink-800 border-pink-200';
   }
   
+  if (normalizedId === 'wlacrosse' || normalizedId === 'w-lacrosse' || 
+      (normalizedId.includes('lacrosse') && normalizedId.includes('women'))) {
+    return 'bg-violet-50 text-violet-800 border-violet-200';
+  }
+  
   if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) {
     return 'bg-violet-50 text-violet-800 border-violet-200';
   }
@@ -278,7 +290,7 @@ const SchedulePage = () => {
       { id: "track", name: "Track and Field", gender: "mixed" },
       { id: "wbball", name: "Women's Basketball", gender: "womens" },
       { id: "wgolf", name: "Women's Golf", gender: "womens" },
-      { id: "lacrosse", name: "Lacrosse", gender: "womens" },
+      { id: "lacrosse", name: "Women's Lacrosse", gender: "womens" },
       { id: "soccer", name: "Soccer", gender: "womens" },
       { id: "wswim", name: "Women's Swimming & Diving", gender: "womens" },
       { id: "wtennis", name: "Women's Tennis", gender: "womens" },
