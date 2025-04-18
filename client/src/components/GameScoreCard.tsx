@@ -7,6 +7,37 @@ import { shouldShowLiveStats } from "../utils/liveStatsUtils";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 
+// Sport display name mapping for consistent naming across the application
+const SPORT_DISPLAY_NAMES: Record<string, string> = {
+  "baseball": "Baseball",
+  "mbball": "Basketball - Men",
+  "wbball": "Basketball - Women",
+  "xc": "Cross Country",
+  "fhockey": "Field Hockey",
+  "football": "Football",
+  "golf": "Golf",
+  "mgolf": "Golf",
+  "wgolf": "Golf",
+  "gym": "Gymnastics",
+  "wlax": "Lacrosse",
+  "wsoc": "Soccer - Women",
+  "softball": "Softball",
+  "swimming": "Swimming & Diving",
+  "mswim": "Swimming & Diving",
+  "wswim": "Swimming & Diving",
+  "tennis": "Tennis",
+  "mten": "Tennis",
+  "wten": "Tennis",
+  "track": "Track & Field",
+  "wvball": "Volleyball",
+  "wrestling": "Wrestling"
+};
+
+// Helper function to get the display name for a sport
+const getSportDisplayName = (sportId: string): string => {
+  return SPORT_DISPLAY_NAMES[sportId] || "";
+};
+
 interface GameScoreCardProps {
   game: Game;
 }
@@ -112,7 +143,9 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       onClick={hasStats ? handleGameClick : undefined}
     >
       <div className="bg-[#0C2340] text-white text-xs font-semibold px-3 py-1 flex justify-between">
-        <span>{sport.name} • {sport.gender !== "mixed" ? sport.gender.charAt(0).toUpperCase() + sport.gender.slice(1) : "Mixed"}</span>
+        <span>
+          {getSportDisplayName(sport.id) || sport.name}
+        </span>
         <div className="flex items-center space-x-2">
           {game.status === 'live' && (
             <span className="flex items-center">
