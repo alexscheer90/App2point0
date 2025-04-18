@@ -8,7 +8,100 @@ import { School, Sport } from "@shared/schema";
  * @returns URL string for the Sidearm live stats page
  */
 export function generateLiveStatsUrl(school: School, sport: Sport): string {
-  // Convert school ID to domain name format
+  // Check if school has sidearmUrl property first
+  if (school.sidearmUrl) {
+    // Format the sport ID to match Sidearm's format
+    let sportPath = sport.id;
+    
+    // Convert sport ID to Sidearm's path format if needed
+    switch (sport.id) {
+      case "mbball":
+        sportPath = "mbball";
+        break;
+      case "wbball":
+        sportPath = "wbball";
+        break;
+      case "football":
+        sportPath = "football";
+        break;
+      case "baseball":
+        sportPath = "baseball";
+        break;
+      case "softball":
+        sportPath = "softball";
+        break;
+      case "volleyball":
+      case "wvball":
+        sportPath = "wvball";
+        break;
+      case "msoccer":
+      case "msoc":
+        sportPath = "msoc";
+        break;
+      case "wsoccer":
+      case "wsoc":
+        sportPath = "wsoc";
+        break;
+      case "mtennis":
+      case "wtennis":
+      case "tennis":
+        // Check if it's men's or women's tennis
+        if (sport.id.startsWith("w")) {
+          sportPath = "wtennis";
+        } else if (sport.id.startsWith("m")) {
+          sportPath = "mtennis";
+        } else {
+          sportPath = "tennis"; // Generic fallback
+        }
+        break;
+      case "track":
+      case "xc":
+        // Cross country or track & field
+        sportPath = sport.id;
+        break;
+      case "wrestling":
+        sportPath = "wrestling";
+        break;
+      case "lacrosse":
+      case "wlax":
+        sportPath = "wlax";
+        break;
+      case "fhockey":
+        sportPath = "fhockey";
+        break;
+      case "mswim":
+      case "wswim":
+      case "swimming":
+        if (sport.id.startsWith("w")) {
+          sportPath = "wswim";
+        } else if (sport.id.startsWith("m")) {
+          sportPath = "mswim";
+        } else {
+          sportPath = "swimming";
+        }
+        break;
+      case "mgolf":
+      case "wgolf":
+      case "golf":
+        if (sport.id.startsWith("w")) {
+          sportPath = "wgolf";
+        } else if (sport.id.startsWith("m")) {
+          sportPath = "mgolf";
+        } else {
+          sportPath = "golf";
+        }
+        break;
+      // Add more sport mappings as needed
+      default:
+        sportPath = sport.id;
+    }
+    
+    // Return the full URL using the school's Sidearm domain
+    const baseUrl = school.sidearmUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    return `https://${baseUrl}/sidearmstats/${sportPath}/summary`;
+  }
+  
+  // Fallback to constructing the URL from the school ID if sidearmUrl is not available
   let domain = "";
   
   // Map school IDs to their respective domains
@@ -58,41 +151,10 @@ export function generateLiveStatsUrl(school: School, sport: Sport): string {
       domain = `${school.shortName.toLowerCase()}.com`;
   }
   
-  // Format the sport ID to match Sidearm's format
+  // Format the sport ID to match Sidearm's format (using the logic above)
   let sportPath = sport.id;
   
-  // Convert sport ID to Sidearm's path format if needed
-  switch (sport.id) {
-    case "mbball":
-      sportPath = "mbball";
-      break;
-    case "wbball":
-      sportPath = "wbball";
-      break;
-    case "football":
-      sportPath = "football";
-      break;
-    case "baseball":
-      sportPath = "baseball";
-      break;
-    case "softball":
-      sportPath = "softball";
-      break;
-    case "volleyball":
-      sportPath = "wvball";
-      break;
-    case "msoccer":
-      sportPath = "msoc";
-      break;
-    case "wsoccer":
-      sportPath = "wsoc";
-      break;
-    // Add more sport mappings as needed
-    default:
-      sportPath = sport.id;
-  }
-  
-  // Return the full URL
+  // Return the full URL using the constructed domain
   return `https://${domain}/sidearmstats/${sportPath}/summary`;
 }
 

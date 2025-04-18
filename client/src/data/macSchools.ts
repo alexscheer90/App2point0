@@ -140,6 +140,8 @@ export const macSchools: School[] = [
     logoUrl: massachusettsLogo,
     city: "Amherst",
     state: "MA",
+    sidearmUrl: "https://umassathletics.com",
+    sidearmScoresApi: "https://umassathletics.com/services/scores_live_sports.aspx",
   },
   {
     id: "miamioh",
@@ -151,6 +153,8 @@ export const macSchools: School[] = [
     logoUrl: miamiLogo,
     city: "Oxford",
     state: "OH",
+    sidearmUrl: "https://miamiredhawks.com",
+    sidearmScoresApi: "https://miamiredhawks.com/services/scores_live_sports.aspx",
   },
   {
     id: "northernillinois",
@@ -162,6 +166,8 @@ export const macSchools: School[] = [
     logoUrl: niuLogo,
     city: "DeKalb",
     state: "IL",
+    sidearmUrl: "https://niuhuskies.com",
+    sidearmScoresApi: "https://niuhuskies.com/services/scores_live_sports.aspx",
   },
   {
     id: "ohio",
@@ -173,6 +179,8 @@ export const macSchools: School[] = [
     logoUrl: ohioLogo,
     city: "Athens",
     state: "OH",
+    sidearmUrl: "https://ohiobobcats.com",
+    sidearmScoresApi: "https://ohiobobcats.com/services/scores_live_sports.aspx",
   },
   {
     id: "toledo",
@@ -184,6 +192,8 @@ export const macSchools: School[] = [
     logoUrl: toledoLogo,
     city: "Toledo",
     state: "OH",
+    sidearmUrl: "https://utrockets.com",
+    sidearmScoresApi: "https://utrockets.com/services/scores_live_sports.aspx",
   },
   {
     id: "westernmichigan",
@@ -195,6 +205,8 @@ export const macSchools: School[] = [
     logoUrl: wmuLogo,
     city: "Kalamazoo",
     state: "MI",
+    sidearmUrl: "https://wmubroncos.com",
+    sidearmScoresApi: "https://wmubroncos.com/services/scores_live_sports.aspx",
   },
   // Affiliate schools - Field Hockey (MAC affiliate members)
   {

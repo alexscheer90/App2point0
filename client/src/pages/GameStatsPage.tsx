@@ -173,7 +173,7 @@ const GameStatsPage = () => {
   }
   
   // For connecting to external data source in production
-  const externalStatsUrl = generateLiveStatsUrl(homeTeam, sport);
+  const externalStatsUrl = game.liveStatsUrl || generateLiveStatsUrl(homeTeam, sport);
   
   return (
     <div className="p-4">
