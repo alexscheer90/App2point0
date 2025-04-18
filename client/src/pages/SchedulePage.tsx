@@ -696,40 +696,122 @@ const SchedulePage = () => {
       defaultAwayTeam.logoUrl = schoolLogoMap[game.awayTeamId];
     }
     
-    // Special handling for Youngstown State logo if found in our assets
+    // Special handling for Youngstown State logo
     if (defaultHomeTeam.name?.includes('Youngstown') || defaultHomeTeam.id?.includes('youngstown')) {
-      defaultHomeTeam.logoUrl = '/attached_assets/Youngstown_State_Penguins_logo.svg.png';
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/youngstownstate.png';
     }
     
     if (defaultAwayTeam.name?.includes('Youngstown') || defaultAwayTeam.id?.includes('youngstown')) {
-      defaultAwayTeam.logoUrl = '/attached_assets/Youngstown_State_Penguins_logo.svg.png';
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/youngstownstate.png';
     }
     
-    // Special handling for Detroit logo if found in our assets
+    // Special handling for Detroit Mercy logo
     if (defaultHomeTeam.name?.includes('Detroit') || defaultHomeTeam.id?.includes('detroit')) {
-      defaultHomeTeam.logoUrl = '/attached_assets/Detroit_Titans_logo.svg.png';
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/detroitmercy.png';
     }
     
     if (defaultAwayTeam.name?.includes('Detroit') || defaultAwayTeam.id?.includes('detroit')) {
-      defaultAwayTeam.logoUrl = '/attached_assets/Detroit_Titans_logo.svg.png';
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/detroitmercy.png';
     }
     
-    // Special handling for UIC logo if found in our assets
-    if (defaultHomeTeam.name?.includes('UIC') || defaultHomeTeam.id?.includes('uic')) {
-      defaultHomeTeam.logoUrl = '/attached_assets/UIC_Flames_wordmark.svg.png';
+    // Special handling for UIC (University of Illinois-Chicago) logo
+    if (defaultHomeTeam.name?.includes('UIC') || 
+        defaultHomeTeam.name?.includes('Illinois-Chicago') || 
+        defaultHomeTeam.name?.includes('Illinois Chicago') || 
+        defaultHomeTeam.name?.includes('UIC Flames') || 
+        defaultHomeTeam.id?.includes('uic')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/uic.png';
     }
     
-    if (defaultAwayTeam.name?.includes('UIC') || defaultAwayTeam.id?.includes('uic')) {
-      defaultAwayTeam.logoUrl = '/attached_assets/UIC_Flames_wordmark.svg.png';
+    if (defaultAwayTeam.name?.includes('UIC') || 
+        defaultAwayTeam.name?.includes('Illinois-Chicago') || 
+        defaultAwayTeam.name?.includes('Illinois Chicago') || 
+        defaultAwayTeam.name?.includes('UIC Flames') || 
+        defaultAwayTeam.id?.includes('uic')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/uic.png';
     }
     
-    // Special handling for RMU logo if found in our assets
+    // Special handling for Robert Morris (RMU) logo
     if (defaultHomeTeam.name?.includes('Robert Morris') || defaultHomeTeam.id?.includes('robertmorris')) {
-      defaultHomeTeam.logoUrl = '/attached_assets/rmu_logo_1.png';
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/robertmorris.png';
     }
     
     if (defaultAwayTeam.name?.includes('Robert Morris') || defaultAwayTeam.id?.includes('robertmorris')) {
-      defaultAwayTeam.logoUrl = '/attached_assets/rmu_logo_1.png';
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/robertmorris.png';
+    }
+    
+    // Special handling for Oklahoma logo (example mentioned by user)
+    if (defaultHomeTeam.name?.includes('Oklahoma') || defaultHomeTeam.id?.includes('oklahoma')) {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/oklahoma.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Oklahoma') || defaultAwayTeam.id?.includes('oklahoma')) {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/oklahoma.png';
+    }
+    
+    // Add special handling for other affiliate schools
+    if (defaultHomeTeam.name?.includes('Bellarmine') || defaultHomeTeam.id?.includes('bellarmine')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/bellarmine.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Bellarmine') || defaultAwayTeam.id?.includes('bellarmine')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/bellarmine.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('Bloomsburg') || defaultHomeTeam.id?.includes('bloomsburg')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/bloomsburg.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Bloomsburg') || defaultAwayTeam.id?.includes('bloomsburg')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/bloomsburg.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('Clarion') || defaultHomeTeam.id?.includes('clarion')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/clarion.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Clarion') || defaultAwayTeam.id?.includes('clarion')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/clarion.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('Cleveland State') || defaultHomeTeam.id?.includes('clevelandstate')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/clevelandstate.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Cleveland State') || defaultAwayTeam.id?.includes('clevelandstate')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/clevelandstate.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('Edinboro') || defaultHomeTeam.id?.includes('edinboro')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/edinboro.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Edinboro') || defaultAwayTeam.id?.includes('edinboro')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/edinboro.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('George Mason') || defaultHomeTeam.id?.includes('georgemason')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/georgemason.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('George Mason') || defaultAwayTeam.id?.includes('georgemason')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/georgemason.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('Lock Haven') || defaultHomeTeam.id?.includes('lockhaven')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/lockhaven.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Lock Haven') || defaultAwayTeam.id?.includes('lockhaven')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/lockhaven.png';
+    }
+    
+    if (defaultHomeTeam.name?.includes('Rider') || defaultHomeTeam.id?.includes('rider')) {
+      defaultHomeTeam.logoUrl = '/school-logos/affiliate/rider.png';
+    }
+    
+    if (defaultAwayTeam.name?.includes('Rider') || defaultAwayTeam.id?.includes('rider')) {
+      defaultAwayTeam.logoUrl = '/school-logos/affiliate/rider.png';
     }
 
     const gameDate = parseISO(game.scheduledTime);
