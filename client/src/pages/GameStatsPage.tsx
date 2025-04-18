@@ -51,30 +51,114 @@ const GameStatsPage = () => {
     const fetchGame = async () => {
       setIsLoading(true);
       try {
-        // This would be a real API call in production
-        // For demo, we'll use mock data
-        const mockGame: Game = {
-          id: gameId || "mock-game",
-          sportId: "mbball",
-          homeTeamId: "bowlinggreen",
-          awayTeamId: "akron",
-          homeTeamScore: 78,
-          awayTeamScore: 72,
-          startTime: new Date().toISOString(),
-          scheduledTime: new Date().toISOString(),
-          status: "final",
-          period: 2,
-          venue: "Stroh Center",
-          location: "Bowling Green, OH",
-          isRivalryGame: false,
-          homeScore: 78,
-          awayScore: 72,
-        };
+        // Make a real API call to get the game data
+        const response = await fetch('/api/games');
+        const allGames = await response.json();
         
-        setGame(mockGame);
+        // Find the game with the matching ID
+        const foundGame = allGames.find((g: Game) => g.id === gameId);
         
-        // Fetch stats data
-        await fetchGameStats(mockGame);
+        if (foundGame) {
+          console.log(`Found game data for ID ${gameId}:`, foundGame);
+          setGame(foundGame);
+          
+          // Fetch stats data for this game
+          await fetchGameStats(foundGame);
+        } else {
+          // If game not found with that ID, use the data from URL parameters
+          // This is just a fallback for demo purposes
+          console.warn(`Game with ID ${gameId} not found in API response`);
+          
+          // Create a fallback game object from the game we're showing in the scores list
+          if (gameId?.includes('live-game-1')) {
+            // BGSU vs Toledo men's basketball
+            const fallbackGame: Game = {
+              id: gameId || "live-game-1",
+              sportId: "mbball",
+              homeTeamId: "bowlinggreen",
+              awayTeamId: "toledo",
+              homeTeamScore: 62,
+              awayTeamScore: 58,
+              startTime: new Date().toISOString(),
+              scheduledTime: new Date().toISOString(),
+              status: "live",
+              period: 2,
+              venue: "Stroh Center",
+              location: "Bowling Green, OH",
+              situation: "BGSU ball • Under 8:30 timeout",
+              isRivalryGame: false,
+              homeScore: 62,
+              awayScore: 58,
+              liveStatsUrl: "https://bgsufalcons.com/sidearmstats/mbball/summary",
+            };
+            setGame(fallbackGame);
+            await fetchGameStats(fallbackGame);
+          } else if (gameId?.includes('live-game-2')) {
+            // Ohio vs Miami women's basketball
+            const fallbackGame: Game = {
+              id: gameId || "live-game-2",
+              sportId: "wbball",
+              homeTeamId: "ohio",
+              awayTeamId: "miamioh",
+              homeTeamScore: 45,
+              awayTeamScore: 41,
+              startTime: new Date().toISOString(),
+              scheduledTime: new Date().toISOString(),
+              status: "live",
+              period: 3,
+              venue: "Convocation Center",
+              location: "Athens, OH",
+              situation: "Miami ball • 2:38 remaining in 3rd quarter",
+              isRivalryGame: false,
+              homeScore: 45,
+              awayScore: 41,
+              liveStatsUrl: "https://ohiobobcats.com/sidearmstats/wbball/summary",
+            };
+            setGame(fallbackGame);
+            await fetchGameStats(fallbackGame);
+          } else if (gameId?.includes('game8')) {
+            // BGSU vs Buffalo women's basketball (completed)
+            const fallbackGame: Game = {
+              id: gameId || "game8",
+              sportId: "wbball",
+              homeTeamId: "bowlinggreen",
+              awayTeamId: "buffalo",
+              homeTeamScore: 78,
+              awayTeamScore: 72,
+              startTime: new Date(new Date().getTime() - 24*60*60*1000).toISOString(), // yesterday
+              scheduledTime: new Date(new Date().getTime() - 24*60*60*1000).toISOString(),
+              status: "final",
+              venue: "Stroh Center",
+              location: "Bowling Green, OH",
+              isRivalryGame: false,
+              homeScore: 78,
+              awayScore: 72,
+            };
+            setGame(fallbackGame);
+            await fetchGameStats(fallbackGame);
+          } else {
+            // Generic fallback
+            const fallbackGame: Game = {
+              id: gameId || "mock-game",
+              sportId: "mbball",
+              homeTeamId: "bowlinggreen",
+              awayTeamId: "akron",
+              homeTeamScore: 78,
+              awayTeamScore: 72,
+              startTime: new Date().toISOString(),
+              scheduledTime: new Date().toISOString(),
+              status: "final",
+              period: 2,
+              venue: "Stroh Center",
+              location: "Bowling Green, OH",
+              isRivalryGame: false,
+              homeScore: 78,
+              awayScore: 72,
+            };
+            setGame(fallbackGame);
+            await fetchGameStats(fallbackGame);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch game:", error);
       } finally {
