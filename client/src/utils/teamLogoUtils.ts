@@ -36,13 +36,20 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "UM": "Michigan",
   "U-M": "Michigan",
   "TTU": "Texas Tech",
+  "Texas Tech Red Raiders": "Texas Tech",
+  "Texas Tech Univ": "Texas Tech",
+  "Texas Tech University": "Texas Tech",
   "UT Austin": "Texas",
   "UNT": "North Texas",
+  "North Texas Mean Green": "North Texas",
   "University of North Texas": "North Texas",
   "University of Texas": "Texas",
   "Longhorns": "Texas",
   "Wildcats": "Kentucky",
-  "Spartans": "Michigan State",
+  "Spartans": "Michigan State", 
+  "Michigan State Spartans": "Michigan State",
+  "Michigan State Univ": "Michigan State",
+  "Michigan State University": "Michigan State",
   "Wolverines": "Michigan",
   "Red Raiders": "Texas Tech",
   "Mean Green": "North Texas",
@@ -52,6 +59,8 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "Terrapins": "Maryland",
   "Terps": "Maryland",
   "UMD": "Maryland",
+  "Maryland Terrapins": "Maryland",
+  "University of Maryland": "Maryland",
   "Huskers": "Nebraska",
   "UNL": "Nebraska",
   "University of Nebraska": "Nebraska",
@@ -61,12 +70,7 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "Hilltoppers": "Western Kentucky",
   "Notre Dame": "Notre Dame",
   "Fighting Irish": "Notre Dame",
-  "UND": "Notre Dame",
-  // Exact mappings from full names to prevent confusion
-  "Michigan State University": "Michigan State",
-  "University of Maryland": "Maryland",
-  "Texas Tech University": "Texas Tech",
-  "Michigan State": "Michigan State"
+  "UND": "Notre Dame"
 };
 
 // Create a comprehensive list of non-MAC schools with their colors and logo paths
@@ -208,8 +212,13 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
 export function findSchoolByName(name: string): School | undefined {
   if (!name) return undefined;
   
+  const lowerCaseName = name.toLowerCase();
+  
   // Special case handling for specific schools appearing in the screenshots
-  if (name.includes("Michigan State") || name === "Michigan State University") {
+  if (lowerCaseName.includes("michigan state") || 
+      lowerCaseName.includes("michigan st") || 
+      lowerCaseName === "msu" || 
+      lowerCaseName.includes("spartans")) {
     return {
       id: "michigan-state",
       name: "Michigan State",
@@ -223,7 +232,9 @@ export function findSchoolByName(name: string): School | undefined {
     };
   }
   
-  if (name.includes("Texas Tech") || name === "Texas Tech University") {
+  if (lowerCaseName.includes("texas tech") || 
+      lowerCaseName === "ttu" || 
+      lowerCaseName.includes("red raiders")) {
     return {
       id: "texas-tech",
       name: "Texas Tech",
@@ -237,7 +248,9 @@ export function findSchoolByName(name: string): School | undefined {
     };
   }
   
-  if (name.includes("North Texas") || name === "University of North Texas") {
+  if (lowerCaseName.includes("north texas") || 
+      lowerCaseName === "unt" || 
+      lowerCaseName.includes("mean green")) {
     return {
       id: "north-texas",
       name: "North Texas",
@@ -251,7 +264,10 @@ export function findSchoolByName(name: string): School | undefined {
     };
   }
   
-  if (name.includes("Maryland") || name === "University of Maryland") {
+  if (lowerCaseName.includes("maryland") || 
+      lowerCaseName === "umd" || 
+      lowerCaseName.includes("terrapins") || 
+      lowerCaseName.includes("terps")) {
     return {
       id: "maryland",
       name: "Maryland",
@@ -340,6 +356,14 @@ export function findSchoolByName(name: string): School | undefined {
  * Get a logo URL for a team based on its name
  */
 export function getTeamLogoUrl(name: string): string {
+  // Add debugging for the problematic schools
+  if (name && (
+      name.toLowerCase().includes("michigan state") || 
+      name.toLowerCase().includes("texas tech") || 
+      name.toLowerCase().includes("north texas"))) {
+    console.log(`Debug logoUrl - School name: "${name}", path: ${findSchoolByName(name)?.logoUrl}`);
+  }
+  
   const school = findSchoolByName(name);
   return school?.logoUrl || ncaaLogoUrl;
 }
