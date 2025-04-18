@@ -75,6 +75,8 @@ export const macSchools: School[] = [
     logoUrl: bgsuLogo,
     city: "Bowling Green",
     state: "OH",
+    sidearmUrl: "https://bgsufalcons.com",
+    sidearmScoresApi: "https://bgsufalcons.com/services/scores_live_sports.aspx",
   },
   {
     id: "buffalo",
@@ -86,6 +88,8 @@ export const macSchools: School[] = [
     logoUrl: buffaloLogo,
     city: "Buffalo",
     state: "NY",
+    sidearmUrl: "https://ubbulls.com",
+    sidearmScoresApi: "https://ubbulls.com/services/scores_live_sports.aspx",
   },
   {
     id: "centralmichigan",
@@ -97,6 +101,8 @@ export const macSchools: School[] = [
     logoUrl: cmuLogo,
     city: "Mount Pleasant",
     state: "MI",
+    sidearmUrl: "https://cmuchippewas.com",
+    sidearmScoresApi: "https://cmuchippewas.com/services/scores_live_sports.aspx",
   },
   {
     id: "easternmichigan",
@@ -108,6 +114,8 @@ export const macSchools: School[] = [
     logoUrl: emuLogo,
     city: "Ypsilanti",
     state: "MI",
+    sidearmUrl: "https://emueagles.com",
+    sidearmScoresApi: "https://emueagles.com/services/scores_live_sports.aspx",
   },
   {
     id: "kentstate",
@@ -119,6 +127,8 @@ export const macSchools: School[] = [
     logoUrl: kentStateLogo,
     city: "Kent",
     state: "OH",
+    sidearmUrl: "https://kentstatesports.com",
+    sidearmScoresApi: "https://kentstatesports.com/services/scores_live_sports.aspx",
   },
   {
     id: "massachusetts",
