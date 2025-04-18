@@ -703,12 +703,42 @@ export class DataImporter {
           // Find the sport (usually after date/time)
           let sportId = '';
           let sportIndex = 0;
+          
+          // Check for women's/men's identifier in the title as a whole
+          const titleLower = title.toLowerCase();
+          let isMensSport = titleLower.includes(" men") || titleLower.includes("men's");
+          let isWomensSport = titleLower.includes(" women") || titleLower.includes("women's");
+          
           for (let i = 0; i < titleParts.length; i++) {
             // Check for common sports names
             const part = titleParts[i].toLowerCase();
-            if (['baseball', 'basketball', 'football', 'soccer', 'volleyball', 'tennis', 
-                 'track', 'golf', 'swimming', 'softball', 'wrestling'].includes(part)) {
+            if (['baseball', 'basketball', 'football', 'soccer', 'volleyball', 'track', 
+                 'golf', 'swimming', 'softball', 'wrestling'].includes(part)) {
               sportId = part;
+              sportIndex = i;
+              break;
+            }
+            // Special handling for tennis to add gender prefixes
+            else if (part === 'tennis') {
+              // Add gender prefix based on title analysis
+              if (isMensSport) {
+                sportId = 'mtennis';
+              } else if (isWomensSport) {
+                sportId = 'wtennis';
+              } else {
+                // Check surrounding context for gender clues
+                const prevPart = i > 0 ? titleParts[i-1].toLowerCase() : '';
+                const nextPart = i < titleParts.length - 1 ? titleParts[i+1].toLowerCase() : '';
+                
+                if (prevPart.includes('men') || nextPart.includes('men')) {
+                  sportId = 'mtennis';
+                } else if (prevPart.includes('women') || nextPart.includes('women')) {
+                  sportId = 'wtennis';
+                } else {
+                  // Default gender based on team names (coming later)
+                  sportId = 'tennis';
+                }
+              }
               sportIndex = i;
               break;
             }
@@ -910,7 +940,23 @@ export class DataImporter {
       'track and field': 'track',
       'wrestling': 'wrestling',
       'tennis': 'tennis',
+      'mens tennis': 'mtennis',
+      'men tennis': 'mtennis',
+      'm tennis': 'mtennis',
+      'mtennis': 'mtennis',
+      'womens tennis': 'wtennis',
+      'women tennis': 'wtennis',
+      'w tennis': 'wtennis',
+      'wtennis': 'wtennis',
       'golf': 'golf',
+      'mens golf': 'mgolf',
+      'men golf': 'mgolf',
+      'm golf': 'mgolf',
+      'mgolf': 'mgolf',
+      'womens golf': 'wgolf',
+      'women golf': 'wgolf',
+      'w golf': 'wgolf',
+      'wgolf': 'wgolf',
       'swimming': 'swimming',
       'cross country': 'crosscountry'
     };
