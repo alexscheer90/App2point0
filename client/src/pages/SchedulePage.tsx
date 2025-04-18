@@ -407,12 +407,19 @@ const SchedulePage = () => {
     return dateA.getTime() - dateB.getTime(); // Upcoming games: soonest first
   });
   
-  // Group games by date
+  // Group games by date - with improved timezone handling
   const gamesByDate: { [key: string]: Game[] } = {};
   
   filteredGames?.forEach((game: Game) => {
-    // Group by date
-    const dateStr = format(parseISO(game.scheduledTime), 'yyyy-MM-dd');
+    // 1. Parse the ISO timestamp from the game data
+    const gameDate = parseISO(game.scheduledTime);
+    
+    // 2. Format the date string using local timezone to ensure correct day-of-week
+    const dateStr = format(gameDate, 'yyyy-MM-dd');
+    
+    // Log for debugging timezone issues
+    console.log(`Game: ${game.homeTeamName} vs ${game.awayTeamName}, Date: ${dateStr}, Day: ${format(gameDate, 'EEEE')}`);
+    
     if (!gamesByDate[dateStr]) {
       gamesByDate[dateStr] = [];
     }

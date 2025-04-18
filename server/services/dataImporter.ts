@@ -744,11 +744,21 @@ export class DataImporter {
           // Parse the start time
           const startTime = item.evStartDate || item.localStartDate || new Date().toISOString();
           console.log(`Raw startTime from MAC feed: ${startTime}`);
-          const gameDate = new Date(startTime);
-          console.log(`Parsed gameDate: ${gameDate.toISOString()}, Day: ${gameDate.toLocaleDateString(undefined, { weekday: 'long' })}`);
-          // Account for timezone if needed
-          const gameDateUTC = new Date(gameDate.getTime());
-          console.log(`Game date (UTC): ${gameDateUTC.toISOString()}, Day: ${gameDateUTC.toLocaleDateString(undefined, { weekday: 'long' })}`);
+          
+          // Parse date and handle timezone properly
+          let gameDate;
+          
+          // Check if the date has a time component
+          if (startTime.includes('T') || startTime.includes(' ')) {
+            // It has time info, use it directly
+            gameDate = new Date(startTime);
+          } else {
+            // It's just a date (YYYY-MM-DD), use noon UTC to avoid timezone issues
+            // Adding time ensures the date stays the same when viewed in any timezone
+            gameDate = new Date(`${startTime}T12:00:00Z`);
+          }
+          
+          console.log(`Parsed gameDate: ${gameDate.toISOString()}, Day: ${gameDate.toLocaleDateString(undefined, { weekday: 'long' })}, Local Time: ${gameDate.toLocaleTimeString()}`);
           
           // Check for live stats URL
           let liveStatsUrl = '';
