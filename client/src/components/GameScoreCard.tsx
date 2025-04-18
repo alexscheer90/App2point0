@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { shouldShowLiveStats } from "../utils/liveStatsUtils";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
+import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
 
 // Sport display name mapping for consistent naming across the application
 const SPORT_DISPLAY_NAMES: Record<string, string> = {
@@ -73,8 +74,12 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     homeTeamName.includes('Mid-American Conference') || 
     awayTeamName.includes('Mid-American Conference');
   
+  // Use the findSchoolByName utility to get team data
+  const foundHomeTeam = !homeTeam ? findSchoolByName(homeTeamName) : null;
+  const foundAwayTeam = !awayTeam ? findSchoolByName(awayTeamName) : null;
+  
   // Create placeholder objects for unknown teams if needed
-  const defaultHomeTeam = homeTeam || {
+  const defaultHomeTeam = homeTeam || foundHomeTeam || {
     id: game.homeTeamId || 'unknown',
     name: homeTeamName,
     shortName: homeShortName,
@@ -85,7 +90,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
-  const defaultAwayTeam = awayTeam || {
+  const defaultAwayTeam = awayTeam || foundAwayTeam || {
     id: game.awayTeamId || 'unknown',
     name: awayTeamName,
     shortName: awayShortName,

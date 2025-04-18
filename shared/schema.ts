@@ -42,6 +42,8 @@ export const schoolSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   affiliate: z.boolean().optional(), // To mark schools that are MAC affiliates
+  sidearmUrl: z.string().optional(), // URL to the school's Sidearm sports website
+  sidearmScoresApi: z.string().optional(), // URL to the school's Sidearm scores API endpoint
 });
 
 export const sportSchema = z.object({

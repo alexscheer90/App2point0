@@ -49,6 +49,8 @@ export const macSchools: School[] = [
     logoUrl: akronLogo,
     city: "Akron",
     state: "OH",
+    sidearmUrl: "https://gozips.com",
+    sidearmScoresApi: "https://gozips.com/services/scores_live_sports.aspx",
   },
   {
     id: "ballstate",
@@ -60,6 +62,8 @@ export const macSchools: School[] = [
     logoUrl: ballStateLogo,
     city: "Muncie",
     state: "IN",
+    sidearmUrl: "https://ballstatesports.com",
+    sidearmScoresApi: "https://ballstatesports.com/services/scores_live_sports.aspx",
   },
   {
     id: "bowlinggreen",
