@@ -1000,63 +1000,317 @@ const SchedulePage = () => {
     
     // Apply school logos using exact name matching for common problem cases
     // For home team
-    if (homeTeamName === 'Kentucky' || homeTeamName === 'University of Kentucky' || homeTeamName === 'UK') {
+    if (homeTeamName === 'Kentucky' || homeTeamName === 'University of Kentucky' || 
+        homeTeamName === 'UK' || homeTeamName === 'Kentucky Wildcats') {
       defaultHomeTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
       game.homeTeamId = 'kentucky';
     }
     else if (homeTeamName === 'Western Kentucky' || homeTeamName === 'Western Kentucky University' || 
-             homeTeamName === 'WKU') {
+             homeTeamName === 'WKU' || homeTeamName === 'Western Kentucky Hilltoppers') {
       defaultHomeTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
       game.homeTeamId = 'westernkentucky';
     }
     else if (homeTeamName === 'Ohio State' || homeTeamName === 'Ohio State University' || 
-             homeTeamName === 'OSU') {
+             homeTeamName === 'OSU' || homeTeamName === 'Ohio State Buckeyes') {
       defaultHomeTeam.logoUrl = '/school-logos/non-mac/ohiostate.png';
       game.homeTeamId = 'ohiostate';
     }
     else if (homeTeamName === 'Illinois' || homeTeamName === 'University of Illinois' || 
-             homeTeamName === 'Fighting Illini') {
+             homeTeamName === 'Fighting Illini' || homeTeamName === 'Illinois Fighting Illini') {
       defaultHomeTeam.logoUrl = '/school-logos/non-mac/illinois.png';
       game.homeTeamId = 'illinois';
     }
     else if (homeTeamName === 'Iowa' || homeTeamName === 'University of Iowa' || 
-             homeTeamName === 'Hawkeyes') {
+             homeTeamName === 'Hawkeyes' || homeTeamName === 'Iowa Hawkeyes') {
       defaultHomeTeam.logoUrl = '/school-logos/non-mac/iowa.png';
       game.homeTeamId = 'iowa';
     }
+    else if (homeTeamName === 'Michigan' || homeTeamName === 'University of Michigan' || 
+             homeTeamName === 'Michigan Wolverines' || homeTeamName === 'U-M' || 
+             homeTeamName === 'UMich' || homeTeamName === 'UM') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/michigan.png';
+      game.homeTeamId = 'michigan';
+    }
+    else if (homeTeamName === 'Michigan State' || homeTeamName === 'Michigan State University' || 
+             homeTeamName === 'Michigan State Spartans' || homeTeamName === 'MSU' || 
+             homeTeamName === 'Mich. State') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/michiganstate.png';
+      game.homeTeamId = 'michiganstate';
+    }
+    else if (homeTeamName === 'UAB' || homeTeamName === 'Alabama-Birmingham' ||
+             homeTeamName === 'University of Alabama at Birmingham' || 
+             homeTeamName === 'UAB Blazers' || homeTeamName === 'Alabama Birmingham') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/uab.png';
+      game.homeTeamId = 'uab';
+    }
+    else if (homeTeamName === 'Liberty' || homeTeamName === 'Liberty University' || 
+             homeTeamName === 'Liberty Flames' || homeTeamName === 'LU') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/liberty.png';
+      game.homeTeamId = 'liberty';
+    }
+    else if (homeTeamName === 'Washington State' || homeTeamName === 'Washington State University' || 
+             homeTeamName === 'Washington State Cougars' || homeTeamName === 'Wazzu' || 
+             homeTeamName === 'WSU') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/washingtonstate.png';
+      game.homeTeamId = 'washingtonstate';
+    }
+    else if (homeTeamName === 'Alabama' || homeTeamName === 'University of Alabama' || 
+             homeTeamName === 'Alabama Crimson Tide' || homeTeamName === 'Crimson Tide' || 
+             homeTeamName === 'Bama') {
+      defaultHomeTeam.logoUrl = '/school-logos/non-mac/alabama.png';
+      game.homeTeamId = 'alabama';
+    }
     
     // For away team
-    if (awayTeamName === 'Kentucky' || awayTeamName === 'University of Kentucky' || awayTeamName === 'UK') {
+    if (awayTeamName === 'Kentucky' || awayTeamName === 'University of Kentucky' || 
+        awayTeamName === 'UK' || awayTeamName === 'Kentucky Wildcats') {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/kentucky.png';
       game.awayTeamId = 'kentucky';
     }
     else if (awayTeamName === 'Western Kentucky' || awayTeamName === 'Western Kentucky University' || 
-             awayTeamName === 'WKU') {
+             awayTeamName === 'WKU' || awayTeamName === 'Western Kentucky Hilltoppers') {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/westernkentucky.png';
       game.awayTeamId = 'westernkentucky';
     }
     else if (awayTeamName === 'Ohio State' || awayTeamName === 'Ohio State University' || 
-             awayTeamName === 'OSU') {
+             awayTeamName === 'OSU' || awayTeamName === 'Ohio State Buckeyes') {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/ohiostate.png';
       game.awayTeamId = 'ohiostate';
     }
     else if (awayTeamName === 'Illinois' || awayTeamName === 'University of Illinois' || 
-             awayTeamName === 'Fighting Illini') {
+             awayTeamName === 'Fighting Illini' || awayTeamName === 'Illinois Fighting Illini') {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/illinois.png';
       game.awayTeamId = 'illinois';
     }
     else if (awayTeamName === 'Iowa' || awayTeamName === 'University of Iowa' || 
-             awayTeamName === 'Hawkeyes') {
+             awayTeamName === 'Hawkeyes' || awayTeamName === 'Iowa Hawkeyes') {
       defaultAwayTeam.logoUrl = '/school-logos/non-mac/iowa.png';
       game.awayTeamId = 'iowa';
     }
+    else if (awayTeamName === 'Michigan' || awayTeamName === 'University of Michigan' || 
+             awayTeamName === 'Michigan Wolverines' || awayTeamName === 'U-M' || 
+             awayTeamName === 'UMich' || awayTeamName === 'UM') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/michigan.png';
+      game.awayTeamId = 'michigan';
+    }
+    else if (awayTeamName === 'Michigan State' || awayTeamName === 'Michigan State University' || 
+             awayTeamName === 'Michigan State Spartans' || awayTeamName === 'MSU' || 
+             awayTeamName === 'Mich. State') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/michiganstate.png';
+      game.awayTeamId = 'michiganstate';
+    }
+    else if (awayTeamName === 'UAB' || awayTeamName === 'Alabama-Birmingham' ||
+             awayTeamName === 'University of Alabama at Birmingham' || 
+             awayTeamName === 'UAB Blazers' || awayTeamName === 'Alabama Birmingham') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/uab.png';
+      game.awayTeamId = 'uab';
+    }
+    else if (awayTeamName === 'Liberty' || awayTeamName === 'Liberty University' || 
+             awayTeamName === 'Liberty Flames' || awayTeamName === 'LU') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/liberty.png';
+      game.awayTeamId = 'liberty';
+    }
+    else if (awayTeamName === 'Washington State' || awayTeamName === 'Washington State University' || 
+             awayTeamName === 'Washington State Cougars' || awayTeamName === 'Wazzu' || 
+             awayTeamName === 'WSU') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/washingtonstate.png';
+      game.awayTeamId = 'washingtonstate';
+    }
+    else if (awayTeamName === 'Alabama' || awayTeamName === 'University of Alabama' || 
+             awayTeamName === 'Alabama Crimson Tide' || awayTeamName === 'Crimson Tide' || 
+             awayTeamName === 'Bama') {
+      defaultAwayTeam.logoUrl = '/school-logos/non-mac/alabama.png';
+      game.awayTeamId = 'alabama';
+    }
     
-    // Apply MAC school logos if available (as a fallback)
-    if (game.homeTeamId && schoolLogoMap[game.homeTeamId] && !defaultHomeTeam.logoUrl.includes('non-mac')) {
+    // Get the simple form of team name (remove common prefixes like "University of" and suffixes like mascots)
+    const getSimpleTeamName = (name: string): string => {
+      let simpleName = name.toLowerCase();
+      
+      // Remove "university of" prefix
+      simpleName = simpleName.replace(/^university of\s+/, '');
+      
+      // Remove mascot suffixes (common patterns)
+      simpleName = simpleName.replace(/\s+(wildcats|wolverines|spartans|buckeyes|illini|hawkeyes|blazers|flames|cougars|crimson tide|huskies|seminoles|blue devils|yellow jackets|cardinals|panthers|wolfpack|tar heels|cavaliers|hokies|demon deacons|sun devils|bears|cougars|bearcats|buffaloes|jayhawks|tigers|horned frogs|longhorns|red raiders|knights|mountaineers|ducks|beavers|trojans|utes|owls|mustangs|bulls|green wave|golden hurricane|aggies)$/, '');
+      
+      // Remove trailing spaces
+      simpleName = simpleName.trim();
+      
+      return simpleName;
+    };
+    
+    // Better school name matching function
+    const getBestLogoMatch = (teamName: string): string | null => {
+      if (!teamName) return null;
+      
+      // Direct lookup in our logoMap
+      if (schoolLogoMap[teamName.toLowerCase().replace(/\s+/g, '')]) {
+        return schoolLogoMap[teamName.toLowerCase().replace(/\s+/g, '')];
+      }
+      
+      // Try using the simple name
+      const simpleName = getSimpleTeamName(teamName);
+      
+      // Check for common nicknames and abbreviations
+      const schoolNameMap: Record<string, string> = {
+        // Common MAC schools
+        'akron': 'akron',
+        'zips': 'akron',
+        'ball state': 'ballstate',
+        'ball st': 'ballstate',
+        'bowling green': 'bowlinggreen',
+        'bgsu': 'bowlinggreen',
+        'buffalo': 'buffalo',
+        'bulls': 'buffalo',
+        'central michigan': 'centralmichigan',
+        'chippewas': 'centralmichigan',
+        'cmu': 'centralmichigan',
+        'eastern michigan': 'easternmichigan',
+        'emu': 'easternmichigan',
+        'eagles': 'easternmichigan',
+        'kent state': 'kentstate',
+        'kent': 'kentstate',
+        'golden flashes': 'kentstate',
+        'miami oh': 'miamioh',
+        'miami (oh)': 'miamioh',
+        'miami ohio': 'miamioh',
+        'redhawks': 'miamioh',
+        'northern illinois': 'northernillinois',
+        'niu': 'northernillinois',
+        'huskies': 'northernillinois',
+        'ohio': 'ohio',
+        'bobcats': 'ohio',
+        'toledo': 'toledo',
+        'rockets': 'toledo',
+        'western michigan': 'westernmichigan',
+        'wmu': 'westernmichigan',
+        'broncos': 'westernmichigan',
+        'massachusetts': 'massachusetts',
+        'umass': 'massachusetts',
+        'minutemen': 'massachusetts',
+        
+        // Big Ten schools
+        'illinois': 'illinois',
+        'fighting illini': 'illinois',
+        'indiana': 'indiana',
+        'hoosiers': 'indiana',
+        'iowa': 'iowa',
+        'hawkeyes': 'iowa',
+        'michigan': 'michigan',
+        'wolverines': 'michigan',
+        'michigan state': 'michiganstate',
+        'spartans': 'michiganstate',
+        'msu': 'michiganstate',
+        'minnesota': 'minnesota',
+        'golden gophers': 'minnesota',
+        'gophers': 'minnesota',
+        'northwestern': 'northwestern',
+        'wildcats': 'northwestern',
+        'ohio state': 'ohiostate',
+        'buckeyes': 'ohiostate',
+        'osu': 'ohiostate',
+        'penn state': 'pennstate',
+        'nittany lions': 'pennstate',
+        'psu': 'pennstate',
+        'purdue': 'purdue',
+        'boilermakers': 'purdue',
+        'rutgers': 'rutgers',
+        'scarlet knights': 'rutgers',
+        'wisconsin': 'wisconsin',
+        'badgers': 'wisconsin',
+        
+        // SEC schools
+        'alabama': 'alabama',
+        'crimson tide': 'alabama',
+        'tide': 'alabama',
+        'arkansas': 'arkansas',
+        'razorbacks': 'arkansas',
+        'hogs': 'arkansas',
+        'auburn': 'auburn',
+        'tigers': 'auburn',
+        'florida': 'florida',
+        'gators': 'florida',
+        'georgia': 'georgia',
+        'bulldogs': 'georgia',
+        'dawgs': 'georgia',
+        'kentucky': 'kentucky',
+        'wildcats': 'kentucky',
+        'lsu': 'lsu',
+        'louisiana state': 'lsu',
+        'tigers': 'lsu',
+        'mississippi state': 'mississippistate',
+        'bulldogs': 'mississippistate',
+        'missouri': 'missouri',
+        'mizzou': 'missouri',
+        'tigers': 'missouri',
+        'ole miss': 'olemiss',
+        'rebels': 'olemiss',
+        'south carolina': 'southcarolina',
+        'gamecocks': 'southcarolina',
+        'tennessee': 'tennessee',
+        'volunteers': 'tennessee',
+        'vols': 'tennessee',
+        'texas a&m': 'texasam',
+        'aggies': 'texasam',
+        'vanderbilt': 'vanderbilt',
+        'commodores': 'vanderbilt',
+        'vandy': 'vanderbilt',
+        
+        // Other common non-conference opponents
+        'uconn': 'connecticut',
+        'connecticut': 'connecticut',
+        'huskies': 'connecticut',
+        'washington state': 'washingtonstate',
+        'cougars': 'washingtonstate',
+        'wsu': 'washingtonstate',
+        'western kentucky': 'westernkentucky',
+        'hilltoppers': 'westernkentucky',
+        'wku': 'westernkentucky',
+        'liberty': 'liberty',
+        'flames': 'liberty',
+        'uab': 'uab',
+        'alabama birmingham': 'uab',
+        'alabama-birmingham': 'uab',
+        'blazers': 'uab',
+        'cincinnati': 'cincinnati',
+        'bearcats': 'cincinnati',
+        'uc': 'cincinnati'
+      };
+      
+      if (schoolNameMap[simpleName]) {
+        const mappedName = schoolNameMap[simpleName];
+        if (schoolLogoMap[mappedName]) {
+          return schoolLogoMap[mappedName];
+        }
+      }
+      
+      // If we have a match for this in our log map, return it
+      for (const [key, value] of Object.entries(schoolLogoMap)) {
+        if (key.includes(simpleName) || simpleName.includes(key)) {
+          return value;
+        }
+      }
+      
+      return null;
+    };
+    
+    // Apply best match logos for home team
+    const homeLogoPath = getBestLogoMatch(homeTeamName);
+    if (homeLogoPath) {
+      defaultHomeTeam.logoUrl = homeLogoPath;
+    } 
+    // Fall back to the ID-based lookup
+    else if (game.homeTeamId && schoolLogoMap[game.homeTeamId] && !defaultHomeTeam.logoUrl.includes('non-mac')) {
       defaultHomeTeam.logoUrl = schoolLogoMap[game.homeTeamId];
     }
     
-    if (game.awayTeamId && schoolLogoMap[game.awayTeamId] && !defaultAwayTeam.logoUrl.includes('non-mac')) {
+    // Apply best match logos for away team
+    const awayLogoPath = getBestLogoMatch(awayTeamName);
+    if (awayLogoPath) {
+      defaultAwayTeam.logoUrl = awayLogoPath;
+    }
+    // Fall back to the ID-based lookup
+    else if (game.awayTeamId && schoolLogoMap[game.awayTeamId] && !defaultAwayTeam.logoUrl.includes('non-mac')) {
       defaultAwayTeam.logoUrl = schoolLogoMap[game.awayTeamId];
     }
     
