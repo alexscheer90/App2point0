@@ -77,43 +77,32 @@ const getSportName = (sportId: string): string => {
     return "Soccer";
   }
   
-  // Golf - men's and women's versions in MAC
-  if (normalizedId === 'mgolf' || normalizedId === 'm-golf' || 
-    (normalizedId.includes('golf') && normalizedId.includes('men'))) {
-    return "Men's Golf";
+  // Consolidated sports - combining men's and women's variants
+  if (normalizedId === 'golf' || 
+      normalizedId === 'mgolf' || 
+      normalizedId === 'wgolf' ||
+      normalizedId.includes('golf')) {
+    return "Golf";
   }
   
-  if (normalizedId === 'wgolf' || normalizedId === 'w-golf' || 
-    (normalizedId.includes('golf') && normalizedId.includes('women'))) {
-    return "Women's Golf";
+  if (normalizedId === 'tennis' || 
+      normalizedId === 'mtennis' || 
+      normalizedId === 'wtennis' ||
+      normalizedId.includes('tennis')) {
+    return "Tennis";
   }
   
-  // Tennis - men's and women's versions in MAC
-  if (normalizedId === 'mtennis' || normalizedId === 'm-tennis' || 
-    (normalizedId.includes('tennis') && normalizedId.includes('men'))) {
-    return "Men's Tennis";
-  }
-  
-  if (normalizedId === 'wtennis' || normalizedId === 'w-tennis' || 
-    (normalizedId.includes('tennis') && normalizedId.includes('women'))) {
-    return "Women's Tennis";
-  }
-  
-  // Swimming - men's and women's versions in MAC
-  if (normalizedId === 'mswim' || normalizedId === 'm-swimming' || 
-    (normalizedId.includes('swimming') && normalizedId.includes('men'))) {
-    return "Men's Swimming & Diving";
-  }
-  
-  if (normalizedId === 'wswim' || normalizedId === 'w-swimming' || 
-    (normalizedId.includes('swimming') && normalizedId.includes('women'))) {
-    return "Women's Swimming & Diving";
+  if (normalizedId === 'swimming' || 
+      normalizedId === 'mswim' || 
+      normalizedId === 'wswim' ||
+      normalizedId.includes('swimming') ||
+      normalizedId.includes('swim')) {
+    return "Swimming & Diving";
   }
   
   // Other sports
   if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) return 'Field Hockey';
   if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) return 'Wrestling';
-  if (normalizedId === 'swimming' || normalizedId.includes('swimming')) return 'Swimming & Diving';
   if (normalizedId === 'track' || normalizedId.includes('track')) return 'Track & Field';
   if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) return 'Cross Country';
   if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return 'Gymnastics';
@@ -183,16 +172,15 @@ const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-red-50 text-red-800 border-red-200';
   }
   
-  // Men's Swimming - Deep Blue
-  if (normalizedId === 'mswim' || normalizedId === 'm-swimming' || 
-      (normalizedId.includes('swimming') && normalizedId.includes('men'))) {
-    return 'bg-blue-100 text-blue-900 border-blue-300';
-  }
-  
-  // Women's Swimming - Sky Blue
-  if (normalizedId === 'wswim' || normalizedId === 'w-swimming' || 
-      (normalizedId.includes('swimming') && normalizedId.includes('women'))) {
-    return 'bg-sky-50 text-sky-800 border-sky-200';
+  // Swimming & Diving - Consolidated Blue Style
+  if (normalizedId === 'swimming' || 
+      normalizedId === 'mswim' || 
+      normalizedId === 'wswim' || 
+      normalizedId === 'm-swimming' || 
+      normalizedId === 'w-swimming' ||
+      normalizedId.includes('swimming') ||
+      normalizedId.includes('swim')) {
+    return 'bg-blue-50 text-blue-800 border-blue-200';
   }
   
   // Track & Field - Indigo
@@ -205,27 +193,23 @@ const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
   }
   
-  // Men's Golf - Deep Teal
-  if (normalizedId === 'mgolf' || normalizedId === 'm-golf' || 
-      (normalizedId.includes('golf') && normalizedId.includes('men'))) {
-    return 'bg-teal-100 text-teal-900 border-teal-300';
-  }
-  
-  // Women's Golf - Light Teal
-  if (normalizedId === 'wgolf' || normalizedId === 'w-golf' || 
-      (normalizedId.includes('golf') && normalizedId.includes('women'))) {
+  // Golf - Consolidated Teal Style
+  if (normalizedId === 'golf' || 
+      normalizedId === 'mgolf' || 
+      normalizedId === 'wgolf' || 
+      normalizedId === 'm-golf' || 
+      normalizedId === 'w-golf' ||
+      normalizedId.includes('golf')) {
     return 'bg-teal-50 text-teal-800 border-teal-200';
   }
   
-  // Men's Tennis - Deep Cyan
-  if (normalizedId === 'mtennis' || normalizedId === 'm-tennis' || 
-      (normalizedId.includes('tennis') && normalizedId.includes('men'))) {
-    return 'bg-cyan-100 text-cyan-900 border-cyan-300';
-  }
-  
-  // Women's Tennis - Light Cyan
-  if (normalizedId === 'wtennis' || normalizedId === 'w-tennis' || 
-      (normalizedId.includes('tennis') && normalizedId.includes('women'))) {
+  // Tennis - Consolidated Cyan Style 
+  if (normalizedId === 'tennis' || 
+      normalizedId === 'mtennis' || 
+      normalizedId === 'wtennis' || 
+      normalizedId === 'm-tennis' || 
+      normalizedId === 'w-tennis' ||
+      normalizedId.includes('tennis')) {
     return 'bg-cyan-50 text-cyan-800 border-cyan-200';
   }
   
@@ -301,18 +285,15 @@ const SchedulePage = () => {
       { id: "football", name: "Football", gender: "mens" },
       { id: "gymnastics", name: "Gymnastics", gender: "womens" },
       { id: "mbball", name: "Basketball", gender: "mens" },
-      { id: "mgolf", name: "Golf", gender: "mens" },
-      // Removed Men's Soccer as requested
-      { id: "mswim", name: "Swimming & Diving", gender: "mens" },
-      { id: "mtennis", name: "Tennis", gender: "mens" },
+      // Consolidated sports (no gender variants)
+      { id: "golf", name: "Golf", gender: "mixed" },
+      { id: "swimming", name: "Swimming & Diving", gender: "mixed" },
+      { id: "tennis", name: "Tennis", gender: "mixed" },
       { id: "softball", name: "Softball", gender: "womens" },
       { id: "track", name: "Track and Field", gender: "mixed" },
       { id: "wbball", name: "Basketball", gender: "womens" },
-      { id: "wgolf", name: "Golf", gender: "womens" },
       { id: "lacrosse", name: "Lacrosse", gender: "womens" },
       { id: "soccer", name: "Soccer", gender: "womens" },
-      { id: "wswim", name: "Swimming & Diving", gender: "womens" },
-      { id: "wtennis", name: "Tennis", gender: "womens" },
       { id: "volleyball", name: "Volleyball", gender: "womens" },
       { id: "wrestling", name: "Wrestling", gender: "mens" }
     ];
@@ -476,151 +457,38 @@ const SchedulePage = () => {
       const normalizedSelectedSport = selectedSport.toLowerCase().trim();
       const normalizedGameSport = gameActualSportId?.toLowerCase()?.trim() || '';
       
-      // Special case for Tennis - improved detection logic
-      if (normalizedSelectedSport === 'mtennis') {
-        // Check for exact match on the ID
-        if (normalizedGameSport === 'mtennis' || normalizedGameSport === 'm-tennis') {
-          return true;
-        }
-        
-        // Check if it's a generic tennis ID but has men's in the name or location
-        if (normalizedGameSport === 'tennis') {
-          const hasTeamMensIndicator = 
-            (game.homeTeamName?.toLowerCase().includes("men") || 
-             game.awayTeamName?.toLowerCase().includes("men"));
-          
-          const hasLocationMensIndicator = 
-            game.location?.toLowerCase().includes("men") || 
-            game.venue?.toLowerCase().includes("men");
-          
-          // If tennis is in the game description and it has men's indicators
-          return hasTeamMensIndicator || hasLocationMensIndicator;
-        }
-        
-        // Otherwise, check for combined indicators (like men's tennis)
-        return normalizedGameSport.includes('tennis') && normalizedGameSport.includes('men');
+      // Special case for Tennis - consolidated version
+      if (normalizedSelectedSport === 'tennis') {
+        // Match any tennis-related IDs or venues
+        return normalizedGameSport === 'tennis' || 
+               normalizedGameSport === 'mtennis' || 
+               normalizedGameSport === 'wtennis' ||
+               normalizedGameSport === 'm-tennis' || 
+               normalizedGameSport === 'w-tennis' ||
+               normalizedGameSport.includes('tennis');
       }
       
-      if (normalizedSelectedSport === 'wtennis') {
-        // Check for exact match on the ID
-        if (normalizedGameSport === 'wtennis' || normalizedGameSport === 'w-tennis') {
-          return true;
-        }
-        
-        // Check if it's a generic tennis ID but has women's in the name or location
-        if (normalizedGameSport === 'tennis') {
-          const hasTeamWomensIndicator = 
-            (game.homeTeamName?.toLowerCase().includes("women") || 
-             game.awayTeamName?.toLowerCase().includes("women"));
-          
-          const hasLocationWomensIndicator = 
-            game.location?.toLowerCase().includes("women") || 
-            game.venue?.toLowerCase().includes("women");
-          
-          // If tennis is in the game description and it has women's indicators
-          return hasTeamWomensIndicator || hasLocationWomensIndicator;
-        }
-        
-        // Otherwise, check for combined indicators (like women's tennis)
-        return normalizedGameSport.includes('tennis') && normalizedGameSport.includes('women');
+      // Special case for Swimming - consolidated version
+      if (normalizedSelectedSport === 'swimming') {
+        // Match any swimming-related IDs or venues
+        return normalizedGameSport === 'swimming' || 
+               normalizedGameSport === 'mswim' || 
+               normalizedGameSport === 'wswim' ||
+               normalizedGameSport === 'm-swimming' || 
+               normalizedGameSport === 'w-swimming' ||
+               normalizedGameSport.includes('swimming') ||
+               normalizedGameSport.includes('swim');
       }
       
-      // Handle swimming variants - improved detection
-      if (normalizedSelectedSport === 'mswim') {
-        // Check for exact match on the ID
-        if (normalizedGameSport === 'mswim' || normalizedGameSport === 'm-swimming') {
-          return true;
-        }
-        
-        // Check if it's a generic swimming ID but has men's in the name or location
-        if (normalizedGameSport === 'swimming') {
-          const hasTeamMensIndicator = 
-            (game.homeTeamName?.toLowerCase().includes("men") || 
-             game.awayTeamName?.toLowerCase().includes("men"));
-          
-          const hasLocationMensIndicator = 
-            game.location?.toLowerCase().includes("men") || 
-            game.venue?.toLowerCase().includes("men");
-          
-          // If swimming is in the game description and it has men's indicators
-          return hasTeamMensIndicator || hasLocationMensIndicator;
-        }
-        
-        // Otherwise, check for combined indicators
-        return normalizedGameSport.includes('swimming') && normalizedGameSport.includes('men');
-      }
-      
-      if (normalizedSelectedSport === 'wswim') {
-        // Check for exact match on the ID
-        if (normalizedGameSport === 'wswim' || normalizedGameSport === 'w-swimming') {
-          return true;
-        }
-        
-        // Check if it's a generic swimming ID but has women's in the name or location
-        if (normalizedGameSport === 'swimming') {
-          const hasTeamWomensIndicator = 
-            (game.homeTeamName?.toLowerCase().includes("women") || 
-             game.awayTeamName?.toLowerCase().includes("women"));
-          
-          const hasLocationWomensIndicator = 
-            game.location?.toLowerCase().includes("women") || 
-            game.venue?.toLowerCase().includes("women");
-          
-          // If swimming is in the game description and it has women's indicators
-          return hasTeamWomensIndicator || hasLocationWomensIndicator;
-        }
-        
-        // Otherwise, check for combined indicators
-        return normalizedGameSport.includes('swimming') && normalizedGameSport.includes('women');
-      }
-      
-      // Handle golf variants - improved detection logic
-      if (normalizedSelectedSport === 'mgolf') {
-        // Check for exact match on the ID
-        if (normalizedGameSport === 'mgolf' || normalizedGameSport === 'm-golf') {
-          return true;
-        }
-        
-        // Check if it's a generic golf ID but has men's in the name or location
-        if (normalizedGameSport === 'golf') {
-          const hasTeamMensIndicator = 
-            (game.homeTeamName?.toLowerCase().includes("men") || 
-             game.awayTeamName?.toLowerCase().includes("men"));
-          
-          const hasLocationMensIndicator = 
-            game.location?.toLowerCase().includes("men") || 
-            game.venue?.toLowerCase().includes("men");
-          
-          // If golf is in the game description and it has men's indicators
-          return hasTeamMensIndicator || hasLocationMensIndicator;
-        }
-        
-        // Otherwise, check for combined indicators
-        return normalizedGameSport.includes('golf') && normalizedGameSport.includes('men');
-      }
-      
-      if (normalizedSelectedSport === 'wgolf') {
-        // Check for exact match on the ID
-        if (normalizedGameSport === 'wgolf' || normalizedGameSport === 'w-golf') {
-          return true;
-        }
-        
-        // Check if it's a generic golf ID but has women's in the name or location
-        if (normalizedGameSport === 'golf') {
-          const hasTeamWomensIndicator = 
-            (game.homeTeamName?.toLowerCase().includes("women") || 
-             game.awayTeamName?.toLowerCase().includes("women"));
-          
-          const hasLocationWomensIndicator = 
-            game.location?.toLowerCase().includes("women") || 
-            game.venue?.toLowerCase().includes("women");
-          
-          // If golf is in the game description and it has women's indicators
-          return hasTeamWomensIndicator || hasLocationWomensIndicator;
-        }
-        
-        // Otherwise, check for combined indicators
-        return normalizedGameSport.includes('golf') && normalizedGameSport.includes('women');
+      // Special case for Golf - consolidated version
+      if (normalizedSelectedSport === 'golf') {
+        // Match any golf-related IDs or venues
+        return normalizedGameSport === 'golf' || 
+               normalizedGameSport === 'mgolf' || 
+               normalizedGameSport === 'wgolf' ||
+               normalizedGameSport === 'm-golf' || 
+               normalizedGameSport === 'w-golf' ||
+               normalizedGameSport.includes('golf');
       }
       
       // Handle football

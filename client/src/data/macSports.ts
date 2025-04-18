@@ -63,16 +63,10 @@ export const macSports: Sport[] = [
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wlax"
   },
   {
-    id: "mtennis",
+    id: "tennis",
     name: "Tennis",
-    gender: "men",
+    gender: "mixed",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=mten"
-  },
-  {
-    id: "wtennis",
-    name: "Tennis",
-    gender: "women",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=wten"
   },
   {
     id: "wrestling",
@@ -81,27 +75,15 @@ export const macSports: Sport[] = [
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wrestling"
   },
   {
-    id: "mgolf",
+    id: "golf",
     name: "Golf",
-    gender: "men",
+    gender: "mixed",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf"
   },
   {
-    id: "wgolf",
-    name: "Golf",
-    gender: "women",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=wgolf"
-  },
-  {
-    id: "mswim",
+    id: "swimming",
     name: "Swimming & Diving",
-    gender: "men",
+    gender: "mixed",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim"
-  },
-  {
-    id: "wswim",
-    name: "Swimming & Diving",
-    gender: "women",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=wswim"
   }
 ];
