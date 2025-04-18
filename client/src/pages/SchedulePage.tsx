@@ -700,7 +700,9 @@ const SchedulePage = () => {
       awayTeamName.includes('Mid-American Conference');
     
     // Special handling for the Ohio vs Ohio State case
-    if (homeTeamName === 'Ohio' && awayTeamName === 'Ohio' && game.location?.includes('Columbus')) {
+    if ((homeTeamName === 'Ohio' && awayTeamName === 'Ohio') && 
+        (game.location?.includes('Columbus') || 
+        (game.scheduledTime && game.scheduledTime.includes('2025-09-13')))) {
       // This is actually Ohio at Ohio State
       awayTeamName = 'Ohio State';
       game.awayTeamId = 'ohiostate';
@@ -902,25 +904,58 @@ const SchedulePage = () => {
     const knownSchoolMatches: Record<string, string> = {
       'University of Illinois': 'illinois',
       'Illinois': 'illinois',
+      'U of I': 'illinois',
+      'University of Illinois at Urbana-Champaign': 'illinois',
+      
       'Iowa': 'iowa',
       'University of Iowa': 'iowa',
+      
       'Washington State': 'washingtonstate',
+      'WSU': 'washingtonstate',
+      
       'Auburn University': 'auburn',
       'Auburn': 'auburn',
+      
       'Nebraska': 'nebraska',
+      'University of Nebraska': 'nebraska',
+      
       'Pittsburgh': 'pitt',
       'Pitt': 'pitt',
+      
       'Cincinnati': 'cincinnati',
+      'UC': 'cincinnati',
+      
       'Rutgers': 'rutgers',
+      'Rutgers University': 'rutgers',
+      
       'Texas Tech University': 'texastech',
       'Texas Tech': 'texastech',
+      
       'Stanford': 'stanford',
+      'Stanford University': 'stanford',
+      
       'University of Texas': 'texas',
       'Texas': 'texas',
+      'UT': 'texas',
+      
+      'University of Maryland': 'maryland',
       'Maryland': 'maryland',
+      'UMD': 'maryland',
+      
       'West Virginia': 'westvirginia',
+      'WVU': 'westvirginia',
+      'West Virginia University': 'westvirginia',
+      
       'Santa Clara': 'santaclara',
-      'Oklahoma': 'oklahoma'
+      'Santa Clara University': 'santaclara',
+      
+      'Oklahoma': 'oklahoma',
+      'OU': 'oklahoma',
+      'University of Oklahoma': 'oklahoma',
+      
+      'Ohio State': 'ohiostate',
+      'Ohio State University': 'ohiostate',
+      'OSU': 'ohiostate'
     };
     
     // Try to match by homeTeamName if available
