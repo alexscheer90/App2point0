@@ -241,10 +241,132 @@ export async function getTodaysGames(): Promise<Game[]> {
     awayScore: 41,
   };
   
-  liveGames.push(liveGame1, liveGame2);
+  // Create some upcoming games for today
+  const kentState = macSchools.find(school => school.id === 'kentstate')!;
+  const akron = macSchools.find(school => school.id === 'akron')!;
+  const ballState = macSchools.find(school => school.id === 'ballstate')!;
+  const westernMichigan = macSchools.find(school => school.id === 'westernmichigan')!;
+  const centralMichigan = macSchools.find(school => school.id === 'centralmichigan')!;
+  const buffalo = macSchools.find(school => school.id === 'buffalo')!;
   
-  // In a real implementation, we would now fetch scheduled games for today
-  // For the demo, we'll just return the live games
+  // Create a few real-world upcoming games
+  const upcomingGame1: Game = {
+    id: 'upcoming-game-1',
+    sportId: 'baseball',
+    homeTeamId: kentState.id,
+    awayTeamId: akron.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Schoonover Stadium',
+    location: 'Kent, OH',
+    homeScore: 0,
+    awayScore: 0,
+  };
+  
+  const upcomingGame2: Game = {
+    id: 'upcoming-game-2',
+    sportId: 'softball',
+    homeTeamId: ballState.id,
+    awayTeamId: westernMichigan.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Softball Field at First Merchants Ballpark Complex',
+    location: 'Muncie, IN',
+    homeScore: 0,
+    awayScore: 0,
+  };
+  
+  const upcomingGame3: Game = {
+    id: 'upcoming-game-3',
+    sportId: 'wlax',
+    homeTeamId: centralMichigan.id,
+    awayTeamId: 'detroitmercy',
+    homeTeamName: 'Central Michigan',
+    awayTeamName: 'Detroit Mercy',
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'CMU Lacrosse Complex',
+    location: 'Mount Pleasant, MI',
+    homeScore: 0,
+    awayScore: 0,
+  };
+  
+  const upcomingGame4: Game = {
+    id: 'upcoming-game-4',
+    sportId: 'softball',
+    homeTeamId: buffalo.id,
+    awayTeamId: toledo.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Nan Harvey Field',
+    location: 'Buffalo, NY',
+    homeScore: 0,
+    awayScore: 0,
+  };
+  
+  // Add completed games for today
+  const completedGame1: Game = {
+    id: 'completed-game-1',
+    sportId: 'baseball',
+    homeTeamId: miami.id,
+    awayTeamId: 'bellarmine',
+    homeTeamName: 'Miami',
+    awayTeamName: 'Bellarmine',
+    homeTeamScore: 7,
+    awayTeamScore: 3,
+    startTime: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+    scheduledTime: today.toISOString(),
+    status: 'final',
+    venue: 'McKie Field at Hayden Park',
+    location: 'Oxford, OH',
+    homeScore: 7,
+    awayScore: 3,
+  };
+  
+  const completedGame2: Game = {
+    id: 'completed-game-2',
+    sportId: 'mtennis',
+    homeTeamId: bowlingGreen.id,
+    awayTeamId: 'michigan',
+    homeTeamName: 'Bowling Green',
+    awayTeamName: 'Michigan',
+    homeTeamScore: 1,
+    awayTeamScore: 6,
+    startTime: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+    scheduledTime: today.toISOString(),
+    status: 'final',
+    venue: 'Keefe Courts',
+    location: 'Bowling Green, OH',
+    homeScore: 1,
+    awayScore: 6,
+  };
+  
+  // Add all games to our list
+  liveGames.push(
+    liveGame1, 
+    liveGame2, 
+    upcomingGame1, 
+    upcomingGame2, 
+    upcomingGame3, 
+    upcomingGame4,
+    completedGame1,
+    completedGame2
+  );
+  
+  // In a real implementation, we would fetch actual games from Sidearm APIs
+  // For this demo, we're returning the mock games that match today's real date
   return liveGames;
 }
 
