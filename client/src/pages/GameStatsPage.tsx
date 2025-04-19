@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Share, ChevronRight, ExternalLink } from "lucide-react";
 import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getGame } from "../lib/api";
 
 interface GameStats {
   boxScore?: {
