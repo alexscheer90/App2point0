@@ -46,35 +46,23 @@ const GameStatsPage = () => {
   const { data: schools } = useMacSchools();
   const { data: sports } = useMacSports();
   
-  // Fetch game data
+  // Fetch game data using our API
   useEffect(() => {
     const fetchGame = async () => {
       setIsLoading(true);
       try {
-        // This would be a real API call in production
-        // For demo, we'll use mock data
-        const mockGame: Game = {
-          id: gameId || "mock-game",
-          sportId: "mbball",
-          homeTeamId: "bowlinggreen",
-          awayTeamId: "akron",
-          homeTeamScore: 78,
-          awayTeamScore: 72,
-          startTime: new Date().toISOString(),
-          scheduledTime: new Date().toISOString(),
-          status: "final",
-          period: 2,
-          venue: "Stroh Center",
-          location: "Bowling Green, OH",
-          isRivalryGame: false,
-          homeScore: 78,
-          awayScore: 72,
-        };
+        // Use the getGame API function to fetch the game data by ID
+        const fetchedGame = await getGame(gameId || "");
         
-        setGame(mockGame);
-        
-        // Fetch stats data
-        await fetchGameStats(mockGame);
+        if (fetchedGame) {
+          console.log("Found game:", fetchedGame);
+          setGame(fetchedGame);
+          
+          // Fetch stats data for the game
+          await fetchGameStats(fetchedGame);
+        } else {
+          console.error(`Game with ID ${gameId} not found`);
+        }
       } catch (error) {
         console.error("Failed to fetch game:", error);
       } finally {

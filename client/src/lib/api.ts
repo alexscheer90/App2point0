@@ -280,6 +280,17 @@ export async function getSchoolGames(schoolId: string): Promise<Game[]> {
   );
 }
 
+// Get a specific game by ID
+export async function getGame(gameId: string): Promise<Game | null> {
+  try {
+    const allGames = await getGames();
+    return allGames.find(game => game.id === gameId) || null;
+  } catch (error) {
+    console.error(`Error fetching game with ID ${gameId}:`, error);
+    return null;
+  }
+}
+
 // News API - Real RSS Feed Implementation
 export async function getNews(schoolId?: string): Promise<NewsItem[]> {
   try {
