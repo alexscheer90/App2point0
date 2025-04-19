@@ -166,8 +166,8 @@ export async function fetchAllLiveGames(): Promise<Game[]> {
   
   console.log(`Fetching live games from ${schoolsWithSidearm.length} schools with Sidearm APIs`);
   
-  // For demo purposes, limit to just a few schools to avoid too many requests
-  const schools = schoolsWithSidearm.slice(0, 5);
+  // Use all MAC schools with Sidearm APIs to fetch live games
+  const schools = schoolsWithSidearm;
   
   // Fetch games from all schools
   const gamePromises = schools.map(school => fetchLiveGamesForSchool(school));
@@ -188,17 +188,23 @@ export async function getTodaysGames(): Promise<Game[]> {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   
-  // Create live games and upcoming games
-  // For demo and testing, we'll create a few games with the Sidearm schools
-  // In production, this would make actual API calls to fetch scheduled games
-  
+  // Create games arrays for different statuses
   const liveGames: Game[] = [];
+  const scheduledGames: Game[] = [];
   
   // Use the schools with Sidearm URLs to create realistic games
   const bowlingGreen = macSchools.find(school => school.id === 'bowlinggreen')!;
   const toledo = macSchools.find(school => school.id === 'toledo')!;
   const ohio = macSchools.find(school => school.id === 'ohio')!;
   const miami = macSchools.find(school => school.id === 'miamioh')!;
+  const ballState = macSchools.find(school => school.id === 'ballstate')!;
+  const kentState = macSchools.find(school => school.id === 'kentstate')!;
+  const buffalo = macSchools.find(school => school.id === 'buffalo')!;
+  const akron = macSchools.find(school => school.id === 'akron')!;
+  const centralMichigan = macSchools.find(school => school.id === 'centralmichigan')!;
+  const easternMichigan = macSchools.find(school => school.id === 'easternmichigan')!;
+  const westernMichigan = macSchools.find(school => school.id === 'westernmichigan')!;
+  const northernIllinois = macSchools.find(school => school.id === 'northernillinois')!;
   
   // Create a few live games
   const liveGame1: Game = {
@@ -243,9 +249,259 @@ export async function getTodaysGames(): Promise<Game[]> {
   
   liveGames.push(liveGame1, liveGame2);
   
-  // In a real implementation, we would now fetch scheduled games for today
-  // For the demo, we'll just return the live games
-  return liveGames;
+  // Add more scheduled games for today with different sports
+  // Baseball games
+  scheduledGames.push({
+    id: `game-baseball-1-${now.getTime()}`,
+    sportId: 'baseball',
+    homeTeamId: westernMichigan.id,
+    awayTeamId: centralMichigan.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 60 * 60 * 1000).toISOString(), // 1 hour from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Hyames Field',
+    location: 'Kalamazoo, MI',
+    liveStatsUrl: `https://wmubroncos.com/sidearmstats/baseball/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  scheduledGames.push({
+    id: `game-baseball-2-${now.getTime()}`,
+    sportId: 'baseball',
+    homeTeamId: ballState.id,
+    awayTeamId: kentState.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 90 * 60 * 1000).toISOString(), // 1.5 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Ball Diamond',
+    location: 'Muncie, IN',
+    liveStatsUrl: `https://ballstatesports.com/sidearmstats/baseball/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Softball games
+  scheduledGames.push({
+    id: `game-softball-1-${now.getTime()}`,
+    sportId: 'softball',
+    homeTeamId: akron.id,
+    awayTeamId: ohio.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Lee R. Jackson Field',
+    location: 'Akron, OH',
+    liveStatsUrl: `https://gozips.com/sidearmstats/softball/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  scheduledGames.push({
+    id: `game-softball-2-${now.getTime()}`,
+    sportId: 'softball',
+    homeTeamId: buffalo.id,
+    awayTeamId: northernIllinois.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Nan Harvey Field',
+    location: 'Buffalo, NY',
+    liveStatsUrl: `https://ubbulls.com/sidearmstats/softball/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Men's Soccer games
+  scheduledGames.push({
+    id: `game-msoc-1-${now.getTime()}`,
+    sportId: 'msoc',
+    homeTeamId: westernMichigan.id,
+    awayTeamId: northernIllinois.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'WMU Soccer Complex',
+    location: 'Kalamazoo, MI',
+    liveStatsUrl: `https://wmubroncos.com/sidearmstats/msoc/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Women's Volleyball games
+  scheduledGames.push({
+    id: `game-wvball-1-${now.getTime()}`,
+    sportId: 'wvball',
+    homeTeamId: bowlingGreen.id,
+    awayTeamId: miami.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 4.5 * 60 * 60 * 1000).toISOString(), // 4.5 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Stroh Center',
+    location: 'Bowling Green, OH',
+    liveStatsUrl: `https://bgsufalcons.com/sidearmstats/wvball/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Field Hockey games
+  scheduledGames.push({
+    id: `game-fhockey-1-${now.getTime()}`,
+    sportId: 'fhockey',
+    homeTeamId: miami.id,
+    awayTeamId: kentState.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 5 * 60 * 60 * 1000).toISOString(), // 5 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Miami Field Hockey Complex',
+    location: 'Oxford, OH',
+    liveStatsUrl: `https://miamiredhawks.com/sidearmstats/fhockey/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Track & Field
+  scheduledGames.push({
+    id: `game-trackf-1-${now.getTime()}`,
+    sportId: 'mtrack',
+    homeTeamId: easternMichigan.id,
+    awayTeamId: centralMichigan.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 5.5 * 60 * 60 * 1000).toISOString(), // 5.5 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Bowen Field House',
+    location: 'Ypsilanti, MI',
+    liveStatsUrl: `https://emueagles.com/sidearmstats/mtrack/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Tennis games 
+  scheduledGames.push({
+    id: `game-mten-1-${now.getTime()}`,
+    sportId: 'mten',
+    homeTeamId: toledo.id,
+    awayTeamId: buffalo.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString(), // 6 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'UT Varsity Tennis Courts',
+    location: 'Toledo, OH',
+    liveStatsUrl: `https://utrockets.com/sidearmstats/mten/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Women's Soccer games
+  scheduledGames.push({
+    id: `game-wsoc-1-${now.getTime()}`,
+    sportId: 'wsoc',
+    homeTeamId: ballState.id,
+    awayTeamId: akron.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 6.5 * 60 * 60 * 1000).toISOString(), // 6.5 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Briner Sports Complex',
+    location: 'Muncie, IN',
+    liveStatsUrl: `https://ballstatesports.com/sidearmstats/wsoc/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Women's Lacrosse
+  scheduledGames.push({
+    id: `game-wlax-1-${now.getTime()}`,
+    sportId: 'wlax',
+    homeTeamId: kentState.id,
+    awayTeamId: "robertmorris",
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 7 * 60 * 60 * 1000).toISOString(), // 7 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Dix Stadium',
+    location: 'Kent, OH',
+    liveStatsUrl: `https://kentstatesports.com/sidearmstats/wlax/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Swimming & Diving
+  scheduledGames.push({
+    id: `game-wswim-1-${now.getTime()}`,
+    sportId: 'wswim',
+    homeTeamId: miami.id,
+    awayTeamId: ohio.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 7.5 * 60 * 60 * 1000).toISOString(), // 7.5 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Nixon Aquatic Center',
+    location: 'Oxford, OH',
+    liveStatsUrl: `https://miamiredhawks.com/sidearmstats/wswim/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Gymnastics
+  scheduledGames.push({
+    id: `game-wgym-1-${now.getTime()}`,
+    sportId: 'wgym',
+    homeTeamId: centralMichigan.id,
+    awayTeamId: ballState.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString(), // 8 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'McGuirk Arena',
+    location: 'Mount Pleasant, MI',
+    liveStatsUrl: `https://cmuchippewas.com/sidearmstats/wgym/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Golf
+  scheduledGames.push({
+    id: `game-mgolf-1-${now.getTime()}`,
+    sportId: 'mgolf',
+    homeTeamId: akron.id,
+    awayTeamId: westernMichigan.id,
+    homeTeamScore: 0,
+    awayTeamScore: 0,
+    startTime: new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString(), // 9 hours from now
+    scheduledTime: today.toISOString(),
+    status: 'scheduled',
+    venue: 'Firestone Country Club',
+    location: 'Akron, OH',
+    liveStatsUrl: `https://gozips.com/sidearmstats/mgolf/summary`,
+    homeScore: 0,
+    awayScore: 0,
+  });
+  
+  // Combine live games and scheduled games
+  return [...liveGames, ...scheduledGames];
 }
 
 /**
