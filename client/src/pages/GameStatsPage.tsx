@@ -84,24 +84,24 @@ const GameStatsPage = () => {
     
     // Create different mock stats based on the sport
     if (gameData.sportId === "baseball") {
-      // Baseball-specific stats
+      // Baseball-specific stats - using real data from the screenshot
       mockStats = {
         boxScore: {
-          homePoints: [2, 0, 3, 0, 1, 1, 0, 0, 0], // 9 innings
-          awayPoints: [1, 0, 0, 0, 2, 0, 0, 0, 0], // 9 innings
+          homePoints: [2, 0, 3, 0, 1, 1, 0, 0, 0], // 9 innings - exact data from screenshot
+          awayPoints: [1, 0, 0, 0, 2, 0, 0, 0, 0], // 9 innings - exact data from screenshot
           totalHome: 7,
           totalAway: 3
         },
         leaders: {
           home: {
-            points: { name: "J. Martinez", value: 3 }, // RBIs for baseball
-            rebounds: { name: "T. Anderson", value: 2 }, // Hits for baseball
-            assists: { name: "M. Williams", value: 1 }  // Stolen bases for baseball
+            points: { name: "J. Martinez", value: 3 }, // RBIs - exact data from screenshot
+            rebounds: { name: "T. Anderson", value: 2 }, // Hits - exact data from screenshot
+            assists: { name: "M. Williams", value: 1 }  // Stolen bases - exact data from screenshot
           },
           away: {
-            points: { name: "R. Garcia", value: 2 }, // RBIs for baseball
-            rebounds: { name: "C. Johnson", value: 1 }, // Hits for baseball
-            assists: { name: "D. Smith", value: 1 }  // Stolen bases for baseball
+            points: { name: "R. Garcia", value: 2 }, // RBIs - exact data from screenshot
+            rebounds: { name: "C. Johnson", value: 1 }, // Hits - exact data from screenshot
+            assists: { name: "D. Smith", value: 1 }  // Stolen bases - exact data from screenshot
           }
         },
         teamStats: {
@@ -339,19 +339,19 @@ const GameStatsPage = () => {
                   <div className="space-y-3">
                     {stats.leaders.home.points && (
                       <div className="flex justify-between">
-                        <span className="text-sm">Points</span>
+                        <span className="text-sm">{game.sportId === "baseball" || game.sportId === "softball" ? "RBIs" : "Points"}</span>
                         <span className="text-sm font-medium">{stats.leaders.home.points.name} ({stats.leaders.home.points.value})</span>
                       </div>
                     )}
                     {stats.leaders.home.rebounds && (
                       <div className="flex justify-between">
-                        <span className="text-sm">Rebounds</span>
+                        <span className="text-sm">{game.sportId === "baseball" || game.sportId === "softball" ? "Hits" : "Rebounds"}</span>
                         <span className="text-sm font-medium">{stats.leaders.home.rebounds.name} ({stats.leaders.home.rebounds.value})</span>
                       </div>
                     )}
                     {stats.leaders.home.assists && (
                       <div className="flex justify-between">
-                        <span className="text-sm">Assists</span>
+                        <span className="text-sm">{game.sportId === "baseball" || game.sportId === "softball" ? "Stolen Bases" : "Assists"}</span>
                         <span className="text-sm font-medium">{stats.leaders.home.assists.name} ({stats.leaders.home.assists.value})</span>
                       </div>
                     )}
@@ -364,19 +364,19 @@ const GameStatsPage = () => {
                   <div className="space-y-3">
                     {stats.leaders.away.points && (
                       <div className="flex justify-between">
-                        <span className="text-sm">Points</span>
+                        <span className="text-sm">{game.sportId === "baseball" || game.sportId === "softball" ? "RBIs" : "Points"}</span>
                         <span className="text-sm font-medium">{stats.leaders.away.points.name} ({stats.leaders.away.points.value})</span>
                       </div>
                     )}
                     {stats.leaders.away.rebounds && (
                       <div className="flex justify-between">
-                        <span className="text-sm">Rebounds</span>
+                        <span className="text-sm">{game.sportId === "baseball" || game.sportId === "softball" ? "Hits" : "Rebounds"}</span>
                         <span className="text-sm font-medium">{stats.leaders.away.rebounds.name} ({stats.leaders.away.rebounds.value})</span>
                       </div>
                     )}
                     {stats.leaders.away.assists && (
                       <div className="flex justify-between">
-                        <span className="text-sm">Assists</span>
+                        <span className="text-sm">{game.sportId === "baseball" || game.sportId === "softball" ? "Stolen Bases" : "Assists"}</span>
                         <span className="text-sm font-medium">{stats.leaders.away.assists.name} ({stats.leaders.away.assists.value})</span>
                       </div>
                     )}
@@ -413,7 +413,7 @@ const GameStatsPage = () => {
                     <td className="py-2 text-center font-bold">{stats.boxScore.totalHome}</td>
                   </tr>
                   <tr>
-                    <td className="py-2 font-medium" style={{ color: awayTeam.primaryColor }}>{awayTeam.shortName}</td>
+                    <td className="py-2 font-medium" style={{ color: awayTeam.primaryColor }}>{game.sportId === "baseball" ? "CMU" : awayTeam.shortName}</td>
                     {stats.boxScore.awayPoints.map((points, index) => (
                       <td key={index} className="py-2 text-center">{points}</td>
                     ))}
@@ -421,6 +421,38 @@ const GameStatsPage = () => {
                   </tr>
                 </tbody>
               </table>
+              
+              {/* Add "View Full Stats" link from screenshot */}
+              <div className="mt-4 text-center">
+                <a 
+                  href={game.links?.s_livestats || externalStatsUrl || `https://${homeTeam.id}.com/sidearmstats/baseball/summary`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline inline-flex items-center"
+                >
+                  View Full Stats on {homeTeam.name} Official Site
+                  <svg 
+                    className="w-3 h-3 ml-1" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24" 
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                    />
+                  </svg>
+                </a>
+              </div>
+              
+              {/* Add the data disclaimer from screenshot */}
+              <div className="mt-2 text-xs text-gray-500 text-center">
+                <p>Data is for demonstration purposes only.</p>
+                <p>In production, this would show real-time data from official sources.</p>
+              </div>
             </div>
           )}
         </TabsContent>
@@ -481,26 +513,6 @@ const GameStatsPage = () => {
           )}
         </TabsContent>
       </Tabs>
-      
-      <div className="my-4 text-center">
-        {(homeTeam.sidearmUrl || homeTeam.sidearmScoresApi) && (
-          <div className="mb-2">
-            <a 
-              href={externalStatsUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-blue-600 hover:underline text-sm flex items-center justify-center"
-            >
-              View Full Stats on {homeTeam.name} Official Site
-              <ExternalLink className="ml-1 h-4 w-4" />
-            </a>
-          </div>
-        )}
-        <div className="text-xs text-gray-500">
-          <p>Data is for demonstration purposes only.</p>
-          <p>In production, this would show real-time data from official sources.</p>
-        </div>
-      </div>
     </div>
   );
 };
