@@ -14,9 +14,8 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
           backgroundColor: 
             school.id === "bowlinggreen" ? school.secondaryColor :
             school.id === "centralmichigan" ? school.secondaryColor :
-            school.id === "buffalo" || 
-            school.id === "easternmichigan" ? 
-              "white" : school.primaryColor
+            school.id === "buffalo" ? "white" : 
+            school.primaryColor
         }}
       >
         {school.logoUrl ? (
