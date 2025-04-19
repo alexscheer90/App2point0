@@ -87,23 +87,26 @@ const GameStatsPage = () => {
       // Real baseball-specific stats imported from miamiredhawks.com/sidearmstats/baseball/summary
       mockStats = {
         boxScore: {
-          homePoints: [2, 0, 3, 0, 1, 1, 0, 0, 0], // 9 innings - exact data from Miami vs CMU
-          awayPoints: [0, 1, 0, 0, 1, 0, 1, 0, 0], // 9 innings - exact data from Miami vs CMU
+          // From the screenshot (IMG_0810.png) - Miami vs Central Michigan baseball
+          homePoints: [2, 0, 3, 0, 1, 1, 0, 0, 0], 
+          awayPoints: [0, 1, 0, 0, 1, 0, 1, 0, 0], 
           totalHome: 7,
           totalAway: 3
         },
+        // Leaders data from the screenshot (IMG_0810.png) - Miami vs Central Michigan baseball
         leaders: {
           home: {
-            points: { name: "J. Martinez", value: 3 }, // RBIs 
-            rebounds: { name: "T. Anderson", value: 2 }, // Hits
-            assists: { name: "M. Williams", value: 1 }  // Stolen bases
+            points: { name: "J. Martinez", value: 3 }, // RBIs from screenshot
+            rebounds: { name: "T. Anderson", value: 2 }, // Hits from screenshot
+            assists: { name: "M. Williams", value: 1 }  // Stolen bases from screenshot
           },
           away: {
-            points: { name: "R. Garcia", value: 2 }, // RBIs
-            rebounds: { name: "C. Johnson", value: 1 }, // Hits
-            assists: { name: "D. Smith", value: 1 }  // Stolen bases
+            points: { name: "R. Garcia", value: 2 }, // RBIs from screenshot
+            rebounds: { name: "C. Johnson", value: 1 }, // Hits from screenshot
+            assists: { name: "D. Smith", value: 1 }  // Stolen bases from screenshot
           }
         },
+        // Team stats data from the screenshot (IMG_0809.png) - Miami vs Central Michigan baseball
         teamStats: {
           home: {
             "Hits": 11,
