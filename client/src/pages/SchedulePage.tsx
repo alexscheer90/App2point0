@@ -569,59 +569,7 @@ const SchedulePage = () => {
     gamesByDate[dateStr].push(game);
   });
   
-  // Create iCalendar file for a specific game
-  const createCalendarFile = (game: Game) => {
-    const homeTeam = schools.find(s => s.id === game.homeTeamId);
-    const awayTeam = schools.find(s => s.id === game.awayTeamId);
-    
-    if (!homeTeam || !awayTeam) return '';
-    
-    const gameDate = new Date(game.scheduledTime);
-    // End time is 3 hours after start for calendar purposes
-    const endDate = new Date(gameDate.getTime() + 3 * 60 * 60 * 1000);
-    
-    const formatDate = (date: Date) => {
-      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    };
-    
-    const icsContent = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//MAC Sports//MACtion App//EN',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-      'BEGIN:VEVENT',
-      `UID:${game.id}@macsports.com`,
-      `DTSTAMP:${formatDate(new Date())}`,
-      `DTSTART:${formatDate(gameDate)}`,
-      `DTEND:${formatDate(endDate)}`,
-      `SUMMARY:${awayTeam.name} at ${homeTeam.name}`,
-      `DESCRIPTION:${awayTeam.name} ${awayTeam.mascot} vs ${homeTeam.name} ${homeTeam.mascot}`,
-      `LOCATION:${game.location || homeTeam.name + ' Stadium'}`,
-      'END:VEVENT',
-      'END:VCALENDAR'
-    ].join('\r\n');
-    
-    return icsContent;
-  };
-  
-  // Function to download the calendar file
-  const downloadCalendarEvent = (game: Game) => {
-    const icsContent = createCalendarFile(game);
-    const homeTeam = schools.find(s => s.id === game.homeTeamId);
-    const awayTeam = schools.find(s => s.id === game.awayTeamId);
-    
-    if (!icsContent || !homeTeam || !awayTeam) return;
-    
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${awayTeam.name}_at_${homeTeam.name}.ics`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // Calendar functionality has been removed as per user request
   
   // Component to render each game card
   const GameCard = ({ game }: { game: Game }) => {
@@ -1648,48 +1596,17 @@ const SchedulePage = () => {
           </div>
         </div>
         
-        {!isPastGame && (
-          <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="text-xs">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  Add to Calendar
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Add to Calendar</DialogTitle>
-                  <DialogDescription>
-                    {defaultAwayTeam.name} vs {defaultHomeTeam.name} on {format(gameDate, 'MMMM d, yyyy')}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col space-y-3 mt-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => downloadCalendarEvent(game)}
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Download .ics File
-                  </Button>
-                  <p className="text-xs text-gray-500 mt-2">
-                    The .ics file works with most calendar apps including Google Calendar, Apple Calendar, and Outlook.
-                  </p>
-                </div>
-              </DialogContent>
-            </Dialog>
-            
-            {game.ticketUrl && (
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="text-xs" 
-                style={{ backgroundColor: MAC_GREEN }}
-                onClick={() => window.open(game.ticketUrl, '_blank')}
-              >
-                Get Tickets
-              </Button>
-            )}
+        {!isPastGame && game.ticketUrl && (
+          <div className="mt-3 pt-2 border-t border-gray-100 flex justify-end">
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="text-xs" 
+              style={{ backgroundColor: MAC_GREEN }}
+              onClick={() => window.open(game.ticketUrl, '_blank')}
+            >
+              Get Tickets
+            </Button>
           </div>
         )}
       </div>
