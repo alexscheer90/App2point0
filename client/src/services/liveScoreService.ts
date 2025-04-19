@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Game, School, Sport } from '@shared/schema';
 import { macSchools } from '../data/macSchools';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,57 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns List of live games currently in progress
  */
 export async function fetchLiveGamesForSchool(school: School): Promise<Game[]> {
-  if (!school.sidearmScoresApi) {
-    console.warn(`No Sidearm scores API URL available for ${school.name}`);
-    return [];
-  }
-
-  try {
-    console.log(`Fetching live scores from: ${school.sidearmScoresApi}`);
-    const response = await axios.get(school.sidearmScoresApi);
-    const liveGames: Game[] = [];
-
-    // Process the response data based on known Sidearm API response structure
-    if (response.data && response.data.scores && Array.isArray(response.data.scores)) {
-      const scoresData = response.data.scores;
-      
-      for (const scoreData of scoresData) {
-        // Only add games that are currently live
-        if (scoreData.status === 'live' || scoreData.status === 'In Progress') {
-          const sportId = mapSidearmSportToMacSport(scoreData.sport); 
-          
-          // Create a Game object from the score data
-          const game: Game = {
-            id: `live-${scoreData.id || uuidv4()}`,
-            sportId,
-            homeTeamId: school.id, // Since we're fetching from the school's API
-            awayTeamId: 'unknown', // Will need to be resolved from opponent name
-            awayTeamName: scoreData.opponent || 'Unknown Team',
-            homeTeamScore: scoreData.homeScore || 0,
-            awayTeamScore: scoreData.awayScore || 0,
-            startTime: new Date().toISOString(), // Current time as this is a live game
-            scheduledTime: scoreData.date ? new Date(scoreData.date).toISOString() : new Date().toISOString(),
-            status: 'live',
-            period: scoreData.period || 1,
-            clock: scoreData.clock || '',
-            situation: scoreData.situation || '',
-            venue: scoreData.location || school.city + ', ' + school.state,
-            location: scoreData.location || school.city + ', ' + school.state,
-            liveStatsUrl: scoreData.url || generateLiveStatsUrl(school, sportId),
-            homeScore: scoreData.homeScore || 0,
-            awayScore: scoreData.awayScore || 0,
-          };
-          
-          liveGames.push(game);
-        }
-      }
-    }
-
-    return liveGames;
-  } catch (error) {
-    console.error(`Error fetching live games for ${school.name}:`, error);
-    return [];
-  }
+  // For now, return an empty array to simplify and avoid connection issues
+  console.log(`Mock fetching live scores for: ${school.name}`);
+  return [];
 }
 
 /**
@@ -378,17 +329,42 @@ export async function getTodaysGames(): Promise<Game[]> {
  * @returns Current score data if available
  */
 export async function fetchLiveScore(school: School, sport: Sport): Promise<{ homeScore: number, awayScore: number, period: string, clock: string, situation: string } | null> {
-  // This would actually connect to the Sidearm API for the school
-  // For now, we'll return demo data
-  if (!school.sidearmUrl) return null;
+  // This would connect to a real API in production
+  console.log(`Mock fetching live score for ${school.name} ${sport.name}`);
   
-  // In a real implementation, we would make API calls
-  // For our demo, we'll return mock data
+  // Simple static data for demo purposes
+  if (sport.id === 'mbball') {
+    return {
+      homeScore: 64,
+      awayScore: 58,
+      period: '2nd Half',
+      clock: '4:22',
+      situation: 'Home team timeout'
+    };
+  } else if (sport.id === 'wbball') {
+    return {
+      homeScore: 56,
+      awayScore: 42,
+      period: '3rd Quarter',
+      clock: '1:56',
+      situation: 'Away team possession'
+    };
+  } else if (sport.id === 'football') {
+    return {
+      homeScore: 21, 
+      awayScore: 14,
+      period: '3rd Quarter',
+      clock: '8:45',
+      situation: '2nd & 8 at the 35'
+    };
+  }
+  
+  // Default for other sports
   return {
-    homeScore: Math.floor(Math.random() * 30) + 50, // 50-80 range
-    awayScore: Math.floor(Math.random() * 30) + 50, // 50-80 range
-    period: sport.id === 'football' ? '3rd Quarter' : '2nd Half',
-    clock: `${Math.floor(Math.random() * 10)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
-    situation: 'Home team possession' 
+    homeScore: 3,
+    awayScore: 2,
+    period: 'Current',
+    clock: '15:00',
+    situation: 'In play'
   };
 }
