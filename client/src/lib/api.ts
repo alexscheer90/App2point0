@@ -152,6 +152,11 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       location: "Kent, OH",
       homeScore: 0,
       awayScore: 0,
+      links: {
+        s_livestats: "https://kentstatesports.com/sidearmstats/baseball/summary",
+        s_audio: "https://kentstatesports.com/showcase?Live=193",
+        s_video: "https://espnplus.com/watch/player/_/id/xyz123"
+      }
     },
     {
       id: "game-today-2",
@@ -173,9 +178,9 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       id: "game-today-3",
       sportId: "baseball",
       homeTeamId: "miamioh",
-      awayTeamId: "bellarmine",
+      awayTeamId: "centralmichigan",
       homeTeamName: "Miami",
-      awayTeamName: "Bellarmine",
+      awayTeamName: "Central Michigan",
       homeTeamScore: 7,
       awayTeamScore: 3,
       startTime: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
@@ -185,6 +190,11 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       location: "Oxford, OH",
       homeScore: 7,
       awayScore: 3,
+      links: {
+        s_livestats: "https://miamiredhawks.com/sidearmstats/baseball/summary",
+        s_audio: "https://redhawkradio.com/listen-live/",
+        s_video: "https://espn.com/watch/player/_/id/abc123"
+      }
     },
     {
       id: "game-today-4",

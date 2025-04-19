@@ -79,6 +79,11 @@ export const gameSchema = z.object({
   awayScore: z.number().optional(), // Alias for awayTeamScore for consistency
   homeTeamName: z.string().optional(), // For teams not in our database
   awayTeamName: z.string().optional(), // For teams not in our database
+  links: z.object({
+    s_livestats: z.string().optional(), // Sidearm live stats URL
+    s_audio: z.string().optional(), // Audio broadcast URL
+    s_video: z.string().optional(), // Video broadcast URL
+  }).optional(),
 });
 
 export const standingsEntrySchema = z.object({

@@ -255,27 +255,68 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
           </div>
         </div>
       ) : (
-        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
-          {hasStats && (
-            <span 
-              className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
-              onClick={(e) => {
-                e.stopPropagation();
-                setLocation(`/games/${game.id}`);
-              }}
-            >
-              <ChevronRight size={12} />
-              {hasSidearmStats ? 'Live Stats' : 'View Stats'}
-            </span>
-          )}
-          <div onClick={handleShareClick} className="hidden md:block">
-            <ShareButton 
-              url={shareUrl}
-              title={shareTitle}
-              description={description}
-              compact={true}
-            />
+        <div className="bg-gray-100 text-xs px-3 py-2 flex flex-col">
+          <div className="flex justify-between items-center">
+            {hasStats && (
+              <span 
+                className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/games/${game.id}`);
+                }}
+              >
+                <ChevronRight size={12} />
+                {hasSidearmStats ? 'Live Stats' : 'View Stats'}
+              </span>
+            )}
+            <div onClick={handleShareClick} className="hidden md:block">
+              <ShareButton 
+                url={shareUrl}
+                title={shareTitle}
+                description={description}
+                compact={true}
+              />
+            </div>
           </div>
+          
+          {/* Links section */}
+          {game.links && (Object.values(game.links).some(Boolean)) && (
+            <div className="pt-2 mt-1 border-t border-gray-200 flex gap-3">
+              {game.links.s_livestats && (
+                <a 
+                  href={game.links.s_livestats} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-green-600 hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Live Stats
+                </a>
+              )}
+              {game.links.s_audio && (
+                <a 
+                  href={game.links.s_audio} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Audio
+                </a>
+              )}
+              {game.links.s_video && (
+                <a 
+                  href={game.links.s_video} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-red-600 hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Video
+                </a>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

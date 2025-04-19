@@ -79,49 +79,151 @@ const GameStatsPage = () => {
   // Fetch game stats data
   const fetchGameStats = async (gameData: Game) => {
     // In a real implementation, this would fetch actual data from an API
-    // For demo, we'll create mock data
-    const mockStats: GameStats = {
-      boxScore: {
-        homePoints: [35, 43],
-        awayPoints: [34, 38],
-        totalHome: 78,
-        totalAway: 72
-      },
-      leaders: {
-        home: {
-          points: { name: "M. Johnson", value: 22 },
-          rebounds: { name: "D. Smith", value: 8 },
-          assists: { name: "K. Williams", value: 7 }
+    // For demo, we'll create sport-appropriate mock data
+    let mockStats: GameStats;
+    
+    // Create different mock stats based on the sport
+    if (gameData.sportId === "baseball") {
+      // Baseball-specific stats
+      mockStats = {
+        boxScore: {
+          homePoints: [2, 0, 3, 0, 1, 1, 0, 0, 0], // 9 innings
+          awayPoints: [1, 0, 0, 0, 2, 0, 0, 0, 0], // 9 innings
+          totalHome: 7,
+          totalAway: 3
         },
-        away: {
-          points: { name: "J. Davis", value: 18 },
-          rebounds: { name: "R. Thompson", value: 9 },
-          assists: { name: "C. Miller", value: 5 }
-        }
-      },
-      teamStats: {
-        home: {
-          "FG%": 45.8,
-          "3P%": 36.4,
-          "FT%": 75.0,
-          Rebounds: 38,
-          Assists: 17,
-          Steals: 7,
-          Blocks: 3,
-          Turnovers: 12
+        leaders: {
+          home: {
+            points: { name: "J. Martinez", value: 3 }, // RBIs for baseball
+            rebounds: { name: "T. Anderson", value: 2 }, // Hits for baseball
+            assists: { name: "M. Williams", value: 1 }  // Stolen bases for baseball
+          },
+          away: {
+            points: { name: "R. Garcia", value: 2 }, // RBIs for baseball
+            rebounds: { name: "C. Johnson", value: 1 }, // Hits for baseball
+            assists: { name: "D. Smith", value: 1 }  // Stolen bases for baseball
+          }
         },
-        away: {
-          "FG%": 42.6,
-          "3P%": 33.3,
-          "FT%": 72.7,
-          Rebounds: 35,
-          Assists: 14,
-          Steals: 9,
-          Blocks: 2,
-          Turnovers: 14
+        teamStats: {
+          home: {
+            "Hits": 11,
+            "Errors": 1,
+            "LOB": 8,
+            "Doubles": 3,
+            "Triples": 1,
+            "HR": 1,
+            "RBI": 7,
+            "SB": 2,
+            "CS": 0,
+            "BB": 5
+          },
+          away: {
+            "Hits": 7,
+            "Errors": 2,
+            "LOB": 6,
+            "Doubles": 1,
+            "Triples": 0,
+            "HR": 0,
+            "RBI": 3,
+            "SB": 1,
+            "CS": 1,
+            "BB": 4
+          }
         }
-      }
-    };
+      };
+    } else if (gameData.sportId === "softball") {
+      // Softball-specific stats (similar to baseball)
+      mockStats = {
+        boxScore: {
+          homePoints: [1, 2, 0, 3, 0, 1, 0], // 7 innings
+          awayPoints: [0, 0, 2, 0, 0, 0, 0], // 7 innings
+          totalHome: 7,
+          totalAway: 2
+        },
+        leaders: {
+          home: {
+            points: { name: "A. Johnson", value: 4 }, // RBIs
+            rebounds: { name: "S. Miller", value: 3 }, // Hits
+            assists: { name: "K. Davis", value: 2 }  // Stolen bases
+          },
+          away: {
+            points: { name: "L. Thompson", value: 2 }, // RBIs
+            rebounds: { name: "M. Wilson", value: 2 }, // Hits
+            assists: { name: "J. Roberts", value: 1 }  // Stolen bases
+          }
+        },
+        teamStats: {
+          home: {
+            "Hits": 10,
+            "Errors": 0,
+            "LOB": 6,
+            "Doubles": 2,
+            "Triples": 1,
+            "HR": 1,
+            "RBI": 7,
+            "SB": 3,
+            "CS": 1,
+            "BB": 4
+          },
+          away: {
+            "Hits": 5,
+            "Errors": 2,
+            "LOB": 5,
+            "Doubles": 1,
+            "Triples": 0,
+            "HR": 0,
+            "RBI": 2,
+            "SB": 1,
+            "CS": 0,
+            "BB": 3
+          }
+        }
+      };
+    } else {
+      // Default to basketball stats for basketball and other sports
+      mockStats = {
+        boxScore: {
+          homePoints: [35, 43],
+          awayPoints: [34, 38],
+          totalHome: 78,
+          totalAway: 72
+        },
+        leaders: {
+          home: {
+            points: { name: "M. Johnson", value: 22 },
+            rebounds: { name: "D. Smith", value: 8 },
+            assists: { name: "K. Williams", value: 7 }
+          },
+          away: {
+            points: { name: "J. Davis", value: 18 },
+            rebounds: { name: "R. Thompson", value: 9 },
+            assists: { name: "C. Miller", value: 5 }
+          }
+        },
+        teamStats: {
+          home: {
+            "FG%": 45.8,
+            "3P%": 36.4,
+            "FT%": 75.0,
+            Rebounds: 38,
+            Assists: 17,
+            Steals: 7,
+            Blocks: 3,
+            Turnovers: 12
+          },
+          away: {
+            "FG%": 42.6,
+            "3P%": 33.3,
+            "FT%": 72.7,
+            Rebounds: 35,
+            Assists: 14,
+            Steals: 9,
+            Blocks: 2,
+            Turnovers: 14
+          }
+        }
+      };
+    }
     
     setStats(mockStats);
   };
