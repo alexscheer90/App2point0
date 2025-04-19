@@ -89,34 +89,8 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
   return macLocalEats.find(restaurant => restaurant.id === id);
 }
 
-// Import the live score service
-import { getTodaysGames } from "../services/liveScoreService";
-
-// Games API - Uses real-time data when available
+// Games API - Uses mock data for demonstration
 export async function getGames(sportId?: string): Promise<Game[]> {
-  try {
-    // Try to get real-time games that are happening today
-    console.log("Fetching today's games with real-time data...");
-    const todaysGames = await getTodaysGames();
-    
-    // If we got games, use them
-    if (todaysGames.length > 0) {
-      console.log(`Found ${todaysGames.length} games happening today!`);
-      
-      // If a sport filter was provided, apply it
-      if (sportId) {
-        return todaysGames.filter(game => game.sportId === sportId);
-      }
-      
-      return todaysGames;
-    }
-  } catch (error) {
-    console.error("Error fetching real-time games:", error);
-  }
-  
-  // Fallback to mock data if needed
-  console.log("No live games found, using backup data");
-  
   // Generate some mock games for demonstration
   const now = new Date();
   const yesterday = new Date(now);
@@ -163,7 +137,73 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       awayScore: 42,
       liveStatsUrl: "https://ohiobobcats.com/sidearmstats/wbball/summary",
     },
-    // Upcoming games
+    // Today's games (upcoming)
+    {
+      id: "game-today-1",
+      sportId: "baseball",
+      homeTeamId: "kentstate",
+      awayTeamId: "akron",
+      homeTeamScore: 0,
+      awayTeamScore: 0,
+      startTime: new Date(now.getTime() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+      scheduledTime: now.toISOString(),
+      status: "scheduled" as const,
+      venue: "Schoonover Stadium",
+      location: "Kent, OH",
+      homeScore: 0,
+      awayScore: 0,
+    },
+    {
+      id: "game-today-2",
+      sportId: "softball",
+      homeTeamId: "ballstate",
+      awayTeamId: "westernmichigan",
+      homeTeamScore: 0,
+      awayTeamScore: 0,
+      startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+      scheduledTime: now.toISOString(),
+      status: "scheduled" as const,
+      venue: "Softball Field at First Merchants Ballpark Complex",
+      location: "Muncie, IN",
+      homeScore: 0,
+      awayScore: 0,
+    },
+    // Today's completed games
+    {
+      id: "game-today-3",
+      sportId: "baseball",
+      homeTeamId: "miamioh",
+      awayTeamId: "bellarmine",
+      homeTeamName: "Miami",
+      awayTeamName: "Bellarmine",
+      homeTeamScore: 7,
+      awayTeamScore: 3,
+      startTime: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+      scheduledTime: now.toISOString(),
+      status: "final" as const,
+      venue: "McKie Field at Hayden Park",
+      location: "Oxford, OH",
+      homeScore: 7,
+      awayScore: 3,
+    },
+    {
+      id: "game-today-4",
+      sportId: "mtennis",
+      homeTeamId: "bowlinggreen",
+      awayTeamId: "michigan",
+      homeTeamName: "Bowling Green",
+      awayTeamName: "Michigan",
+      homeTeamScore: 1,
+      awayTeamScore: 6,
+      startTime: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+      scheduledTime: now.toISOString(),
+      status: "final" as const,
+      venue: "Keefe Courts",
+      location: "Bowling Green, OH",
+      homeScore: 1,
+      awayScore: 6,
+    },
+    // Upcoming games for tomorrow
     {
       id: "game3",
       sportId: "baseball",
@@ -194,7 +234,7 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeScore: 0,
       awayScore: 0,
     },
-    // Completed games
+    // Completed games from yesterday
     {
       id: "game5",
       sportId: "baseball",
