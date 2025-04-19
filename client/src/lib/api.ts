@@ -90,39 +90,80 @@ export async function getLocalEat(id: string): Promise<LocalEats | undefined> {
 }
 
 // Import the live score service
-import { getTodaysGames, fetchAllLiveGames } from "../services/liveScoreService";
+import { getTodaysGames } from "../services/liveScoreService";
 
-// Games API - Uses real-time data along with upcoming and recent games
+// Games API - Uses real-time data when available
 export async function getGames(sportId?: string): Promise<Game[]> {
-  // Generate date references for game scheduling
+  try {
+    // Try to get real-time games that are happening today
+    console.log("Fetching today's games with real-time data...");
+    const todaysGames = await getTodaysGames();
+    
+    // If we got games, use them
+    if (todaysGames.length > 0) {
+      console.log(`Found ${todaysGames.length} games happening today!`);
+      
+      // If a sport filter was provided, apply it
+      if (sportId) {
+        return todaysGames.filter(game => game.sportId === sportId);
+      }
+      
+      return todaysGames;
+    }
+  } catch (error) {
+    console.error("Error fetching real-time games:", error);
+  }
+  
+  // Fallback to mock data if needed
+  console.log("No live games found, using backup data");
+  
+  // Generate some mock games for demonstration
   const now = new Date();
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
   
-  // Initialize arrays for different game types
-  let liveGames: Game[] = [];
-  let upcomingGames: Game[] = [];
-  let recentGames: Game[] = [];
-  
-  try {
-    // Try to get real-time games that are happening today
-    console.log("Fetching today's games with real-time data...");
-    const todaysGames = await getTodaysGames();
-    
-    // If we got games, add them to our live games list
-    if (todaysGames.length > 0) {
-      console.log(`Found ${todaysGames.length} games happening today!`);
-      liveGames = todaysGames;
-    }
-  } catch (error) {
-    console.error("Error fetching real-time games:", error);
-  }
-  
-  // Add some upcoming scheduled games (these would come from a real API in production)
-  upcomingGames = [
-    // Tomorrow's games
+  // We need to cast our mock games to Game type to ensure they match the schema
+  const mockGames = [
+    // Live games happening NOW
+    {
+      id: "game1",
+      sportId: "mbball",
+      homeTeamId: "toledo",
+      awayTeamId: "bowlinggreen",
+      homeTeamScore: 64,
+      awayTeamScore: 58,
+      startTime: now.toISOString(),
+      scheduledTime: now.toISOString(),
+      status: "live" as const,
+      period: 2,
+      clock: "4:22",
+      situation: "Toledo timeout • Under 5 TV timeout",
+      location: "Savage Arena, Toledo OH",
+      homeScore: 64,
+      awayScore: 58,
+      liveStatsUrl: "https://utrockets.com/sidearmstats/mbball/summary",
+    },
+    {
+      id: "game2",
+      sportId: "wbball",
+      homeTeamId: "ohio",
+      awayTeamId: "kentstate",
+      homeTeamScore: 56,
+      awayTeamScore: 42,
+      startTime: now.toISOString(),
+      scheduledTime: now.toISOString(),
+      status: "live" as const,
+      period: 3,
+      clock: "1:56",
+      situation: "3rd Quarter • Kent St. possession",
+      location: "Convocation Center, Athens OH",
+      homeScore: 56,
+      awayScore: 42,
+      liveStatsUrl: "https://ohiobobcats.com/sidearmstats/wbball/summary",
+    },
+    // Upcoming games
     {
       id: "game3",
       sportId: "baseball",
@@ -153,26 +194,7 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeScore: 0,
       awayScore: 0,
     },
-    {
-      id: "game7",
-      sportId: "mbball", 
-      homeTeamId: "kentstate",
-      awayTeamId: "easternmichigan",
-      startTime: new Date(tomorrow.getTime() + 3600000 * 3).toISOString(), // 3pm tomorrow
-      scheduledTime: new Date(tomorrow.getTime() + 3600000 * 3).toISOString(),
-      status: "scheduled" as const,
-      venue: "Memorial Athletic and Convocation Center, Kent OH",
-      location: "Memorial Athletic and Convocation Center, Kent OH", 
-      homeTeamScore: 0,
-      awayTeamScore: 0,
-      homeScore: 0,
-      awayScore: 0,
-    }
-  ];
-  
-  // Add some recently completed games
-  recentGames = [
-    // Yesterday's games
+    // Completed games
     {
       id: "game5",
       sportId: "baseball",
@@ -201,76 +223,14 @@ export async function getGames(sportId?: string): Promise<Game[]> {
       homeScore: 1,
       awayScore: 2,
     },
-    {
-      id: "game8",
-      sportId: "wbball",
-      homeTeamId: "bowlinggreen",
-      awayTeamId: "buffalo",
-      homeTeamScore: 78,
-      awayTeamScore: 72,
-      startTime: yesterday.toISOString(),
-      scheduledTime: yesterday.toISOString(),
-      status: "final" as const,
-      location: "Stroh Center, Bowling Green OH",
-      homeScore: 78,
-      awayScore: 72,
-    }
   ];
-  
-  // If live games list is still empty, add a couple of mock live games
-  if (liveGames.length === 0) {
-    console.log("No live games found from API, adding mock live games");
-    
-    liveGames = [
-      // Live games happening NOW
-      {
-        id: "game1",
-        sportId: "mbball",
-        homeTeamId: "toledo",
-        awayTeamId: "bowlinggreen",
-        homeTeamScore: 64,
-        awayTeamScore: 58,
-        startTime: now.toISOString(),
-        scheduledTime: now.toISOString(),
-        status: "live" as const,
-        period: 2,
-        clock: "4:22",
-        situation: "Toledo timeout • Under 5 TV timeout",
-        location: "Savage Arena, Toledo OH",
-        homeScore: 64,
-        awayScore: 58,
-        liveStatsUrl: "https://utrockets.com/sidearmstats/mbball/summary",
-      },
-      {
-        id: "game2",
-        sportId: "wbball",
-        homeTeamId: "ohio",
-        awayTeamId: "kentstate",
-        homeTeamScore: 56,
-        awayTeamScore: 42,
-        startTime: now.toISOString(),
-        scheduledTime: now.toISOString(),
-        status: "live" as const,
-        period: 3,
-        clock: "1:56",
-        situation: "3rd Quarter • Kent St. possession",
-        location: "Convocation Center, Athens OH",
-        homeScore: 56,
-        awayScore: 42,
-        liveStatsUrl: "https://ohiobobcats.com/sidearmstats/wbball/summary",
-      }
-    ];
-  }
-  
-  // Combine all games into a single array
-  const allGames = [...liveGames, ...upcomingGames, ...recentGames];
   
   // Filter by sport if needed
   if (sportId && sportId !== "all") {
-    return allGames.filter(game => game.sportId === sportId);
+    return mockGames.filter(game => game.sportId === sportId);
   }
   
-  return allGames;
+  return mockGames;
 }
 
 export async function getSchoolGames(schoolId: string): Promise<Game[]> {

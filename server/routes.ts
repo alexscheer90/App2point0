@@ -20,20 +20,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Google Sheets routes
   app.use('/api/sheets', googleSheetsRoutes);
   
-  // API endpoint for getting games
-  app.get("/api/games", async (req, res) => {
-    try {
-      // Get games from client API
-      const { getGames } = await import("../client/src/lib/api");
-      const games = await getGames();
-      
-      res.json(games);
-    } catch (error) {
-      console.error("Error fetching games:", error);
-      res.status(500).json({ message: "Failed to fetch games" });
-    }
-  });
-  
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {
     try {
