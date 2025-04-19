@@ -9,6 +9,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getGame } from "../lib/api";
+import { fetchSidearmStats } from "../services/sidearmStatsService";
 
 interface GameStats {
   boxScore?: {
@@ -78,143 +79,150 @@ const GameStatsPage = () => {
   
   // Fetch game stats data
   const fetchGameStats = async (gameData: Game) => {
-    // In production, this would fetch data from the Sidearm API
-    // For now, we're using data directly from the actual Miami vs CMU game on the Sidearm stats page
-    let mockStats: GameStats;
+    if (!schools) return;
     
-    // Using actual data from the Sidearm stats page
-    if (gameData.sportId === "baseball" && gameData.homeTeamId === "miamioh" && gameData.awayTeamId === "centralmichigan") {
-      // Real baseball-specific stats imported from miamiredhawks.com/sidearmstats/baseball/summary
-      mockStats = {
+    const homeTeam = schools.find(school => school.id === gameData.homeTeamId);
+    const sport = sports?.find(sport => sport.id === gameData.sportId);
+    
+    if (!homeTeam || !sport) {
+      console.error("Could not find home team or sport data");
+      return;
+    }
+    
+    try {
+      // Try to fetch stats from the Sidearm stats service
+      const sidearmStats = await fetchSidearmStats(homeTeam, sport, gameData.id);
+      
+      if (sidearmStats) {
+        // If we got stats from Sidearm, use them
+        console.log("Fetched stats from Sidearm service");
+        setStats(sidearmStats);
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching Sidearm stats:", error);
+    }
+    
+    // If we couldn't get stats from Sidearm or there was an error, use fallback stats
+    console.log("Using fallback stats data");
+    
+    let fallbackStats: GameStats;
+    
+    if (gameData.sportId === "baseball") {
+      // Baseball fallback stats
+      fallbackStats = {
         boxScore: {
-          // From the screenshot (IMG_0810.png) - Miami vs Central Michigan baseball
-          homePoints: [2, 0, 3, 0, 1, 1, 0, 0, 0], 
-          awayPoints: [0, 1, 0, 0, 1, 0, 1, 0, 0], 
-          totalHome: 7,
-          totalAway: 3
+          homePoints: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          awayPoints: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          totalHome: gameData.homeTeamScore || 0,
+          totalAway: gameData.awayTeamScore || 0
         },
-        // Leaders data from the screenshot (IMG_0810.png) - Miami vs Central Michigan baseball
         leaders: {
           home: {
-            points: { name: "J. Martinez", value: 3 }, // RBIs from screenshot
-            rebounds: { name: "T. Anderson", value: 2 }, // Hits from screenshot
-            assists: { name: "M. Williams", value: 1 }  // Stolen bases from screenshot
+            points: { name: "N/A", value: 0 }, // RBIs
+            rebounds: { name: "N/A", value: 0 }, // Hits
+            assists: { name: "N/A", value: 0 }  // Stolen bases
           },
           away: {
-            points: { name: "R. Garcia", value: 2 }, // RBIs from screenshot
-            rebounds: { name: "C. Johnson", value: 1 }, // Hits from screenshot
-            assists: { name: "D. Smith", value: 1 }  // Stolen bases from screenshot
+            points: { name: "N/A", value: 0 }, // RBIs
+            rebounds: { name: "N/A", value: 0 }, // Hits
+            assists: { name: "N/A", value: 0 }  // Stolen bases
           }
         },
-        // Team stats data from the screenshot (IMG_0809.png) - Miami vs Central Michigan baseball
         teamStats: {
           home: {
-            "Hits": 11,
-            "Errors": 1,
-            "LOB": 8
+            "Hits": 0,
+            "Errors": 0,
+            "LOB": 0
           },
           away: {
-            "Hits": 7,
-            "Errors": 2,
-            "LOB": 6
+            "Hits": 0,
+            "Errors": 0,
+            "LOB": 0
           }
         }
       };
     } else if (gameData.sportId === "softball") {
-      // Softball-specific stats (similar to baseball)
-      mockStats = {
+      // Softball fallback stats
+      fallbackStats = {
         boxScore: {
-          homePoints: [1, 2, 0, 3, 0, 1, 0], // 7 innings
-          awayPoints: [0, 0, 2, 0, 0, 0, 0], // 7 innings
-          totalHome: 7,
-          totalAway: 2
+          homePoints: [0, 0, 0, 0, 0, 0, 0], // 7 innings
+          awayPoints: [0, 0, 0, 0, 0, 0, 0], // 7 innings
+          totalHome: gameData.homeTeamScore || 0,
+          totalAway: gameData.awayTeamScore || 0
         },
         leaders: {
           home: {
-            points: { name: "A. Johnson", value: 4 }, // RBIs
-            rebounds: { name: "S. Miller", value: 3 }, // Hits
-            assists: { name: "K. Davis", value: 2 }  // Stolen bases
+            points: { name: "N/A", value: 0 }, // RBIs
+            rebounds: { name: "N/A", value: 0 }, // Hits
+            assists: { name: "N/A", value: 0 }  // Stolen bases
           },
           away: {
-            points: { name: "L. Thompson", value: 2 }, // RBIs
-            rebounds: { name: "M. Wilson", value: 2 }, // Hits
-            assists: { name: "J. Roberts", value: 1 }  // Stolen bases
+            points: { name: "N/A", value: 0 }, // RBIs
+            rebounds: { name: "N/A", value: 0 }, // Hits
+            assists: { name: "N/A", value: 0 }  // Stolen bases
           }
         },
         teamStats: {
           home: {
-            "Hits": 10,
+            "Hits": 0,
             "Errors": 0,
-            "LOB": 6,
-            "Doubles": 2,
-            "Triples": 1,
-            "HR": 1,
-            "RBI": 7,
-            "SB": 3,
-            "CS": 1,
-            "BB": 4
+            "LOB": 0
           },
           away: {
-            "Hits": 5,
-            "Errors": 2,
-            "LOB": 5,
-            "Doubles": 1,
-            "Triples": 0,
-            "HR": 0,
-            "RBI": 2,
-            "SB": 1,
-            "CS": 0,
-            "BB": 3
+            "Hits": 0,
+            "Errors": 0,
+            "LOB": 0
           }
         }
       };
     } else {
-      // Default to basketball stats for basketball and other sports
-      mockStats = {
+      // Default basketball fallback stats
+      fallbackStats = {
         boxScore: {
-          homePoints: [35, 43],
-          awayPoints: [34, 38],
-          totalHome: 78,
-          totalAway: 72
+          homePoints: [0, 0],
+          awayPoints: [0, 0],
+          totalHome: gameData.homeTeamScore || 0,
+          totalAway: gameData.awayTeamScore || 0
         },
         leaders: {
           home: {
-            points: { name: "M. Johnson", value: 22 },
-            rebounds: { name: "D. Smith", value: 8 },
-            assists: { name: "K. Williams", value: 7 }
+            points: { name: "N/A", value: 0 },
+            rebounds: { name: "N/A", value: 0 },
+            assists: { name: "N/A", value: 0 }
           },
           away: {
-            points: { name: "J. Davis", value: 18 },
-            rebounds: { name: "R. Thompson", value: 9 },
-            assists: { name: "C. Miller", value: 5 }
+            points: { name: "N/A", value: 0 },
+            rebounds: { name: "N/A", value: 0 },
+            assists: { name: "N/A", value: 0 }
           }
         },
         teamStats: {
           home: {
-            "FG%": 45.8,
-            "3P%": 36.4,
-            "FT%": 75.0,
-            Rebounds: 38,
-            Assists: 17,
-            Steals: 7,
-            Blocks: 3,
-            Turnovers: 12
+            "FG%": 0,
+            "3P%": 0,
+            "FT%": 0,
+            "Rebounds": 0,
+            "Assists": 0,
+            "Steals": 0,
+            "Blocks": 0,
+            "Turnovers": 0
           },
           away: {
-            "FG%": 42.6,
-            "3P%": 33.3,
-            "FT%": 72.7,
-            Rebounds: 35,
-            Assists: 14,
-            Steals: 9,
-            Blocks: 2,
-            Turnovers: 14
+            "FG%": 0,
+            "3P%": 0,
+            "FT%": 0,
+            "Rebounds": 0,
+            "Assists": 0,
+            "Steals": 0,
+            "Blocks": 0,
+            "Turnovers": 0
           }
         }
       };
     }
     
-    setStats(mockStats);
+    setStats(fallbackStats);
   };
   
   const handleBack = () => {
@@ -347,13 +355,21 @@ const GameStatsPage = () => {
                 <div>
                   <div className="flex justify-between">
                     <span className="text-sm">RBIs</span>
-                    <span className="text-sm font-medium">J. Martinez (3)</span>
+                    <span className="text-sm font-medium">
+                      {stats?.leaders?.home?.points ? 
+                       `${stats.leaders.home.points.name} (${stats.leaders.home.points.value})` : 
+                       'N/A'}
+                    </span>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between">
                     <span className="text-sm">RBIs</span>
-                    <span className="text-sm font-medium">R. Garcia (2)</span>
+                    <span className="text-sm font-medium">
+                      {stats?.leaders?.away?.points ? 
+                       `${stats.leaders.away.points.name} (${stats.leaders.away.points.value})` : 
+                       'N/A'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -362,13 +378,21 @@ const GameStatsPage = () => {
                 <div>
                   <div className="flex justify-between">
                     <span className="text-sm">Hits</span>
-                    <span className="text-sm font-medium">T. Anderson (2)</span>
+                    <span className="text-sm font-medium">
+                      {stats?.leaders?.home?.rebounds ? 
+                       `${stats.leaders.home.rebounds.name} (${stats.leaders.home.rebounds.value})` : 
+                       'N/A'}
+                    </span>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between">
                     <span className="text-sm">Hits</span>
-                    <span className="text-sm font-medium">C. Johnson (1)</span>
+                    <span className="text-sm font-medium">
+                      {stats?.leaders?.away?.rebounds ? 
+                       `${stats.leaders.away.rebounds.name} (${stats.leaders.away.rebounds.value})` : 
+                       'N/A'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -377,13 +401,21 @@ const GameStatsPage = () => {
                 <div>
                   <div className="flex justify-between">
                     <span className="text-sm">Stolen Bases</span>
-                    <span className="text-sm font-medium">M. Williams (1)</span>
+                    <span className="text-sm font-medium">
+                      {stats?.leaders?.home?.assists ? 
+                       `${stats.leaders.home.assists.name} (${stats.leaders.home.assists.value})` : 
+                       'N/A'}
+                    </span>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between">
                     <span className="text-sm">Stolen Bases</span>
-                    <span className="text-sm font-medium">D. Smith (1)</span>
+                    <span className="text-sm font-medium">
+                      {stats?.leaders?.away?.assists ? 
+                       `${stats.leaders.away.assists.name} (${stats.leaders.away.assists.value})` : 
+                       'N/A'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -412,42 +444,38 @@ const GameStatsPage = () => {
               <tbody>
                 <tr className="border-b">
                   <td className="py-2 font-medium text-red-700">Miami</td>
-                  <td className="py-2 text-center">2</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">3</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">1</td>
-                  <td className="py-2 text-center">1</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center font-bold">7</td>
+                  {stats?.boxScore?.homePoints.map((score, index) => (
+                    <td key={`home-${index}`} className="py-2 text-center">
+                      {score}
+                    </td>
+                  ))}
+                  <td className="py-2 text-center font-bold">
+                    {stats?.boxScore?.totalHome || 0}
+                  </td>
                 </tr>
                 <tr>
                   <td className="py-2 font-medium text-red-800">CMU</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">1</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">1</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">1</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center">0</td>
-                  <td className="py-2 text-center font-bold">3</td>
+                  {stats?.boxScore?.awayPoints.map((score, index) => (
+                    <td key={`away-${index}`} className="py-2 text-center">
+                      {score}
+                    </td>
+                  ))}
+                  <td className="py-2 text-center font-bold">
+                    {stats?.boxScore?.totalAway || 0}
+                  </td>
                 </tr>
               </tbody>
             </table>
             
-            {/* Add "View Full Stats" link from screenshot */}
+            {/* Add "View Full Stats" link using the actual game's live stats URL */}
             <div className="mt-4 text-center">
               <a 
-                href="https://miamiredhawks.com/sidearmstats/baseball/summary"
+                href={game.links?.s_livestats || externalStatsUrl}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline inline-flex items-center"
               >
-                View Full Stats on Miami Official Site
+                View Full Stats on {homeTeam.name} Official Site
                 <svg 
                   className="w-3 h-3 ml-1" 
                   fill="none" 
@@ -501,21 +529,34 @@ const GameStatsPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b">
-                <td className="py-2 text-sm">Hits</td>
-                <td className="py-2 text-center">11</td>
-                <td className="py-2 text-center">7</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 text-sm">Errors</td>
-                <td className="py-2 text-center">1</td>
-                <td className="py-2 text-center">2</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 text-sm">LOB</td>
-                <td className="py-2 text-center">8</td>
-                <td className="py-2 text-center">6</td>
-              </tr>
+              {/* Dynamically generate team stats rows from the data */}
+              {stats?.teamStats ? (
+                Object.keys(stats.teamStats.home).map((stat, index) => (
+                  <tr key={stat} className="border-b">
+                    <td className="py-2 text-sm">{stat}</td>
+                    <td className="py-2 text-center">{stats.teamStats?.home[stat]}</td>
+                    <td className="py-2 text-center">{stats.teamStats?.away[stat] || 0}</td>
+                  </tr>
+                ))
+              ) : (
+                <>
+                  <tr className="border-b">
+                    <td className="py-2 text-sm">Hits</td>
+                    <td className="py-2 text-center">0</td>
+                    <td className="py-2 text-center">0</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2 text-sm">Errors</td>
+                    <td className="py-2 text-center">0</td>
+                    <td className="py-2 text-center">0</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="py-2 text-sm">LOB</td>
+                    <td className="py-2 text-center">0</td>
+                    <td className="py-2 text-center">0</td>
+                  </tr>
+                </>
+              )}
             </tbody>
           </table>
         </div>
