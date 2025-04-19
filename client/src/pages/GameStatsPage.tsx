@@ -530,12 +530,12 @@ const GameStatsPage = () => {
             </thead>
             <tbody>
               {/* Dynamically generate team stats rows from the data */}
-              {stats?.teamStats ? (
+              {stats?.teamStats && stats.teamStats.home ? (
                 Object.keys(stats.teamStats.home).map((stat, index) => (
                   <tr key={stat} className="border-b">
                     <td className="py-2 text-sm">{stat}</td>
                     <td className="py-2 text-center">{stats.teamStats?.home[stat]}</td>
-                    <td className="py-2 text-center">{stats.teamStats?.away[stat] || 0}</td>
+                    <td className="py-2 text-center">{stats.teamStats?.away && stat in stats.teamStats.away ? stats.teamStats.away[stat] : 0}</td>
                   </tr>
                 ))
               ) : (
