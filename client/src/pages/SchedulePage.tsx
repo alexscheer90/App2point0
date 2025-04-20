@@ -340,7 +340,7 @@ const SchedulePage = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
   };
   
-  if (isMacCalendarLoading || !schools) {
+  if ((isMacCalendarLoading || isEnhancedDataLoading) || !schools) {
     return (
       <div className="py-4 px-4">
         <div className="mb-4">
@@ -355,8 +355,50 @@ const SchedulePage = () => {
     );
   }
   
-  // Use MAC calendar data
-  const activeGames = macCalendarGames;
+  // Merge both data sources to get the most comprehensive data
+  const activeGames = useMemo(() => {
+    if (!macCalendarGames) return [];
+    
+    // Create a map of games from macCalendarGames using game IDs as keys
+    const gamesMap = new Map<string, Game>();
+    
+    // First add all calendar games
+    macCalendarGames.forEach(game => {
+      gamesMap.set(game.id, game);
+    });
+    
+    // Now enhance with final scores and additional data from enhanced events
+    if (enhancedMacEvents) {
+      enhancedMacEvents.forEach(game => {
+        if (gamesMap.has(game.id)) {
+          // Merge the data, prioritizing score data from enhancedMacEvents
+          const existingGame = gamesMap.get(game.id)!;
+          gamesMap.set(game.id, {
+            ...existingGame,
+            // Update these fields with enhanced data if they exist
+            homeTeamScore: game.homeTeamScore || existingGame.homeTeamScore,
+            awayTeamScore: game.awayTeamScore || existingGame.awayTeamScore,
+            status: game.status || existingGame.status,
+            venue: game.venue || existingGame.venue,
+            // Store additional data in the links object to maintain type compatibility
+            links: {
+              ...(existingGame.links || {}),
+              s_boxscore: game.links?.s_boxscore || existingGame.links?.s_boxscore,
+              s_video: game.links?.s_video || existingGame.links?.s_video,
+              s_audio: game.links?.s_audio || existingGame.links?.s_audio,
+              s_livestats: game.links?.s_livestats || existingGame.links?.s_livestats
+            }
+          });
+        } else {
+          // This is a game we don't have yet, add it
+          gamesMap.set(game.id, game);
+        }
+      });
+    }
+    
+    // Convert map back to array
+    return Array.from(gamesMap.values());
+  }, [macCalendarGames, enhancedMacEvents]);
   
   // Helper function to detect and extract sport info from game data
   const extractSportFromGame = (game: Game): string | undefined => {
