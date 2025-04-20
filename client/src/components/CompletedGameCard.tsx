@@ -131,6 +131,18 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
                   src={defaultHomeTeam.logoUrl} 
                   alt={`${defaultHomeTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
+                  onError={(e) => {
+                    console.log(`Failed to load logo for: ${defaultHomeTeam.name}`);
+                    e.currentTarget.onerror = null; // Prevent infinite error loop
+                    // Try to load a fallback logo if applicable
+                    if (defaultHomeTeam.name?.toLowerCase().includes("mid-american conference")) {
+                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
+                    } else if (defaultHomeTeam.name === "Bowling Green") {
+                      e.currentTarget.src = "/attached_assets/BGSU.png";
+                    } else if (defaultHomeTeam.name?.includes("Illinois-Chicago")) {
+                      e.currentTarget.src = "/attached_assets/Chicago_State_Cougars_logo.svg.png";
+                    }
+                  }}
                 />
               </div>
             ) : (
@@ -157,6 +169,18 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
                   src={defaultAwayTeam.logoUrl} 
                   alt={`${defaultAwayTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
+                  onError={(e) => {
+                    console.log(`Failed to load logo for: ${defaultAwayTeam.name}`);
+                    e.currentTarget.onerror = null; // Prevent infinite error loop
+                    // Try to load a fallback logo if applicable
+                    if (defaultAwayTeam.name?.toLowerCase().includes("mid-american conference")) {
+                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
+                    } else if (defaultAwayTeam.name === "Bowling Green") {
+                      e.currentTarget.src = "/attached_assets/BGSU.png";
+                    } else if (defaultAwayTeam.name?.includes("Illinois-Chicago")) {
+                      e.currentTarget.src = "/attached_assets/Chicago_State_Cougars_logo.svg.png";
+                    }
+                  }}
                 />
               </div>
             ) : (
