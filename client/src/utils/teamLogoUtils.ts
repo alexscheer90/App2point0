@@ -411,14 +411,19 @@ export function findSchoolByName(name: string): School | undefined {
 }
 
 /**
- * Get a logo URL for a team based on its name
+ * Get a logo URL for a team based on its name or ID
  */
-export function getTeamLogoUrl(name: string): string {
-  if (!name) return ncaaLogoUrl;
+export function getTeamLogoUrl(nameOrId: string): string {
+  if (!nameOrId) return ncaaLogoUrl;
   
-  // Special case handling for problematic schools in the screenshot
-  if (name.toLowerCase().includes("mid-american conference") || name === "MAC") {
-    return macLogoUrl; // Using imported asset directly from attached_assets folder
+  // Special case handling for MAC Conference (by name or id)
+  if (
+    nameOrId.toLowerCase().includes("mid-american conference") || 
+    nameOrId === "MAC" || 
+    nameOrId === "mac" ||
+    nameOrId === "mid-american-conference"
+  ) {
+    return macLogoUrl; // Using public path reference
   }
   
   if (name.toLowerCase().includes("university of illinois-chicago") || 
