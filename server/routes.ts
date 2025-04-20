@@ -398,7 +398,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`Successfully connected to ESPN API for ${sportId}`);
           break; // Exit loop if successful
         } catch (err) {
-          console.error(`Error with URL format ${currentUrl}:`, err.message);
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          console.error(`Error with URL format ${currentUrl}:`, errorMessage);
           error = err;
           // Continue to next URL format
         }
