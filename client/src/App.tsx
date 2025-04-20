@@ -19,7 +19,6 @@ import SoundsPage from "./pages/SoundsPage";
 import LocalEatsPage from "./pages/LocalEatsPage";
 import PodcastPage from "./pages/PodcastPage";
 import SchedulePage from "./pages/SchedulePage";
-import CalendarPage from "./pages/CalendarPage";
 import GameStatsPage from "./pages/GameStatsPage";
 import TestNotificationsPage from "./pages/TestNotificationsPage";
 import AdminPage from "./pages/AdminPage";
@@ -56,7 +55,6 @@ function App() {
                 <Route path="/schools" component={SchoolsPage} />
                 <Route path="/schools/:id" component={SchoolProfile} />
                 <Route path="/schedule" component={SchedulePage} />
-                <Route path="/calendar" component={CalendarPage} />
                 <Route path="/rivalries" component={RivalriesPage} />
                 <Route path="/sounds" component={SoundsPage} />
                 <Route path="/eats" component={LocalEatsPage} />

@@ -35,11 +35,6 @@ const MoreMenu = ({ open, onOpenChange }: MoreMenuProps) => {
       path: "/schedule",
     },
     {
-      icon: <Calendar className="h-5 w-5" />,
-      label: "Calendar",
-      path: "/calendar",
-    },
-    {
       icon: <Trophy className="h-5 w-5" />,
       label: "Rivalries",
       path: "/rivalries",

@@ -6,6 +6,7 @@ import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
 import { useMacCalendar } from "../hooks/useMacCalendar";
+import { useMacCalendarEvents } from "../hooks/useMacCalendarEvents";
 import { queryClient } from "../lib/queryClient";
 import SportSelector from "../components/SportSelector";
 import { Button } from "@/components/ui/button";
@@ -267,8 +268,15 @@ const SchedulePage = () => {
     };
   }, []);
   
-  // Only use MAC calendar data now
-  const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(selectedSport, selectedTeam !== "all" ? selectedTeam : undefined);
+  // Use both MAC calendar data sources for comprehensive data
+  const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(
+    selectedSport, 
+    selectedTeam !== "all" ? selectedTeam : undefined
+  );
+  
+  // Get the enhanced calendar data with final scores
+  const { data: enhancedMacEvents, isLoading: isEnhancedDataLoading } = useMacCalendarEvents();
+  
   const { data: schools } = useMacSchools();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],

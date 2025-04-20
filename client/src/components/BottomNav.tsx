@@ -44,7 +44,7 @@ const BottomNav = ({ activeTab }: BottomNavProps) => {
         <button 
           onClick={() => setMoreMenuOpen(true)}
           className={`flex flex-col items-center justify-center w-14 ${
-            ['schedule', 'calendar', 'rivalries', 'sounds', 'eats', 'podcast'].includes(activeTab) 
+            ['schedule', 'rivalries', 'sounds', 'eats', 'podcast'].includes(activeTab) 
               ? 'text-green-600' 
               : 'text-gray-600'
           }`}
