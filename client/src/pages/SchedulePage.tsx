@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getMonth, getYear, addMonths, subMonths, isSameDay, getDay } from "date-fns";
-import { Calendar, Clock, MapPin, CalendarIcon, Tag, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, MapPin, CalendarIcon, Tag, ChevronLeft, ChevronRight, BarChart2, Video, Radio } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
@@ -1659,7 +1659,7 @@ const SchedulePage = () => {
             <div>
               <p className="font-medium">{defaultAwayTeam.name}</p>
               {isPastGame && game.status === "final" && (
-                <p className="text-sm font-bold">{game.awayScore}</p>
+                <p className="text-sm font-bold">{game.awayScore || game.awayTeamScore}</p>
               )}
             </div>
           </div>
@@ -1673,7 +1673,7 @@ const SchedulePage = () => {
             <div>
               <p className="font-medium text-right">{defaultHomeTeam.name}</p>
               {isPastGame && game.status === "final" && (
-                <p className="text-sm font-bold text-right">{game.homeScore}</p>
+                <p className="text-sm font-bold text-right">{game.homeScore || game.homeTeamScore}</p>
               )}
             </div>
             <div className="w-8 h-8 flex-shrink-0 ml-2">
@@ -1698,8 +1698,10 @@ const SchedulePage = () => {
           </div>
         </div>
         
-        {!isPastGame && (
-          <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between">
+        <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between flex-wrap">
+          {/* Left side buttons */}
+          <div className="flex items-center space-x-2">
+            {/* Calendar button for all games */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="text-xs">
@@ -1729,7 +1731,8 @@ const SchedulePage = () => {
               </DialogContent>
             </Dialog>
             
-            {game.ticketUrl && (
+            {/* Only show tickets for upcoming games */}
+            {!isPastGame && game.ticketUrl && (
               <Button 
                 variant="default" 
                 size="sm" 
@@ -1741,7 +1744,62 @@ const SchedulePage = () => {
               </Button>
             )}
           </div>
-        )}
+          
+          {/* Right side links */}
+          <div className="flex items-center mt-2 sm:mt-0 space-x-2">
+            {/* Live stats for upcoming/in-progress games */}
+            {!isPastGame && game.liveStatsUrl && (
+              <a 
+                href={game.liveStatsUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
+              >
+                <BarChart2 className="h-3 w-3 mr-1" />
+                Live Stats
+              </a>
+            )}
+            
+            {/* Box score for completed games */}
+            {isPastGame && game.links?.s_boxscore && (
+              <a 
+                href={game.links.s_boxscore} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
+              >
+                <BarChart2 className="h-3 w-3 mr-1" />
+                Box Score
+              </a>
+            )}
+            
+            {/* Video link if available */}
+            {game.links?.s_video && (
+              <a 
+                href={game.links.s_video} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
+              >
+                <Video className="h-3 w-3 mr-1" />
+                Video
+              </a>
+            )}
+            
+            {/* Audio link if available */}
+            {game.links?.s_audio && (
+              <a 
+                href={game.links.s_audio} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
+              >
+                <Radio className="h-3 w-3 mr-1" />
+                Audio
+              </a>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
