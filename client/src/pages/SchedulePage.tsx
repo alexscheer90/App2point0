@@ -527,12 +527,15 @@ const SchedulePage = () => {
             {/* Home vs Away teams with logos */}
             <div className="flex items-center mb-2">
               <div className="flex items-center">
+                {/* Add debugging logs */}
+                {console.log(`Team logo for ${defaultAwayTeam.name}: ${getTeamLogoUrl(defaultAwayTeam.id)}`)}
                 <img 
                   src={getTeamLogoUrl(defaultAwayTeam.id)} 
                   alt={defaultAwayTeam.name} 
                   className="w-6 h-6 mr-1 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
+                    console.log(`Failed to load logo for ${defaultAwayTeam.name}: ${target.src}`);
                     target.style.display = 'none';
                   }}
                 />
@@ -540,12 +543,15 @@ const SchedulePage = () => {
               </div>
               <span className="mx-2 text-gray-400">at</span>
               <div className="flex items-center">
+                {/* Add debugging logs */}
+                {console.log(`Team logo for ${defaultHomeTeam.name}: ${getTeamLogoUrl(defaultHomeTeam.id)}`)}
                 <img 
                   src={getTeamLogoUrl(defaultHomeTeam.id)} 
                   alt={defaultHomeTeam.name} 
                   className="w-6 h-6 mr-1 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
+                    console.log(`Failed to load logo for ${defaultHomeTeam.name}: ${target.src}`);
                     target.style.display = 'none';
                   }}
                 />

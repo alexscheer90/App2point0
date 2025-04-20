@@ -97,14 +97,14 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "MAC",
     primaryColor: "#0B213E", // MAC navy
     secondaryColor: "#019E4F", // MAC green
-    logoUrl: "/MAC logo.PNG"
+    logoUrl: "/public/mac-logo.png"
   },
   "University of Illinois-Chicago": {
     name: "University of Illinois-Chicago",
     shortName: "UIC",
     primaryColor: "#DE3337",
     secondaryColor: "#003EAA",
-    logoUrl: "/UIC_Flames_wordmark.svg.png"
+    logoUrl: "/public/school-logos/affiliate/uic.png"
   },
   "Michigan": {
     name: "Michigan",
@@ -248,7 +248,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "",
       primaryColor: "#0B213E", // MAC navy
       secondaryColor: "#019E4F", // MAC green
-      logoUrl: "/MAC logo.PNG",
+      logoUrl: "/public/mac-logo.png",
       city: "",
       state: ""
     };
@@ -313,7 +313,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Flames",
       primaryColor: "#DE3337",
       secondaryColor: "#003EAA",
-      logoUrl: "/UIC_Flames_wordmark.svg.png", 
+      logoUrl: "/public/school-logos/affiliate/uic.png", 
       city: "Chicago",
       state: "IL"
     };
@@ -415,17 +415,17 @@ export function getTeamLogoUrl(name: string): string {
   
   // Special case handling for problematic schools in the screenshot
   if (name.toLowerCase().includes("mid-american conference") || name === "MAC") {
-    return "/MAC logo.PNG";
+    return "/public/mac-logo.png";
   }
   
   if (name.toLowerCase().includes("university of illinois-chicago") || 
       name.toLowerCase().includes("illinois-chicago") || 
       name === "UIC") {
-    return "/UIC_Flames_wordmark.svg.png";
+    return "/public/school-logos/affiliate/uic.png";
   }
   
   if (name.toLowerCase().includes("bowling green")) {
-    return "/BGSU.png";
+    return "/public/school-logos/bowlinggreen.png";
   }
   
   // Add debugging for specific schools to diagnose issues
