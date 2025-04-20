@@ -1,6 +1,9 @@
 import { School } from "@shared/schema";
 import { macSchools, ncaaLogoUrl } from "../data/macSchools";
 
+// For debugging
+const DEBUG_LOGO_PATH = false;
+
 // Map of common nicknames or alternate versions of school names
 const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   // Special non-MAC teams and organizations
@@ -248,7 +251,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "",
       primaryColor: "#0B213E", // MAC navy
       secondaryColor: "#019E4F", // MAC green
-      logoUrl: "/mac-logo.png",
+      logoUrl: "/MAC logo.PNG", // Exact filename
       city: "",
       state: ""
     };
@@ -415,7 +418,7 @@ export function getTeamLogoUrl(name: string): string {
   
   // Special case handling for problematic schools in the screenshot
   if (name.toLowerCase().includes("mid-american conference") || name === "MAC") {
-    return "/mac-logo.png";
+    return "/MAC logo.PNG"; // Exact case-sensitive filename that exists in public folder
   }
   
   if (name.toLowerCase().includes("university of illinois-chicago") || 
