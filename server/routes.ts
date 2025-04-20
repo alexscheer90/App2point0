@@ -311,8 +311,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }));
   });
 
-  // Setup demo notifications for testing
-  // In a real app, these would be triggered by real events
+  // Setup polling for real ESPN data for active sports
+  // For now, we're just including a few sample sports
+  const activeSports = ['baseball', 'softball', 'basketball', 'football'];
+  
+  // This would normally come from a proper ESPN API service
+  // For demonstration, we're importing the axios module directly here
+  const ESPN_API_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
+  
+  // MAC conference ID in ESPN API
+  const MAC_ESPN_ID = '14';
+  
+  // Sport path mapping
+  const SPORT_ESPN_PATHS: Record<string, string> = {
+    'football': 'football/college-football',
+    'basketball': 'basketball/mens-college-basketball',
+    'baseball': 'baseball/college-baseball',
+    'softball': 'softball/college-softball'
+  };
+  
+  // Cache the last known state for each game to avoid unnecessary broadcasts
+  const gameStateCache = new Map<string, any>();
+  
+  // Setup poll interval for each sport
+  for (const sport of activeSports) {
+    // Skip sports without ESPN paths
+    if (!SPORT_ESPN_PATHS[sport]) continue;
+    
+    // Use a shorter initial delay for immediate feedback
+    setTimeout(() => {
+      // Set up polling for the specific sport
+      pollESPNScores(sport);
+      
+      // Poll regularly every minute for live game updates
+      setInterval(() => {
+        pollESPNScores(sport);
+      }, 60000); // Poll every minute
+    }, 10000 + activeSports.indexOf(sport) * 5000); // Stagger initial polls
+  }
+  
+  async function pollESPNScores(sportId: string) {
+    try {
+      // Get the ESPN API path for this sport
+      const sportPath = SPORT_ESPN_PATHS[sportId];
+      if (!sportPath) return;
+      
+      // Today's date in YYYYMMDD format
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, '0')}${today.getDate().toString().padStart(2, '0')}`;
+      
+      // For demo purposes, we're using the current date for most sports
+      // but you could use specific dates for testing specific games
+      const dateToUse = sportId === 'football' ? '20250419' : formattedDate; 
+      
+      // Construct URL with group=MAC_ESPN_ID to filter for MAC teams
+      // We can also use the dates parameter for specific dates
+      const url = `${ESPN_API_BASE}/${sportPath}/scoreboard?groups=${MAC_ESPN_ID}&dates=${dateToUse}`;
+      
+      console.log(`Polling ESPN API for ${sportId}: ${url}`);
+      
+      // Fetch data from ESPN API
+      const response = await axios.get(url);
+      const data = response.data;
+      
+      // Check if we have events to process
+      if (!data.events || !Array.isArray(data.events)) {
+        console.log(`No ${sportId} events found`);
+        return;
+      }
+      
+      console.log(`Found ${data.events.length} ${sportId} events from ESPN API`);
+      
+      // Process each event
+      for (const event of data.events) {
+        if (!event.competitions || !event.competitions.length) continue;
+        
+        const competition = event.competitions[0];
+        const homeTeam = competition.competitors.find((c: any) => c.homeAway === 'home');
+        const awayTeam = competition.competitors.find((c: any) => c.homeAway === 'away');
+        
+        if (!homeTeam || !awayTeam) continue;
+        
+        // Map ESPN status to our game status
+        const statusMap: Record<string, any> = {
+          'pre': 'scheduled',
+          'in': 'live',
+          'post': 'final'
+        };
+        
+        const status = statusMap[event.status.type.state] || 'scheduled';
+        const gameId = `espn-${event.id}`;
+        
+        // Create game object from ESPN data
+        const game: Game = {
+          id: gameId,
+          sportId,
+          homeTeamId: 'unknown', // We would map ESPN team ID to our team ID here
+          awayTeamId: 'unknown', // We would map ESPN team ID to our team ID here
+          homeTeamName: homeTeam.team.displayName,
+          awayTeamName: awayTeam.team.displayName,
+          homeTeamScore: parseInt(homeTeam.score) || 0,
+          awayTeamScore: parseInt(awayTeam.score) || 0,
+          startTime: new Date(event.date).toISOString(),
+          scheduledTime: new Date(event.date).toISOString(),
+          status,
+          venue: competition.venue?.fullName || '',
+          location: competition.venue?.address?.city || '',
+          period: competition.status?.period,
+          clock: competition.status?.displayClock,
+          situation: competition.situation?.lastPlay?.text || '',
+        };
+        
+        // Check if game state has changed since last update
+        const cachedGameJson = gameStateCache.get(gameId);
+        const currentGameJson = JSON.stringify(game);
+        
+        if (cachedGameJson !== currentGameJson) {
+          // State has changed, broadcast update
+          broadcast({
+            type: 'game_update',
+            payload: game
+          });
+          
+          console.log(`Broadcast update for ${sportId} game ${game.homeTeamName} vs ${game.awayTeamName}`);
+          
+          // Update cache
+          gameStateCache.set(gameId, currentGameJson);
+        }
+      }
+    } catch (error) {
+      console.error(`Error polling ESPN scores for ${sportId}:`, error);
+    }
+  }
+  
+  // Send initial test data for UI demonstration
   setTimeout(() => {
     // Sample game update for testing
     const gameUpdate = {
@@ -321,7 +453,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: 'game_1',
         sportId: 'football',
         homeTeamId: 'toledo',
-        awayTeamId: 'bgsu',
+        awayTeamId: 'bowlinggreen',
+        homeTeamName: 'Toledo',
+        awayTeamName: 'Bowling Green',
         homeTeamScore: 24,
         awayTeamScore: 21,
         startTime: new Date().toISOString(),
@@ -353,8 +487,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       broadcast(newsUpdate);
       console.log('Sent test news update');
-    }, 10000); // 10 seconds after game update
-  }, 30000); // 30 seconds after server start
+    }, 5000); // 5 seconds after game update
+  }, 5000); // 5 seconds after server start
 
   return httpServer;
 }
