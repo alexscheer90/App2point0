@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Game } from "@shared/schema";
-import { getGames, getSchoolGames } from "../lib/api";
-import { useLiveScores } from "./useESPNScores";
+import { useMacCalendar } from "./useMacCalendar";
 
 // Helper to check if a date is today
 function isGameToday(gameDate: string): boolean {
@@ -17,25 +16,25 @@ function isGameToday(gameDate: string): boolean {
 }
 
 export function useScores(sportId: string = "all") {
-  // Use our traditional API for MAC calendar games
-  const { data: apiGames, isLoading: apiLoading } = useQuery({
-    queryKey: [`/api/games/${sportId === "all" ? "" : sportId}`],
-    queryFn: () => getGames(sportId),
-    // Don't refetch as frequently for API games
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
-  });
+  // Use our MAC calendar API for real event data
+  const { data: macCalendarGames, isLoading: macLoading } = useMacCalendar(
+    sportId !== "all" ? sportId : undefined
+  );
   
   // Only use games that are scheduled for today
-  const todaysGames = (apiGames || []).filter(game => {
+  const todaysGames = (macCalendarGames || []).filter(game => {
     return isGameToday(game.scheduledTime || game.startTime);
   });
   
-  const isLoading = apiLoading;
+  const isLoading = macLoading;
   
   // Filter games by status
   const liveGames = todaysGames.filter(game => game.status === "live") || [];
   const upcomingGames = todaysGames.filter(game => game.status === "scheduled") || [];
   const recentGames = todaysGames.filter(game => game.status === "final") || [];
+  
+  // Log for debugging
+  console.log(`Found ${todaysGames.length} games today (${liveGames.length} live, ${upcomingGames.length} upcoming, ${recentGames.length} completed)`);
   
   return {
     liveGames,
@@ -102,13 +101,13 @@ function mergeGameData(apiGames: Game[], espnGames: Game[]): Game[] {
 }
 
 export function useGames(sportId: string = "all") {
-  const { data, isLoading } = useQuery({
-    queryKey: [`/api/games/${sportId === "all" ? "" : sportId}`],
-    queryFn: () => getGames(sportId),
-  });
+  // Use our MAC calendar API for real event data
+  const { data: macCalendarGames, isLoading } = useMacCalendar(
+    sportId !== "all" ? sportId : undefined
+  );
   
   // Map data to include required fields for schedule
-  const games = data?.map((game: Game) => {
+  const games = macCalendarGames?.map((game: Game) => {
     return {
       ...game,
       scheduledTime: game.startTime, // Use startTime as scheduledTime
@@ -125,14 +124,15 @@ export function useGames(sportId: string = "all") {
 }
 
 export function useSchoolGames(schoolId: string) {
-  const { data: games, isLoading } = useQuery({
-    queryKey: [`/api/schools/${schoolId}/games`],
-    queryFn: () => getSchoolGames(schoolId),
-  });
+  // Use our MAC calendar API for real event data
+  const { data: macCalendarGames, isLoading } = useMacCalendar(
+    undefined, // all sports
+    schoolId   // for specific school
+  );
   
-  const liveGames = games?.filter(game => game.status === "live") || [];
-  const upcomingGames = games?.filter(game => game.status === "scheduled") || [];
-  const recentGames = games?.filter(game => game.status === "final") || [];
+  const liveGames = macCalendarGames?.filter((game: Game) => game.status === "live") || [];
+  const upcomingGames = macCalendarGames?.filter((game: Game) => game.status === "scheduled") || [];
+  const recentGames = macCalendarGames?.filter((game: Game) => game.status === "final") || [];
   
   return {
     liveGames,

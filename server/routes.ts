@@ -476,51 +476,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }
   
-  // Send initial test data for UI demonstration
-  setTimeout(() => {
-    // Sample game update for testing
-    const gameUpdate = {
-      type: 'game_update',
-      payload: {
-        id: 'game_1',
-        sportId: 'football',
-        homeTeamId: 'toledo',
-        awayTeamId: 'bowlinggreen',
-        homeTeamName: 'Toledo',
-        awayTeamName: 'Bowling Green',
-        homeTeamScore: 24,
-        awayTeamScore: 21,
-        startTime: new Date().toISOString(),
-        status: 'live' as const,
-        period: 4,
-        clock: '2:30',
-        situation: 'Toledo ball, 3rd and 8',
-        venue: 'Glass Bowl',
-        isRivalryGame: true
-      } as Game
-    };
-    
-    broadcast(gameUpdate);
-    console.log('Sent test game update');
-    
-    // Sample news update for testing
-    setTimeout(() => {
-      const newsUpdate = {
-        type: 'news_update',
-        payload: {
-          id: 'news_1',
-          schoolId: 'toledo',
-          title: 'Toledo Takes Lead in Rivalry Game',
-          summary: 'Rockets score late touchdown to take lead over Falcons',
-          publishedAt: new Date().toISOString(),
-          url: 'https://utrockets.com/news/2025/4/4/football-rockets-take-lead'
-        } as NewsItem
-      };
-      
-      broadcast(newsUpdate);
-      console.log('Sent test news update');
-    }, 5000); // 5 seconds after game update
-  }, 5000); // 5 seconds after server start
+  // We're removing all test data sending
 
   return httpServer;
 }
