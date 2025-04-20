@@ -104,7 +104,7 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "UIC",
     primaryColor: "#DE3337",
     secondaryColor: "#003EAA",
-    logoUrl: "/Chicago_State_Cougars_logo.svg.png"
+    logoUrl: "/UIC_Flames_wordmark.svg.png"
   },
   "Michigan": {
     name: "Michigan",
@@ -313,7 +313,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Flames",
       primaryColor: "#DE3337",
       secondaryColor: "#003EAA",
-      logoUrl: "/Chicago_State_Cougars_logo.svg.png", 
+      logoUrl: "/UIC_Flames_wordmark.svg.png", 
       city: "Chicago",
       state: "IL"
     };
@@ -421,7 +421,7 @@ export function getTeamLogoUrl(name: string): string {
   if (name.toLowerCase().includes("university of illinois-chicago") || 
       name.toLowerCase().includes("illinois-chicago") || 
       name === "UIC") {
-    return "/Chicago_State_Cougars_logo.svg.png";
+    return "/UIC_Flames_wordmark.svg.png";
   }
   
   if (name.toLowerCase().includes("bowling green")) {
