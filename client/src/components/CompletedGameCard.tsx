@@ -57,7 +57,7 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo.png' // MAC logo
+      ? '/mac-logo-official.png' // MAC logo with proper public path
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
@@ -69,7 +69,7 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo.png' // MAC logo
+      ? '/mac-logo-official.png' // MAC logo with proper public path
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
@@ -136,7 +136,7 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     // Try to load a fallback logo if applicable
                     if (defaultHomeTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
+                      e.currentTarget.src = "/mac-logo-official.png";
                     } else if (defaultHomeTeam.name === "Bowling Green") {
                       e.currentTarget.src = "/attached_assets/BGSU.png";
                     } else if (defaultHomeTeam.name?.includes("Illinois-Chicago")) {
@@ -174,7 +174,7 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     // Try to load a fallback logo if applicable
                     if (defaultAwayTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
+                      e.currentTarget.src = "/mac-logo-official.png";
                     } else if (defaultAwayTeam.name === "Bowling Green") {
                       e.currentTarget.src = "/attached_assets/BGSU.png";
                     } else if (defaultAwayTeam.name?.includes("Illinois-Chicago")) {
