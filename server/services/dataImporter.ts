@@ -808,7 +808,45 @@ export class DataImporter {
             status = 'live';
           }
           
-          // Create the game object
+          // Try to extract scores from the description for final games
+          const description = item.description || '';
+          let homeTeamScore = 0;
+          let awayTeamScore = 0;
+          let boxScoreUrl = '';
+          
+          // For final games, try to extract scores and box score link
+          if (status === 'final' && description) {
+            // Extract scores - look for the format "Home Team X, Away Team Y" or similar
+            const scoreRegex = /(\d+)[-,]?\s*(\d+)/;
+            const scoreMatch = description.match(scoreRegex);
+            
+            if (scoreMatch && scoreMatch.length >= 3) {
+              // Extract the two numbers found
+              // The order depends on how the teams are listed in the description
+              const firstScore = parseInt(scoreMatch[1], 10);
+              const secondScore = parseInt(scoreMatch[2], 10);
+              
+              // Determine which score belongs to which team
+              if (description.indexOf(homeTeamName) < description.indexOf(awayTeamName)) {
+                homeTeamScore = firstScore;
+                awayTeamScore = secondScore;
+              } else {
+                homeTeamScore = secondScore;
+                awayTeamScore = firstScore;
+              }
+              
+              console.log(`Extracted scores for ${homeTeamName} vs ${awayTeamName}: ${homeTeamScore}-${awayTeamScore}`);
+            }
+            
+            // Check if there's a Box Score link in the description
+            if (description.toLowerCase().includes('box score')) {
+              // Generate a default box score URL to the MAC site
+              const dateStr = gameDate.toISOString().split('T')[0].replace(/-/g, '');
+              boxScoreUrl = `https://getsomemaction.com/boxscore.aspx?path=${this.normalizeSportId(sportId)}&game=${dateStr}_${homeTeamId}_${awayTeamId}`;
+            }
+          }
+          
+          // Create the game object with all collected information
           games.push({
             id: `mac-${item.gameId || games.length + 1}-${Date.now()}`,
             sportId: this.normalizeSportId(sportId),
@@ -817,15 +855,18 @@ export class DataImporter {
             // Add team names for teams that might not be in our database
             homeTeamName: homeTeamName,
             awayTeamName: awayTeamName,
-            homeTeamScore: 0, // Will be updated for in-progress or completed games
-            awayTeamScore: 0,
+            homeTeamScore: homeTeamScore,
+            awayTeamScore: awayTeamScore,
             status,
             clock: '',
             venue: item.evLocation || '',
             location: item.evLocation || '',
             startTime: gameDate.toISOString(),
             scheduledTime: gameDate.toISOString(),
-            liveStatsUrl,
+            links: {
+              s_livestats: liveStatsUrl,
+              s_boxscore: boxScoreUrl
+            },
             isRivalryGame: false // Would need additional logic to determine this
           });
           
