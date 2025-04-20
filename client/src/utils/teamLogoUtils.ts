@@ -1,5 +1,5 @@
 import { School } from "@shared/schema";
-import { macSchools, ncaaLogoUrl } from "../data/macSchools";
+import { macSchools, ncaaLogoUrl, macLogoUrl } from "../data/macSchools";
 
 // For debugging
 const DEBUG_LOGO_PATH = false;
@@ -100,7 +100,7 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "MAC",
     primaryColor: "#0B213E", // MAC navy
     secondaryColor: "#019E4F", // MAC green
-    logoUrl: "/mac-logo.png"
+    logoUrl: macLogoUrl  // Using imported asset directly
   },
   "University of Illinois-Chicago": {
     name: "University of Illinois-Chicago",
@@ -251,7 +251,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "",
       primaryColor: "#0B213E", // MAC navy
       secondaryColor: "#019E4F", // MAC green
-      logoUrl: "/MAC logo.PNG", // Exact filename
+      logoUrl: macLogoUrl, // Using imported asset directly
       city: "",
       state: ""
     };
@@ -418,7 +418,7 @@ export function getTeamLogoUrl(name: string): string {
   
   // Special case handling for problematic schools in the screenshot
   if (name.toLowerCase().includes("mid-american conference") || name === "MAC") {
-    return "/MAC logo.PNG"; // Exact case-sensitive filename that exists in public folder
+    return macLogoUrl; // Using imported asset directly from attached_assets folder
   }
   
   if (name.toLowerCase().includes("university of illinois-chicago") || 

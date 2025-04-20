@@ -31,8 +31,11 @@ import robertMorrisLogo from "@assets/rmu_logo_1.png";
 import youngstownStateLogo from "@assets/Youngstown_State_Penguins_logo.svg.png";
 import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
 import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
-// NCAA logo for non-MAC schools now using the public path instead of imported asset
+
+// Using public paths for logos
 export const ncaaLogoUrl = "/ncaa-logo.png";
+// MAC logo using public path (no direct import which was causing errors)
+export const macLogoUrl = "/mac-logo-official.png";
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
