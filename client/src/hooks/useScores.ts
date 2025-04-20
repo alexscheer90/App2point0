@@ -21,8 +21,11 @@ export function useScores(sportId: string = "all") {
     sportId !== "all" ? sportId : undefined
   );
   
-  // Only use games that are scheduled for today
-  const todaysGames = (macCalendarGames || []).filter(game => {
+  // Filter games to only show those for today and completed games from today
+  const games = macCalendarGames || [];
+  
+  // Get today's games, including completed ones
+  const todaysGames = games.filter(game => {
     return isGameToday(game.scheduledTime || game.startTime);
   });
   

@@ -176,13 +176,26 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
         </div>
         
         <div className="flex justify-between pt-2 border-t border-gray-100 mt-2">
-          <span className="text-blue-600 flex items-center gap-1 text-xs" onClick={(e) => {
-            e.stopPropagation();
-            setLocation(`/games/${game.id}`);
-          }}>
-            <ChevronRight size={12} />
-            Box Score
-          </span>
+          {game.links?.s_boxscore ? (
+            <a 
+              href={game.links.s_boxscore} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-purple-600 hover:underline font-medium flex items-center gap-1 text-xs"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ChevronRight size={12} />
+              Box Score
+            </a>
+          ) : (
+            <span className="text-blue-600 flex items-center gap-1 text-xs" onClick={(e) => {
+              e.stopPropagation();
+              setLocation(`/games/${game.id}`);
+            }}>
+              <ChevronRight size={12} />
+              Game Stats
+            </span>
+          )}
           <div onClick={handleShareClick} className="hidden md:block">
             <ShareButton 
               url={shareUrl}

@@ -83,6 +83,7 @@ export const gameSchema = z.object({
     s_livestats: z.string().optional(), // Sidearm live stats URL
     s_audio: z.string().optional(), // Audio broadcast URL
     s_video: z.string().optional(), // Video broadcast URL
+    s_boxscore: z.string().optional(), // Box score URL for completed games
   }).optional(),
 });
 

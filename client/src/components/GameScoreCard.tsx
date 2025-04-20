@@ -232,6 +232,18 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
         <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
           <span>{game.situation}</span>
           <div className="flex items-center gap-2">
+            {game.status === 'final' && game.links?.s_boxscore && (
+              <a 
+                href={game.links.s_boxscore} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-purple-600 hover:underline font-medium flex items-center gap-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ChevronRight size={12} />
+                Box Score
+              </a>
+            )}
             {hasStats && (
               <span 
                 className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
@@ -282,6 +294,17 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
           {/* Links section */}
           {game.links && (Object.values(game.links).some(Boolean)) && (
             <div className="pt-2 mt-1 border-t border-gray-200 flex gap-3">
+              {game.status === 'final' && game.links.s_boxscore && (
+                <a 
+                  href={game.links.s_boxscore} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:underline font-medium"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Box Score
+                </a>
+              )}
               {game.links.s_livestats && (
                 <a 
                   href={game.links.s_livestats} 
