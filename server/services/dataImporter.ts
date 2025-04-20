@@ -891,7 +891,7 @@ export class DataImporter {
    * @param schoolName The name of the school from the calendar
    * @returns The corresponding school ID in our system
    */
-  private getSchoolIdFromName(schoolName: string): string {
+  public getSchoolIdFromName(schoolName: string): string {
     // Normalize the school name
     const normalizedName = schoolName.toLowerCase().trim();
     
