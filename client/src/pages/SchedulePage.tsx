@@ -527,8 +527,7 @@ const SchedulePage = () => {
             {/* Home vs Away teams with logos */}
             <div className="flex items-center mb-2">
               <div className="flex items-center">
-                {/* Add debugging logs */}
-                {console.log(`Team logo for ${defaultAwayTeam.name}: ${getTeamLogoUrl(defaultAwayTeam.id)}`)}
+                {/* Team logo */}
                 <img 
                   src={getTeamLogoUrl(defaultAwayTeam.id)} 
                   alt={defaultAwayTeam.name} 
@@ -543,8 +542,7 @@ const SchedulePage = () => {
               </div>
               <span className="mx-2 text-gray-400">at</span>
               <div className="flex items-center">
-                {/* Add debugging logs */}
-                {console.log(`Team logo for ${defaultHomeTeam.name}: ${getTeamLogoUrl(defaultHomeTeam.id)}`)}
+                {/* Team logo */}
                 <img 
                   src={getTeamLogoUrl(defaultHomeTeam.id)} 
                   alt={defaultHomeTeam.name} 

@@ -97,14 +97,14 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "MAC",
     primaryColor: "#0B213E", // MAC navy
     secondaryColor: "#019E4F", // MAC green
-    logoUrl: "/public/mac-logo.png"
+    logoUrl: "/mac-logo.png"
   },
   "University of Illinois-Chicago": {
     name: "University of Illinois-Chicago",
     shortName: "UIC",
     primaryColor: "#DE3337",
     secondaryColor: "#003EAA",
-    logoUrl: "/public/school-logos/affiliate/uic.png"
+    logoUrl: "/school-logos/affiliate/uic.png"
   },
   "Michigan": {
     name: "Michigan",
@@ -248,7 +248,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "",
       primaryColor: "#0B213E", // MAC navy
       secondaryColor: "#019E4F", // MAC green
-      logoUrl: "/public/mac-logo.png",
+      logoUrl: "/mac-logo.png",
       city: "",
       state: ""
     };
@@ -313,7 +313,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Flames",
       primaryColor: "#DE3337",
       secondaryColor: "#003EAA",
-      logoUrl: "/public/school-logos/affiliate/uic.png", 
+      logoUrl: "/school-logos/affiliate/uic.png", 
       city: "Chicago",
       state: "IL"
     };
@@ -415,29 +415,20 @@ export function getTeamLogoUrl(name: string): string {
   
   // Special case handling for problematic schools in the screenshot
   if (name.toLowerCase().includes("mid-american conference") || name === "MAC") {
-    return "/public/mac-logo.png";
+    return "/mac-logo.png";
   }
   
   if (name.toLowerCase().includes("university of illinois-chicago") || 
       name.toLowerCase().includes("illinois-chicago") || 
       name === "UIC") {
-    return "/public/school-logos/affiliate/uic.png";
+    return "/school-logos/affiliate/uic.png";
   }
   
   if (name.toLowerCase().includes("bowling green")) {
-    return "/public/school-logos/bowlinggreen.png";
+    return "/school-logos/bowlinggreen.png";
   }
   
-  // Add debugging for specific schools to diagnose issues
-  if (name && (
-      name.toLowerCase().includes("conference") ||
-      name.toLowerCase().includes("michigan state") || 
-      name.toLowerCase().includes("texas tech") || 
-      name.toLowerCase().includes("illinois-chicago") ||
-      name.toLowerCase().includes("uic") ||
-      name.toLowerCase().includes("north texas"))) {
-    console.log(`Debug logoUrl - School name: "${name}", path: ${findSchoolByName(name)?.logoUrl}`);
-  }
+  // Special school matching logic has been handled above
   
   const school = findSchoolByName(name);
   return school?.logoUrl || ncaaLogoUrl;
