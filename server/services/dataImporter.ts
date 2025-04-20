@@ -934,7 +934,9 @@ export class DataImporter {
       'george mason': 'georgemason',
       'patriots': 'georgemason',
       'cleveland state': 'clevelandstate',
-      'vikings': 'clevelandstate'
+      'vikings': 'clevelandstate',
+      'mid-american conference': 'mac',
+      'mac': 'mac'
     };
     
     // Try to find a match in our map
