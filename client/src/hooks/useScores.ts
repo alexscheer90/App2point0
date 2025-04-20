@@ -4,8 +4,20 @@ import { Game } from "@shared/schema";
 import { getGames, getSchoolGames } from "../lib/api";
 import { useLiveScores } from "./useESPNScores";
 
+// Helper to check if a date is today
+function isGameToday(gameDate: string): boolean {
+  const today = new Date();
+  const gameDateTime = new Date(gameDate);
+  
+  return (
+    today.getFullYear() === gameDateTime.getFullYear() &&
+    today.getMonth() === gameDateTime.getMonth() &&
+    today.getDate() === gameDateTime.getDate()
+  );
+}
+
 export function useScores(sportId: string = "all") {
-  // Use our traditional API for all sports or non-primary sports
+  // Use our traditional API for MAC calendar games
   const { data: apiGames, isLoading: apiLoading } = useQuery({
     queryKey: [`/api/games/${sportId === "all" ? "" : sportId}`],
     queryFn: () => getGames(sportId),
@@ -13,32 +25,17 @@ export function useScores(sportId: string = "all") {
     refetchInterval: 5 * 60 * 1000, // 5 minutes
   });
   
-  // For specific live sports, use ESPN API
-  const useESPNForThisSport = 
-    sportId !== "all" && 
-    ["football", "basketball", "baseball", "softball"].includes(sportId);
+  // Only use games that are scheduled for today
+  const todaysGames = (apiGames || []).filter(game => {
+    return isGameToday(game.scheduledTime || game.startTime);
+  });
   
-  // Get real-time scores from ESPN for supported sports
-  const { 
-    games: espnGames, 
-    isLoading: espnLoading,
-    error: espnError
-  } = useESPNForThisSport ? useLiveScores(sportId) : { games: undefined, isLoading: false, error: null };
-  
-  // Use ESPN data only if we have valid data and no errors
-  const hasValidESPNData = useESPNForThisSport && espnGames && espnGames.length > 0 && !espnError;
-  
-  // Merge the data sources, preferring ESPN for live data when available
-  const mergedGames = hasValidESPNData ? 
-    mergeGameData(apiGames || [], espnGames) :
-    apiGames || [];
-  
-  const isLoading = apiLoading || (useESPNForThisSport && espnLoading);
+  const isLoading = apiLoading;
   
   // Filter games by status
-  const liveGames = mergedGames?.filter(game => game.status === "live") || [];
-  const upcomingGames = mergedGames?.filter(game => game.status === "scheduled") || [];
-  const recentGames = mergedGames?.filter(game => game.status === "final") || [];
+  const liveGames = todaysGames.filter(game => game.status === "live") || [];
+  const upcomingGames = todaysGames.filter(game => game.status === "scheduled") || [];
+  const recentGames = todaysGames.filter(game => game.status === "final") || [];
   
   return {
     liveGames,
