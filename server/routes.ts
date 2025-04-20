@@ -364,15 +364,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // but you could use specific dates for testing specific games
       const dateToUse = sportId === 'football' ? '20250419' : formattedDate; 
       
-      // Construct URL with group=MAC_ESPN_ID to filter for MAC teams
-      // We can also use the dates parameter for specific dates
-      const url = `${ESPN_API_BASE}/${sportPath}/scoreboard?groups=${MAC_ESPN_ID}&dates=${dateToUse}`;
+      // Construct URL with groups & dates parameters
+      // Note: The correct format may vary by sport and API version
+      // We'll try various formats if one fails
+      const urlFormats = [
+        // Try standard format
+        `${ESPN_API_BASE}/${sportPath}/scoreboard?dates=${dateToUse}`,
+        // Try with conference filter
+        `${ESPN_API_BASE}/${sportPath}/scoreboard?groups=${MAC_ESPN_ID}&dates=${dateToUse}`,
+        // Try with different conference parameter
+        `${ESPN_API_BASE}/${sportPath}/scoreboard?group=${MAC_ESPN_ID}&dates=${dateToUse}`,
+        // Try different date format (year only) for testing
+        `${ESPN_API_BASE}/${sportPath}/scoreboard?dates=2025`
+      ];
+        
+      const url = urlFormats[0]; // Start with first format
       
-      console.log(`Polling ESPN API for ${sportId}: ${url}`);
+      // Try each URL format until one works
+      let data = null;
+      let urlUsed = '';
+      let error = null;
       
-      // Fetch data from ESPN API
-      const response = await axios.get(url);
-      const data = response.data;
+      for (const currentUrl of urlFormats) {
+        try {
+          console.log(`Trying ESPN API for ${sportId}: ${currentUrl}`);
+          const response = await axios.get(currentUrl);
+          data = response.data;
+          urlUsed = currentUrl;
+          console.log(`Successfully connected to ESPN API for ${sportId}`);
+          break; // Exit loop if successful
+        } catch (err) {
+          console.error(`Error with URL format ${currentUrl}:`, err.message);
+          error = err;
+          // Continue to next URL format
+        }
+      }
+      
+      // If all formats failed
+      if (!data) {
+        console.error(`All ESPN API URL formats failed for ${sportId}`);
+        throw error || new Error('Failed to connect to ESPN API');
+      }
       
       // Check if we have events to process
       if (!data.events || !Array.isArray(data.events)) {

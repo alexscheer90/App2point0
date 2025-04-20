@@ -99,7 +99,10 @@ const ScoresPage = () => {
           
           {liveGames.length === 0 && upcomingGames.length === 0 && recentGames.length === 0 && (
             <div className="px-4 py-8 text-center">
-              <p className="text-gray-500">No games found for the selected criteria.</p>
+              <p className="text-gray-500 mb-2">No games found for the selected criteria.</p>
+              <p className="text-sm text-gray-400">
+                Live data from ESPN may not be available for some sports or dates.
+              </p>
             </div>
           )}
         </>

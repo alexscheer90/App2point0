@@ -11,8 +11,14 @@ export function useESPNScores(sportId: string) {
   return useQuery({ 
     queryKey: ['espn-scores', sportId],
     queryFn: async () => {
-      const scores = await espnScoreboardService.getLiveScores(sportId);
-      return scores;
+      try {
+        const scores = await espnScoreboardService.getLiveScores(sportId);
+        return scores;
+      } catch (error) {
+        console.error(`Error fetching ESPN scores for ${sportId}:`, error);
+        // Instead of swallowing the error, propagate it so we can handle it in the UI
+        throw error;
+      }
     },
     refetchInterval: 60000, // Refetch every minute
   });

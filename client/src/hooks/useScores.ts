@@ -21,11 +21,15 @@ export function useScores(sportId: string = "all") {
   // Get real-time scores from ESPN for supported sports
   const { 
     games: espnGames, 
-    isLoading: espnLoading 
-  } = useESPNForThisSport ? useLiveScores(sportId) : { games: undefined, isLoading: false };
+    isLoading: espnLoading,
+    error: espnError
+  } = useESPNForThisSport ? useLiveScores(sportId) : { games: undefined, isLoading: false, error: null };
+  
+  // Use ESPN data only if we have valid data and no errors
+  const hasValidESPNData = useESPNForThisSport && espnGames && espnGames.length > 0 && !espnError;
   
   // Merge the data sources, preferring ESPN for live data when available
-  const mergedGames = useESPNForThisSport && espnGames ? 
+  const mergedGames = hasValidESPNData ? 
     mergeGameData(apiGames || [], espnGames) :
     apiGames || [];
   
