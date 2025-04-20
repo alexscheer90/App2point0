@@ -8,6 +8,7 @@ import { useMacCalendar } from "../hooks/useMacCalendar";
 import { useMacCalendarEvents } from "../hooks/useMacCalendarEvents";
 import { queryClient } from "../lib/queryClient";
 import SportSelector from "../components/SportSelector";
+import { getTeamLogoUrl } from "../utils/teamLogoUtils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -523,10 +524,34 @@ const SchedulePage = () => {
               </Badge>
             )}
             
-            {/* Home vs Away teams */}
-            <h3 className="font-medium text-base mb-1">
-              {defaultAwayTeam.name} at {defaultHomeTeam.name}
-            </h3>
+            {/* Home vs Away teams with logos */}
+            <div className="flex items-center mb-2">
+              <div className="flex items-center">
+                <img 
+                  src={getTeamLogoUrl(defaultAwayTeam.id)} 
+                  alt={defaultAwayTeam.name} 
+                  className="w-6 h-6 mr-1 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+                <span className="font-medium">{defaultAwayTeam.name}</span>
+              </div>
+              <span className="mx-2 text-gray-400">at</span>
+              <div className="flex items-center">
+                <img 
+                  src={getTeamLogoUrl(defaultHomeTeam.id)} 
+                  alt={defaultHomeTeam.name} 
+                  className="w-6 h-6 mr-1 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+                <span className="font-medium">{defaultHomeTeam.name}</span>
+              </div>
+            </div>
             
             {/* Date and time */}
             <div className="flex items-center text-sm text-gray-500 mb-2">
