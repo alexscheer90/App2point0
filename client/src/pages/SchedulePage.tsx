@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getMonth, getYear, addMonths, subMonths, isSameDay, getDay } from "date-fns";
-import { Calendar, Clock, MapPin, CalendarIcon, Tag, ChevronLeft, ChevronRight, BarChart2, Video, Radio } from "lucide-react";
+import { Calendar, Clock, MapPin, CalendarIcon, Tag, ChevronLeft, ChevronRight, BarChartIcon, VideoIcon, RadioIcon } from "lucide-react";
 import { Game } from "@shared/schema";
 import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
@@ -1755,7 +1755,7 @@ const SchedulePage = () => {
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
               >
-                <BarChart2 className="h-3 w-3 mr-1" />
+                <BarChartIcon className="h-3 w-3 mr-1" />
                 Live Stats
               </a>
             )}
@@ -1768,7 +1768,7 @@ const SchedulePage = () => {
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
               >
-                <BarChart2 className="h-3 w-3 mr-1" />
+                <BarChartIcon className="h-3 w-3 mr-1" />
                 Box Score
               </a>
             )}
@@ -1781,7 +1781,7 @@ const SchedulePage = () => {
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
               >
-                <Video className="h-3 w-3 mr-1" />
+                <VideoIcon className="h-3 w-3 mr-1" />
                 Video
               </a>
             )}
@@ -1794,7 +1794,7 @@ const SchedulePage = () => {
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
               >
-                <Radio className="h-3 w-3 mr-1" />
+                <RadioIcon className="h-3 w-3 mr-1" />
                 Audio
               </a>
             )}
