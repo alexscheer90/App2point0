@@ -97,14 +97,14 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "MAC",
     primaryColor: "#0B213E", // MAC navy
     secondaryColor: "#019E4F", // MAC green
-    logoUrl: "/attached_assets/MAC logo.PNG"
+    logoUrl: "/MAC logo.PNG"
   },
   "University of Illinois-Chicago": {
     name: "University of Illinois-Chicago",
     shortName: "UIC",
     primaryColor: "#DE3337",
     secondaryColor: "#003EAA",
-    logoUrl: "/attached_assets/Chicago_State_Cougars_logo.svg.png"
+    logoUrl: "/Chicago_State_Cougars_logo.svg.png"
   },
   "Michigan": {
     name: "Michigan",
@@ -248,7 +248,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "",
       primaryColor: "#0B213E", // MAC navy
       secondaryColor: "#019E4F", // MAC green
-      logoUrl: "/attached_assets/MAC logo.PNG",
+      logoUrl: "/MAC logo.PNG",
       city: "",
       state: ""
     };
@@ -313,7 +313,7 @@ export function findSchoolByName(name: string): School | undefined {
       mascot: "Flames",
       primaryColor: "#DE3337",
       secondaryColor: "#003EAA",
-      logoUrl: "/attached_assets/Chicago_State_Cougars_logo.svg.png", 
+      logoUrl: "/Chicago_State_Cougars_logo.svg.png", 
       city: "Chicago",
       state: "IL"
     };
@@ -415,17 +415,17 @@ export function getTeamLogoUrl(name: string): string {
   
   // Special case handling for problematic schools in the screenshot
   if (name.toLowerCase().includes("mid-american conference") || name === "MAC") {
-    return "/attached_assets/MAC logo.PNG";
+    return "/MAC logo.PNG";
   }
   
   if (name.toLowerCase().includes("university of illinois-chicago") || 
       name.toLowerCase().includes("illinois-chicago") || 
       name === "UIC") {
-    return "/attached_assets/Chicago_State_Cougars_logo.svg.png";
+    return "/Chicago_State_Cougars_logo.svg.png";
   }
   
   if (name.toLowerCase().includes("bowling green")) {
-    return "/attached_assets/BGSU.png";
+    return "/BGSU.png";
   }
   
   // Add debugging for specific schools to diagnose issues
