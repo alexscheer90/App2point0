@@ -426,19 +426,19 @@ export function getTeamLogoUrl(nameOrId: string): string {
     return macLogoUrl; // Using public path reference
   }
   
-  if (name.toLowerCase().includes("university of illinois-chicago") || 
-      name.toLowerCase().includes("illinois-chicago") || 
-      name === "UIC") {
+  if (nameOrId.toLowerCase().includes("university of illinois-chicago") || 
+      nameOrId.toLowerCase().includes("illinois-chicago") || 
+      nameOrId === "UIC") {
     return "/school-logos/affiliate/uic.png";
   }
   
-  if (name.toLowerCase().includes("bowling green")) {
+  if (nameOrId.toLowerCase().includes("bowling green")) {
     return "/school-logos/bowlinggreen.png";
   }
   
   // Special school matching logic has been handled above
   
-  const school = findSchoolByName(name);
+  const school = findSchoolByName(nameOrId);
   return school?.logoUrl || ncaaLogoUrl;
 }
 
