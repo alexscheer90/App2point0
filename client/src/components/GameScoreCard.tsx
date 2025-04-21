@@ -189,7 +189,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     // Try to load a fallback logo if applicable
                     if (defaultHomeTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/mac-logo-official.png";
+                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
                     } else if (defaultHomeTeam.name === "Bowling Green") {
                       e.currentTarget.src = "/attached_assets/BGSU.png";
                     } else if (defaultHomeTeam.name?.includes("Illinois-Chicago")) {
@@ -227,7 +227,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     // Try to load a fallback logo if applicable
                     if (defaultAwayTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/mac-logo-official.png";
+                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
                     } else if (defaultAwayTeam.name === "Bowling Green") {
                       e.currentTarget.src = "/attached_assets/BGSU.png";
                     } else if (defaultAwayTeam.name?.includes("Illinois-Chicago")) {
