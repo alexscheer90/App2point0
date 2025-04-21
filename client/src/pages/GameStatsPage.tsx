@@ -675,7 +675,7 @@ const GameStatsPage = () => {
                   {inning}
                 </h3>
                 <div className="space-y-2 pl-2">
-                  {stats.plays
+                  {stats.plays && stats.plays
                     .filter(play => play.inning === inning)
                     .map((play, index) => (
                       <div key={`${inning}-${index}`} className="py-1 border-b border-gray-100 last:border-0">
