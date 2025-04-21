@@ -8,6 +8,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import importerRoutes from "./routes/importer";
 import googleSheetsRoutes from "./routes/googleSheets";
 import macRoutes from "./routes/mac";
+import toledoStatsRoutes from "./routes/toledoStats";
 import express from "express";
 import path from "path";
 
@@ -23,6 +24,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register MAC routes
   app.use('/api/mac', macRoutes);
+  
+  // Register Toledo stats routes
+  app.use('/api/toledo', toledoStatsRoutes);
   
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {

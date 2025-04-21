@@ -10,6 +10,7 @@ import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getGame } from "../lib/api";
 import espnApiService from "../services/espnApiService";
+import toledoStatsService from "../services/toledoStatsService";
 
 interface GameStats {
   boxScore?: {
