@@ -132,15 +132,15 @@ const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
                   alt={`${defaultHomeTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
                   onError={(e) => {
-                    console.log(`Failed to load logo for: ${defaultHomeTeam.name}`);
+                    console.log(`Failed to load logo for: ${defaultHomeTeam.name} from ${defaultHomeTeam.logoUrl}`);
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     // Try to load a fallback logo if applicable
                     if (defaultHomeTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/attached_assets/MAC logo.PNG";
+                      e.currentTarget.src = "/school-logos/mac-conference.png";
                     } else if (defaultHomeTeam.name === "Bowling Green") {
-                      e.currentTarget.src = "/attached_assets/BGSU.png";
+                      e.currentTarget.src = "/school-logos/bowlinggreen.png";
                     } else if (defaultHomeTeam.name?.includes("Illinois-Chicago")) {
-                      e.currentTarget.src = "/attached_assets/Chicago_State_Cougars_logo.svg.png";
+                      e.currentTarget.src = "/school-logos/affiliate/uic.png";
                     }
                   }}
                 />
