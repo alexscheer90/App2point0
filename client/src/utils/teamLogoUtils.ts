@@ -114,7 +114,7 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Michigan",
     primaryColor: "#00274C",
     secondaryColor: "#FFCB05",
-    logoUrl: "/school-logos/non-mac/michigan.svg"
+    logoUrl: "/school-logos/non-mac/michigan.png"
   },
   "Michigan State": {
     name: "Michigan State",
@@ -128,21 +128,21 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Notre Dame",
     primaryColor: "#0C2340",
     secondaryColor: "#C99700",
-    logoUrl: "/school-logos/non-mac/notre-dame.svg"
+    logoUrl: "/school-logos/non-mac/notredame.png"
   },
   "Ohio State": {
     name: "Ohio State",
     shortName: "OSU",
     primaryColor: "#BB0000",
     secondaryColor: "#666666",
-    logoUrl: "/school-logos/non-mac/ohio-state.svg"
+    logoUrl: "/school-logos/non-mac/ohiostate.png"
   },
   "Texas": {
     name: "Texas",
     shortName: "Texas",
     primaryColor: "#BF5700",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/texas.svg"
+    logoUrl: "/school-logos/non-mac/texas.png"
   },
   "Texas Tech": {
     name: "Texas Tech",
@@ -163,21 +163,21 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "UK",
     primaryColor: "#0033A0",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/kentucky.svg"
+    logoUrl: "/school-logos/non-mac/kentucky.png"
   },
   "Cincinnati": {
     name: "Cincinnati",
     shortName: "Cincinnati",
     primaryColor: "#E00122",
     secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/cincinnati.svg"
+    logoUrl: "/school-logos/non-mac/cincinnati.png"
   },
   "Western Kentucky": {
     name: "Western Kentucky",
     shortName: "WKU",
     primaryColor: "#C8102E",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/western-kentucky.svg"
+    logoUrl: "/school-logos/non-mac/westernkentucky.png"
   },
   "Maryland": {
     name: "Maryland",
@@ -191,42 +191,42 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Nebraska",
     primaryColor: "#E41C38",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/nebraska.svg"
+    logoUrl: "/school-logos/non-mac/nebraska.png"
   },
   "Troy": {
     name: "Troy",
     shortName: "Troy",
     primaryColor: "#8A2432",
     secondaryColor: "#C3C5C8",
-    logoUrl: "/school-logos/non-mac/troy.svg"
+    logoUrl: "/school-logos/non-mac/troy.png"
   },
   "Washington State": {
     name: "Washington State",
     shortName: "WSU",
     primaryColor: "#981E32",
     secondaryColor: "#5E6A71",
-    logoUrl: "/school-logos/non-mac/washington-state.svg"
+    logoUrl: "/school-logos/non-mac/washingtonstate.png"
   },
   "Purdue": {
     name: "Purdue",
     shortName: "Purdue",
     primaryColor: "#CFB991",
     secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/purdue.svg"
+    logoUrl: "/school-logos/non-mac/purdue.png"
   },
   "Penn State": {
     name: "Penn State",
     shortName: "PSU",
     primaryColor: "#041E42",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/penn-state.svg"
+    logoUrl: "/school-logos/non-mac/pennstate.png"
   },
   "Youngstown State": {
     name: "Youngstown State",
     shortName: "YSU",
     primaryColor: "#C8102E",
     secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/youngstown-state.svg"
+    logoUrl: "/ncaa-logo.png"
   }
 };
 
