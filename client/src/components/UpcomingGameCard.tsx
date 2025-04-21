@@ -112,7 +112,19 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                 <img 
                   src={homeTeam.logoUrl} 
                   alt={`${homeTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    console.log(`Failed to load logo for: ${homeTeam.name} from ${homeTeam.logoUrl}`);
+                    e.currentTarget.onerror = null; // Prevent infinite error loop
+                    // Try to load a fallback logo if applicable
+                    if (homeTeam.name?.toLowerCase().includes("mid-american conference")) {
+                      e.currentTarget.src = "/school-logos/mac-conference.png";
+                    } else if (homeTeam.name === "Bowling Green") {
+                      e.currentTarget.src = "/school-logos/bowlinggreen.png";
+                    } else if (homeTeam.name?.includes("Illinois-Chicago")) {
+                      e.currentTarget.src = "/school-logos/affiliate/uic.png";
+                    }
+                  }}
                 />
               </div>
             ) : homeTeam ? (
@@ -147,7 +159,19 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                 <img 
                   src={awayTeam.logoUrl} 
                   alt={`${awayTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    console.log(`Failed to load logo for: ${awayTeam.name} from ${awayTeam.logoUrl}`);
+                    e.currentTarget.onerror = null; // Prevent infinite error loop
+                    // Try to load a fallback logo if applicable
+                    if (awayTeam.name?.toLowerCase().includes("mid-american conference")) {
+                      e.currentTarget.src = "/school-logos/mac-conference.png";
+                    } else if (awayTeam.name === "Bowling Green") {
+                      e.currentTarget.src = "/school-logos/bowlinggreen.png";
+                    } else if (awayTeam.name?.includes("Illinois-Chicago")) {
+                      e.currentTarget.src = "/school-logos/affiliate/uic.png";
+                    }
+                  }}
                 />
               </div>
             ) : awayTeam ? (
