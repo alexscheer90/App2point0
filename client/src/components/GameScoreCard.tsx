@@ -3,8 +3,8 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import ShareButton from "./ShareButton";
 import { format } from "date-fns";
-import { shouldShowLiveStats } from "../utils/liveStatsUtils";
-import { ChevronRight } from "lucide-react";
+import { shouldShowLiveStats, isToledoBaseballGame } from "../utils/liveStatsUtils";
+import { ChevronRight, BarChart2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
 

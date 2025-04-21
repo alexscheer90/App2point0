@@ -35,6 +35,13 @@ interface GameStats {
     home: Record<string, number>;
     away: Record<string, number>;
   };
+  plays?: GamePlay[];
+}
+
+interface GamePlay {
+  inning: string;
+  description: string;
+  score?: string;
 }
 
 const GameStatsPage = () => {
@@ -83,6 +90,7 @@ const GameStatsPage = () => {
     if (!schools) return;
     
     const homeTeam = schools.find(school => school.id === gameData.homeTeamId);
+    const awayTeam = schools.find(school => school.id === gameData.awayTeamId);
     const sport = sports?.find(sport => sport.id === gameData.sportId);
     
     if (!homeTeam || !sport) {
@@ -90,7 +98,34 @@ const GameStatsPage = () => {
       return;
     }
     
+    // Check if this is a Toledo baseball game
+    const isToledoGame = gameData.sportId === "baseball" && 
+                        (homeTeam.id === "toledo" || (awayTeam && awayTeam.id === "toledo"));
+    
     try {
+      // For Toledo baseball games, try to fetch live stats from Toledo SideArm portal
+      if (isToledoGame) {
+        console.log("Checking Toledo SideArm stats availability for baseball game");
+        const isAvailable = await toledoStatsService.checkToledoBaseballStatsAvailability();
+        
+        if (isAvailable) {
+          console.log("Toledo SideArm stats are available for this game, fetching data");
+          const toledoStats = await toledoStatsService.fetchToledoBaseballStats(gameData.id);
+          
+          if (toledoStats) {
+            console.log("Successfully fetched Toledo baseball stats from SideArm");
+            // Convert Toledo stats to our app's format
+            const convertedStats = toledoStatsService.convertToledoStatsToGameStats(toledoStats);
+            setStats(convertedStats);
+            return;
+          } else {
+            console.log("No data returned from Toledo SideArm, continuing to other options");
+          }
+        } else {
+          console.log("Toledo SideArm stats are not available, continuing to other options");
+        }
+      }
+      
       // Check if we have an ESPN event ID in the game links
       const espnGameId = gameData.links?.s_video ? 
                           espnApiService.getESPNGameId(gameData.links.s_video) :
@@ -112,10 +147,10 @@ const GameStatsPage = () => {
         console.log("No ESPN game ID found in game links, using sample data");
       }
     } catch (error) {
-      console.error("Error fetching game stats from ESPN API:", error);
+      console.error("Error fetching game stats:", error);
     }
     
-    // If we couldn't get stats from ESPN or there was an error, use real sample data from Miami vs CMU game
+    // If we couldn't get stats from Toledo SideArm or ESPN or there was an error, use real sample data from Miami vs CMU game
     console.log("Using sample data for Miami vs Central Michigan baseball game");
 
     // For Miami vs Central Michigan baseball game, use the actual game data we saw
@@ -393,6 +428,14 @@ const GameStatsPage = () => {
         >
           Team Stats
         </button>
+        {stats?.plays && stats.plays.length > 0 && (
+          <button 
+            className={`flex-1 py-3 text-center ${activeTab === "plays" ? "bg-blue-400 text-white" : ""}`}
+            onClick={() => setActiveTab("plays")}
+          >
+            Play by Play
+          </button>
+        )}
       </div>
       
       {activeTab === "summary" && (
@@ -618,6 +661,43 @@ const GameStatsPage = () => {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+      
+      {activeTab === "plays" && stats?.plays && stats.plays.length > 0 && (
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <h2 className="text-lg font-semibold mb-3">Play by Play</h2>
+          <div className="space-y-4">
+            {/* Group plays by inning */}
+            {stats.plays && Array.from(new Set(stats.plays.map(play => play.inning))).map(inning => (
+              <div key={inning} className="mb-4">
+                <h3 className="font-medium text-blue-800 bg-blue-50 p-2 rounded-md mb-2">
+                  {inning}
+                </h3>
+                <div className="space-y-2 pl-2">
+                  {stats.plays
+                    .filter(play => play.inning === inning)
+                    .map((play, index) => (
+                      <div key={`${inning}-${index}`} className="py-1 border-b border-gray-100 last:border-0">
+                        <div className="flex">
+                          <div className="w-full">
+                            <p className="text-sm">{play.description}</p>
+                            {play.score && (
+                              <p className="text-xs text-blue-600 mt-1">Score: {play.score}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Attribution to SideArm Stats */}
+          <div className="mt-4 text-xs text-gray-500 text-center">
+            <p>Play-by-play data courtesy of Toledo SideArm Stats</p>
+          </div>
         </div>
       )}
     </div>
