@@ -268,7 +268,21 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
                 Box Score
               </a>
             )}
-            {hasStats && (
+            {/* Special label for Toledo baseball games */}
+            {hasStats && isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
+              <span 
+                className="text-green-600 flex items-center gap-1 font-medium" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/games/${game.id}`);
+                }}
+              >
+                <BarChart2 size={12} />
+                Toledo Live Stats
+              </span>
+            )}
+            {/* Regular stats button for other games */}
+            {hasStats && !isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
               <span 
                 className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
                 onClick={(e) => {
@@ -293,7 +307,21 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       ) : (
         <div className="bg-gray-100 text-xs px-3 py-2 flex flex-col">
           <div className="flex justify-between items-center">
-            {hasStats && (
+            {/* Special label for Toledo baseball games */}
+            {hasStats && isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
+              <span 
+                className="text-green-600 flex items-center gap-1 font-medium" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/games/${game.id}`);
+                }}
+              >
+                <BarChart2 size={12} />
+                Toledo Live Stats
+              </span>
+            )}
+            {/* Regular stats button for other games */}
+            {hasStats && !isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
               <span 
                 className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
                 onClick={(e) => {
