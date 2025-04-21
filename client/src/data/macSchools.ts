@@ -33,9 +33,9 @@ import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
 import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
 
 // Using public paths for logos
-export const ncaaLogoUrl = "/ncaa-logo.png";
+export const ncaaLogoUrl = "/school-logos/ncaa.png";
 // MAC logo using public path (no direct import which was causing errors)
-export const macLogoUrl = "/mac-logo-official.png";
+export const macLogoUrl = "/school-logos/mac-conference.png";
 
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
