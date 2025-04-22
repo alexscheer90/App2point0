@@ -5,37 +5,61 @@ import { Badge } from "./ui/badge";
 import { format } from "date-fns";
 import { CalendarIcon, ChevronRight, Clock } from "lucide-react";
 
-// Helper function to convert team IDs to proper display names
-function getTeamNameFromId(teamId: string | undefined): string {
-  if (!teamId) return "Unknown Team";
+// Type definition for team information
+interface TeamInfo {
+  name: string;
+  mascot?: string;
+}
+
+// Helper function to convert team IDs to proper display names with mascots
+function getTeamNameFromId(teamId: string | undefined): TeamInfo {
+  if (!teamId) return { name: "Unknown Team" };
   
-  // Convert teamId to proper team name
-  const teamMap: Record<string, string> = {
-    "akron": "Akron",
-    "ballstate": "Ball State",
-    "bowlinggreen": "Bowling Green",
-    "buffalo": "Buffalo",
-    "centralmichigan": "Central Michigan",
-    "easternmichigan": "Eastern Michigan",
-    "kentstate": "Kent State",
-    "miami": "Miami (OH)",
-    "miamioh": "Miami (OH)",
-    "northernillinois": "Northern Illinois",
-    "ohio": "Ohio",
-    "toledo": "Toledo",
-    "westernmichigan": "Western Michigan",
-    "umass": "Massachusetts",
-    "massachusetts": "Massachusetts",
-    "bellarmine": "Bellarmine",
-    "notredame": "Notre Dame",
-    "michiganstate": "Michigan State",
-    "michigan": "Michigan",
-    "ohiostate": "Ohio State"
+  // Remove the "unknown-" prefix if it exists
+  const cleanedTeamId = teamId.replace(/^unknown-/, '');
+  
+  // Convert teamId to proper team name and mascot
+  const teamMap: Record<string, TeamInfo> = {
+    // MAC Schools
+    "akron": { name: "Akron", mascot: "Zips" },
+    "ballstate": { name: "Ball State", mascot: "Cardinals" },
+    "bowlinggreen": { name: "Bowling Green", mascot: "Falcons" },
+    "buffalo": { name: "Buffalo", mascot: "Bulls" },
+    "centralmichigan": { name: "Central Michigan", mascot: "Chippewas" },
+    "easternmichigan": { name: "Eastern Michigan", mascot: "Eagles" },
+    "kentstate": { name: "Kent State", mascot: "Golden Flashes" },
+    "miami": { name: "Miami", mascot: "RedHawks" },
+    "miamioh": { name: "Miami", mascot: "RedHawks" },
+    "northernillinois": { name: "Northern Illinois", mascot: "Huskies" },
+    "ohio": { name: "Ohio", mascot: "Bobcats" },
+    "toledo": { name: "Toledo", mascot: "Rockets" },
+    "westernmichigan": { name: "Western Michigan", mascot: "Broncos" },
+    
+    // Non-MAC schools
+    "umass": { name: "Massachusetts", mascot: "Minutemen" },
+    "massachusetts": { name: "Massachusetts", mascot: "Minutemen" },
+    "bellarmine": { name: "Bellarmine", mascot: "Knights" },
+    "notredame": { name: "Notre Dame", mascot: "Fighting Irish" },
+    "michiganstate": { name: "Michigan State", mascot: "Spartans" },
+    "michigan": { name: "Michigan", mascot: "Wolverines" },
+    "ohiostate": { name: "Ohio State", mascot: "Buckeyes" },
+    "valparaiso-beacons": { name: "Valparaiso", mascot: "Beacons" },
+    "northern-kentucky-university": { name: "Northern Kentucky", mascot: "Norse" },
+    "mid-american-conference": { name: "MAC Championship", mascot: "Conference" },
+    "notre-dame": { name: "Notre Dame", mascot: "Fighting Irish" },
   };
   
-  // If the teamId exists in our map, return the proper name, otherwise capitalize the ID
-  return teamMap[teamId.toLowerCase()] || 
-    teamId.replace(/\b\w/g, letter => letter.toUpperCase()).replace(/-/g, ' ');
+  // Try to find the team in our map
+  if (teamMap[cleanedTeamId.toLowerCase()]) {
+    return teamMap[cleanedTeamId.toLowerCase()];
+  }
+  
+  // If not found, create a proper name from the ID
+  const formattedName = cleanedTeamId
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, letter => letter.toUpperCase());
+  
+  return { name: formattedName };
 }
 
 interface CompletedGameCardProps {
@@ -48,16 +72,16 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
   console.log(`Game ID: ${game.id}, HomeID: "${game.homeTeamId}", AwayID: "${game.awayTeamId}"`);
   
   // Get team names from IDs
-  const homeTeamName = getTeamNameFromId(game.homeTeamId);
-  const awayTeamName = getTeamNameFromId(game.awayTeamId);
+  const homeTeamInfo = getTeamNameFromId(game.homeTeamId);
+  const awayTeamInfo = getTeamNameFromId(game.awayTeamId);
   
   // Find team data using the improved findSchoolByName function
-  const homeTeam = findSchoolByName(homeTeamName);
-  const awayTeam = findSchoolByName(awayTeamName);
+  const homeTeam = findSchoolByName(homeTeamInfo.name);
+  const awayTeam = findSchoolByName(awayTeamInfo.name);
   
   // Debug team resolution
-  console.log(`Team resolution - Home: ${homeTeam?.name || homeTeamName}, Logo: ${homeTeam?.logoUrl || 'Using default'}`);
-  console.log(`Team resolution - Away: ${awayTeam?.name || awayTeamName}, Logo: ${awayTeam?.logoUrl || 'Using default'}`);
+  console.log(`Team resolution - Home: ${homeTeam?.name || homeTeamInfo.name}, Logo: ${homeTeam?.logoUrl || 'Using default'}`);
+  console.log(`Team resolution - Away: ${awayTeam?.name || awayTeamInfo.name}, Logo: ${awayTeam?.logoUrl || 'Using default'}`);
   
   // Determine if the game is a rivalry
   const isRivalry = game.isRivalry;
@@ -183,13 +207,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
                     src={awayTeam?.logoUrl || "/school-logos/ncaa.png"} 
-                    alt={awayTeamName} 
+                    alt={awayTeamInfo.name} 
                     className={`object-contain w-full h-full p-1 ${awayWinner ? 'ring-2 ring-yellow-400' : ''}`}
                   />
                 </div>
                 <div>
-                  <div className="text-sm font-medium">{awayTeam?.shortName || awayTeamName}</div>
-                  <div className={`text-xl font-bold ${awayWinner ? 'text-yellow-400' : ''}`}>{awayTeamName}</div>
+                  <div className="text-sm font-medium text-gray-300">{awayTeamInfo.mascot || ''}</div>
+                  <div className={`text-xl font-bold ${awayWinner ? 'text-yellow-400' : ''}`}>{awayTeamInfo.name}</div>
                 </div>
               </div>
               <div className={`text-3xl font-bold mr-2 ${awayWinner ? 'text-yellow-400' : ''}`}>
@@ -203,13 +227,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
                     src={homeTeam?.logoUrl || "/school-logos/ncaa.png"} 
-                    alt={homeTeamName} 
+                    alt={homeTeamInfo.name} 
                     className={`object-contain w-full h-full p-1 ${homeWinner ? 'ring-2 ring-yellow-400' : ''}`}
                   />
                 </div>
                 <div>
-                  <div className="text-sm font-medium">{homeTeam?.shortName || homeTeamName}</div>
-                  <div className={`text-xl font-bold ${homeWinner ? 'text-yellow-400' : ''}`}>{homeTeamName}</div>
+                  <div className="text-sm font-medium text-gray-300">{homeTeamInfo.mascot || ''}</div>
+                  <div className={`text-xl font-bold ${homeWinner ? 'text-yellow-400' : ''}`}>{homeTeamInfo.name}</div>
                 </div>
               </div>
               <div className={`text-3xl font-bold mr-2 ${homeWinner ? 'text-yellow-400' : ''}`}>
