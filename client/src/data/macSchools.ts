@@ -75,6 +75,30 @@ export const nonMacSchools: School[] = [
     city: "Ann Arbor",
     state: "MI",
     affiliate: false
+  },
+  {
+    id: "northernkentucky",
+    name: "Northern Kentucky",
+    shortName: "NKU",
+    mascot: "Norse",
+    primaryColor: "#000000", // Black
+    secondaryColor: "#FFC72C", // Gold
+    logoUrl: "/school-logos/non-mac/northernkentucky.png",
+    city: "Highland Heights",
+    state: "KY",
+    affiliate: false
+  },
+  {
+    id: "valparaiso",
+    name: "Valparaiso",
+    shortName: "Valpo",
+    mascot: "Beacons",
+    primaryColor: "#432818", // Brown
+    secondaryColor: "#FFC72C", // Gold
+    logoUrl: "/school-logos/non-mac/valparaiso.png",
+    city: "Valparaiso",
+    state: "IN",
+    affiliate: false
   }
 ];
 
