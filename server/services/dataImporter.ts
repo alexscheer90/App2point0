@@ -712,9 +712,33 @@ export class DataImporter {
           for (let i = 0; i < titleParts.length; i++) {
             // Check for common sports names
             const part = titleParts[i].toLowerCase();
-            if (['baseball', 'basketball', 'football', 'soccer', 'volleyball', 'track', 
-                 'golf', 'swimming', 'softball', 'wrestling'].includes(part)) {
-              sportId = part;
+            
+            // Special handling for golf to add gender prefixes
+            if (part === 'golf') {
+              // Add gender prefix based on title analysis
+              if (isMensSport) {
+                sportId = 'mgolf';
+                console.log(`Detected Men's Golf from title: ${title}`);
+              } else if (isWomensSport) {
+                sportId = 'wgolf';
+                console.log(`Detected Women's Golf from title: ${title}`);
+              } else {
+                // Check surrounding context for gender clues
+                const prevPart = i > 0 ? titleParts[i-1].toLowerCase() : '';
+                const nextPart = i < titleParts.length - 1 ? titleParts[i+1].toLowerCase() : '';
+                
+                if (prevPart.includes('men') || nextPart.includes('men')) {
+                  sportId = 'mgolf';
+                  console.log(`Detected Men's Golf from context: ${prevPart} ${part} ${nextPart}`);
+                } else if (prevPart.includes('women') || nextPart.includes('women')) {
+                  sportId = 'wgolf';
+                  console.log(`Detected Women's Golf from context: ${prevPart} ${part} ${nextPart}`);
+                } else {
+                  // Default to regular golf ID, gender will be determined later
+                  sportId = 'golf';
+                  console.log(`Unable to determine golf gender from title: ${title}`);
+                }
+              }
               sportIndex = i;
               break;
             }
@@ -739,6 +763,13 @@ export class DataImporter {
                   sportId = 'tennis';
                 }
               }
+              sportIndex = i;
+              break;
+            }
+            // For all other sports
+            else if (['baseball', 'basketball', 'football', 'soccer', 'volleyball', 'track', 
+                     'swimming', 'softball', 'wrestling'].includes(part)) {
+              sportId = part;
               sportIndex = i;
               break;
             }

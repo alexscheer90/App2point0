@@ -329,9 +329,18 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
       return "Women's Tennis";
     }
     
-    // Men's Golf - include championship detection
-    if (normalizedId === 'mgolf' || 
-        (normalizedId.includes('golf') && normalizedId.includes('men')) ||
+    // Direct detection of Men's Golf from sportId
+    if (normalizedId === 'mgolf') {
+      return "Men's Golf";
+    }
+    
+    // Direct detection of Women's Golf from sportId
+    if (normalizedId === 'wgolf') {
+      return "Women's Golf";
+    }
+    
+    // Fallback detection for Men's Golf from context
+    if ((normalizedId.includes('golf') && normalizedId.includes('men')) ||
         (normalizedId.includes('golf') && 
          (game.homeTeamId?.toLowerCase().includes('men') || 
           game.awayTeamId?.toLowerCase().includes('men') ||
@@ -340,9 +349,8 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
       return "Men's Golf";
     }
     
-    // Women's Golf - include championship detection
-    if (normalizedId === 'wgolf' || 
-        (normalizedId.includes('golf') && normalizedId.includes('women')) ||
+    // Fallback detection for Women's Golf from context
+    if ((normalizedId.includes('golf') && normalizedId.includes('women')) ||
         (normalizedId.includes('golf') && 
          (game.homeTeamId?.toLowerCase().includes('women') || 
           game.awayTeamId?.toLowerCase().includes('women') ||
@@ -351,16 +359,14 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
       return "Women's Golf";
     }
     
-    // For MAC Championship Golf events with no explicit gender marker
-    // We'll check other parts of the game data to determine gender
-    if (normalizedId.includes('golf') && 
+    // For generic "golf" sportId with MAC Championship, we need to check other context
+    if (normalizedId === 'golf' && 
         (game.homeTeamName?.includes('MAC Championship') || 
          game.awayTeamName?.includes('MAC Championship') ||
          game.homeTeamId?.includes('mid-american-conference') || 
          game.awayTeamId?.includes('mid-american-conference'))) {
          
-      // Check for specific tournaments/championships by date
-      // Mid-April is typically women's championships, late April/early May is men's
+      // Only use date-based detection as a last resort
       const gameDate = new Date(game.startTime || game.date || "");
       const month = gameDate.getMonth(); // 0-based (April = 3)
       const day = gameDate.getDate();
