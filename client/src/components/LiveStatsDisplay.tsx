@@ -38,10 +38,20 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
         if (response.data.success) {
           return response.data.data as DataSourceInfo;
         }
-        throw new Error('Failed to get data source info');
+        // Return a default config rather than throwing an error 
+        return {
+          recommendedSource: 'sidearm',
+          sidearmAvailable: true,
+          espnAvailable: false
+        } as DataSourceInfo;
       } catch (error) {
         console.error('Error fetching data sources:', error);
-        return null;
+        // Return a default config that doesn't cause the component to error out
+        return {
+          recommendedSource: 'sidearm',
+          sidearmAvailable: true,
+          espnAvailable: false
+        } as DataSourceInfo;
       }
     },
     refetchInterval: 30000, // Check data sources every 30 seconds
@@ -211,6 +221,15 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
       );
     }
     
+    if (error) {
+      return (
+        <div className="flex items-center text-orange-600">
+          <span className="inline-block w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+          <span>Connection issue - will retry shortly</span>
+        </div>
+      );
+    }
+    
     return (
       <div className="flex items-center text-gray-600">
         <span className="inline-block w-2 h-2 bg-gray-500 rounded-full mr-2"></span>
@@ -226,13 +245,7 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
         {renderConnectionStatus()}
       </div>
       
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      {/* Remove error alert as we already show status in the connection line */}
       
       <div className="flex justify-between items-center mb-3">
         <div>

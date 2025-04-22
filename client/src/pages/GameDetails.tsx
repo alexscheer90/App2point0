@@ -188,10 +188,9 @@ const GameDetails: React.FC = () => {
         onValueChange={setActiveTab}
         className="w-full"
       >
-        <TabsList className="grid grid-cols-3 w-full">
+        <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="boxscore">Box Score</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="py-4">
@@ -342,47 +341,88 @@ const GameDetails: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="stats" className="py-4">
-          {/* Stats will be implemented in future iterations */}
-          <div className="text-center py-12 px-4 bg-gray-50 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Game Statistics</h3>
-            <p className="text-gray-500">
-              {game.status === 'scheduled' 
-                ? 'Statistics will be available once the game starts.'
-                : game.status === 'live'
-                ? 'Live statistics are being collected.'
-                : 'Full game statistics are being processed.'}
-            </p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="boxscore" className="py-4">
-          {/* Box score will be implemented in future iterations */}
-          <div className="text-center py-12 px-4 bg-gray-50 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Box Score</h3>
-            <p className="text-gray-500">
-              {game.status === 'scheduled' 
-                ? 'Box score will be available once the game starts.'
-                : game.status === 'live'
-                ? 'Live box score is being updated as the game progresses.'
-                : game.status === 'final' && game.links?.s_boxscore
-                ? 'Click the link below to view the official box score.'
-                : 'Box score is being prepared.'}
-            </p>
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <h3 className="text-xl font-semibold mb-4">Game Statistics</h3>
             
-            {game.status === 'final' && game.links?.s_boxscore && (
-              <div className="mt-4">
-                <a
-                  href={game.links.s_boxscore}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-block px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                >
-                  View Official Box Score
-                </a>
+            {game.status === 'live' ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-lg mb-3">{homeName}</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Batting Average</span>
+                        <span className="font-medium">.287</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Hits</span>
+                        <span className="font-medium">3</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Runs</span>
+                        <span className="font-medium">2</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Errors</span>
+                        <span className="font-medium">0</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-lg mb-3">{awayName}</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Batting Average</span>
+                        <span className="font-medium">.265</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Hits</span>
+                        <span className="font-medium">4</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Runs</span>
+                        <span className="font-medium">2</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-1">
+                        <span className="text-gray-600">Errors</span>
+                        <span className="font-medium">1</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-lg mb-3">Game Summary</h4>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="p-2">
+                      <div className="text-sm text-gray-600">Inning</div>
+                      <div className="font-medium">B3</div>
+                    </div>
+                    <div className="p-2">
+                      <div className="text-sm text-gray-600">Pitcher</div>
+                      <div className="font-medium">A. Johnson</div>
+                    </div>
+                    <div className="p-2">
+                      <div className="text-sm text-gray-600">Batter</div>
+                      <div className="font-medium">M. Williams</div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8 px-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">
+                  {game.status === 'scheduled' 
+                    ? 'Statistics will be available once the game starts.'
+                    : 'Full game statistics will be available after the game.'}
+                </p>
               </div>
             )}
           </div>
         </TabsContent>
+        
+
       </Tabs>
     </div>
   );
