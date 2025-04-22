@@ -1,0 +1,87 @@
+1. Check Raw Data
+You mentioned earlier that the scores (e.g., Home: 2, Away: 0) are being correctly fetched from the feed. Let’s start by verifying the raw data again.
+
+Action: Add some additional logging before the data is processed to ensure the values are being captured:
+
+ts
+Copy
+Edit
+console.log('Raw data:', rawData);
+console.log('Home score:', rawData.data.HomeTeam.Score);
+console.log('Away score:', rawData.data.VisitingTeam.Score);
+This will help confirm if the raw data includes the scores before they’re passed into processSidearmData.
+
+2. Double-check Processing Logic
+Ensure the scores are being correctly parsed and passed along. The issue might be in how we’re extracting and assigning those values. Here's a snippet of what to focus on in processSidearmData:
+
+ts
+Copy
+Edit
+const homeTeamScore = data.HomeTeam.Score;
+const awayTeamScore = data.VisitingTeam.Score;
+
+// Make sure these variables are passed properly:
+return {
+  status: gameStatus,
+  homeTeamScore,
+  awayTeamScore,
+  statusDetail: 'SIDEARM data retrieved successfully',
+  // other relevant data
+};
+3. Check If Scores Are Being Sent to Frontend
+In your response, make sure you’re sending the homeTeamScore and awayTeamScore properly to the frontend.
+
+Action: Check the network request in your browser’s dev tools to confirm the correct data is being returned from the API endpoint. Look for the homeTeamScore and awayTeamScore values.
+
+4. Frontend Display Logic
+Ensure that the frontend is correctly receiving and rendering the score data. Here’s an example of how you might render it in your component:
+
+tsx
+Copy
+Edit
+const LiveStatsDisplay: React.FC = ({ gameData }) => {
+  const { homeTeamScore, awayTeamScore, period, gameStatus } = gameData;
+
+  return (
+    <div>
+      <div>{gameStatus === 'live' ? 'Live' : 'Final'}</div>
+      <div>Score: {homeTeamScore} - {awayTeamScore}</div>
+      <div>Period: {period}</div>
+    </div>
+  );
+};
+5. Game Status Check
+Since the game is still showing the "Game will start shortly" message, make sure the gameStatus is correctly being set to 'live'. You can log it in the backend:
+
+ts
+Copy
+Edit
+console.log('Game status:', gameStatus);
+Ensure that the logic determining 'live' vs 'final' is correctly implemented:
+
+ts
+Copy
+Edit
+let gameStatus = 'scheduled';
+if (data.HasStarted && !data.IsComplete) {
+  gameStatus = 'live';
+} else if (data.IsComplete) {
+  gameStatus = 'final';
+}
+6. Final Test: Endpoint and Response
+You can test the data processing manually by using the test endpoint and making sure the response includes both scores and status.
+
+bash
+Copy
+Edit
+curl -s "http://localhost:5000/api/live-stats/test-miami-feed" | jq
+Make sure that homeTeamScore and awayTeamScore appear in the response.
+
+In Summary:
+Log the raw data to make sure you're seeing the scores coming in.
+
+Verify the data is processed correctly in the processSidearmData function.
+
+Check if the frontend is properly rendering the scores from the response.
+
+Confirm that the game status is being correctly set to 'live' when applicable.

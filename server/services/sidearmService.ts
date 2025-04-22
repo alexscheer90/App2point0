@@ -89,6 +89,14 @@ export async function fetchSidearmGameData(
           
           console.log('JSONP data after cleanup (first 100 chars):', cleanedData.substring(0, 100));
           data = JSON.parse(cleanedData);
+          
+          // Log detailed score information
+          if (data.HomeTeam && data.HomeTeam.Score !== undefined) {
+            console.log('Raw Home Team Score:', data.HomeTeam.Score, typeof data.HomeTeam.Score);
+          }
+          if (data.VisitingTeam && data.VisitingTeam.Score !== undefined) {
+            console.log('Raw Visiting Team Score:', data.VisitingTeam.Score, typeof data.VisitingTeam.Score);
+          }
         } else {
           // Generic approach for other JSONP responses
           // Extract the JSON part from the JSONP response
@@ -313,7 +321,8 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
     // Log what we found for debugging
     console.log(`Processed SIDEARM data: Home ${homeTeamScore}, Away ${awayTeamScore}, Period: ${period}, Clock: ${clock}, Situation: ${situation}`);
     
-    return {
+    // Create the final object
+    const result = {
       status: gameStatus,
       statusDetail: 'SIDEARM data retrieved successfully',
       homeTeamScore,
@@ -323,6 +332,11 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       situation,
       lastUpdated: new Date().toISOString()
     };
+    
+    // Log the final result object to verify all fields are populated correctly
+    console.log('Final processed SIDEARM result object:', JSON.stringify(result));
+    
+    return result;
   } catch (error) {
     console.error('Error processing SIDEARM data:', error);
     return {

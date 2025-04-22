@@ -84,12 +84,22 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
           
           // Handle different message types
           if (data.type === 'gameUpdate' && data.gameId === gameId) {
+            console.log('Game update data received:', {
+              status: data.game?.status,
+              homeTeamScore: data.game?.homeTeamScore,
+              awayTeamScore: data.game?.awayTeamScore,
+              period: data.game?.period,
+              situation: data.game?.situation
+            });
             setLiveData(data);
           } else if (data.type === 'subscribed' && data.gameId === gameId) {
             console.log(`Successfully subscribed to updates for game ${gameId}`);
+          } else {
+            console.log('Received message with type:', data.type);
           }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
+          console.log('Raw message data:', event.data);
         }
       };
       
@@ -245,21 +255,56 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
       
       {/* Show live data if available */}
       {liveData ? (
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h4 className="text-sm font-semibold text-gray-500 mb-1">Last Updated</h4>
-            <p className="text-sm">
-              {new Date(liveData.timestamp).toLocaleTimeString()}
-            </p>
+        <div>
+          {/* Score display */}
+          <div className="flex justify-center items-center mb-4 bg-gray-50 p-4 rounded-lg">
+            <div className="text-center flex-1">
+              <p className="text-sm font-semibold">Home</p>
+              <p className="text-3xl font-bold">{liveData.game?.homeTeamScore || 0}</p>
+            </div>
+            
+            <div className="text-center px-4">
+              <p className="text-sm font-semibold mb-1">Period</p>
+              <p className="text-lg font-medium bg-gray-200 px-3 py-1 rounded">
+                {liveData.game?.period || '-'}
+              </p>
+            </div>
+            
+            <div className="text-center flex-1">
+              <p className="text-sm font-semibold">Away</p>
+              <p className="text-3xl font-bold">{liveData.game?.awayTeamScore || 0}</p>
+            </div>
           </div>
           
-          {/* Other live stat sections would go here, based on the sport */}
-          {/* For now, we'll just show a placeholder */}
-          <div>
-            <h4 className="text-sm font-semibold text-gray-500 mb-1">Current State</h4>
-            <p className="text-sm">
-              {liveData.game?.situation || 'In progress'}
-            </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm font-semibold text-gray-500 mb-1">Game Status</h4>
+              <p className="text-sm">
+                {liveData.game?.status === 'live' ? (
+                  <span className="text-green-600 font-semibold">LIVE</span>
+                ) : liveData.game?.status === 'final' ? (
+                  <span className="font-semibold">FINAL</span>
+                ) : (
+                  <span>{liveData.game?.status || 'Unknown'}</span>
+                )}
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-semibold text-gray-500 mb-1">Last Updated</h4>
+              <p className="text-sm">
+                {liveData.timestamp ? new Date(liveData.timestamp).toLocaleTimeString() : 'N/A'}
+              </p>
+            </div>
+            
+            {liveData.game?.situation && (
+              <div className="col-span-2 mt-2">
+                <h4 className="text-sm font-semibold text-gray-500 mb-1">Situation</h4>
+                <p className="text-sm bg-gray-50 p-2 rounded">
+                  {liveData.game.situation}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       ) : (
