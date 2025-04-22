@@ -6,6 +6,8 @@ import UpcomingGameCard from "../components/UpcomingGameCard";
 import CompletedGameCard from "../components/CompletedGameCard";
 import { useScores } from "../hooks/useScores";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 const ScoresPage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
@@ -14,7 +16,8 @@ const ScoresPage = () => {
     liveGames, 
     upcomingGames, 
     recentGames, 
-    isLoading 
+    isLoading,
+    refreshScores
   } = useScores(selectedSport);
   
   const { data: favoriteSchoolData } = useQuery({
@@ -53,11 +56,25 @@ const ScoresPage = () => {
   return (
     <div className="py-4">
       <div className="px-4 mb-4">
-        <SportSelector
-          selectedSport={selectedSport}
-          onChange={handleChangeSport}
-          showAllOption={true}
-        />
+        <div className="flex justify-between items-center">
+          <div className="flex-1">
+            <SportSelector
+              selectedSport={selectedSport}
+              onChange={handleChangeSport}
+              showAllOption={true}
+            />
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="ml-2 flex items-center gap-1" 
+            onClick={() => refreshScores()}
+            disabled={isLoading}
+          >
+            <RefreshCw size={14} />
+            <span>Refresh</span>
+          </Button>
+        </div>
       </div>
       
       {isLoading ? (

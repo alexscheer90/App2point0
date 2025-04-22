@@ -17,7 +17,11 @@ function isGameToday(gameDate: string): boolean {
 
 export function useScores(sportId: string = "all") {
   // Use our MAC calendar API for real event data
-  const { data: macCalendarGames, isLoading: macLoading } = useMacCalendar(
+  const { 
+    data: macCalendarGames, 
+    isLoading: macLoading,
+    refreshCalendar 
+  } = useMacCalendar(
     sportId !== "all" ? sportId : undefined
   );
   
@@ -44,6 +48,7 @@ export function useScores(sportId: string = "all") {
     upcomingGames,
     recentGames,
     isLoading,
+    refreshScores: refreshCalendar
   };
 }
 
