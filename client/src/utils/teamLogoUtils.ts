@@ -14,26 +14,70 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "UIC": "University of Illinois-Chicago",
   "Illinois-Chicago": "University of Illinois-Chicago",
   
-  // Common MAC school variants
+  // Common MAC school variants with explicit name formats
   "NIU": "Northern Illinois",
+  "Northern Illinois University": "Northern Illinois",
+  "Northern Illinois Huskies": "Northern Illinois",
+  
   "CMU": "Central Michigan", 
+  "Central Michigan University": "Central Michigan",
+  "Central Michigan Chippewas": "Central Michigan",
+  
   "EMU": "Eastern Michigan",
+  "Eastern Michigan University": "Eastern Michigan",
+  "Eastern Michigan Eagles": "Eastern Michigan",
+  
   "WMU": "Western Michigan",
+  "Western Michigan University": "Western Michigan",
+  "Western Michigan Broncos": "Western Michigan",
+  
   "BGSU": "Bowling Green",
+  "Bowling Green State": "Bowling Green",
+  "Bowling Green State University": "Bowling Green",
+  "Bowling Green Falcons": "Bowling Green",
+  
   "UB": "Buffalo",
+  "University at Buffalo": "Buffalo",
+  "Buffalo Bulls": "Buffalo",
+  
   "Miami (OH)": "Miami",
   "Miami Ohio": "Miami",
+  "Miami University": "Miami",
+  "Miami of Ohio": "Miami",
   "RedHawks": "Miami",
+  "Miami RedHawks": "Miami",
+  
   "Kent State": "Kent State",
+  "Kent State University": "Kent State",
   "Golden Flashes": "Kent State",
+  "Kent State Golden Flashes": "Kent State",
+  
   "UMass": "Massachusetts",
   "Minutemen": "Massachusetts",
+  "Massachusetts Minutemen": "Massachusetts",
+  "University of Massachusetts": "Massachusetts",
+  
   "UT": "Toledo",
+  "Toledo Rockets": "Toledo",
+  "University of Toledo": "Toledo",
   "Rockets": "Toledo",
+  
   "Ball St": "Ball State",
+  "Ball State University": "Ball State",
   "Cardinals": "Ball State",
+  "Ball State Cardinals": "Ball State",
+  
+  "Akron": "Akron",
+  "University of Akron": "Akron",
   "Zips": "Akron",
+  "Akron Zips": "Akron",
+  
+  "Ohio": "Ohio",
+  "Ohio University": "Ohio",
   "Bobcats": "Ohio",
+  "Ohio Bobcats": "Ohio",
+  
+  // More explicit mascot mappings
   "Huskies": "Northern Illinois",
   "Chippewas": "Central Michigan",
   "Eagles": "Eastern Michigan",
@@ -110,6 +154,13 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     logoUrl: "/school-logos/affiliate/uic.png"
   },
   "Michigan": {
+    name: "Michigan",
+    shortName: "Michigan",
+    primaryColor: "#00274C",
+    secondaryColor: "#FFCB05",
+    logoUrl: "/school-logos/non-mac/michigan.png"
+  },
+  "University of Michigan": {
     name: "Michigan",
     shortName: "Michigan",
     primaryColor: "#00274C",
@@ -274,6 +325,86 @@ export function findSchoolByName(name: string): School | undefined {
     };
   }
   
+  // Explicitly handle University of Michigan to distinguish from MAC Michigan schools
+  if (lowerCaseName === "michigan" || 
+      lowerCaseName === "university of michigan" || 
+      lowerCaseName === "wolverines" || 
+      lowerCaseName === "u of m" || 
+      lowerCaseName === "u-m") {
+    return {
+      id: "university-of-michigan",
+      name: "Michigan",
+      shortName: "Michigan",
+      mascot: "Wolverines",
+      primaryColor: "#00274C",
+      secondaryColor: "#FFCB05",
+      logoUrl: "/school-logos/non-mac/michigan.png",
+      city: "Ann Arbor",
+      state: "MI"
+    };
+  }
+      
+  // Explicitly handle the MAC Michigan schools to prevent confusion with University of Michigan
+  if (lowerCaseName.includes("central michigan") || 
+      lowerCaseName === "cmu" || 
+      lowerCaseName.includes("chippewas")) {
+    // Find Central Michigan in macSchools array
+    const cmu = macSchools.find(school => school.id === "centralmichigan");
+    if (cmu) return cmu;
+    
+    return {
+      id: "centralmichigan",
+      name: "Central Michigan",
+      shortName: "CMU",
+      mascot: "Chippewas",
+      primaryColor: "#6A0032",
+      secondaryColor: "#FFC82E",
+      logoUrl: "/school-logos/centralmichigan.png",
+      city: "Mount Pleasant",
+      state: "MI"
+    };
+  }
+  
+  if (lowerCaseName.includes("eastern michigan") || 
+      lowerCaseName === "emu" || 
+      lowerCaseName.includes("eagles")) {
+    // Find Eastern Michigan in macSchools array
+    const emu = macSchools.find(school => school.id === "easternmichigan");
+    if (emu) return emu;
+    
+    return {
+      id: "easternmichigan",
+      name: "Eastern Michigan",
+      shortName: "EMU",
+      mascot: "Eagles",
+      primaryColor: "#046A38",
+      secondaryColor: "#777777",
+      logoUrl: "/school-logos/easternmichigan.png",
+      city: "Ypsilanti",
+      state: "MI"
+    };
+  }
+  
+  if (lowerCaseName.includes("western michigan") || 
+      lowerCaseName === "wmu" || 
+      lowerCaseName.includes("broncos")) {
+    // Find Western Michigan in macSchools array
+    const wmu = macSchools.find(school => school.id === "westernmichigan");
+    if (wmu) return wmu;
+    
+    return {
+      id: "westernmichigan",
+      name: "Western Michigan",
+      shortName: "WMU",
+      mascot: "Broncos",
+      primaryColor: "#6C4023",
+      secondaryColor: "#B5A167",
+      logoUrl: "/school-logos/westernmichigan.png",
+      city: "Kalamazoo",
+      state: "MI"
+    };
+  }
+  
   if (lowerCaseName.includes("texas tech") || 
       lowerCaseName === "ttu" || 
       lowerCaseName.includes("red raiders")) {
@@ -434,6 +565,31 @@ export function getTeamLogoUrl(nameOrId: string): string {
   
   if (nameOrId.toLowerCase().includes("bowling green")) {
     return "/school-logos/bowlinggreen.png";
+  }
+  
+  // Special case handling for Michigan schools to avoid confusion
+  if (nameOrId.toLowerCase() === "michigan" || 
+      nameOrId.toLowerCase().includes("university of michigan") ||
+      nameOrId.toLowerCase().includes("wolverines")) {
+    return "/school-logos/non-mac/michigan.png";
+  }
+  
+  if (nameOrId.toLowerCase().includes("central michigan") || 
+      nameOrId.toLowerCase() === "cmu" ||
+      nameOrId.toLowerCase().includes("chippewas")) {
+    return "/school-logos/centralmichigan.png";
+  }
+  
+  if (nameOrId.toLowerCase().includes("eastern michigan") || 
+      nameOrId.toLowerCase() === "emu" ||
+      nameOrId.toLowerCase().includes("eagles")) {
+    return "/school-logos/easternmichigan.png";
+  }
+  
+  if (nameOrId.toLowerCase().includes("western michigan") || 
+      nameOrId.toLowerCase() === "wmu" ||
+      nameOrId.toLowerCase().includes("broncos")) {
+    return "/school-logos/westernmichigan.png";
   }
   
   // Special school matching logic has been handled above
