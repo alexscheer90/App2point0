@@ -1,7 +1,8 @@
 import express from 'express';
 import { log } from '../vite';
-import { gameScheduleService } from '../services/gameScheduleService';
+import { Game } from '@shared/schema';
 import { unifiedDataService } from '../services/unifiedDataService';
+import axios from 'axios';
 
 const router = express.Router();
 
@@ -10,8 +11,14 @@ router.get('/games/:gameId', async (req, res) => {
   try {
     const { gameId } = req.params;
     
-    // First, get the basic game info from our schedule service
-    const game = await gameScheduleService.getGameById(gameId);
+    // Temporary: get game from our API directly
+    let game: Game | null = null;
+    try {
+      const response = await axios.get(`/api/games/${gameId}`);
+      game = response.data;
+    } catch (error) {
+      log(`Game not found: ${gameId}`, 'livestats');
+    }
     
     if (!game) {
       return res.status(404).json({ 
@@ -67,8 +74,14 @@ router.get('/availability/:gameId', async (req, res) => {
   try {
     const { gameId } = req.params;
     
-    // Get the basic game info
-    const game = await gameScheduleService.getGameById(gameId);
+    // Temporary: get game from our API directly
+    let game: Game | null = null;
+    try {
+      const response = await axios.get(`/api/games/${gameId}`);
+      game = response.data;
+    } catch (error) {
+      log(`Game not found: ${gameId}`, 'livestats');
+    }
     
     if (!game) {
       return res.status(404).json({ 

@@ -7,6 +7,7 @@ import axios from "axios";
 import { WebSocketServer, WebSocket } from "ws";
 import importerRoutes from "./routes/importer";
 import googleSheetsRoutes from "./routes/googleSheets";
+import liveStatsRoutes from "./routes/livestats";
 import express from "express";
 import path from "path";
 
@@ -19,6 +20,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Google Sheets routes
   app.use('/api/sheets', googleSheetsRoutes);
+  
+  // Register live stats routes
+  app.use('/api/live-stats', liveStatsRoutes);
   
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {

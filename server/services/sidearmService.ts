@@ -124,7 +124,7 @@ function findDataSourceUrls($: cheerio.CheerioAPI): string[] {
   const urls: string[] = [];
   
   // Look for JavaScript that contains URLs to data sources
-  $('script').each((_, script) => {
+  $('script').each((index: number, script: any) => {
     const content = $(script).html() || '';
     
     // Common patterns for data source URLs in SIDEARM
@@ -183,12 +183,12 @@ function extractScore(data: any, team: 'home' | 'away'): number {
   return 0;
 }
 
-function extractGameStatus(data: any): string {
+function extractGameStatus(data: any): GameStatus {
   // Implementation would depend on the actual data format
   return 'scheduled';
 }
 
-function extractPeriod(data: any): string | undefined {
+function extractPeriod(data: any): number | undefined {
   // Implementation would depend on the actual data format
   return undefined;
 }
