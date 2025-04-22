@@ -391,6 +391,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
           {sourceLabel}
         </div>
         
+        {/* Sport badge - positioned in top right */}
+        <div className="absolute top-2 right-2 z-20 flex items-center px-2 py-1 rounded-full shadow-sm"
+             style={{ backgroundColor: sportStyle.backgroundColor, color: sportStyle.textColor }}>
+          <Trophy size={12} className="mr-1" />
+          <span className="text-xs font-medium">{sportName}</span>
+        </div>
+            
         {/* Content container */}
         <div className="relative z-10 flex flex-col h-full p-3">
           {/* Game header */}
@@ -401,13 +408,6 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
             <div className="flex items-center">
               <CalendarIcon size={12} className="mr-1" />
               {formattedDate}
-            </div>
-            
-            {/* Sport badge */}
-            <div className="flex items-center px-2 py-0.5 ml-1 rounded-full"
-                style={{ backgroundColor: sportStyle.backgroundColor, color: sportStyle.textColor }}>
-              <Trophy size={10} className="mr-1" />
-              <span className="text-xs">{sportName}</span>
             </div>
             
             {/* Time badge if available */}
