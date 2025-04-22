@@ -47,7 +47,7 @@ export const nonMacSchools: School[] = [
     mascot: "Buckeyes",
     primaryColor: "#BB0000", // Scarlet
     secondaryColor: "#666666", // Gray
-    logoUrl: ohioStateLogo,
+    logoUrl: "/school-logos/non-mac/ohiostate.png",
     city: "Columbus",
     state: "OH",
     affiliate: false
