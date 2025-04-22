@@ -454,17 +454,5 @@ export const macSchools: School[] = [
     city: "Chicago",
     state: "IL",
     affiliate: true
-  },
-  {
-    id: "ohiostate",
-    name: "Ohio State",
-    shortName: "Ohio St",
-    mascot: "Buckeyes",
-    primaryColor: "#BB0000", // Scarlet
-    secondaryColor: "#666666", // Gray
-    logoUrl: ohioStateLogo,
-    city: "Columbus",
-    state: "OH",
-    affiliate: false
   }
 ];
