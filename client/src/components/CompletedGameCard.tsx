@@ -82,6 +82,35 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
   const homeTeam = findSchoolByName(homeTeamInfo.name);
   const awayTeam = findSchoolByName(awayTeamInfo.name);
   
+  // Add special case handling for specific non-MAC schools
+  if (awayTeamInfo.name.includes("Valparaiso") || awayTeamInfo.name.toLowerCase().includes("valpo")) {
+    if (!awayTeam || !awayTeam.logoUrl.includes('valparaiso')) {
+      awayTeam = {
+        ...awayTeam || {},
+        name: "Valparaiso",
+        shortName: "Valpo",
+        mascot: "Beacons",
+        logoUrl: "/school-logos/non-mac/valparaiso.png",
+        primaryColor: "#402E82", // Valpo colors
+        secondaryColor: "#FDAC43"
+      } as any;
+    }
+  }
+  
+  if (awayTeamInfo.name.includes("Northern Kentucky") || awayTeamInfo.name.includes("NKU")) {
+    if (!awayTeam || !awayTeam.logoUrl.includes('northernkentucky')) {
+      awayTeam = {
+        ...awayTeam || {},
+        name: "Northern Kentucky",
+        shortName: "NKU",
+        mascot: "Norse",
+        logoUrl: "/school-logos/non-mac/northernkentucky.png",
+        primaryColor: "#FFC72C", // NKU colors
+        secondaryColor: "#000000"
+      } as any;
+    }
+  }
+  
   // Debug team resolution
   console.log(`Team resolution - Home: ${homeTeam?.name || homeTeamInfo.name}, Logo: ${homeTeam?.logoUrl || 'Using default'}`);
   console.log(`Team resolution - Away: ${awayTeam?.name || awayTeamInfo.name}, Logo: ${awayTeam?.logoUrl || 'Using default'}`);

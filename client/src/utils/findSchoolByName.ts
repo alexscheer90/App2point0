@@ -25,6 +25,40 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
   // Normalize the name for comparison
   const normalizedName = name.trim();
   
+  // Special case handling for Valparaiso
+  if (normalizedName.toLowerCase().includes("valparaiso") || 
+      normalizedName.toLowerCase().includes("valpo") ||
+      normalizedName.toLowerCase().includes("beacons")) {
+    return {
+      id: "valparaiso",
+      name: "Valparaiso",
+      shortName: "Valpo",
+      mascot: "Beacons",
+      primaryColor: "#402E82", // Valpo colors 
+      secondaryColor: "#FDAC43",
+      logoUrl: "/school-logos/non-mac/valparaiso.png",
+      city: "Valparaiso",
+      state: "IN"
+    };
+  }
+  
+  // Special case handling for Northern Kentucky
+  if (normalizedName.toLowerCase().includes("northern kentucky") || 
+      normalizedName.toLowerCase() === "nku" ||
+      normalizedName.toLowerCase().includes("norse")) {
+    return {
+      id: "northern-kentucky",
+      name: "Northern Kentucky",
+      shortName: "NKU",
+      mascot: "Norse",
+      primaryColor: "#FFC72C", // NKU colors
+      secondaryColor: "#000000",
+      logoUrl: "/school-logos/non-mac/northernkentucky.png",
+      city: "Highland Heights",
+      state: "KY"
+    };
+  }
+  
   // First, try exact match with MAC schools
   const macSchool = macSchools.find(s => 
     s.name.toLowerCase() === normalizedName.toLowerCase() || 
