@@ -183,6 +183,19 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
         parseInt(data.visitor.score) : Number(data.visitor.score);
     }
     
+    // Miami baseball specific format (based on test endpoint)
+    if (data.HomeTeam && data.HomeTeam.Score !== undefined) {
+      homeTeamScore = typeof data.HomeTeam.Score === 'string' ?
+        parseInt(data.HomeTeam.Score) : Number(data.HomeTeam.Score);
+      console.log(`Found HomeTeam.Score: ${homeTeamScore}`);
+    }
+    
+    if (data.VisitingTeam && data.VisitingTeam.Score !== undefined) {
+      awayTeamScore = typeof data.VisitingTeam.Score === 'string' ?
+        parseInt(data.VisitingTeam.Score) : Number(data.VisitingTeam.Score);
+      console.log(`Found VisitingTeam.Score: ${awayTeamScore}`);
+    }
+    
     // Try to get period/inning/quarter information
     if (data.status && data.status.period) {
       period = data.status.period;
@@ -197,6 +210,12 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       // Another baseball format
       const inningHalf = data.currentInningHalf === 0 ? 'T' : 'B';
       period = String(data.currentInning) + inningHalf;
+    } 
+    // Miami baseball specific format
+    else if (data.Period && typeof data.Period === 'string') {
+      // For example, "T4" for top of the 4th inning
+      period = data.Period;
+      console.log(`Found Period directly from Miami data: ${period}`);
     }
     
     // Try to get clock information
@@ -233,6 +252,37 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       
       if (bases.length > 0) {
         situation += `, runner${bases.length > 1 ? 's' : ''} on ${bases.join(', ')}`;
+      }
+    }
+    // Miami baseball specific format
+    else if (data.Situation) {
+      if (typeof data.Situation === 'object') {
+        // Build a situation string from the available information
+        const situationParts = [];
+        
+        if (data.Situation.Balls !== undefined && data.Situation.Strikes !== undefined) {
+          situationParts.push(`${data.Situation.Balls}-${data.Situation.Strikes} count`);
+        }
+        
+        if (data.Situation.Outs !== undefined) {
+          situationParts.push(`${data.Situation.Outs} out${data.Situation.Outs !== 1 ? 's' : ''}`);
+        }
+        
+        // Check for runners on base
+        const bases = [];
+        if (data.Situation.RunnerOnFirst) bases.push('1st');
+        if (data.Situation.RunnerOnSecond) bases.push('2nd');
+        if (data.Situation.RunnerOnThird) bases.push('3rd');
+        
+        if (bases.length > 0) {
+          situationParts.push(`runner${bases.length > 1 ? 's' : ''} on ${bases.join(', ')}`);
+        }
+        
+        situation = situationParts.join(', ');
+        console.log(`Built situation from Miami data object: ${situation}`);
+      } else if (typeof data.Situation === 'string') {
+        situation = data.Situation;
+        console.log(`Found situation directly from Miami data: ${situation}`);
       }
     }
     
