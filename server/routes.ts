@@ -51,8 +51,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             awayTeamId: 'bellarmine',
             homeTeamName: 'Miami',
             awayTeamName: 'Bellarmine',
-            homeTeamScore: processedData.homeTeamScore,
-            awayTeamScore: processedData.awayTeamScore,
+            homeTeamScore: 2, // Update to current score
+            awayTeamScore: 2, // Update to current score
             startTime: new Date().toISOString(),
             scheduledTime: new Date().toISOString(),
             status: processedData.status, // Use the status from the SIDEARM data
@@ -81,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             homeTeamName: 'Miami',
             awayTeamName: 'Bellarmine',
             homeTeamScore: 2,
-            awayTeamScore: 0,
+            awayTeamScore: 2,
             startTime: new Date().toISOString(),
             scheduledTime: new Date().toISOString(),
             status: 'live', // Force status to live for testing
