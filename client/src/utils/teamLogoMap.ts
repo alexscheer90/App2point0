@@ -533,8 +533,13 @@ export function findLogoByNamePattern(name: string): string {
   // Log for debugging
   console.log(`Looking for logo for ${name} (cleaned: ${cleanName})`);
   
-  // Special case for conference name
-  if (name.toLowerCase().includes("mid-american") || name.toLowerCase() === "mac") {
+  // Special case for conference name, championship, or tournament
+  if (name.toLowerCase().includes("mid-american") || 
+      name.toLowerCase() === "mac" ||
+      name.toLowerCase().includes("mac championship") ||
+      name.toLowerCase().includes("mac tournament") ||
+      (name.toLowerCase().includes("mac") && 
+       (name.toLowerCase().includes("championship") || name.toLowerCase().includes("tournament")))) {
     return "/school-logos/mac-conference.png";
   }
   
@@ -555,7 +560,9 @@ export function findLogoByNamePattern(name: string): string {
     "toledo": "/school-logos/toledo.png",
     "western michigan": "/school-logos/westernmichigan.png",
     "massachusetts": "/school-logos/massachusetts.png",
-    "umass": "/school-logos/massachusetts.png"
+    "umass": "/school-logos/massachusetts.png",
+    "mac championship": "/school-logos/mac-conference.png",
+    "mac tournament": "/school-logos/mac-conference.png"
   };
   
   // Check for MAC school direct match
