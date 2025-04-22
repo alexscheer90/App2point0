@@ -26,11 +26,14 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
   
   if (!game) {
     return (
-      <Alert variant="destructive" className="mt-4">
+      <Alert variant="default" className="mt-4">
         <XCircle className="h-5 w-5" />
         <AlertTitle>Live Stats Unavailable</AlertTitle>
         <AlertDescription>
-          We couldn't retrieve live stats for this game. Please check back later.
+          Game has not yet started. Stats will populate when the game begins.
+          <div className="mt-4 text-center text-sm text-gray-500">
+            -- Mobile #MACtion --
+          </div>
         </AlertDescription>
       </Alert>
     );

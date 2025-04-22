@@ -48,10 +48,16 @@ const GameDetails: React.FC = () => {
   
   if (error || !game) {
     return (
-      <Alert variant="destructive" className="mx-4 my-8">
-        <AlertTitle>Error loading game</AlertTitle>
+      <Alert variant={error ? "destructive" : "default"} className="mx-4 my-8">
+        <AlertTitle>{error ? "Error loading game" : "Game not yet active"}</AlertTitle>
         <AlertDescription>
-          We couldn't load this game. Please try again later.
+          {error 
+            ? "We couldn't load this game. Please try again later."
+            : "Game has not yet started. Stats will populate when the game begins."
+          }
+          <div className="mt-4 text-center text-sm text-gray-500">
+            -- Mobile #MACtion --
+          </div>
         </AlertDescription>
       </Alert>
     );
