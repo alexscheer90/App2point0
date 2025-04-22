@@ -1,0 +1,131 @@
+import { School } from "@shared/schema";
+import { macSchools, ncaaLogoUrl } from "../data/macSchools";
+import { 
+  SCHOOL_NAME_MAPPINGS, 
+  findLogoByNamePattern, 
+  guessTeamColors 
+} from "./teamLogoMap";
+import { NON_MAC_SCHOOLS } from "./nonMacSchools";
+
+/**
+ * Find a matching school object by name
+ * Uses fuzzy matching and common name variants
+ * Prioritizes official MAC schedule team names
+ * 
+ * @param name The name of the school to find
+ * @param context Optional context string to help resolve ambiguous names
+ * @returns School object or undefined
+ */
+export function findSchoolByName(name: string, context?: string): School | undefined {
+  if (!name) return undefined;
+  
+  // Normalize the name for comparison
+  const normalizedName = name.trim();
+  
+  // First, try exact match with MAC schools
+  const macSchool = macSchools.find(s => 
+    s.name.toLowerCase() === normalizedName.toLowerCase() || 
+    s.shortName.toLowerCase() === normalizedName.toLowerCase()
+  );
+  
+  if (macSchool) return macSchool;
+  
+  // Check for known name mappings
+  const mappedName = SCHOOL_NAME_MAPPINGS[normalizedName];
+  if (mappedName) {
+    // Try to find the mapped name in MAC schools
+    const mappedMacSchool = macSchools.find(s => 
+      s.name.toLowerCase() === mappedName.toLowerCase() || 
+      s.shortName.toLowerCase() === mappedName.toLowerCase()
+    );
+    
+    if (mappedMacSchool) return mappedMacSchool;
+    
+    // If not a MAC school, check if it's in our non-MAC schools
+    const nonMacSchool = NON_MAC_SCHOOLS[mappedName];
+    if (nonMacSchool) {
+      return {
+        id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
+        name: nonMacSchool.name,
+        shortName: nonMacSchool.shortName,
+        mascot: "",
+        primaryColor: nonMacSchool.primaryColor,
+        secondaryColor: nonMacSchool.secondaryColor,
+        logoUrl: nonMacSchool.logoUrl,
+        city: "",
+        state: ""
+      };
+    }
+  }
+  
+  // Direct lookup in non-MAC schools
+  const nonMacSchool = NON_MAC_SCHOOLS[normalizedName];
+  if (nonMacSchool) {
+    return {
+      id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
+      name: nonMacSchool.name,
+      shortName: nonMacSchool.shortName,
+      mascot: "",
+      primaryColor: nonMacSchool.primaryColor,
+      secondaryColor: nonMacSchool.secondaryColor,
+      logoUrl: nonMacSchool.logoUrl,
+      city: "",
+      state: ""
+    };
+  }
+  
+  // Try to match with non-MAC schools based on filename pattern
+  // This helps use more of the available logo files
+  const logoUrl = findLogoByNamePattern(normalizedName);
+  const colors = guessTeamColors(normalizedName);
+    
+  // Fuzzy matching - first with MAC schools
+  for (const school of macSchools) {
+    if (
+      school.name.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(school.name.toLowerCase()) ||
+      school.shortName.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(school.shortName.toLowerCase())
+    ) {
+      return school;
+    }
+  }
+  
+  // Then with non-MAC schools
+  for (const [key, school] of Object.entries(NON_MAC_SCHOOLS)) {
+    if (
+      school.name.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(school.name.toLowerCase()) ||
+      school.shortName.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(school.shortName.toLowerCase())
+    ) {
+      return {
+        id: school.name.toLowerCase().replace(/\s+/g, "-"),
+        name: school.name,
+        shortName: school.shortName,
+        mascot: "",
+        primaryColor: school.primaryColor,
+        secondaryColor: school.secondaryColor,
+        logoUrl: school.logoUrl,
+        city: "",
+        state: ""
+      };
+    }
+  }
+  
+  // If still no match, create a school entry with potential logo match
+  console.log(`Creating school with potential logo match: ${name} → ${logoUrl}`);
+  
+  // Create a school with inferred logo and default colors
+  return {
+    id: name.toLowerCase().replace(/\s+/g, "-"),
+    name: name,
+    shortName: name,
+    mascot: "",
+    primaryColor: colors.primary,
+    secondaryColor: colors.secondary,
+    logoUrl: logoUrl, // Try to use a matching logo file based on name
+    city: "",
+    state: ""
+  };
+}

@@ -1,212 +1,177 @@
 import { Game } from "@shared/schema";
-import { useMacSchools } from "../hooks/useSchool";
-import { useMacSports } from "../hooks/useStandings";
-import { format, formatDistanceToNow } from "date-fns";
-import ShareButton from "./ShareButton";
-import { ChevronRight } from "lucide-react";
-import { useLocation } from "wouter";
-import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
+import { Link } from "wouter";
+import { findSchoolByName } from "../utils/findSchoolByName";
+import { Badge } from "./ui/badge";
+import { format } from "date-fns";
+import { CalendarIcon, ChevronRight, Clock } from "lucide-react";
 
 interface CompletedGameCardProps {
   game: Game;
+  showType?: "list" | "card";
 }
 
-const CompletedGameCard = ({ game }: CompletedGameCardProps) => {
-  const { data: schools, isLoading: schoolsLoading } = useMacSchools();
-  const { data: sports, isLoading: sportsLoading } = useMacSports();
+function CompletedGameCardComponent({ game, showType = "card" }: CompletedGameCardProps) {
+  // Find team data using the improved findSchoolByName function
+  const homeTeam = findSchoolByName(game.homeTeam);
+  const awayTeam = findSchoolByName(game.awayTeam);
   
-  if (schoolsLoading || sportsLoading || !schools || !sports) {
-    return (
-      <div className="bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200 p-4 animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-        <div className="h-6 bg-gray-200 rounded w-full mb-2"></div>
-        <div className="h-6 bg-gray-200 rounded w-full"></div>
-      </div>
-    );
+  // Determine if the game is a rivalry
+  const isRivalry = game.isRivalry;
+  
+  // Set default background color to MAC Navy
+  const defaultBgColor = "#0B213E";
+  
+  // Determine background gradient based on team primary colors
+  const homePrimaryColor = homeTeam?.primaryColor || defaultBgColor;
+  const awayPrimaryColor = awayTeam?.primaryColor || defaultBgColor;
+  
+  // Get winner and loser for styling
+  let winnerTeam = null;
+  let loserTeam = null;
+  let homeWinner = false;
+  let awayWinner = false;
+  
+  // Only determine winner/loser if we have scores
+  if (game.homeScore !== undefined && game.awayScore !== undefined) {
+    const homeScore = parseInt(game.homeScore.toString());
+    const awayScore = parseInt(game.awayScore.toString());
+    
+    if (homeScore > awayScore) {
+      winnerTeam = homeTeam;
+      loserTeam = awayTeam;
+      homeWinner = true;
+    } else if (awayScore > homeScore) {
+      winnerTeam = awayTeam;
+      loserTeam = homeTeam;
+      awayWinner = true;
+    }
   }
   
-  // Get team data, first try to match by ID from our MAC schools
-  let homeTeam = schools.find(school => school.id === game.homeTeamId);
-  let awayTeam = schools.find(school => school.id === game.awayTeamId);
-  const sport = sports.find(sport => sport.id === game.sportId);
-  
-  // Extract team names from the game data
-  const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
-  const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
-  
-  // For non-MAC teams, try to find by name using the logo utility
-  if (!homeTeam && game.homeTeamName) {
-    homeTeam = findSchoolByName(game.homeTeamName);
+  // Define the background gradient that emphasizes the winner
+  let gradientStyle;
+  if (winnerTeam && loserTeam) {
+    // If we have a winner, make their color more prominent
+    const winnerColor = winnerTeam?.primaryColor || defaultBgColor;
+    const loserColor = loserTeam?.primaryColor || defaultBgColor;
+    gradientStyle = {
+      background: `linear-gradient(125deg, ${homeWinner ? winnerColor : loserColor} 0%, ${awayWinner ? winnerColor : loserColor} 100%)`,
+    };
+  } else {
+    // Otherwise use both team colors equally
+    gradientStyle = {
+      background: `linear-gradient(125deg, ${homePrimaryColor} 0%, ${awayPrimaryColor} 100%)`,
+    };
   }
   
-  if (!awayTeam && game.awayTeamName) {
-    awayTeam = findSchoolByName(game.awayTeamName);
+  // Determine badge color based on data source
+  let sourceColor = "bg-blue-500"; // Default blue badge for normal data
+  let sourceLabel = "Smart Data Sourcing";
+  
+  if (game.dataSource === "sidearm") {
+    sourceColor = "bg-green-500";
+    sourceLabel = "Official School Stats";
+  } else if (game.dataSource === "espn") {
+    sourceColor = "bg-purple-500";
+    sourceLabel = "ESPN Data";
   }
   
-  // Check if this is a MAC tournament/championship game
-  const isMacConferenceGame = 
-    homeTeamName.includes('Mid-American Conference') || 
-    awayTeamName.includes('Mid-American Conference');
+  const gameDate = new Date(game.date);
+  const formattedDate = format(gameDate, "MMM d, yyyy");
   
-  // Create placeholder objects for unknown teams if needed
-  const defaultHomeTeam = homeTeam || {
-    id: game.homeTeamId || 'unknown',
-    name: homeTeamName,
-    shortName: homeTeamName.split(' ').pop() || 'UNK',
-    mascot: "",
-    primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
-    secondaryColor: '#ffffff',
-    logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo.png' // MAC logo
-      : '/attached_assets/IMG_0788.png' // NCAA logo
-  };
-  
-  const defaultAwayTeam = awayTeam || {
-    id: game.awayTeamId || 'unknown',
-    name: awayTeamName,
-    shortName: awayTeamName.split(' ').pop() || 'UNK',
-    mascot: "",
-    primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
-    secondaryColor: '#ffffff',
-    logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo.png' // MAC logo
-      : '/attached_assets/IMG_0788.png' // NCAA logo
-  };
-  
-  if (!sport) {
-    return null;
+  // Format game result text
+  let resultText = "Final";
+  if (game.periodDetail && game.sport === "baseball") {
+    resultText = `Final/${game.periodDetail}`;
+  } else if (game.periodDetail) {
+    resultText = `Final ${game.periodDetail}`;
   }
-  
-  // Format the date for display
-  const gameDate = new Date(game.startTime);
-  const timeAgo = formatDistanceToNow(gameDate, { addSuffix: true });
-  
-  // Create a share URL for the game
-  const shareUrl = `/games/${game.id}`;
-  
-  // Create share content
-  const shareTitle = `Final: ${defaultHomeTeam.name} ${game.homeTeamScore}, ${defaultAwayTeam.name} ${game.awayTeamScore}`;
-  const description = `Check out the final score of this ${sport.name} game from Mobile #MACtion!`;
-  
-  const handleShareClick = (e: React.MouseEvent) => {
-    // Stop propagation to prevent any parent onClick from firing
-    e.stopPropagation();
-  };
-  
-  // Set up navigation
-  const [_, setLocation] = useLocation();
-  
-  // Handle click to navigate to game stats page
-  const handleGameClick = () => {
-    // For completed games, we'll always show stats
-    setLocation(`/games/${game.id}`);
-  };
   
   return (
-    <div 
-      className="bg-white rounded-lg shadow-sm mb-3 overflow-hidden border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={handleGameClick}
-    >
-      <div className="bg-gray-100 text-xs font-semibold px-3 py-1 flex justify-between items-center">
-        <span>{sport.name}</span>
-        <div className="flex items-center space-x-2">
-          <span>Final • {timeAgo}</span>
-          <div onClick={handleShareClick}>
-            <ShareButton 
-              url={shareUrl}
-              title={shareTitle}
-              description={description}
-              compact={true}
-            />
+    <Link href={`/games/${game.id}`}>
+      <div className={`relative mb-4 overflow-hidden text-white rounded-xl cursor-pointer transition-transform duration-200 hover:scale-102 ${
+        isRivalry ? "ring-2 ring-yellow-400" : ""
+      } ${showType === "card" ? "h-48" : "h-28"}`}>
+        {/* Background gradient */}
+        <div className="absolute inset-0" style={gradientStyle}></div>
+        
+        {/* Overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black/30"></div>
+        
+        {/* Rivalry indicator */}
+        {isRivalry && (
+          <div className="absolute top-0 left-0 z-10 flex items-center px-2 py-1 text-xs font-bold text-black bg-yellow-400 rounded-br-md">
+            RIVALRY GAME
           </div>
-        </div>
-      </div>
-      <div className="p-3">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center">
-            {defaultHomeTeam.logoUrl ? (
-              // When logo is available
-              <div className="w-8 h-8 mr-3 flex items-center justify-center">
-                <img 
-                  src={defaultHomeTeam.logoUrl} 
-                  alt={`${defaultHomeTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
-                />
-              </div>
-            ) : (
-              // Fallback to circular initial when no logo
-              <div 
-                className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: defaultHomeTeam.primaryColor }}
-              >
-                <span className="text-xs font-bold" style={{ color: defaultHomeTeam.secondaryColor }}>
-                  {defaultHomeTeam.shortName.charAt(0)}
-                </span>
-              </div>
-            )}
-            <span className="font-semibold text-sm">{defaultHomeTeam.name}</span>
-          </div>
-          <span className="font-bold text-lg">{game.homeTeamScore}</span>
-        </div>
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center">
-            {defaultAwayTeam.logoUrl ? (
-              // When logo is available
-              <div className="w-8 h-8 mr-3 flex items-center justify-center">
-                <img 
-                  src={defaultAwayTeam.logoUrl} 
-                  alt={`${defaultAwayTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
-                />
-              </div>
-            ) : (
-              // Fallback to circular initial when no logo
-              <div 
-                className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: defaultAwayTeam.primaryColor }}
-              >
-                <span className="text-xs font-bold" style={{ color: defaultAwayTeam.secondaryColor }}>
-                  {defaultAwayTeam.shortName.charAt(0)}
-                </span>
-              </div>
-            )}
-            <span className="font-semibold text-sm">{defaultAwayTeam.name}</span>
-          </div>
-          <span className="font-bold text-lg">{game.awayTeamScore}</span>
+        )}
+        
+        {/* Data source badge */}
+        <div className="absolute top-0 right-0 z-10 px-2 py-1 text-xs font-medium text-white rounded-bl-md"
+             style={{ backgroundColor: sourceColor.replace('bg-', '') }}>
+          {sourceLabel}
         </div>
         
-        <div className="flex justify-between pt-2 border-t border-gray-100 mt-2">
-          {game.links?.s_boxscore ? (
-            <a 
-              href={game.links.s_boxscore} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-purple-600 hover:underline font-medium flex items-center gap-1 text-xs"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ChevronRight size={12} />
-              Box Score
-            </a>
-          ) : (
-            <span className="text-blue-600 flex items-center gap-1 text-xs" onClick={(e) => {
-              e.stopPropagation();
-              setLocation(`/games/${game.id}`);
-            }}>
-              <ChevronRight size={12} />
-              Game Stats
-            </span>
-          )}
-          <div onClick={handleShareClick} className="hidden md:block">
-            <ShareButton 
-              url={shareUrl}
-              title={shareTitle}
-              description={description}
-            />
+        {/* Content container */}
+        <div className="relative z-10 flex flex-col h-full p-3">
+          {/* Game header */}
+          <div className="flex items-center mb-2 space-x-2 text-xs text-white/80">
+            <Badge variant="outline" className="border-white/30 text-white">
+              {resultText}
+            </Badge>
+            <div className="flex items-center">
+              <CalendarIcon size={12} className="mr-1" />
+              {formattedDate}
+            </div>
+          </div>
+          
+          {/* Team display */}
+          <div className="flex flex-col flex-grow justify-center">
+            {/* Away team */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
+                  <img 
+                    src={awayTeam?.logoUrl || "/school-logos/generic.png"} 
+                    alt={game.awayTeam} 
+                    className={`object-contain w-full h-full p-1 ${awayWinner ? 'ring-2 ring-yellow-400' : ''}`}
+                  />
+                </div>
+                <div>
+                  <div className="text-sm font-medium">{awayTeam?.shortName || game.awayTeam}</div>
+                  <div className={`text-xl font-bold ${awayWinner ? 'text-yellow-400' : ''}`}>{game.awayTeam}</div>
+                </div>
+              </div>
+              <div className={`text-3xl font-bold mr-2 ${awayWinner ? 'text-yellow-400' : ''}`}>
+                {game.awayScore || "0"}
+              </div>
+            </div>
+            
+            {/* Home team */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
+                  <img 
+                    src={homeTeam?.logoUrl || "/school-logos/generic.png"} 
+                    alt={game.homeTeam} 
+                    className={`object-contain w-full h-full p-1 ${homeWinner ? 'ring-2 ring-yellow-400' : ''}`}
+                  />
+                </div>
+                <div>
+                  <div className="text-sm font-medium">{homeTeam?.shortName || game.homeTeam}</div>
+                  <div className={`text-xl font-bold ${homeWinner ? 'text-yellow-400' : ''}`}>{game.homeTeam}</div>
+                </div>
+              </div>
+              <div className={`text-3xl font-bold mr-2 ${homeWinner ? 'text-yellow-400' : ''}`}>
+                {game.homeScore || "0"}
+              </div>
+            </div>
+          </div>
+          
+          {/* View details chevron */}
+          <div className="flex justify-end mt-2">
+            <ChevronRight className="text-white/70" />
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
-};
-
-export default CompletedGameCard;
+}

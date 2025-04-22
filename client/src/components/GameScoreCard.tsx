@@ -1,349 +1,193 @@
 import { Game } from "@shared/schema";
-import { useMacSchools } from "../hooks/useSchool";
-import { useMacSports } from "../hooks/useStandings";
-import ShareButton from "./ShareButton";
+import { Link } from "wouter";
+import { findSchoolByName } from "../utils/findSchoolByName";
+import { Badge } from "./ui/badge";
 import { format } from "date-fns";
-import { shouldShowLiveStats } from "../utils/liveStatsUtils";
-import { ChevronRight } from "lucide-react";
-import { useLocation } from "wouter";
-import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
-
-// Sport display name mapping for consistent naming across the application
-const SPORT_DISPLAY_NAMES: Record<string, string> = {
-  "baseball": "Baseball",
-  "mbball": "Basketball - Men",
-  "wbball": "Basketball - Women",
-  "xc": "Cross Country",
-  "fhockey": "Field Hockey",
-  "football": "Football",
-  "golf": "Golf",
-  "mgolf": "Golf",
-  "wgolf": "Golf",
-  "gym": "Gymnastics",
-  "wlax": "Lacrosse",
-  "wsoc": "Soccer - Women",
-  "softball": "Softball",
-  "swimming": "Swimming & Diving",
-  "mswim": "Swimming & Diving",
-  "wswim": "Swimming & Diving",
-  "tennis": "Tennis",
-  "mten": "Tennis",
-  "wten": "Tennis",
-  "track": "Track & Field",
-  "wvball": "Volleyball",
-  "wrestling": "Wrestling"
-};
-
-// Helper function to get the display name for a sport
-const getSportDisplayName = (sportId: string): string => {
-  return SPORT_DISPLAY_NAMES[sportId] || "";
-};
+import { CalendarIcon, ChevronRight, Clock, Play } from "lucide-react";
 
 interface GameScoreCardProps {
   game: Game;
+  isLive?: boolean;
+  showType?: "list" | "card";
 }
 
-const GameScoreCard = ({ game }: GameScoreCardProps) => {
-  const { data: schools, isLoading: schoolsLoading } = useMacSchools();
-  const { data: sports, isLoading: sportsLoading } = useMacSports();
+export function GameScoreCard({ game, isLive = false, showType = "card" }: GameScoreCardProps) {
+  // Find team data using the improved findSchoolByName function
+  const homeTeam = findSchoolByName(game.homeTeam);
+  const awayTeam = findSchoolByName(game.awayTeam);
   
-  if (schoolsLoading || sportsLoading || !schools || !sports) {
-    return (
-      <div className="bg-white rounded-lg shadow-md mb-3 overflow-hidden border border-gray-200 p-4 animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-        <div className="h-6 bg-gray-200 rounded w-full mb-2"></div>
-        <div className="h-6 bg-gray-200 rounded w-full"></div>
-      </div>
-    );
-  }
+  // Determine if the game is a rivalry based on both teams having logoUrls
+  // and both being in the MAC conference
+  const isRivalry = game.isRivalry;
   
-  const homeTeam = schools.find(school => school.id === game.homeTeamId);
-  const awayTeam = schools.find(school => school.id === game.awayTeamId);
-  const sport = sports.find(sport => sport.id === game.sportId);
+  // Set default background color to MAC Navy
+  const defaultBgColor = "#0B213E";
   
-  // Extract team names from the game data
-  const homeTeamName = game.homeTeamName || (homeTeam?.name) || game.homeTeamId || 'Unknown Team';
-  const awayTeamName = game.awayTeamName || (awayTeam?.name) || game.awayTeamId || 'Unknown Team';
+  // Determine background gradient based on team primary colors
+  const homePrimaryColor = homeTeam?.primaryColor || defaultBgColor;
+  const awayPrimaryColor = awayTeam?.primaryColor || defaultBgColor;
   
-  // Get short names for the teams
-  const homeShortName = homeTeamName.split(' ').pop() || 'UNK';
-  const awayShortName = awayTeamName.split(' ').pop() || 'UNK';
-  
-  // Check if this is a MAC tournament/championship game
-  const isMacConferenceGame = 
-    homeTeamName.includes('Mid-American Conference') || 
-    awayTeamName.includes('Mid-American Conference');
-  
-  // Use the findSchoolByName utility to get team data
-  const foundHomeTeam = !homeTeam ? findSchoolByName(homeTeamName) : null;
-  const foundAwayTeam = !awayTeam ? findSchoolByName(awayTeamName) : null;
-  
-  // Create placeholder objects for unknown teams if needed
-  const defaultHomeTeam = homeTeam || foundHomeTeam || {
-    id: game.homeTeamId || 'unknown',
-    name: homeTeamName,
-    shortName: homeShortName,
-    primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
-    secondaryColor: '#ffffff',
-    logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo.png' // MAC logo
-      : '/attached_assets/IMG_0788.png' // NCAA logo
+  // Generate a gradient background
+  const gradientStyle = {
+    background: `linear-gradient(125deg, ${homePrimaryColor} 0%, ${awayPrimaryColor} 100%)`,
   };
   
-  const defaultAwayTeam = awayTeam || foundAwayTeam || {
-    id: game.awayTeamId || 'unknown',
-    name: awayTeamName,
-    shortName: awayShortName,
-    primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue 
-    secondaryColor: '#ffffff',
-    logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo.png' // MAC logo
-      : '/attached_assets/IMG_0788.png' // NCAA logo
-  };
+  // Determine badge color based on data source
+  let sourceColor = "bg-blue-500"; // Default blue badge for normal data
+  let sourceLabel = "Smart Data Sourcing";
   
-  if (!sport) {
-    return null;
+  if (game.dataSource === "sidearm") {
+    sourceColor = "bg-green-500";
+    sourceLabel = "Official School Stats";
+  } else if (game.dataSource === "espn") {
+    sourceColor = "bg-purple-500";
+    sourceLabel = "ESPN Data";
   }
   
-  // Create a share URL for the game
-  const shareUrl = `/games/${game.id}`;
+  const gameDate = new Date(game.date);
+  const formattedDate = format(gameDate, "MMM d, yyyy");
+  const formattedTime = format(gameDate, "h:mm a");
   
-  // Create a share title based on the game status
-  let shareTitle = '';
-  let description = '';
-  
-  if (game.status === 'final') {
-    shareTitle = `Final: ${defaultHomeTeam.name} ${game.homeTeamScore}, ${defaultAwayTeam.name} ${game.awayTeamScore}`;
-    description = `Check out the final score of this ${sport.name} game from Mobile #MACtion!`;
-  } else if (game.status === 'live') {
-    shareTitle = `LIVE: ${defaultHomeTeam.name} ${game.homeTeamScore}, ${defaultAwayTeam.name} ${game.awayTeamScore}`;
-    description = `Watch this ${sport.name} game live on Mobile #MACtion!`;
-  } else {
-    const gameDate = game.startTime ? format(new Date(game.startTime), 'MMM d, yyyy') : '';
-    shareTitle = `${defaultHomeTeam.name} vs ${defaultAwayTeam.name} - ${gameDate}`;
-    description = `Don't miss this upcoming ${sport.name} matchup on Mobile #MACtion!`;
-  }
-  
-  const handleShareClick = (e: React.MouseEvent) => {
-    // Stop propagation to prevent any parent onClick from firing
-    e.stopPropagation();
-  };
-  
-  // Set up navigation
-  const [_, setLocation] = useLocation();
-  
-  // Check if stats are available for this game
-  const hasStats = shouldShowLiveStats(game.status);
-  
-  // Check if the home team has a Sidearm URL for fetching live stats
-  const hasSidearmStats = Boolean(
-    (homeTeam?.sidearmUrl || homeTeam?.sidearmScoresApi) &&
-    hasStats
-  );
-  
-  // Handle click to navigate to game stats page
-  const handleGameClick = () => {
-    if (hasStats) {
-      setLocation(`/games/${game.id}`);
+  // Determine display for current game situation (inning, score, etc.)
+  let gameSituation = "";
+  if (game.status === "live") {
+    if (game.sport === "baseball" || game.sport === "softball") {
+      if (game.period) {
+        const inningText = `${game.period}${getInningOrdinal(game.period)}`;
+        const topBottom = game.periodDetail?.toLowerCase().includes("top") ? "Top" : "Bottom";
+        gameSituation = `${topBottom} ${inningText}`;
+      }
+    } else if (game.sport === "basketball") {
+      gameSituation = `${game.periodDetail || ""} ${game.period || ""}`;
+    } else if (game.sport === "football") {
+      gameSituation = `${game.periodDetail || ""} ${game.period || "Q"}`;
+    } else {
+      gameSituation = game.periodDetail || "";
     }
-  };
+  }
   
   return (
-    <div 
-      className={`bg-white rounded-lg shadow-md mb-3 overflow-hidden border border-gray-200 ${hasStats ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`} 
-      onClick={hasStats ? handleGameClick : undefined}
-    >
-      <div className="bg-[#0C2340] text-white text-xs font-semibold px-3 py-1 flex justify-between">
-        <span>
-          {getSportDisplayName(sport.id) || sport.name}
-        </span>
-        <div className="flex items-center space-x-2">
-          {game.status === 'live' && (
-            <span className="flex items-center">
-              <span className="w-2 h-2 rounded-full bg-[#28A745] mr-1 animate-pulse"></span>
-              LIVE • {game.period || ""}
-            </span>
-          )}
-          <div onClick={handleShareClick}>
-            <ShareButton 
-              url={shareUrl}
-              title={shareTitle}
-              description={description}
-              compact={true}
-            />
+    <Link href={`/games/${game.id}`}>
+      <div className={`relative mb-4 overflow-hidden text-white rounded-xl cursor-pointer transition-transform duration-200 hover:scale-102 ${
+        isRivalry ? "ring-2 ring-yellow-400" : ""
+      } ${showType === "card" ? "h-56" : "h-28"}`}>
+        {/* Background gradient */}
+        <div className="absolute inset-0" style={gradientStyle}></div>
+        
+        {/* Overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black/30"></div>
+        
+        {/* Rivalry indicator */}
+        {isRivalry && (
+          <div className="absolute top-0 left-0 z-10 flex items-center px-2 py-1 text-xs font-bold text-black bg-yellow-400 rounded-br-md">
+            RIVALRY GAME
           </div>
+        )}
+        
+        {/* Data source badge */}
+        <div className="absolute top-0 right-0 z-10 px-2 py-1 text-xs font-medium text-white rounded-bl-md"
+             style={{ backgroundColor: sourceColor.replace('bg-', '') }}>
+          {sourceLabel}
         </div>
-      </div>
-      <div className="p-3">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center">
-            {defaultHomeTeam.logoUrl ? (
-              // When logo is available
-              <div className="w-8 h-8 mr-3 flex items-center justify-center">
-                <img 
-                  src={defaultHomeTeam.logoUrl} 
-                  alt={`${defaultHomeTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
-                />
-              </div>
+        
+        {/* Content container */}
+        <div className="relative z-10 flex flex-col h-full p-3">
+          {/* Game header */}
+          <div className="flex items-center mb-2 space-x-2 text-xs text-white/80">
+            {game.status === "live" ? (
+              <>
+                <Badge variant="destructive" className="bg-red-600 animate-pulse">LIVE</Badge>
+                <div className="flex items-center">
+                  <Play size={12} className="mr-1" />
+                  {gameSituation}
+                </div>
+              </>
             ) : (
-              // Fallback to circular initial when no logo
-              <div 
-                className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: defaultHomeTeam.primaryColor }}
-              >
-                <span className="text-xs font-bold" style={{ color: defaultHomeTeam.secondaryColor }}>
-                  {defaultHomeTeam.shortName.charAt(0)}
-                </span>
-              </div>
+              <>
+                <div className="flex items-center">
+                  <CalendarIcon size={12} className="mr-1" />
+                  {formattedDate}
+                </div>
+                <div className="flex items-center">
+                  <Clock size={12} className="mr-1" />
+                  {formattedTime}
+                </div>
+              </>
             )}
-            <span className="font-semibold text-sm">{defaultHomeTeam.name}</span>
           </div>
-          <span className="font-bold text-lg">{game.homeTeamScore}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            {defaultAwayTeam.logoUrl ? (
-              // When logo is available
-              <div className="w-8 h-8 mr-3 flex items-center justify-center">
-                <img 
-                  src={defaultAwayTeam.logoUrl} 
-                  alt={`${defaultAwayTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
-                />
+          
+          {/* Team display */}
+          <div className="flex flex-col flex-grow justify-center">
+            {/* Away team */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
+                  <img 
+                    src={awayTeam?.logoUrl || "/school-logos/generic.png"} 
+                    alt={game.awayTeam} 
+                    className="object-contain w-full h-full p-1"
+                  />
+                </div>
+                <div>
+                  <div className="text-sm font-medium">{awayTeam?.shortName || game.awayTeam}</div>
+                  <div className="text-xl font-bold">{game.awayTeam}</div>
+                </div>
               </div>
-            ) : (
-              // Fallback to circular initial when no logo
-              <div 
-                className="w-8 h-8 rounded-full mr-3 flex items-center justify-center" 
-                style={{ backgroundColor: defaultAwayTeam.primaryColor }}
-              >
-                <span className="text-xs font-bold" style={{ color: defaultAwayTeam.secondaryColor }}>
-                  {defaultAwayTeam.shortName.charAt(0)}
-                </span>
+              <div className="text-3xl font-bold mr-2">
+                {game.awayScore || "0"}
               </div>
-            )}
-            <span className="font-semibold text-sm">{defaultAwayTeam.name}</span>
-          </div>
-          <span className="font-bold text-lg">{game.awayTeamScore}</span>
-        </div>
-      </div>
-      {game.situation ? (
-        <div className="bg-gray-100 text-xs px-3 py-2 flex justify-between">
-          <span>{game.situation}</span>
-          <div className="flex items-center gap-2">
-            {game.status === 'final' && game.links?.s_boxscore && (
-              <a 
-                href={game.links.s_boxscore} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-purple-600 hover:underline font-medium flex items-center gap-1"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ChevronRight size={12} />
-                Box Score
-              </a>
-            )}
-            {hasStats && (
-              <span 
-                className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/games/${game.id}`);
-                }}
-              >
-                <ChevronRight size={12} />
-                {hasSidearmStats ? 'Live Stats' : 'Stats'}
-              </span>
-            )}
-            <div onClick={handleShareClick} className="hidden md:block">
-              <ShareButton 
-                url={shareUrl}
-                title={shareTitle}
-                description={description}
-                compact={true}
-              />
             </div>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-gray-100 text-xs px-3 py-2 flex flex-col">
-          <div className="flex justify-between items-center">
-            {hasStats && (
-              <span 
-                className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/games/${game.id}`);
-                }}
-              >
-                <ChevronRight size={12} />
-                {hasSidearmStats ? 'Live Stats' : 'View Stats'}
-              </span>
-            )}
-            <div onClick={handleShareClick} className="hidden md:block">
-              <ShareButton 
-                url={shareUrl}
-                title={shareTitle}
-                description={description}
-                compact={true}
-              />
+            
+            {/* Home team */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
+                  <img 
+                    src={homeTeam?.logoUrl || "/school-logos/generic.png"} 
+                    alt={game.homeTeam} 
+                    className="object-contain w-full h-full p-1"
+                  />
+                </div>
+                <div>
+                  <div className="text-sm font-medium">{homeTeam?.shortName || game.homeTeam}</div>
+                  <div className="text-xl font-bold">{game.homeTeam}</div>
+                </div>
+              </div>
+              <div className="text-3xl font-bold mr-2">
+                {game.homeScore || "0"}
+              </div>
             </div>
           </div>
           
-          {/* Links section */}
-          {game.links && (Object.values(game.links).some(Boolean)) && (
-            <div className="pt-2 mt-1 border-t border-gray-200 flex gap-3">
-              {game.status === 'final' && game.links.s_boxscore && (
-                <a 
-                  href={game.links.s_boxscore} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-purple-600 hover:underline font-medium"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Box Score
-                </a>
-              )}
-              {game.links.s_livestats && (
-                <a 
-                  href={game.links.s_livestats} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-green-600 hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Live Stats
-                </a>
-              )}
-              {game.links.s_audio && (
-                <a 
-                  href={game.links.s_audio} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Audio
-                </a>
-              )}
-              {game.links.s_video && (
-                <a 
-                  href={game.links.s_video} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-red-600 hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Video
-                </a>
-              )}
-            </div>
-          )}
+          {/* View details chevron */}
+          <div className="flex justify-end mt-2">
+            <ChevronRight className="text-white/70" />
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+    </Link>
   );
-};
+}
 
-export default GameScoreCard;
+// Helper function to get ordinal suffix for inning numbers
+function getInningOrdinal(inning: string | number): string {
+  if (typeof inning === 'string') {
+    // Try to parse the inning string to a number
+    inning = parseInt(inning, 10);
+    if (isNaN(inning)) return ""; // If parsing fails, return empty string
+  }
+  
+  const j = inning % 10;
+  const k = inning % 100;
+  
+  if (j === 1 && k !== 11) {
+    return "st";
+  }
+  if (j === 2 && k !== 12) {
+    return "nd";
+  }
+  if (j === 3 && k !== 13) {
+    return "rd";
+  }
+  return "th";
+}

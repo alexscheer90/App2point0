@@ -63,25 +63,31 @@ export const gameSchema = z.object({
   statusDetail: z.string().optional(),
   id: z.string(),
   sportId: z.string(),
+  sport: z.string().optional(), // Sport name (baseball, basketball, etc.)
   homeTeamId: z.string(),
   awayTeamId: z.string(),
+  homeTeam: z.string().optional(), // Team name (e.g., "Miami")
+  awayTeam: z.string().optional(), // Team name (e.g., "Kent State")
   homeTeamScore: z.number().optional(),
   awayTeamScore: z.number().optional(),
   startTime: z.string(),
+  date: z.string().optional(), // For display formatting - can be derived from startTime
   scheduledTime: z.string(),  // Added for schedule view
   status: gameStatusSchema,
   period: z.union([z.number(), z.string()]).optional(),
+  periodDetail: z.string().optional(), // Additional details about the period (top/bottom inning, etc.)
   clock: z.string().optional(),
   situation: z.string().optional(),
   venue: z.string().optional(),
   location: z.string().optional(),  // Added for full location name
   ticketUrl: z.string().optional(), // Added for ticket purchase link
   liveStatsUrl: z.string().optional(), // Added for Sidearm live stats link
-  isRivalryGame: z.boolean().optional(),
+  isRivalry: z.boolean().optional(), // Flag for rivalry games
   homeScore: z.number().optional(), // Alias for homeTeamScore for consistency
   awayScore: z.number().optional(), // Alias for awayTeamScore for consistency
   homeTeamName: z.string().optional(), // For teams not in our database
   awayTeamName: z.string().optional(), // For teams not in our database
+  dataSource: z.enum(["espn", "sidearm", "mac"]).optional(), // Source of game data
   links: z.object({
     s_livestats: z.string().optional(), // Sidearm live stats URL
     s_audio: z.string().optional(), // Audio broadcast URL
