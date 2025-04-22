@@ -159,10 +159,22 @@ const GameDetails: React.FC = () => {
                   </span>
                 </div>
                 {dataSourceInfo.data?.recommendedSource && (
-                  <div className="text-sm mt-1">
-                    <strong>Using:</strong> {dataSourceInfo.data.recommendedSource === 'sidearm' 
-                      ? 'Official SIDEARM Stats' 
-                      : 'ESPN Data'}
+                  <div className="text-sm mt-2">
+                    <strong>Using:</strong> {' '}
+                    {dataSourceInfo.data.recommendedSource === 'sidearm' ? (
+                      <div className="inline-flex items-center gap-1 mt-1">
+                        <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          Official School Stats
+                        </span>
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          Smart Data Sourcing
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        ESPN Data
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

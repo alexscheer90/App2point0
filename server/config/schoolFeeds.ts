@@ -3,6 +3,13 @@
  * This maps each MAC school to their official SIDEARM stats feed URL
  */
 
+interface SportFeedConfig {
+  baseUrl?: string;
+  gameStats?: string;
+  summary?: string;
+  boxscore?: string;
+}
+
 interface SchoolFeedConfig {
   schoolId: string;
   name: string;
@@ -10,6 +17,7 @@ interface SchoolFeedConfig {
   espnTeamId?: string;
   primaryColor: string;
   secondaryColor: string;
+  sports?: Record<string, SportFeedConfig>;
 }
 
 const schoolFeeds: Record<string, SchoolFeedConfig> = {
@@ -75,7 +83,21 @@ const schoolFeeds: Record<string, SchoolFeedConfig> = {
     sidearmBaseUrl: 'https://miamiredhawks.com/services/stats',
     espnTeamId: '193',
     primaryColor: '#B61E2E',
-    secondaryColor: '#000000'
+    secondaryColor: '#000000',
+    sports: {
+      'baseball': {
+        baseUrl: 'https://miamiredhawks.com/sports/baseball',
+        gameStats: 'https://miamiredhawks.com/services/stats/baseball/livestats',
+        summary: 'https://miamiredhawks.com/sports/baseball/stats',
+        boxscore: 'https://miamiredhawks.com/sports/baseball/stats/boxscores'
+      },
+      'mens-basketball': {
+        baseUrl: 'https://miamiredhawks.com/sports/mens-basketball',
+        gameStats: 'https://miamiredhawks.com/services/stats/basketball/livestats',
+        summary: 'https://miamiredhawks.com/sports/mens-basketball/stats',
+        boxscore: 'https://miamiredhawks.com/sports/mens-basketball/stats/boxscores'
+      }
+    }
   },
   'northern-illinois': {
     schoolId: 'northern-illinois',
@@ -124,11 +146,65 @@ const schoolFeeds: Record<string, SchoolFeedConfig> = {
  */
 export function getSidearmFeedUrl(schoolId: string, sport: string): string | null {
   const school = schoolFeeds[schoolId];
-  if (!school || !school.sidearmBaseUrl) {
+  if (!school) {
     return null;
   }
   
-  return `${school.sidearmBaseUrl}/${sport}/livestats`;
+  // Check if we have a sport-specific URL first
+  if (school.sports && school.sports[sport] && school.sports[sport].gameStats) {
+    return school.sports[sport].gameStats;
+  }
+  
+  // Fall back to the default pattern if sport-specific URL isn't available
+  if (school.sidearmBaseUrl) {
+    return `${school.sidearmBaseUrl}/${sport}/livestats`;
+  }
+  
+  return null;
+}
+
+/**
+ * Get SIDEARM box score URL for a specific school and sport
+ */
+export function getSidearmBoxScoreUrl(schoolId: string, sport: string): string | null {
+  const school = schoolFeeds[schoolId];
+  if (!school) {
+    return null;
+  }
+  
+  // Check if we have a sport-specific box score URL
+  if (school.sports && school.sports[sport] && school.sports[sport].boxscore) {
+    return school.sports[sport].boxscore;
+  }
+  
+  // Fall back to the default pattern if sport-specific URL isn't available
+  if (school.sidearmBaseUrl) {
+    return `${school.sidearmBaseUrl}/${sport}/boxscores`;
+  }
+  
+  return null;
+}
+
+/**
+ * Get SIDEARM summary URL for a specific school and sport
+ */
+export function getSidearmSummaryUrl(schoolId: string, sport: string): string | null {
+  const school = schoolFeeds[schoolId];
+  if (!school) {
+    return null;
+  }
+  
+  // Check if we have a sport-specific summary URL
+  if (school.sports && school.sports[sport] && school.sports[sport].summary) {
+    return school.sports[sport].summary;
+  }
+  
+  // Fall back to the default pattern if sport-specific URL isn't available
+  if (school.sidearmBaseUrl) {
+    return `${school.sidearmBaseUrl}/${sport}/summary`;
+  }
+  
+  return null;
 }
 
 /**
@@ -190,6 +266,50 @@ export function mapSchoolNameToId(name: string): string | null {
   }
   
   // If no match found
+  return null;
+}
+
+/**
+ * Helper function to check if a SIDEARM URL exists
+ * Used to discover and validate SIDEARM stats URLs
+ */
+export async function checkSidearmUrlExists(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      headers: {
+        'Accept': 'text/html'
+      }
+    });
+    return response.status === 200;
+  } catch (error) {
+    console.error(`Error checking URL ${url}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Utility to attempt to discover a valid SIDEARM stats URL for a school
+ * This is useful for auto-discovery of SIDEARM feeds
+ */
+export async function discoverSidearmUrl(schoolDomain: string, sport: string): Promise<string | null> {
+  // Common patterns for SIDEARM stats URLs
+  const patterns = [
+    `https://${schoolDomain}/services/stats/${sport}/livestats`,
+    `https://${schoolDomain}.com/services/stats/${sport}/livestats`,
+    `https://${schoolDomain}/sports/${sport}/stats/livestats`,
+    `https://${schoolDomain}.com/sports/${sport}/stats/livestats`,
+    `https://stats.${schoolDomain}.com/${sport}/livestats`,
+    `https://${schoolDomain}/sidearmstats/${sport}/summary`
+  ];
+  
+  // Try each pattern to see if it works
+  for (const pattern of patterns) {
+    if (await checkSidearmUrlExists(pattern)) {
+      return pattern;
+    }
+  }
+  
   return null;
 }
 
