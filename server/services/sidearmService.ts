@@ -55,20 +55,52 @@ export async function fetchSidearmGameData(
   feedUrl: string
 ): Promise<any> {
   try {
+    console.log(`Fetching SIDEARM data from: ${feedUrl}`);
+    
+    // Check if this is a JSONP URL (contains callback parameter)
+    const isJsonp = feedUrl.includes('callback=');
+    
     const response = await axios.get(feedUrl, {
       timeout: 5000,
       headers: {
-        'Accept': 'application/json, text/plain, */*'
-      }
+        'Accept': 'application/json, text/plain, text/javascript, */*'
+      },
+      // Don't transform the response for JSONP
+      transformResponse: isJsonp ? [(data) => data] : undefined
     });
     
     if (response.status !== 200) {
       throw new Error(`SIDEARM API returned status ${response.status}`);
     }
     
+    let data = response.data;
+    
+    // If this is JSONP, extract the JSON from the JSONP wrapper
+    if (isJsonp && typeof data === 'string') {
+      console.log('Processing JSONP response for SIDEARM data');
+      try {
+        // Extract the JSON part from the JSONP response
+        // Example format: callbackName({...json data...})
+        const jsonStart = data.indexOf('(') + 1;
+        const jsonEnd = data.lastIndexOf(')');
+        
+        if (jsonStart > 0 && jsonEnd > jsonStart) {
+          const jsonStr = data.substring(jsonStart, jsonEnd);
+          data = JSON.parse(jsonStr);
+          console.log('Successfully parsed JSONP data');
+        } else {
+          console.error('Could not extract JSON from JSONP response');
+        }
+      } catch (jsonError) {
+        console.error('Error parsing JSONP data:', jsonError);
+        console.log('JSONP response starts with:', data.substring(0, 100));
+        // Continue with the raw data
+      }
+    }
+    
     return {
       source: 'sidearm',
-      data: response.data,
+      data: data,
       timestamp: new Date().toISOString()
     };
   } catch (error) {
@@ -81,7 +113,6 @@ export async function fetchSidearmGameData(
  * Process SIDEARM game data into a unified format
  */
 export function processSidearmData(rawData: any, game: Game): Partial<Game> {
-  // This will need to be customized based on the actual SIDEARM data format
   try {
     // If we don't have actual data yet, just return game status update
     if (!rawData || !rawData.data) {
@@ -95,6 +126,8 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
     // Basic data extraction for score and period
     const data = rawData.data;
     
+    console.log('Processing SIDEARM data format, keys:', Object.keys(data));
+    
     // Extract home and away team scores if available
     let homeTeamScore = game.homeTeamScore;
     let awayTeamScore = game.awayTeamScore;
@@ -102,8 +135,9 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
     let clock = game.clock;
     let situation = game.situation;
     
-    // This is where we'd parse the SIDEARM data format
-    // For now, we'll just use placeholder logic that would be replaced with actual parsing
+    // Try to detect the data format - could be standard format or S3/JSONP format
+    
+    // Standard format
     if (data.home && data.home.score !== undefined) {
       homeTeamScore = parseInt(data.home.score);
     }
@@ -112,17 +146,72 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       awayTeamScore = parseInt(data.away.score);
     }
     
+    // S3 SIDEARM format - typically different structure
+    if (data.homeScore !== undefined) {
+      homeTeamScore = typeof data.homeScore === 'string' ? 
+        parseInt(data.homeScore) : data.homeScore;
+    }
+    
+    if (data.visitorScore !== undefined) {
+      awayTeamScore = typeof data.visitorScore === 'string' ? 
+        parseInt(data.visitorScore) : data.visitorScore;
+    }
+    
+    // Try to get period/inning/quarter information
     if (data.status && data.status.period) {
       period = data.status.period;
+    } else if (data.periodNumber) {
+      period = data.periodNumber;
+    } else if (data.period) {
+      period = data.period;
+    } else if (data.inning) {
+      // Baseball specific
+      period = String(data.inning) + (data.inningHalf === 'top' ? 'T' : 'B');
+    } else if (data.currentInning) {
+      // Another baseball format
+      const inningHalf = data.currentInningHalf === 0 ? 'T' : 'B';
+      period = String(data.currentInning) + inningHalf;
     }
     
+    // Try to get clock information
     if (data.status && data.status.clock) {
       clock = data.status.clock;
+    } else if (data.gameClock) {
+      clock = data.gameClock;
+    } else if (data.timeRemaining) {
+      clock = data.timeRemaining;
     }
     
+    // Try to get situation information (like down & distance for football, or runners on base for baseball)
     if (data.status && data.status.situation) {
       situation = data.status.situation;
+    } else if (data.situationText) {
+      situation = data.situationText;
+    } else if (data.down && data.distance) {
+      // Football specific
+      situation = `${data.down} & ${data.distance} at ${data.yardLine}`;
+    } else if (data.balls !== undefined && data.strikes !== undefined) {
+      // Baseball specific
+      situation = `${data.balls}-${data.strikes}`;
+      
+      // Add outs if available
+      if (data.outs !== undefined) {
+        situation += `, ${data.outs} out${data.outs !== 1 ? 's' : ''}`;
+      }
+      
+      // Add runners if available
+      const bases = [];
+      if (data.runnerOnFirst) bases.push('1st');
+      if (data.runnerOnSecond) bases.push('2nd');
+      if (data.runnerOnThird) bases.push('3rd');
+      
+      if (bases.length > 0) {
+        situation += `, runner${bases.length > 1 ? 's' : ''} on ${bases.join(', ')}`;
+      }
     }
+    
+    // Log what we found for debugging
+    console.log(`Processed SIDEARM data: Home ${homeTeamScore}, Away ${awayTeamScore}, Period: ${period}, Clock: ${clock}, Situation: ${situation}`);
     
     return {
       status: 'live',

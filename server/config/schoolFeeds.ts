@@ -87,7 +87,7 @@ const schoolFeeds: Record<string, SchoolFeedConfig> = {
     sports: {
       'baseball': {
         baseUrl: 'https://miamiredhawks.com/sports/baseball',
-        gameStats: 'https://miamiredhawks.com/services/stats/baseball/livestats',
+        gameStats: 'https://s3.amazonaws.com/sidearmstats.com/json_miamiohio_baseball_game.js.gz?callback=jsonp_miamiohio_baseball_game',
         summary: 'https://miamiredhawks.com/sports/baseball/stats',
         boxscore: 'https://miamiredhawks.com/sports/baseball/stats/boxscores'
       },
@@ -300,7 +300,9 @@ export async function discoverSidearmUrl(schoolDomain: string, sport: string): P
     `https://${schoolDomain}/sports/${sport}/stats/livestats`,
     `https://${schoolDomain}.com/sports/${sport}/stats/livestats`,
     `https://stats.${schoolDomain}.com/${sport}/livestats`,
-    `https://${schoolDomain}/sidearmstats/${sport}/summary`
+    `https://${schoolDomain}/sidearmstats/${sport}/summary`,
+    // S3 bucket pattern for SIDEARM stats
+    `https://s3.amazonaws.com/sidearmstats.com/json_${schoolDomain.split('.')[0]}_${sport}_game.js.gz`
   ];
   
   // Try each pattern to see if it works
