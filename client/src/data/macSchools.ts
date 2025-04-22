@@ -37,6 +37,46 @@ import ohioStateLogo from "@assets/IMG_0747.png"; // Ohio State logo
 // Export the NCAA logo for use in other components
 export const ncaaLogoUrl = ncaaLogo;
 
+// Non-MAC schools that we compete against frequently
+export const nonMacSchools: School[] = [
+  {
+    id: "ohiostate",
+    name: "Ohio State",
+    shortName: "Ohio St",
+    mascot: "Buckeyes",
+    primaryColor: "#BB0000", // Scarlet
+    secondaryColor: "#666666", // Gray
+    logoUrl: ohioStateLogo,
+    city: "Columbus",
+    state: "OH",
+    affiliate: false
+  },
+  {
+    id: "notredame", 
+    name: "Notre Dame",
+    shortName: "Notre Dame",
+    mascot: "Fighting Irish",
+    primaryColor: "#0C2340", // Navy
+    secondaryColor: "#C99700", // Gold
+    logoUrl: ncaaLogo, // Using NCAA logo as fallback
+    city: "South Bend",
+    state: "IN",
+    affiliate: false
+  },
+  {
+    id: "michigan",
+    name: "Michigan", 
+    shortName: "Michigan",
+    mascot: "Wolverines",
+    primaryColor: "#00274C", // Navy
+    secondaryColor: "#FFCB05", // Maize
+    logoUrl: ncaaLogo, // Using NCAA logo as fallback
+    city: "Ann Arbor",
+    state: "MI",
+    affiliate: false
+  }
+];
+
 // This data would ideally come from an API, but for demo purposes
 // we're hard-coding the Mid-American Conference schools
 export const macSchools: School[] = [
