@@ -118,16 +118,24 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     
                     // Explicit handling for Michigan schools
-                    if (homeTeam.name === "Central Michigan" || homeTeam.id === "centralmichigan") {
+                    if (homeTeam.name === "Central Michigan" || 
+                        homeTeam.id === "centralmichigan" || 
+                        homeTeam.name.includes("Central Michigan")) {
                       e.currentTarget.src = "/school-logos/centralmichigan.png";
                       return;
-                    } else if (homeTeam.name === "Eastern Michigan" || homeTeam.id === "easternmichigan") {
+                    } else if (homeTeam.name === "Eastern Michigan" || 
+                               homeTeam.id === "easternmichigan" || 
+                               homeTeam.name.includes("Eastern Michigan")) {
                       e.currentTarget.src = "/school-logos/easternmichigan.png";
                       return;
-                    } else if (homeTeam.name === "Western Michigan" || homeTeam.id === "westernmichigan") {
+                    } else if (homeTeam.name === "Western Michigan" || 
+                               homeTeam.id === "westernmichigan" || 
+                               homeTeam.name.includes("Western Michigan")) {
                       e.currentTarget.src = "/school-logos/westernmichigan.png";
                       return;
-                    } else if (homeTeam.name === "Michigan" || homeTeam.id === "michigan") {
+                    } else if (homeTeam.name === "Michigan" || 
+                               homeTeam.id === "michigan" || 
+                               homeTeam.name.includes("University of Michigan")) {
                       e.currentTarget.src = "/school-logos/non-mac/michigan.png";
                       return;
                     }
@@ -184,16 +192,24 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                     e.currentTarget.onerror = null; // Prevent infinite error loop
                     
                     // Explicit handling for Michigan schools
-                    if (awayTeam.name === "Central Michigan" || awayTeam.id === "centralmichigan") {
+                    if (awayTeam.name === "Central Michigan" || 
+                        awayTeam.id === "centralmichigan" || 
+                        awayTeam.name.includes("Central Michigan")) {
                       e.currentTarget.src = "/school-logos/centralmichigan.png";
                       return;
-                    } else if (awayTeam.name === "Eastern Michigan" || awayTeam.id === "easternmichigan") {
+                    } else if (awayTeam.name === "Eastern Michigan" || 
+                               awayTeam.id === "easternmichigan" || 
+                               awayTeam.name.includes("Eastern Michigan")) {
                       e.currentTarget.src = "/school-logos/easternmichigan.png";
                       return;
-                    } else if (awayTeam.name === "Western Michigan" || awayTeam.id === "westernmichigan") {
+                    } else if (awayTeam.name === "Western Michigan" || 
+                               awayTeam.id === "westernmichigan" || 
+                               awayTeam.name.includes("Western Michigan")) {
                       e.currentTarget.src = "/school-logos/westernmichigan.png";
                       return;
-                    } else if (awayTeam.name === "Michigan" || awayTeam.id === "michigan") {
+                    } else if (awayTeam.name === "Michigan" || 
+                               awayTeam.id === "michigan" || 
+                               awayTeam.name.includes("University of Michigan")) {
                       e.currentTarget.src = "/school-logos/non-mac/michigan.png";
                       return;
                     }
