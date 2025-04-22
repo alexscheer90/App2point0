@@ -32,6 +32,7 @@ import youngstownStateLogo from "@assets/Youngstown_State_Penguins_logo.svg.png"
 import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
 import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
 import ncaaLogo from "@assets/IMG_0788.png"; // NCAA logo for non-MAC schools
+import ohioStateLogo from "@assets/IMG_0747.png"; // Ohio State logo
 
 // Export the NCAA logo for use in other components
 export const ncaaLogoUrl = ncaaLogo;
@@ -412,5 +413,17 @@ export const macSchools: School[] = [
     city: "Chicago",
     state: "IL",
     affiliate: true
+  },
+  {
+    id: "ohiostate",
+    name: "Ohio State",
+    shortName: "Ohio St",
+    mascot: "Buckeyes",
+    primaryColor: "#BB0000", // Scarlet
+    secondaryColor: "#666666", // Gray
+    logoUrl: ohioStateLogo,
+    city: "Columbus",
+    state: "OH",
+    affiliate: false
   }
 ];

@@ -617,12 +617,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const status = statusMap[event.status.type.state] || 'scheduled';
         const gameId = `espn-${event.id}`;
         
+        // Map ESPN team names to our team IDs
+        const getTeamId = (teamName: string): string => {
+          const normalizedName = teamName.toLowerCase().trim();
+          
+          // Map of ESPN team names to our team IDs
+          const teamNameMap: Record<string, string> = {
+            'akron': 'akron',
+            'zips': 'akron',
+            'ball state': 'ballstate',
+            'cardinals': 'ballstate',
+            'bowling green': 'bowlinggreen',
+            'falcons': 'bowlinggreen',
+            'buffalo': 'buffalo',
+            'bulls': 'buffalo',
+            'central michigan': 'centralmichigan',
+            'chippewas': 'centralmichigan',
+            'eastern michigan': 'easternmichigan',
+            'eagles': 'easternmichigan',
+            'kent state': 'kentstate',
+            'golden flashes': 'kentstate',
+            'miami (oh)': 'miamioh',
+            'redhawks': 'miamioh',
+            'northern illinois': 'northernillinois',
+            'huskies': 'northernillinois',
+            'ohio': 'ohio',
+            'bobcats': 'ohio',
+            'ohio state': 'ohiostate',
+            'buckeyes': 'ohiostate',
+            'toledo': 'toledo',
+            'rockets': 'toledo',
+            'western michigan': 'westernmichigan',
+            'broncos': 'westernmichigan'
+          };
+          
+          // Try to find the team in our map
+          for (const [key, value] of Object.entries(teamNameMap)) {
+            if (normalizedName.includes(key)) {
+              return value;
+            }
+          }
+          
+          // Handle special cases
+          if (normalizedName.includes('miami') && !normalizedName.includes('florida')) {
+            return 'miamioh'; // Assume it's Miami (OH) if not specified as Miami (FL)
+          }
+          
+          // Return unknown with the name for debugging
+          return `unknown-${normalizedName.replace(/\s+/g, '-')}`;
+        };
+
         // Create game object from ESPN data
         const game: Game = {
           id: gameId,
           sportId,
-          homeTeamId: 'unknown', // We would map ESPN team ID to our team ID here
-          awayTeamId: 'unknown', // We would map ESPN team ID to our team ID here
+          homeTeamId: getTeamId(homeTeam.team.displayName),
+          awayTeamId: getTeamId(awayTeam.team.displayName),
           homeTeamName: homeTeam.team.displayName,
           awayTeamName: awayTeam.team.displayName,
           homeTeamScore: parseInt(homeTeam.score) || 0,
@@ -635,6 +685,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           period: competition.status?.period,
           clock: competition.status?.displayClock,
           situation: competition.situation?.lastPlay?.text || '',
+          dataSource: 'espn', // Mark as coming from ESPN
         };
         
         // Check if game state has changed since last update
