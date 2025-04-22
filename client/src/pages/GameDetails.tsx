@@ -394,29 +394,65 @@ const GameDetails: React.FC = () => {
                 
                 <div className="mt-6 bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-medium text-lg mb-3">Game Summary</h4>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="p-2">
-                      <div className="text-sm text-gray-600">Inning</div>
-                      <div className="font-medium">B3</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white p-3 rounded border border-gray-100">
+                      <h5 className="font-medium text-sm mb-2 text-gray-700">Current Situation</h5>
+                      <div className="flex items-center mb-2">
+                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
+                        <span className="font-medium">{typeof game.period === 'string' ? game.period : `Inning ${game.period}`}</span>
+                      </div>
+                      {game.situation && (
+                        <p className="text-sm text-gray-600">{game.situation}</p>
+                      )}
                     </div>
-                    <div className="p-2">
-                      <div className="text-sm text-gray-600">Pitcher</div>
-                      <div className="font-medium">A. Johnson</div>
-                    </div>
-                    <div className="p-2">
-                      <div className="text-sm text-gray-600">Batter</div>
-                      <div className="font-medium">M. Williams</div>
+                    
+                    <div className="bg-white p-3 rounded border border-gray-100">
+                      <h5 className="font-medium text-sm mb-2 text-gray-700">Game Info</h5>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Game Time:</span>
+                          <span>{new Date(game.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Venue:</span>
+                          <span>{game.venue || 'N/A'}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </>
             ) : (
-              <div className="text-center py-8 px-4 bg-gray-50 rounded-lg">
-                <p className="text-gray-500">
+              <div className="py-6 px-4 bg-gray-50 rounded-lg">
+                <p className="text-center text-gray-600 mb-4">
                   {game.status === 'scheduled' 
                     ? 'Statistics will be available once the game starts.'
                     : 'Full game statistics will be available after the game.'}
                 </p>
+                
+                {game.period && (
+                  <div className="mt-4 bg-white p-3 rounded border border-gray-100 max-w-md mx-auto">
+                    <h5 className="font-medium text-sm mb-2 text-gray-700">Game Info</h5>
+                    <div className="space-y-1">
+                      {game.period && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Status:</span>
+                          <span className="font-medium">{typeof game.period === 'string' ? game.period : `Inning ${game.period}`}</span>
+                        </div>
+                      )}
+                      {game.situation && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Situation:</span>
+                          <span>{game.situation}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Venue:</span>
+                        <span>{game.venue || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
