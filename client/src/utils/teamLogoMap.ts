@@ -616,6 +616,19 @@ export function findLogoByNamePattern(name: string): string {
     }
   }
   
+  // Special direct cases for known problematic schools
+  if (nameLower.includes("valparaiso") || nameLower.includes("valpo") || nameLower.includes("valparaiso beacons")) {
+    const valpoPath = "/school-logos/non-mac/valparaiso.png";
+    console.log(`Creating school with potential logo match: ${name} → ${valpoPath}`);
+    return valpoPath;
+  }
+  
+  if (nameLower.includes("northern kentucky") || nameLower.includes("nku") || nameLower.includes("norse")) {
+    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
+    console.log(`Creating school with potential logo match: ${name} → ${nkuPath}`);
+    return nkuPath;
+  }
+  
   // Try to find in the non-mac folder with various transformations
   const transformedNames = [
     nameLower.replace(/\s+/g, ""),            // Remove spaces
@@ -627,9 +640,7 @@ export function findLogoByNamePattern(name: string): string {
   for (const transformed of transformedNames) {
     const possiblePath = `/school-logos/non-mac/${transformed}.png`;
     console.log(`Trying path: ${possiblePath}`);
-    // In a browser we can't check if the file exists, so we just return
-    // the first transformation and let the image fallback handle missing files
-    return possiblePath;
+    return possiblePath; // Return the first possible path
   }
   
   // If all else fails, return NCAA generic logo
