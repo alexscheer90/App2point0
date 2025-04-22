@@ -3,9 +3,9 @@ import { macSchools, ncaaLogoUrl } from "../data/macSchools";
 import { 
   SCHOOL_NAME_MAPPINGS, 
   findLogoByNamePattern, 
-  guessTeamColors 
+  guessTeamColors,
+  NonMacSchool
 } from "./teamLogoMap";
-import { NON_MAC_SCHOOLS } from "./nonMacSchools";
 
 /**
  * Find a matching school object by name
@@ -16,7 +16,10 @@ import { NON_MAC_SCHOOLS } from "./nonMacSchools";
  * @param context Optional context string to help resolve ambiguous names
  * @returns School object or undefined
  */
-export function findSchoolByName(name: string, context?: string): School | undefined {
+// Import NON_MAC_SCHOOLS directly from teamLogoMap
+import { NON_MAC_SCHOOLS } from "./teamLogoMap";
+
+export function findSchoolByName(name: string | undefined, context?: string): School | undefined {
   if (!name) return undefined;
   
   // Normalize the name for comparison
@@ -93,20 +96,21 @@ export function findSchoolByName(name: string, context?: string): School | undef
   
   // Then with non-MAC schools
   for (const [key, school] of Object.entries(NON_MAC_SCHOOLS)) {
+    const nonMacSchool = school as NonMacSchool;
     if (
-      school.name.toLowerCase().includes(normalizedName.toLowerCase()) ||
-      normalizedName.toLowerCase().includes(school.name.toLowerCase()) ||
-      school.shortName.toLowerCase().includes(normalizedName.toLowerCase()) ||
-      normalizedName.toLowerCase().includes(school.shortName.toLowerCase())
+      nonMacSchool.name.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(nonMacSchool.name.toLowerCase()) ||
+      nonMacSchool.shortName.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(nonMacSchool.shortName.toLowerCase())
     ) {
       return {
-        id: school.name.toLowerCase().replace(/\s+/g, "-"),
-        name: school.name,
-        shortName: school.shortName,
+        id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
+        name: nonMacSchool.name,
+        shortName: nonMacSchool.shortName,
         mascot: "",
-        primaryColor: school.primaryColor,
-        secondaryColor: school.secondaryColor,
-        logoUrl: school.logoUrl,
+        primaryColor: nonMacSchool.primaryColor,
+        secondaryColor: nonMacSchool.secondaryColor,
+        logoUrl: nonMacSchool.logoUrl,
         city: "",
         state: ""
       };

@@ -11,7 +11,7 @@ interface GameScoreCardProps {
   showType?: "list" | "card";
 }
 
-export function GameScoreCard({ game, isLive = false, showType = "card" }: GameScoreCardProps) {
+export default function GameScoreCard({ game, isLive = false, showType = "card" }: GameScoreCardProps) {
   // Find team data using the improved findSchoolByName function
   const homeTeam = findSchoolByName(game.homeTeam);
   const awayTeam = findSchoolByName(game.awayTeam);
@@ -44,9 +44,19 @@ export function GameScoreCard({ game, isLive = false, showType = "card" }: GameS
     sourceLabel = "ESPN Data";
   }
   
-  const gameDate = new Date(game.date);
-  const formattedDate = format(gameDate, "MMM d, yyyy");
-  const formattedTime = format(gameDate, "h:mm a");
+  // Format date and time safely
+  let formattedDate = "TBD";
+  let formattedTime = "TBD";
+  if (game.date) {
+    const gameDate = new Date(game.date);
+    formattedDate = format(gameDate, "MMM d, yyyy");
+    formattedTime = format(gameDate, "h:mm a");
+  } else if (game.startTime) {
+    // Fall back to startTime if date is not available
+    const gameDate = new Date(game.startTime);
+    formattedDate = format(gameDate, "MMM d, yyyy");
+    formattedTime = format(gameDate, "h:mm a");
+  }
   
   // Determine display for current game situation (inning, score, etc.)
   let gameSituation = "";

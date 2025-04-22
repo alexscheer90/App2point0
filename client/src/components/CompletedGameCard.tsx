@@ -10,7 +10,7 @@ interface CompletedGameCardProps {
   showType?: "list" | "card";
 }
 
-function CompletedGameCardComponent({ game, showType = "card" }: CompletedGameCardProps) {
+export default function CompletedGameCard({ game, showType = "card" }: CompletedGameCardProps) {
   // Find team data using the improved findSchoolByName function
   const homeTeam = findSchoolByName(game.homeTeam);
   const awayTeam = findSchoolByName(game.awayTeam);
@@ -75,8 +75,16 @@ function CompletedGameCardComponent({ game, showType = "card" }: CompletedGameCa
     sourceLabel = "ESPN Data";
   }
   
-  const gameDate = new Date(game.date);
-  const formattedDate = format(gameDate, "MMM d, yyyy");
+  // Format date safely
+  let formattedDate = "TBD";
+  if (game.date) {
+    const gameDate = new Date(game.date);
+    formattedDate = format(gameDate, "MMM d, yyyy");
+  } else if (game.startTime) {
+    // Fall back to startTime if date is not available
+    const gameDate = new Date(game.startTime);
+    formattedDate = format(gameDate, "MMM d, yyyy");
+  }
   
   // Format game result text
   let resultText = "Final";
