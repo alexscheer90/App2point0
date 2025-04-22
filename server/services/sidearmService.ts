@@ -200,6 +200,17 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
     const statusDetail = `Miami baseball format - Home: ${homeTeamScore}, Away: ${awayTeamScore}`;
     console.log(statusDetail);
     
+    // Also handle game status - if HasStarted is true and IsComplete is false, it's live
+    let gameStatus = game.status;
+    if (data.HasStarted === true && data.IsComplete === false) {
+      console.log('Detected LIVE game from Miami feed');
+      gameStatus = 'live';
+    } else if (data.IsComplete === true) {
+      console.log('Detected FINAL game from Miami feed');
+      gameStatus = 'final';
+    }
+    console.log(`Game status from data: ${gameStatus}`);
+    
     // Try to get period/inning/quarter information
     if (data.status && data.status.period) {
       period = data.status.period;
@@ -294,7 +305,8 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
     console.log(`Processed SIDEARM data: Home ${homeTeamScore}, Away ${awayTeamScore}, Period: ${period}, Clock: ${clock}, Situation: ${situation}`);
     
     return {
-      status: 'live',
+      status: gameStatus,
+      statusDetail: 'SIDEARM data retrieved successfully',
       homeTeamScore,
       awayTeamScore,
       period,

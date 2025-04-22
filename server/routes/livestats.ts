@@ -173,15 +173,13 @@ router.get('/test-miami-feed', async (req, res) => {
     // Create a mock game for testing
     const mockGame: Game = {
       id: 'test-game-123',
-      sport: { id: 'baseball', name: 'Baseball' },
-      homeTeam: { id: 'miami-oh', name: 'Miami (OH)', mascot: 'RedHawks', shortName: 'Miami' },
-      awayTeam: { id: 'toledo', name: 'Toledo', mascot: 'Rockets', shortName: 'Toledo' },
+      sportId: 'baseball',
+      homeTeamId: 'miami-oh',
+      awayTeamId: 'toledo',
       status: 'live',
-      gameDate: new Date().toISOString(),
-      network: '',
-      location: data.data?.Location || 'Oxford, OH',
-      sidearmAvailable: true,
-      sidearmUrl: url
+      scheduledTime: new Date().toISOString(),
+      startTime: new Date().toISOString(),
+      location: data.data?.Location || 'Oxford, OH'
     };
     
     // Process the data using our SIDEARM service
