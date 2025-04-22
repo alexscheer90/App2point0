@@ -12,9 +12,46 @@ interface GameScoreCardProps {
 }
 
 export default function GameScoreCard({ game, isLive = false, showType = "card" }: GameScoreCardProps) {
-  // Find team data using the improved findSchoolByName function
-  const homeTeam = findSchoolByName(game.homeTeam);
-  const awayTeam = findSchoolByName(game.awayTeam);
+  // Handle special cases before calling findSchoolByName
+  let adjustedHomeName = game.homeTeam;
+  let adjustedAwayName = game.awayTeam;
+  
+  // Special case handling for known problematic schools
+  if (game.awayTeam && (
+      game.awayTeam.includes("Valparaiso") || 
+      game.awayTeam.toLowerCase().includes("valpo") ||
+      game.awayTeam.includes("Beacons")
+  )) {
+    adjustedAwayName = "Valparaiso";
+  }
+  
+  if (game.awayTeam && (
+      game.awayTeam.includes("Northern Kentucky") || 
+      game.awayTeam.includes("NKU") ||
+      game.awayTeam.includes("Norse")
+  )) {
+    adjustedAwayName = "Northern Kentucky";
+  }
+  
+  if (game.homeTeam && (
+      game.homeTeam.includes("Valparaiso") || 
+      game.homeTeam.toLowerCase().includes("valpo") ||
+      game.homeTeam.includes("Beacons")
+  )) {
+    adjustedHomeName = "Valparaiso";
+  }
+  
+  if (game.homeTeam && (
+      game.homeTeam.includes("Northern Kentucky") || 
+      game.homeTeam.includes("NKU") ||
+      game.homeTeam.includes("Norse")
+  )) {
+    adjustedHomeName = "Northern Kentucky";
+  }
+  
+  // Find team data using the improved findSchoolByName function with adjusted names
+  const homeTeam = findSchoolByName(adjustedHomeName);
+  const awayTeam = findSchoolByName(adjustedAwayName);
   
   // Determine if the game is a rivalry based on both teams having logoUrls
   // and both being in the MAC conference
@@ -133,7 +170,13 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
               <div className="flex items-center">
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
-                    src={awayTeam?.logoUrl || "/school-logos/generic.png"} 
+                    src={
+                      game.awayTeam?.includes("Valparaiso") || game.awayTeam?.toLowerCase().includes("valpo") 
+                        ? "/school-logos/non-mac/Valparaiso.png" 
+                        : game.awayTeam?.includes("Northern Kentucky") || game.awayTeam?.includes("NKU")
+                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                          : awayTeam?.logoUrl || "/school-logos/generic.png"
+                    } 
                     alt={game.awayTeam} 
                     className="object-contain w-full h-full p-1"
                   />
@@ -153,7 +196,13 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
               <div className="flex items-center">
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
-                    src={homeTeam?.logoUrl || "/school-logos/generic.png"} 
+                    src={
+                      game.homeTeam?.includes("Valparaiso") || game.homeTeam?.toLowerCase().includes("valpo") 
+                        ? "/school-logos/non-mac/Valparaiso.png" 
+                        : game.homeTeam?.includes("Northern Kentucky") || game.homeTeam?.includes("NKU")
+                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                          : homeTeam?.logoUrl || "/school-logos/generic.png"
+                    } 
                     alt={game.homeTeam} 
                     className="object-contain w-full h-full p-1"
                   />

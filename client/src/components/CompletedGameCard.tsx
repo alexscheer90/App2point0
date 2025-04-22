@@ -78,38 +78,22 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
   const homeTeamInfo = getTeamNameFromId(game.homeTeamId);
   const awayTeamInfo = getTeamNameFromId(game.awayTeamId);
   
-  // Find team data using the improved findSchoolByName function
-  const homeTeam = findSchoolByName(homeTeamInfo.name);
-  const awayTeam = findSchoolByName(awayTeamInfo.name);
+  // Handle special cases before calling findSchoolByName
+  let adjustedHomeName = homeTeamInfo.name;
+  let adjustedAwayName = awayTeamInfo.name;
   
-  // Add special case handling for specific non-MAC schools
+  // Special case handling for known problematic schools
   if (awayTeamInfo.name.includes("Valparaiso") || awayTeamInfo.name.toLowerCase().includes("valpo")) {
-    if (!awayTeam || !awayTeam.logoUrl.includes('valparaiso')) {
-      awayTeam = {
-        ...awayTeam || {},
-        name: "Valparaiso",
-        shortName: "Valpo",
-        mascot: "Beacons",
-        logoUrl: "/school-logos/non-mac/valparaiso.png",
-        primaryColor: "#402E82", // Valpo colors
-        secondaryColor: "#FDAC43"
-      } as any;
-    }
+    adjustedAwayName = "Valparaiso";
   }
   
   if (awayTeamInfo.name.includes("Northern Kentucky") || awayTeamInfo.name.includes("NKU")) {
-    if (!awayTeam || !awayTeam.logoUrl.includes('northernkentucky')) {
-      awayTeam = {
-        ...awayTeam || {},
-        name: "Northern Kentucky",
-        shortName: "NKU",
-        mascot: "Norse",
-        logoUrl: "/school-logos/non-mac/northernkentucky.png",
-        primaryColor: "#FFC72C", // NKU colors
-        secondaryColor: "#000000"
-      } as any;
-    }
+    adjustedAwayName = "Northern Kentucky";
   }
+  
+  // Find team data using the improved findSchoolByName function with adjusted names
+  const homeTeam = findSchoolByName(adjustedHomeName);
+  const awayTeam = findSchoolByName(adjustedAwayName);
   
   // Debug team resolution
   console.log(`Team resolution - Home: ${homeTeam?.name || homeTeamInfo.name}, Logo: ${homeTeam?.logoUrl || 'Using default'}`);
@@ -503,7 +487,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
               <div className="flex items-center">
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
-                    src={awayTeam?.logoUrl || "/school-logos/ncaa.png"} 
+                    src={
+                      awayTeamInfo.name.includes("Valparaiso") || awayTeamInfo.name.toLowerCase().includes("valpo") 
+                        ? "/school-logos/non-mac/Valparaiso.png" 
+                        : awayTeamInfo.name.includes("Northern Kentucky") || awayTeamInfo.name.includes("NKU")
+                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                          : awayTeam?.logoUrl || "/school-logos/ncaa.png"
+                    } 
                     alt={awayTeamInfo.name} 
                     className={`object-contain w-full h-full p-1 ${awayWinner ? 'ring-2 ring-yellow-400' : ''}`}
                   />
@@ -523,7 +513,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
               <div className="flex items-center">
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
-                    src={homeTeam?.logoUrl || "/school-logos/ncaa.png"} 
+                    src={
+                      homeTeamInfo.name.includes("Valparaiso") || homeTeamInfo.name.toLowerCase().includes("valpo") 
+                        ? "/school-logos/non-mac/Valparaiso.png" 
+                        : homeTeamInfo.name.includes("Northern Kentucky") || homeTeamInfo.name.includes("NKU")
+                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                          : homeTeam?.logoUrl || "/school-logos/ncaa.png"
+                    } 
                     alt={homeTeamInfo.name} 
                     className={`object-contain w-full h-full p-1 ${homeWinner ? 'ring-2 ring-yellow-400' : ''}`}
                   />
