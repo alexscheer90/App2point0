@@ -32,7 +32,8 @@ import youngstownStateLogo from "@assets/Youngstown_State_Penguins_logo.svg.png"
 import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
 import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
 import ncaaLogo from "@assets/IMG_0788.png"; // NCAA logo for non-MAC schools
-import ohioStateLogo from "@assets/IMG_0747.png"; // Ohio State logo
+// Import Ohio State logo from the public directory
+const ohioStateLogo = "/school-logos/non-mac/ohiostate.png";
 
 // Export the NCAA logo for use in other components
 export const ncaaLogoUrl = ncaaLogo;
