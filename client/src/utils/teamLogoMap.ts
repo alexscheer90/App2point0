@@ -336,7 +336,7 @@ export const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Ohio State",
     primaryColor: "#BB0000",
     secondaryColor: "#666666",
-    logoUrl: "/school-logos/non-mac/Ohio_State_Buckeyes_logo.svg.png",
+    logoUrl: "/school-logos/non-mac/ohiostate.png",
     conference: "Big Ten"
   },
   "Penn State": {
