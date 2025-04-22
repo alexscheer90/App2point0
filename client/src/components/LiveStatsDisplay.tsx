@@ -47,7 +47,7 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
       {game.situation && (
         <div className="bg-gray-50 rounded-lg p-3 mb-4 border-l-4 border-blue-500">
           <div className="flex items-center gap-2">
-            <Heartbeat className="h-4 w-4 text-blue-500" />
+            <Activity className="h-4 w-4 text-blue-500" />
             <span className="font-medium">Current Play:</span>
           </div>
           <p className="mt-1 text-sm text-gray-700">{game.situation}</p>
