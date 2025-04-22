@@ -116,13 +116,32 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                   onError={(e) => {
                     console.log(`Failed to load logo for: ${homeTeam.name} from ${homeTeam.logoUrl}`);
                     e.currentTarget.onerror = null; // Prevent infinite error loop
-                    // Try to load a fallback logo if applicable
+                    
+                    // Explicit handling for Michigan schools
+                    if (homeTeam.name === "Central Michigan" || homeTeam.id === "centralmichigan") {
+                      e.currentTarget.src = "/school-logos/centralmichigan.png";
+                      return;
+                    } else if (homeTeam.name === "Eastern Michigan" || homeTeam.id === "easternmichigan") {
+                      e.currentTarget.src = "/school-logos/easternmichigan.png";
+                      return;
+                    } else if (homeTeam.name === "Western Michigan" || homeTeam.id === "westernmichigan") {
+                      e.currentTarget.src = "/school-logos/westernmichigan.png";
+                      return;
+                    } else if (homeTeam.name === "Michigan" || homeTeam.id === "michigan") {
+                      e.currentTarget.src = "/school-logos/non-mac/michigan.png";
+                      return;
+                    }
+                    
+                    // Other special cases
                     if (homeTeam.name?.toLowerCase().includes("mid-american conference")) {
                       e.currentTarget.src = "/school-logos/mac-conference.png";
                     } else if (homeTeam.name === "Bowling Green") {
                       e.currentTarget.src = "/school-logos/bowlinggreen.png";
                     } else if (homeTeam.name?.includes("Illinois-Chicago")) {
                       e.currentTarget.src = "/school-logos/affiliate/uic.png";
+                    } else {
+                      // Generic fallback to NCAA logo
+                      e.currentTarget.src = "/school-logos/ncaa.png";
                     }
                   }}
                 />
@@ -163,13 +182,32 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
                   onError={(e) => {
                     console.log(`Failed to load logo for: ${awayTeam.name} from ${awayTeam.logoUrl}`);
                     e.currentTarget.onerror = null; // Prevent infinite error loop
-                    // Try to load a fallback logo if applicable
+                    
+                    // Explicit handling for Michigan schools
+                    if (awayTeam.name === "Central Michigan" || awayTeam.id === "centralmichigan") {
+                      e.currentTarget.src = "/school-logos/centralmichigan.png";
+                      return;
+                    } else if (awayTeam.name === "Eastern Michigan" || awayTeam.id === "easternmichigan") {
+                      e.currentTarget.src = "/school-logos/easternmichigan.png";
+                      return;
+                    } else if (awayTeam.name === "Western Michigan" || awayTeam.id === "westernmichigan") {
+                      e.currentTarget.src = "/school-logos/westernmichigan.png";
+                      return;
+                    } else if (awayTeam.name === "Michigan" || awayTeam.id === "michigan") {
+                      e.currentTarget.src = "/school-logos/non-mac/michigan.png";
+                      return;
+                    }
+                    
+                    // Other special cases
                     if (awayTeam.name?.toLowerCase().includes("mid-american conference")) {
                       e.currentTarget.src = "/school-logos/mac-conference.png";
                     } else if (awayTeam.name === "Bowling Green") {
                       e.currentTarget.src = "/school-logos/bowlinggreen.png";
                     } else if (awayTeam.name?.includes("Illinois-Chicago")) {
                       e.currentTarget.src = "/school-logos/affiliate/uic.png";
+                    } else {
+                      // Generic fallback to NCAA logo
+                      e.currentTarget.src = "/school-logos/ncaa.png";
                     }
                   }}
                 />
