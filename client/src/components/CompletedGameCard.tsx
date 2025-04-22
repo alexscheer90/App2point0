@@ -211,8 +211,8 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
           </div>
         )}
         
-        {/* Data source badge */}
-        <div className="absolute top-0 right-0 z-10 px-2 py-1 text-xs font-medium text-white rounded-bl-md"
+        {/* Data source badge - moved to bottom left */}
+        <div className="absolute bottom-0 left-0 z-10 px-2 py-1 text-xs font-medium text-white rounded-tr-md"
              style={{ backgroundColor: sourceColor.replace('bg-', '') }}>
           {sourceLabel}
         </div>
