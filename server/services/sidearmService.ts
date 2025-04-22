@@ -129,8 +129,8 @@ export async function fetchSidearmGameData(
  */
 export function processSidearmData(rawData: any, game: Game): Partial<Game> {
   try {
-    // If we don't have actual data yet, just return game status update
-    if (!rawData || !rawData.data) {
+    // If we don't have actual data, return a basic status update
+    if (!rawData) {
       return {
         status: game.status,
         statusDetail: 'SIDEARM data source ready',
@@ -138,8 +138,10 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       };
     }
     
-    // Basic data extraction for score and period
-    const data = rawData.data;
+    // Handle both formats: 
+    // 1. When rawData contains a data property (from fetchSidearmGameData)
+    // 2. When rawData is the data itself (direct from test endpoint)
+    const data = rawData.data ? rawData.data : rawData;
     
     console.log('Processing SIDEARM data format, keys:', Object.keys(data));
     
@@ -227,9 +229,16 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       period = String(data.currentInning) + inningHalf;
     } 
     // Miami baseball specific format
-    else if (data.Period && typeof data.Period === 'string') {
-      // For example, "T4" for top of the 4th inning
-      period = data.Period;
+    else if (data.Period !== undefined) {
+      if (typeof data.Period === 'string') {
+        // For example, "T4" for top of the 4th inning
+        period = data.Period;
+      } else if (typeof data.Period === 'number') {
+        // Convert numeric period to a string with the appropriate format
+        // For baseball, add 'T' (top) or 'B' (bottom) prefix based on context
+        const half = data.Context && data.Context.toLowerCase().includes('top') ? 'T' : 'B';
+        period = `${half}${data.Period}`;
+      }
       console.log(`Found Period directly from Miami data: ${period}`);
     }
     

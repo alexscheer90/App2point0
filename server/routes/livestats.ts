@@ -183,6 +183,7 @@ router.get('/test-miami-feed', async (req, res) => {
     };
     
     // Process the data using our SIDEARM service
+    // Pass the raw data directly (not wrapped in another data property)
     const processedData = processSidearmData(data.data, mockGame);
     console.log('PROCESSED SIDEARM DATA:', JSON.stringify(processedData));
     
