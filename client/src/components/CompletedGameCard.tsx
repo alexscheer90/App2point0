@@ -329,14 +329,56 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
       return "Women's Tennis";
     }
     
-    // Men's Golf
-    if (normalizedId === 'mgolf' || (normalizedId.includes('golf') && normalizedId.includes('men'))) {
+    // Men's Golf - include championship detection
+    if (normalizedId === 'mgolf' || 
+        (normalizedId.includes('golf') && normalizedId.includes('men')) ||
+        (normalizedId.includes('golf') && 
+         (game.homeTeamId?.toLowerCase().includes('men') || 
+          game.awayTeamId?.toLowerCase().includes('men') ||
+          game.homeTeamName?.toLowerCase().includes('men') || 
+          game.awayTeamName?.toLowerCase().includes('men')))) {
       return "Men's Golf";
     }
     
-    // Women's Golf
-    if (normalizedId === 'wgolf' || (normalizedId.includes('golf') && normalizedId.includes('women'))) {
+    // Women's Golf - include championship detection
+    if (normalizedId === 'wgolf' || 
+        (normalizedId.includes('golf') && normalizedId.includes('women')) ||
+        (normalizedId.includes('golf') && 
+         (game.homeTeamId?.toLowerCase().includes('women') || 
+          game.awayTeamId?.toLowerCase().includes('women') ||
+          game.homeTeamName?.toLowerCase().includes('women') || 
+          game.awayTeamName?.toLowerCase().includes('women')))) {
       return "Women's Golf";
+    }
+    
+    // For MAC Championship Golf events with no explicit gender marker
+    // We'll check other parts of the game data to determine gender
+    if (normalizedId.includes('golf') && 
+        (game.homeTeamName?.includes('MAC Championship') || 
+         game.awayTeamName?.includes('MAC Championship') ||
+         game.homeTeamId?.includes('mid-american-conference') || 
+         game.awayTeamId?.includes('mid-american-conference'))) {
+         
+      // Check for specific tournaments/championships by date
+      // Mid-April is typically women's championships, late April/early May is men's
+      const gameDate = new Date(game.startTime || game.date || "");
+      const month = gameDate.getMonth(); // 0-based (April = 3)
+      const day = gameDate.getDate();
+      
+      // This season-specific logic can be adjusted yearly
+      // For 2025, assume April 15-22 is women's, April 23-May 5 is men's
+      if (month === 3) { // April
+        if (day <= 22) {
+          return "Women's Golf";
+        } else {
+          return "Men's Golf";
+        }
+      } else if (month === 4 && day <= 5) { // May 1-5
+        return "Men's Golf";
+      }
+      
+      // If we can't determine by date, just use "Golf" as generic
+      return "Golf";
     }
     
     // Women's Lacrosse (only women's in MAC)
