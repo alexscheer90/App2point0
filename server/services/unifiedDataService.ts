@@ -1,358 +1,240 @@
-import { log } from '../vite';
+/**
+ * Service for providing unified data from multiple sources (SIDEARM, ESPN, MAC)
+ */
 import axios from 'axios';
-import { Game, GameStatus } from '@shared/schema';
-import schoolFeeds, { getSidearmFeedUrl, mapSchoolNameToId } from '../config/schoolFeeds';
+import { Game, GameStatus } from '../../shared/schema';
+import { checkSidearmAvailability, fetchSidearmGameData, processSidearmData } from './sidearmService';
+
+interface DataSourceInfo {
+  recommendedSource: 'sidearm' | 'espn' | 'mac';
+  sidearmAvailable: boolean;
+  espnAvailable: boolean;
+  sidearmUrl?: string;
+  espnUrl?: string;
+}
 
 /**
- * Service to handle unified game data from multiple sources
- * - ESPN API for general coverage
- * - SIDEARM for official school-provided statistics
- * - MAC conference calendar for schedule information
+ * Check all available data sources for a game and recommend which to use
  */
-class UnifiedDataService {
-  // Cache to track which data source is used for each game
-  private gameDataSources: Map<string, 'espn' | 'sidearm' | 'mac'> = new Map();
+export async function checkDataSources(game: Game, sport: string): Promise<DataSourceInfo> {
+  const result: DataSourceInfo = {
+    recommendedSource: 'mac', // Default to MAC data
+    sidearmAvailable: false,
+    espnAvailable: false
+  };
   
-  /**
-   * Check if a specific data source is available for a game
-   */
-  async checkDataSourceAvailability(
-    source: 'espn' | 'sidearm', 
-    schoolId: string, 
-    sportId: string, 
-    gameId: string
-  ): Promise<boolean> {
-    try {
-      if (source === 'sidearm') {
-        return await this.checkSidearmAvailability(schoolId, sportId, gameId);
-      } else if (source === 'espn') {
-        // For now, we assume ESPN is always available for demonstration
-        // In a production version, we would check the ESPN API for this specific game
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      log(`Error checking ${source} availability: ${error}`, 'unifiedDataService');
-      return false;
-    }
-  }
-  
-  /**
-   * Check if SIDEARM stats are available for a specific game
-   * Uses the school feeds configuration to determine if a SIDEARM feed exists
-   */
-  private async checkSidearmAvailability(
-    schoolId: string, 
-    sportId: string, 
-    gameId: string
-  ): Promise<boolean> {
-    // Convert any legacy school IDs to new format if needed
-    const normalizedSchoolId = this.normalizeSchoolId(schoolId);
-    if (!normalizedSchoolId) {
-      log(`Could not normalize school ID: ${schoolId}`, 'unifiedDataService');
-      return false;
-    }
-    
-    // Get the SIDEARM feed URL for this school and sport
-    const sidearmUrl = getSidearmFeedUrl(normalizedSchoolId, sportId);
-    if (!sidearmUrl) {
-      log(`No SIDEARM feed URL found for school ${normalizedSchoolId} and sport ${sportId}`, 'unifiedDataService');
-      return false;
-    }
-    
-    // Check if the feed is actually accessible
-    try {
-      const response = await axios.head(sidearmUrl, { 
-        timeout: 3000,
-        validateStatus: (status) => status < 400
-      });
-      
-      log(`SIDEARM feed check for ${normalizedSchoolId}/${sportId}: ${response.status === 200 ? 'Available' : 'Not available'}`, 'unifiedDataService');
-      return response.status === 200;
-    } catch (error) {
-      log(`Error checking SIDEARM feed for ${normalizedSchoolId}/${sportId}: ${error}`, 'unifiedDataService');
-      return false;
-    }
-  }
-  
-  /**
-   * Normalize school IDs between different formats
-   */
-  private normalizeSchoolId(schoolId: string): string | null {
-    // Map legacy school IDs to new format
-    const legacyMap: Record<string, string> = {
-      'bgsu': 'bowling-green',
-      'emu': 'eastern-michigan',
-      'kent': 'kent-state',
-      'akron': 'akron',
-      'ohiou': 'ohio',
-      'miamioh': 'miami-oh',
-      'cmu': 'central-michigan',
-      'bsu': 'ball-state',
-      'niu': 'northern-illinois',
-      'toledo': 'toledo',
-      'wmu': 'western-michigan',
-      'buffalo': 'buffalo',
-      'umass': 'massachusetts'
-    };
-    
-    if (legacyMap[schoolId]) {
-      return legacyMap[schoolId];
-    }
-    
-    // Check if the ID is already in the new format
-    if (schoolFeeds[schoolId]) {
-      return schoolId;
-    }
-    
-    // Last resort: try to map by name 
-    return mapSchoolNameToId(schoolId);
-  }
-  
-  /**
-   * Get the best available game data from any source
-   */
-  async getGameData(
-    gameId: string, 
-    schoolId: string, 
-    sportId: string
-  ): Promise<Game | null> {
+  try {
     // Check SIDEARM availability first (preferred source)
-    const sidearmAvailable = await this.checkDataSourceAvailability(
-      'sidearm', schoolId, sportId, gameId
-    );
+    const sidearmCheck = await checkSidearmAvailability(game, sport);
+    result.sidearmAvailable = sidearmCheck.available;
     
-    if (sidearmAvailable) {
-      try {
-        const sidearmData = await this.getSidearmGameData(gameId, schoolId, sportId);
-        if (sidearmData) {
-          this.gameDataSources.set(gameId, 'sidearm');
-          return sidearmData;
-        }
-      } catch (error) {
-        log(`Error fetching SIDEARM data: ${error}`, 'unifiedDataService');
-        // Continue to ESPN as fallback
-      }
+    if (sidearmCheck.feedUrl) {
+      result.sidearmUrl = sidearmCheck.feedUrl;
     }
     
-    // Try ESPN as fallback or primary if SIDEARM isn't available
-    try {
-      const espnData = await this.getESPNGameData(gameId);
-      if (espnData) {
-        this.gameDataSources.set(gameId, 'espn');
-        return espnData;
-      }
-    } catch (error) {
-      log(`Error fetching ESPN data: ${error}`, 'unifiedDataService');
+    // If SIDEARM is available, recommend it
+    if (result.sidearmAvailable) {
+      result.recommendedSource = 'sidearm';
+      return result;
     }
     
-    // If we get here, no data source was available
-    return null;
-  }
-  
-  /**
-   * Get game data from SIDEARM source
-   * Implements the smart fetching approach for the SIDEARM data feed
-   */
-  private async getSidearmGameData(
-    gameId: string, 
-    schoolId: string, 
-    sportId: string
-  ): Promise<Game | null> {
-    // Normalize the school ID to work with our school feeds config
-    const normalizedSchoolId = this.normalizeSchoolId(schoolId);
-    if (!normalizedSchoolId) {
-      log(`Could not normalize school ID for SIDEARM data: ${schoolId}`, 'unifiedDataService');
-      return null;
+    // Check ESPN availability (secondary source)
+    // For now, we'll assume ESPN is available for all live games
+    // In a full implementation, we would check if the ESPN API has data for this game
+    const espnAvailable = game.links?.espn !== undefined;
+    result.espnAvailable = espnAvailable;
+    
+    if (game.links?.espn) {
+      result.espnUrl = game.links.espn;
     }
     
-    // Get the SIDEARM feed URL for this school and sport
-    const sidearmUrl = getSidearmFeedUrl(normalizedSchoolId, sportId);
-    if (!sidearmUrl) {
-      log(`No SIDEARM feed URL available for ${normalizedSchoolId}/${sportId}`, 'unifiedDataService');
-      return null;
+    if (result.espnAvailable) {
+      result.recommendedSource = 'espn';
     }
     
-    log(`Fetching SIDEARM data for game ${gameId} from ${sidearmUrl}`, 'unifiedDataService');
-    
-    try {
-      // In a full implementation, we would:
-      // 1. Make the appropriate API call to the SIDEARM feed
-      // 2. Parse the XML/JSON response
-      // 3. Transform the data into our Game format
-      
-      // For this exercise, we'll just check if the endpoint is accessible
-      // and return a placeholder game object
-      const checkResponse = await axios.head(`${sidearmUrl}`, { 
-        timeout: 5000,
-        validateStatus: (status) => status < 400
-      });
-      
-      if (checkResponse.status === 200) {
-        log(`Successfully connected to SIDEARM feed for ${normalizedSchoolId}`, 'unifiedDataService');
-        
-        // In a real implementation, we would fetch and parse the actual data
-        // For now, return a placeholder with the "source" field set to 'sidearm'
-        // We'll fall back to ESPN data but tag it as coming from SIDEARM
-        const schoolInfo = schoolFeeds[normalizedSchoolId];
-        
-        // This is where we would normally fetch and parse the data
-        // For demo purposes, we're just returning null to trigger the ESPN fallback
-        // while still tracking that we're using the SIDEARM source
-        return null;
-      } else {
-        log(`SIDEARM feed not available for ${normalizedSchoolId} (status: ${checkResponse.status})`, 'unifiedDataService');
-        return null;
-      }
-    } catch (error) {
-      log(`Error accessing SIDEARM feed for ${normalizedSchoolId}: ${error}`, 'unifiedDataService');
-      return null;
-    }
-  }
-  
-  /**
-   * Get game data from ESPN source
-   */
-  private async getESPNGameData(gameId: string): Promise<Game | null> {
-    // If the gameId starts with 'espn-', extract the ESPN ID
-    if (!gameId.startsWith('espn-')) {
-      log(`Game ID ${gameId} is not an ESPN game ID`, 'unifiedDataService');
-      return null;
-    }
-    
-    const espnId = gameId.replace('espn-', '');
-    
-    try {
-      // Make a request to the ESPN API for this specific game
-      const response = await axios.get(
-        `https://site.api.espn.com/apis/site/v2/sports/events/${espnId}`
-      );
-      
-      // Transform the ESPN data into our standard Game format
-      const event = response.data;
-      
-      if (!event) {
-        log(`No event data returned from ESPN for ID ${espnId}`, 'unifiedDataService');
-        return null;
-      }
-      
-      // Map ESPN status to our GameStatus
-      const statusMap: Record<string, GameStatus> = {
-        pre: 'scheduled',
-        in: 'live',
-        post: 'final'
-      };
-      
-      const status = (statusMap[event.status.type.state] || 'scheduled') as GameStatus;
-      
-      // Build a Game object from ESPN data
-      const game: Game = {
-        id: `espn-${event.id}`,
-        sportId: this.mapESPNSportToSportId(event.sport),
-        status,
-        startTime: event.date,
-        homeTeamId: this.mapESPNTeamToSchoolId(event.competitions[0]?.competitors.find((c: any) => c.homeAway === 'home')?.team),
-        awayTeamId: this.mapESPNTeamToSchoolId(event.competitions[0]?.competitors.find((c: any) => c.homeAway === 'away')?.team),
-        homeTeamName: event.competitions[0]?.competitors.find((c: any) => c.homeAway === 'home')?.team.name,
-        awayTeamName: event.competitions[0]?.competitors.find((c: any) => c.homeAway === 'away')?.team.name,
-        homeTeamScore: parseInt(event.competitions[0]?.competitors.find((c: any) => c.homeAway === 'home')?.score) || 0,
-        awayTeamScore: parseInt(event.competitions[0]?.competitors.find((c: any) => c.homeAway === 'away')?.score) || 0,
-        venue: event.competitions[0]?.venue?.fullName,
-        period: event.status.period,
-        clock: event.status.displayClock,
-        situation: this.extractGameSituation(event),
-        links: this.extractESPNLinks(event),
-        source: 'espn'
-      };
-      
-      return game;
-    } catch (error) {
-      log(`Error fetching ESPN data for game ${espnId}: ${error}`, 'unifiedDataService');
-      return null;
-    }
-  }
-  
-  /**
-   * Extract the current game situation from ESPN data (e.g., "1st and 10 at the 25 yard line")
-   */
-  private extractGameSituation(event: any): string | null {
-    // This would extract situation text from ESPN game data
-    // Implementation depends on the sport and available data
-    return event.situation?.summary || null;
-  }
-  
-  /**
-   * Extract relevant links from ESPN data
-   */
-  private extractESPNLinks(event: any): Record<string, string> | null {
-    const links: Record<string, string> = {};
-    
-    // Extract any available links
-    if (event.links && Array.isArray(event.links)) {
-      for (const link of event.links) {
-        if (link.rel === 'summary') {
-          links.summary = link.href;
-        } else if (link.rel === 'boxscore') {
-          links.boxscore = link.href;
-        } else if (link.rel === 'pbp') {
-          links.playByPlay = link.href;
-        }
-      }
-    }
-    
-    return Object.keys(links).length > 0 ? links : null;
-  }
-  
-  /**
-   * Map ESPN sport to our sportId
-   */
-  private mapESPNSportToSportId(espnSport: any): string {
-    // Simple mapping from ESPN sport to our sportId
-    const sportMap: Record<string, string> = {
-      'football': 'football',
-      'basketball': 'mens-basketball',
-      'womens-basketball': 'womens-basketball',
-      'baseball': 'baseball',
-      'softball': 'softball',
-      'soccer': 'mens-soccer',
-      'womens-soccer': 'womens-soccer'
-    };
-    
-    return sportMap[espnSport?.slug] || 'unknown';
-  }
-  
-  /**
-   * Map ESPN team to our schoolId
-   */
-  private mapESPNTeamToSchoolId(espnTeam: any): string | null {
-    if (!espnTeam) return null;
-    
-    // Map ESPN team IDs to our schoolIds
-    const teamMap: Record<string, string> = {
-      '2050': 'akron',       // Akron
-      '2084': 'bgsu',        // Bowling Green
-      '2086': 'buffalo',     // Buffalo
-      '2117': 'cmu',         // Central Michigan
-      '2199': 'emu',         // Eastern Michigan
-      '2309': 'kent',        // Kent State
-      '193': 'miamioh',      // Miami (OH)
-      '2459': 'niu',         // Northern Illinois
-      '195': 'ohiou',        // Ohio
-      '2649': 'toledo',      // Toledo
-      '2711': 'wmu',         // Western Michigan
-      '113': 'umass'         // UMass
-    };
-    
-    return teamMap[espnTeam.id] || null;
-  }
-  
-  /**
-   * Get which data source was used for a game
-   */
-  getGameDataSource(gameId: string): 'espn' | 'sidearm' | 'mac' | null {
-    return this.gameDataSources.get(gameId) || null;
+    return result;
+  } catch (error) {
+    console.error('Error checking data sources:', error);
+    // Default to MAC if there's an error
+    return result;
   }
 }
 
-export const unifiedDataService = new UnifiedDataService();
+/**
+ * Fetch live game data from the best available source
+ */
+export async function fetchLiveGameData(gameId: string, game: Game, sport: string): Promise<any> {
+  try {
+    // First check which data sources are available
+    const sourceInfo = await checkDataSources(game, sport);
+    
+    // Try to fetch from the recommended source
+    if (sourceInfo.recommendedSource === 'sidearm' && sourceInfo.sidearmUrl) {
+      try {
+        const sidearmData = await fetchSidearmGameData(gameId, sourceInfo.sidearmUrl);
+        return {
+          ...sidearmData,
+          sourceInfo
+        };
+      } catch (sidearmError) {
+        console.error('Error fetching SIDEARM data, falling back to ESPN:', sidearmError);
+        // Fall back to ESPN if SIDEARM fails
+        if (sourceInfo.espnAvailable && sourceInfo.espnUrl) {
+          sourceInfo.recommendedSource = 'espn';
+        } else {
+          throw sidearmError;
+        }
+      }
+    }
+    
+    // If SIDEARM wasn't available or failed, try ESPN
+    if (sourceInfo.recommendedSource === 'espn' && sourceInfo.espnUrl) {
+      try {
+        const espnData = await fetchESPNGameData(gameId, sourceInfo.espnUrl);
+        return {
+          ...espnData,
+          sourceInfo
+        };
+      } catch (espnError) {
+        console.error('Error fetching ESPN data:', espnError);
+        throw espnError;
+      }
+    }
+    
+    // If we get here, no live data sources were available
+    return {
+      source: 'mac',
+      data: null,
+      timestamp: new Date().toISOString(),
+      sourceInfo,
+      error: 'No live data sources available'
+    };
+  } catch (error) {
+    console.error(`Error fetching live game data for game ${gameId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch game data from ESPN
+ */
+async function fetchESPNGameData(gameId: string, url: string): Promise<any> {
+  try {
+    const response = await axios.get(url, {
+      timeout: 5000
+    });
+    
+    if (response.status !== 200) {
+      throw new Error(`ESPN API returned status ${response.status}`);
+    }
+    
+    return {
+      source: 'espn',
+      data: response.data,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error(`Error fetching ESPN data for game ${gameId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Process game data from any source into a unified format
+ */
+export function processGameData(rawData: any, game: Game): Partial<Game> {
+  if (!rawData) {
+    return game;
+  }
+  
+  // Process based on the source
+  if (rawData.source === 'sidearm') {
+    return processSidearmData(rawData, game);
+  } else if (rawData.source === 'espn') {
+    return processESPNData(rawData, game);
+  }
+  
+  // Default to returning the game unchanged
+  return game;
+}
+
+/**
+ * Process ESPN data into our format
+ */
+function processESPNData(rawData: any, game: Game): Partial<Game> {
+  try {
+    // If we don't have actual data yet, just return game status update
+    if (!rawData || !rawData.data) {
+      return {
+        status: game.status,
+        statusDetail: 'ESPN data source ready',
+        lastUpdated: new Date().toISOString()
+      };
+    }
+    
+    // Basic data extraction for score and period
+    const data = rawData.data;
+    
+    // This is a simplified implementation; would need to be customized
+    // based on the actual ESPN API data format
+    let homeTeamScore = game.homeTeamScore;
+    let awayTeamScore = game.awayTeamScore;
+    let period = game.period;
+    let clock = game.clock;
+    let status: GameStatus = game.status;
+    let situation = game.situation;
+    
+    // ESPN data would be parsed here
+    if (data.competitions && data.competitions.length > 0) {
+      const competition = data.competitions[0];
+      
+      if (competition.status && competition.status.type) {
+        if (competition.status.type.state === 'in') {
+          status = 'live';
+        } else if (competition.status.type.state === 'post') {
+          status = 'final';
+        }
+        
+        if (competition.status.period) {
+          period = competition.status.period;
+        }
+        
+        if (competition.status.displayClock) {
+          clock = competition.status.displayClock;
+        }
+      }
+      
+      if (competition.competitors) {
+        for (const competitor of competition.competitors) {
+          if (competitor.homeAway === 'home' && competitor.score) {
+            homeTeamScore = parseInt(competitor.score);
+          } else if (competitor.homeAway === 'away' && competitor.score) {
+            awayTeamScore = parseInt(competitor.score);
+          }
+        }
+      }
+      
+      // Extract situation if available
+      if (competition.situation) {
+        situation = `${competition.situation.downDistanceText || ''} ${competition.situation.possession || ''}`.trim();
+      }
+    }
+    
+    return {
+      status,
+      homeTeamScore,
+      awayTeamScore,
+      period,
+      clock,
+      situation,
+      lastUpdated: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error processing ESPN data:', error);
+    return {
+      status: game.status,
+      statusDetail: 'Error processing ESPN data',
+      lastUpdated: new Date().toISOString()
+    };
+  }
+}

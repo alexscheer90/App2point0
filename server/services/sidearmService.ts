@@ -1,204 +1,144 @@
+/**
+ * Service for fetching and processing SIDEARM live stats data
+ */
 import axios from 'axios';
-import { log } from '../vite';
-import * as cheerio from 'cheerio';
-import { Game, GameStatus } from '@shared/schema';
-
-// Map of MAC schools to their SIDEARM stats base URLs
-const SIDEARM_SCHOOLS: Record<string, string> = {
-  'akron': 'https://gozips.com/sidearmstats',
-  'ball-state': 'https://ballstatesports.com/sidearmstats',
-  'bowling-green': 'https://bgsufalcons.com/sidearmstats',
-  'buffalo': 'https://ubbulls.com/sidearmstats',
-  'central-michigan': 'https://cmuchippewas.com/sidearmstats',
-  'eastern-michigan': 'https://emueagles.com/sidearmstats',
-  'kent-state': 'https://kentstatesports.com/sidearmstats',
-  'miami': 'https://miamiredhawks.com/sidearmstats',
-  'northern-illinois': 'https://niuhuskies.com/sidearmstats',
-  'ohio': 'https://ohiobobcats.com/sidearmstats',
-  'toledo': 'https://utrockets.com/sidearmstats',
-  'western-michigan': 'https://wmubroncos.com/sidearmstats',
-};
-
-// Sport-specific paths for SIDEARM
-const SIDEARM_SPORT_PATHS: Record<string, string> = {
-  'baseball': 'baseball/summary',
-  'mens-basketball': 'mbball/summary',
-  'womens-basketball': 'wbball/summary',
-  'football': 'football/summary',
-  'softball': 'softball/summary',
-  // Add more sports as needed
-};
+import { Game } from '../../shared/schema';
+import { getSidearmFeedUrl, mapSchoolNameToId } from '../config/schoolFeeds';
 
 /**
- * Check if SIDEARM stats are available for a given school and sport
+ * Check if SIDEARM stats are available for a game
  */
 export async function checkSidearmAvailability(
-  schoolId: string,
-  sportId: string
-): Promise<boolean> {
+  game: Game, 
+  sport: string
+): Promise<{ available: boolean; feedUrl: string | null }> {
   try {
-    const schoolKey = schoolId.toLowerCase();
-    const sportKey = mapSportIdToSidearmKey(sportId);
+    // Use the dedicated school database to look up the feed URL
+    const homeSchoolId = mapSchoolNameToId(game.homeTeamName || '');
     
-    if (!SIDEARM_SCHOOLS[schoolKey] || !SIDEARM_SPORT_PATHS[sportKey]) {
-      return false;
+    if (!homeSchoolId) {
+      console.log(`Could not map home team name to ID: ${game.homeTeamName}`);
+      return { available: false, feedUrl: null };
     }
     
-    const statsUrl = `${SIDEARM_SCHOOLS[schoolKey]}/${SIDEARM_SPORT_PATHS[sportKey]}`;
+    // Get the feed URL for this school and sport
+    const feedUrl = getSidearmFeedUrl(homeSchoolId, sport);
     
-    // Just check if the URL responds with 200 OK
-    const response = await axios.head(statsUrl, { timeout: 3000 });
-    return response.status === 200;
-  } catch (error) {
-    log(`SIDEARM availability check failed for ${schoolId}/${sportId}: ${error}`, 'sidearm');
-    return false;
-  }
-}
-
-/**
- * Map our internal sport IDs to SIDEARM sport keys
- */
-function mapSportIdToSidearmKey(sportId: string): string {
-  // This is a simplified mapping, you may need to enhance this
-  const mapping: Record<string, string> = {
-    'baseball': 'baseball',
-    'mens-basketball': 'mens-basketball',
-    'womens-basketball': 'womens-basketball',
-    'football': 'football',
-    'softball': 'softball',
-  };
-  
-  return mapping[sportId] || '';
-}
-
-/**
- * Extract data from a SIDEARM statistics page
- */
-export async function fetchSidearmGameData(
-  schoolId: string,
-  sportId: string,
-  gameId?: string
-): Promise<any> {
-  try {
-    const schoolKey = schoolId.toLowerCase();
-    const sportKey = mapSportIdToSidearmKey(sportId);
-    
-    if (!SIDEARM_SCHOOLS[schoolKey] || !SIDEARM_SPORT_PATHS[sportKey]) {
-      throw new Error('School or sport not supported by SIDEARM');
+    if (!feedUrl) {
+      console.log(`No SIDEARM feed URL configured for ${homeSchoolId} and sport ${sport}`);
+      return { available: false, feedUrl: null };
     }
     
-    const statsUrl = `${SIDEARM_SCHOOLS[schoolKey]}/${SIDEARM_SPORT_PATHS[sportKey]}`;
-    
-    log(`Fetching SIDEARM data from ${statsUrl}`, 'sidearm');
-    
-    // Fetch the HTML page
-    const response = await axios.get(statsUrl, { timeout: 5000 });
-    const html = response.data;
-    
-    // Use cheerio to parse the HTML and extract the data
-    const $ = cheerio.load(html);
-    
-    // Extract GameTracker data source URLs (typically embedded in JavaScript)
-    const dataSourceUrls = findDataSourceUrls($);
-    
-    if (dataSourceUrls.length === 0) {
-      log('No GameTracker data sources found in HTML', 'sidearm');
-      return null;
-    }
-    
-    // Fetch the first data source URL (usually JSON or XML)
-    const dataResponse = await axios.get(dataSourceUrls[0], { timeout: 5000 });
-    const gameData = dataResponse.data;
-    
-    return transformSidearmData(gameData, schoolId, sportId);
-  } catch (error) {
-    log(`SIDEARM data fetch failed for ${schoolId}/${sportId}: ${error}`, 'sidearm');
-    return null;
-  }
-}
-
-/**
- * Look for GameTracker data source URLs in the HTML
- */
-function findDataSourceUrls($: cheerio.CheerioAPI): string[] {
-  const urls: string[] = [];
-  
-  // Look for JavaScript that contains URLs to data sources
-  $('script').each((index: number, script: any) => {
-    const content = $(script).html() || '';
-    
-    // Common patterns for data source URLs in SIDEARM
-    const urlPatterns = [
-      /gameTrackerUrl\s*=\s*["']([^"']+)["']/i,
-      /dataUrl\s*:\s*["']([^"']+)["']/i,
-      /["']([^"']+GameService\.svc[^"']+)["']/i,
-      /["']([^"']+\.json[^"']*)["']/i,
-      /["']([^"']+\.xml[^"']*)["']/i,
-    ];
-    
-    for (const pattern of urlPatterns) {
-      const match = content.match(pattern);
-      if (match && match[1]) {
-        urls.push(match[1]);
+    // Now check if the feed is actually available
+    const response = await axios.head(feedUrl, {
+      timeout: 3000,
+      headers: {
+        'Accept': 'application/json, text/plain, */*'
       }
-    }
-  });
-  
-  return urls;
-}
-
-/**
- * Transform SIDEARM data to our common format
- */
-function transformSidearmData(data: any, schoolId: string, sportId: string): Partial<Game> | null {
-  // This is where we'd transform the SIDEARM data to match our Game schema
-  // The implementation will depend on the exact format of the SIDEARM data
-  
-  try {
-    // We'll need to implement sport-specific transformations
-    // This is a placeholder for now
-    return {
-      id: `sidearm-${Date.now()}`, // We'd use a more stable ID in production
-      sportId,
-      homeTeamId: schoolId,
-      homeTeamScore: extractScore(data, 'home'),
-      awayTeamScore: extractScore(data, 'away'),
-      status: extractGameStatus(data),
-      period: extractPeriod(data),
-      clock: extractClock(data),
-      situation: extractSituation(data),
-      // Additional fields would be populated based on the SIDEARM data
+    });
+    
+    return { 
+      available: response.status === 200, 
+      feedUrl 
     };
   } catch (error) {
-    log(`Error transforming SIDEARM data: ${error}`, 'sidearm');
-    return null;
+    console.log(`Error checking SIDEARM availability for ${game.homeTeamName}:`, error);
+    return { available: false, feedUrl: null };
   }
 }
 
-// Helper functions to extract specific data points from SIDEARM data
-// These would need to be implemented based on the actual data format
-
-function extractScore(data: any, team: 'home' | 'away'): number {
-  // Implementation would depend on the actual data format
-  return 0;
+/**
+ * Fetch live stats data from SIDEARM for a specific game
+ */
+export async function fetchSidearmGameData(
+  gameId: string,
+  feedUrl: string
+): Promise<any> {
+  try {
+    const response = await axios.get(feedUrl, {
+      timeout: 5000,
+      headers: {
+        'Accept': 'application/json, text/plain, */*'
+      }
+    });
+    
+    if (response.status !== 200) {
+      throw new Error(`SIDEARM API returned status ${response.status}`);
+    }
+    
+    return {
+      source: 'sidearm',
+      data: response.data,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error(`Error fetching SIDEARM data for game ${gameId}:`, error);
+    throw error;
+  }
 }
 
-function extractGameStatus(data: any): GameStatus {
-  // Implementation would depend on the actual data format
-  return 'scheduled';
-}
-
-function extractPeriod(data: any): number | undefined {
-  // Implementation would depend on the actual data format
-  return undefined;
-}
-
-function extractClock(data: any): string | undefined {
-  // Implementation would depend on the actual data format
-  return undefined;
-}
-
-function extractSituation(data: any): string | undefined {
-  // Implementation would depend on the actual data format
-  return undefined;
+/**
+ * Process SIDEARM game data into a unified format
+ */
+export function processSidearmData(rawData: any, game: Game): Partial<Game> {
+  // This will need to be customized based on the actual SIDEARM data format
+  try {
+    // If we don't have actual data yet, just return game status update
+    if (!rawData || !rawData.data) {
+      return {
+        status: game.status,
+        statusDetail: 'SIDEARM data source ready',
+        lastUpdated: new Date().toISOString()
+      };
+    }
+    
+    // Basic data extraction for score and period
+    const data = rawData.data;
+    
+    // Extract home and away team scores if available
+    let homeTeamScore = game.homeTeamScore;
+    let awayTeamScore = game.awayTeamScore;
+    let period = game.period;
+    let clock = game.clock;
+    let situation = game.situation;
+    
+    // This is where we'd parse the SIDEARM data format
+    // For now, we'll just use placeholder logic that would be replaced with actual parsing
+    if (data.home && data.home.score !== undefined) {
+      homeTeamScore = parseInt(data.home.score);
+    }
+    
+    if (data.away && data.away.score !== undefined) {
+      awayTeamScore = parseInt(data.away.score);
+    }
+    
+    if (data.status && data.status.period) {
+      period = data.status.period;
+    }
+    
+    if (data.status && data.status.clock) {
+      clock = data.status.clock;
+    }
+    
+    if (data.status && data.status.situation) {
+      situation = data.status.situation;
+    }
+    
+    return {
+      status: 'live',
+      homeTeamScore,
+      awayTeamScore,
+      period,
+      clock,
+      situation,
+      lastUpdated: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error processing SIDEARM data:', error);
+    return {
+      status: game.status,
+      statusDetail: 'Error processing SIDEARM data',
+      lastUpdated: new Date().toISOString()
+    };
+  }
 }

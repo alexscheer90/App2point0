@@ -1,216 +1,278 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { XCircle, ArrowUpDown, Activity } from 'lucide-react';
-import { useLiveGameData } from '../hooks/useLiveGameData';
-import { Game } from '@shared/schema';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import Spinner from './Spinner';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Info } from "lucide-react";
 
 interface LiveStatsDisplayProps {
   gameId: string;
 }
 
+interface DataSourceInfo {
+  recommendedSource: 'sidearm' | 'espn' | 'mac';
+  sidearmAvailable: boolean;
+  espnAvailable: boolean;
+  sidearmUrl?: string;
+  espnUrl?: string;
+}
+
 const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
-  const { game, dataSource, isConnected, isLoading } = useLiveGameData(gameId);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [liveData, setLiveData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   
-  if (isLoading) {
+  // Get the sport from the gameId (in a real app, this would be passed or stored)
+  const sport = gameId.includes('football') ? 'football' : 
+                gameId.includes('basketball') ? 'basketball' : 
+                gameId.includes('baseball') ? 'baseball' : 'softball';
+  
+  // Query to check available data sources
+  const dataSourceInfo = useQuery({
+    queryKey: ['dataSource', gameId, sport],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(`/api/live-stats/data-sources/${gameId}/${sport}`);
+        if (response.data.success) {
+          return response.data.data as DataSourceInfo;
+        }
+        throw new Error('Failed to get data source info');
+      } catch (error) {
+        console.error('Error fetching data sources:', error);
+        return null;
+      }
+    },
+    refetchInterval: 30000, // Check data sources every 30 seconds
+    refetchOnWindowFocus: true
+  });
+  
+  // Effect to set up WebSocket connection for live updates
+  useEffect(() => {
+    // Only connect if we have a valid game ID
+    if (!gameId) return;
+    
+    // Set up WebSocket connection
+    const connectWebSocket = () => {
+      setIsConnecting(true);
+      
+      // Determine WebSocket URL based on current protocol
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      
+      console.log(`Connecting to WebSocket at ${wsUrl}`);
+      
+      const newSocket = new WebSocket(wsUrl);
+      
+      newSocket.onopen = () => {
+        console.log('WebSocket connected');
+        setIsConnected(true);
+        setIsConnecting(false);
+        
+        // Subscribe to updates for this game
+        newSocket.send(JSON.stringify({
+          type: 'subscribe',
+          gameId
+        }));
+      };
+      
+      newSocket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('WebSocket message received:', data);
+          
+          // Handle different message types
+          if (data.type === 'gameUpdate' && data.gameId === gameId) {
+            setLiveData(data);
+          } else if (data.type === 'subscribed' && data.gameId === gameId) {
+            console.log(`Successfully subscribed to updates for game ${gameId}`);
+          }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+      
+      newSocket.onclose = () => {
+        console.log('WebSocket disconnected');
+        setIsConnected(false);
+        setIsConnecting(false);
+        
+        // Attempt to reconnect after a delay
+        setTimeout(() => {
+          if (socket) {
+            connectWebSocket();
+          }
+        }, 5000);
+      };
+      
+      newSocket.onerror = (event) => {
+        console.error('WebSocket error:', event);
+        setError('Error connecting to live updates. Please try again later.');
+        setIsConnected(false);
+        setIsConnecting(false);
+      };
+      
+      setSocket(newSocket);
+    };
+    
+    connectWebSocket();
+    
+    // Clean up WebSocket on unmount
+    return () => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        // Unsubscribe from game updates
+        socket.send(JSON.stringify({
+          type: 'unsubscribe',
+          gameId
+        }));
+        
+        // Close the connection
+        socket.close();
+      }
+      setSocket(null);
+    };
+  }, [gameId]);
+  
+  // Ping the server every 30 seconds to keep the connection alive
+  useEffect(() => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    
+    const pingInterval = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'PING' }));
+      }
+    }, 30000);
+    
+    return () => clearInterval(pingInterval);
+  }, [socket]);
+  
+  if (dataSourceInfo.isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mb-4"></div>
-        <p className="text-center text-gray-600">Loading live stats...</p>
+      <div className="flex justify-center items-center py-12">
+        <Spinner />
+        <span className="ml-2">Checking data sources...</span>
       </div>
     );
   }
   
-  if (!game) {
+  if (dataSourceInfo.isError || !dataSourceInfo.data) {
     return (
-      <div className="mt-4">
-        <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-          <h2 className="text-lg font-bold text-blue-800 mb-2">Stats Preview</h2>
-          <p className="text-blue-700 mb-4">
-            This game has not yet started. Live stats will automatically populate when the game begins.
-          </p>
-          
-          <div className="p-4 bg-white rounded-md border border-blue-100 mb-4">
-            <p className="text-sm text-gray-600 mb-2">Game ID: {gameId}</p>
-            <p className="text-sm text-gray-600">
-              We're ready to connect to the official team stats feed as soon as the game goes live.
+      <Alert variant="destructive" className="mb-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Unable to check data sources. Please try again later.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  
+  // If no data sources are available
+  if (!dataSourceInfo.data.sidearmAvailable && !dataSourceInfo.data.espnAvailable) {
+    return (
+      <Alert className="mb-4">
+        <Info className="h-4 w-4" />
+        <AlertTitle>No live stats available</AlertTitle>
+        <AlertDescription>
+          Live statistics are not available for this game at the moment.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  
+  // Render connection status
+  const renderConnectionStatus = () => {
+    if (isConnecting) {
+      return (
+        <div className="flex items-center text-blue-600">
+          <Spinner size="sm" className="mr-2" />
+          <span>Connecting to live updates...</span>
+        </div>
+      );
+    }
+    
+    if (isConnected) {
+      return (
+        <div className="flex items-center text-green-600">
+          <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          <span>Connected to live updates</span>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="flex items-center text-gray-600">
+        <span className="inline-block w-2 h-2 bg-gray-500 rounded-full mr-2"></span>
+        <span>Not connected to live updates</span>
+      </div>
+    );
+  };
+  
+  return (
+    <div className="bg-white rounded-lg p-4 shadow mb-4">
+      <div className="mb-3 pb-2 border-b border-gray-200">
+        <h3 className="text-lg font-semibold">Live Game Stats</h3>
+        {renderConnectionStatus()}
+      </div>
+      
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <span className="text-sm font-semibold">Data Source: </span>
+          <span className="text-sm">
+            {dataSourceInfo.data.recommendedSource === 'sidearm' 
+              ? 'School SIDEARM Stats' 
+              : dataSourceInfo.data.recommendedSource === 'espn'
+                ? 'ESPN'
+                : 'MAC Feed'}
+          </span>
+        </div>
+        
+        {dataSourceInfo.data.sidearmAvailable && (
+          <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+            Official School Data
+          </span>
+        )}
+      </div>
+      
+      {/* Show live data if available */}
+      {liveData ? (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-sm font-semibold text-gray-500 mb-1">Last Updated</h4>
+            <p className="text-sm">
+              {new Date(liveData.timestamp).toLocaleTimeString()}
             </p>
           </div>
           
-          <div className="mt-4 text-center">
-            <div className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-              Ready for Live Updates
-            </div>
-          </div>
-          
-          <div className="mt-4 text-center text-sm text-gray-500">
-            -- Mobile #MACtion --
+          {/* Other live stat sections would go here, based on the sport */}
+          {/* For now, we'll just show a placeholder */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-500 mb-1">Current State</h4>
+            <p className="text-sm">
+              {liveData.game?.situation || 'In progress'}
+            </p>
           </div>
         </div>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="live-stats-container">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Live Game Stats</h3>
-        <DataSourceBadge source={dataSource} isConnected={isConnected} />
-      </div>
-      
-      {/* Game situation info (specific to each sport) */}
-      {game.situation && (
-        <div className="bg-gray-50 rounded-lg p-3 mb-4 border-l-4 border-blue-500">
-          <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-blue-500" />
-            <span className="font-medium">Current Play:</span>
-          </div>
-          <p className="mt-1 text-sm text-gray-700">{game.situation}</p>
-        </div>
-      )}
-      
-      {/* Basic game stats */}
-      <Card className="mb-4">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Game Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            <StatItem 
-              label="Status" 
-              value={game.status === 'live' ? 
-                `Live - ${game.period || ''} ${game.clock || ''}` : 
-                game.status} 
-            />
-            <StatItem 
-              label="Score" 
-              value={`${game.homeTeamScore}-${game.awayTeamScore}`} 
-            />
-            {game.clock && (
-              <StatItem 
-                label="Clock" 
-                value={game.clock} 
-              />
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Team stats - simple version that works for most sports */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-base">Team Stats</CardTitle>
-            <ArrowUpDown className="h-4 w-4 text-gray-500" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[150px]">Stat</TableHead>
-                <TableHead>{game.awayTeamName}</TableHead>
-                <TableHead>{game.homeTeamName}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {/* These are placeholders - in a real implementation, we'd use actual stats from the API */}
-              <TableRow>
-                <TableCell className="font-medium">Points</TableCell>
-                <TableCell>{game.awayTeamScore}</TableCell>
-                <TableCell>{game.homeTeamScore}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">FG%</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">3PT%</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-              </TableRow>
-              {/* These are always useful stats for any sport */}
-              <TableRow>
-                <TableCell className="font-medium">Timeouts</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Fouls/Penalties</TableCell>
-                <TableCell>-</TableCell>
-                <TableCell>-</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-          
-          <div className="text-xs text-gray-500 mt-3 italic text-center">
-            Data updates every 10 seconds or after major plays
-          </div>
-        </CardContent>
-      </Card>
-      
-      {!isConnected && (
-        <Alert variant="destructive" className="mt-4">
-          <XCircle className="h-5 w-5" />
-          <AlertTitle>Connection Lost</AlertTitle>
-          <AlertDescription>
-            The live stats connection has been lost. We'll try to reconnect automatically.
-          </AlertDescription>
-        </Alert>
-      )}
-    </div>
-  );
-};
-
-// Helper component for showing the data source
-const DataSourceBadge: React.FC<{ source: 'espn' | 'sidearm' | 'mac' | null, isConnected: boolean }> = ({ source, isConnected }) => {
-  if (!source) return null;
-  
-  let badgeText = 'Unknown Source';
-  let badgeVariant: 'default' | 'secondary' | 'destructive' | 'outline' = 'outline';
-  
-  switch (source) {
-    case 'espn':
-      badgeText = 'ESPN';
-      badgeVariant = 'default';
-      break;
-    case 'sidearm':
-      badgeText = 'SIDEARM (Official)';
-      badgeVariant = 'secondary';
-      break;
-    case 'mac':
-      badgeText = 'MAC Calendar';
-      badgeVariant = 'outline';
-      break;
-  }
-  
-  return (
-    <div className="flex items-center gap-2">
-      {isConnected ? (
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-        </span>
       ) : (
-        <span className="h-2 w-2 rounded-full bg-red-500"></span>
+        <div className="text-center py-4 text-gray-500">
+          {isConnected ? (
+            <p>Connected and waiting for live updates...</p>
+          ) : (
+            <p>Live updates will appear here once connected.</p>
+          )}
+        </div>
       )}
-      <Badge variant={badgeVariant}>
-        {badgeText}
-      </Badge>
     </div>
   );
 };
-
-// Helper component for stats items
-const StatItem: React.FC<{ label: string; value: string | number }> = ({ label, value }) => (
-  <div className="flex flex-col">
-    <span className="text-xs text-gray-500">{label}</span>
-    <span className="font-medium">{value}</span>
-  </div>
-);
 
 export default LiveStatsDisplay;

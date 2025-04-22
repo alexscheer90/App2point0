@@ -1,123 +1,158 @@
-import express from 'express';
-import { log } from '../vite';
-import { Game } from '@shared/schema';
-import { unifiedDataService } from '../services/unifiedDataService';
-import axios from 'axios';
+/**
+ * API routes for live game stats
+ */
+import { Request, Response, Router } from 'express';
+import { checkDataSources, fetchLiveGameData, processGameData } from '../services/unifiedDataService';
+import { Game } from '../../shared/schema';
 
-const router = express.Router();
+// Create router
+const router = Router();
 
-// Get live stats for a specific game
-router.get('/games/:gameId', async (req, res) => {
+// Store some game data in-memory for quick access
+const inMemoryGameCache: Map<string, { game: Game; lastUpdated: Date }> = new Map();
+
+/**
+ * Get all available data sources for a game
+ * This helps the frontend decide which stats source to use
+ */
+export async function getDataSources(req: Request, res: Response) {
   try {
-    const { gameId } = req.params;
+    const { gameId, sport } = req.params;
     
-    // Temporary: get game from our API directly
-    let game: Game | null = null;
-    try {
-      const response = await axios.get(`/api/games/${gameId}`);
-      game = response.data;
-    } catch (error) {
-      log(`Game not found: ${gameId}`, 'livestats');
-    }
-    
-    if (!game) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Game not found' 
+    if (!gameId || !sport) {
+      return res.status(400).json({
+        success: false,
+        error: 'Game ID and sport must be provided'
       });
     }
     
-    // If game is not live, just return the basic game info
-    if (game.status !== 'live') {
-      return res.json({
-        success: true,
-        data: game,
-        source: 'mac', // Basic MAC calendar data
-        liveFeedAvailable: false
+    // Get the game from cache or storage
+    const cachedGame = inMemoryGameCache.get(gameId);
+    
+    if (!cachedGame) {
+      return res.status(404).json({
+        success: false,
+        error: 'Game not found in cache'
       });
     }
     
-    // For live games, try to get enhanced stats from the best source
-    const homeSchoolId = game.homeTeamId || '';
-    const sportId = game.sportId || '';
+    // Check all available data sources for this game
+    const dataSourceInfo = await checkDataSources(cachedGame.game, sport);
     
-    const enhancedData = await unifiedDataService.getGameData(gameId, homeSchoolId, sportId);
-    const dataSource = unifiedDataService.getGameDataSource(gameId);
-    
-    if (enhancedData) {
-      res.json({
-        success: true,
-        data: enhancedData,
-        source: dataSource,
-        liveFeedAvailable: true
-      });
-    } else {
-      // Fall back to basic game info if no enhanced data
-      res.json({
-        success: true,
-        data: game,
-        source: 'mac',
-        liveFeedAvailable: false
-      });
-    }
+    return res.json({
+      success: true,
+      data: dataSourceInfo
+    });
   } catch (error) {
-    log(`Error fetching live stats: ${error}`, 'livestats');
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching live stats'
+    console.error('Error getting data sources:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Unable to check data sources'
     });
   }
-});
+}
 
-// Check which data sources are available for a game
-router.get('/availability/:gameId', async (req, res) => {
+/**
+ * Get live game data for a specific game
+ */
+export async function getLiveGameData(req: Request, res: Response) {
   try {
-    const { gameId } = req.params;
+    const { gameId, sport } = req.params;
     
-    // Temporary: get game from our API directly
-    let game: Game | null = null;
-    try {
-      const response = await axios.get(`/api/games/${gameId}`);
-      game = response.data;
-    } catch (error) {
-      log(`Game not found: ${gameId}`, 'livestats');
-    }
-    
-    if (!game) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Game not found' 
+    if (!gameId || !sport) {
+      return res.status(400).json({
+        success: false,
+        error: 'Game ID and sport must be provided'
       });
     }
     
-    const homeSchoolId = game.homeTeamId || '';
-    const sportId = game.sportId || '';
+    // Get the game from cache or storage
+    const cachedGame = inMemoryGameCache.get(gameId);
     
-    // Check SIDEARM availability
-    const sidearmAvailable = await unifiedDataService.checkDataSourceAvailability(
-      'sidearm', homeSchoolId, sportId, gameId
-    );
+    if (!cachedGame) {
+      return res.status(404).json({
+        success: false,
+        error: 'Game not found in cache'
+      });
+    }
     
-    // Check ESPN availability - for now we'll assume always true
-    // but in the future we could check ESPN API for this specific game
-    const espnAvailable = true;
+    // Fetch live game data from the best available source
+    const gameData = await fetchLiveGameData(gameId, cachedGame.game, sport);
     
-    res.json({
+    // Process the game data into a unified format
+    const processedData = processGameData(gameData, cachedGame.game);
+    
+    // Update the cache with the latest game data
+    inMemoryGameCache.set(gameId, {
+      game: {
+        ...cachedGame.game,
+        ...processedData
+      },
+      lastUpdated: new Date()
+    });
+    
+    return res.json({
       success: true,
       data: {
-        gameId,
-        sidearmAvailable,
-        espnAvailable,
-        recommendedSource: sidearmAvailable ? 'sidearm' : 'espn'
+        game: {
+          ...cachedGame.game,
+          ...processedData
+        },
+        sourceInfo: gameData.sourceInfo
       }
     });
   } catch (error) {
-    log(`Error checking data availability: ${error}`, 'livestats');
-    res.status(500).json({
+    console.error('Error getting live game data:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Error checking data availability'
+      error: 'Unable to fetch live game data'
     });
   }
-});
+}
 
+/**
+ * Store a game in the memory cache for quick access
+ */
+export function cacheGame(game: Game) {
+  inMemoryGameCache.set(game.id, {
+    game,
+    lastUpdated: new Date()
+  });
+}
+
+/**
+ * Get a game from the cache
+ */
+export function getCachedGame(gameId: string): Game | null {
+  const cachedGame = inMemoryGameCache.get(gameId);
+  
+  if (!cachedGame) {
+    return null;
+  }
+  
+  return cachedGame.game;
+}
+
+/**
+ * Clear old games from the cache
+ */
+export function cleanupGameCache() {
+  const now = new Date();
+  const ONE_HOUR = 60 * 60 * 1000;
+  
+  // Use Array.from to convert the Map entries to an array for iteration
+  Array.from(inMemoryGameCache.entries()).forEach(([gameId, cachedGame]) => {
+    const timeSinceUpdate = now.getTime() - cachedGame.lastUpdated.getTime();
+    
+    if (timeSinceUpdate > ONE_HOUR) {
+      inMemoryGameCache.delete(gameId);
+    }
+  });
+}
+
+// Register routes
+router.get('/data-sources/:gameId/:sport', getDataSources);
+router.get('/game-data/:gameId/:sport', getLiveGameData);
+
+// Export the router as default
 export default router;

@@ -58,6 +58,9 @@ export const sportSchema = z.object({
 export const gameStatusSchema = z.enum(["scheduled", "live", "final", "postponed", "cancelled"]);
 
 export const gameSchema = z.object({
+  // Additional fields for data handling
+  lastUpdated: z.string().optional(),
+  statusDetail: z.string().optional(),
   id: z.string(),
   sportId: z.string(),
   homeTeamId: z.string(),
@@ -84,6 +87,7 @@ export const gameSchema = z.object({
     s_audio: z.string().optional(), // Audio broadcast URL
     s_video: z.string().optional(), // Video broadcast URL
     s_boxscore: z.string().optional(), // Box score URL for completed games
+    espn: z.string().optional(), // ESPN API endpoint URL
   }).optional(),
 });
 

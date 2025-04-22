@@ -1,38 +1,48 @@
 import React from 'react';
 
 interface SpinnerProps {
-  size?: 'small' | 'medium' | 'large';
+  size?: 'sm' | 'md' | 'lg';
   color?: string;
+  className?: string;
 }
 
-const Spinner: React.FC<SpinnerProps> = ({ size = 'medium', color = 'currentColor' }) => {
-  const sizeMap = {
-    small: {
-      width: 'w-4',
-      height: 'h-4',
-      border: 'border-2'
-    },
-    medium: {
-      width: 'w-8',
-      height: 'h-8',
-      border: 'border-3'
-    },
-    large: {
-      width: 'w-12',
-      height: 'h-12',
-      border: 'border-4'
-    }
-  };
+const Spinner: React.FC<SpinnerProps> = ({ 
+  size = 'md', 
+  color = 'text-blue-600', 
+  className = '' 
+}) => {
+  let sizeClass = 'w-8 h-8';
   
-  const { width, height, border } = sizeMap[size];
+  if (size === 'sm') {
+    sizeClass = 'w-5 h-5';
+  } else if (size === 'lg') {
+    sizeClass = 'w-12 h-12';
+  }
   
   return (
-    <div 
-      className={`${width} ${height} rounded-full animate-spin ${border} border-solid border-t-transparent`}
-      style={{ 
-        borderColor: `${color} transparent transparent transparent`
-      }}
-    />
+    <div className={`inline-block ${sizeClass} ${className}`} role="status">
+      <svg 
+        className={`animate-spin ${sizeClass} ${color}`} 
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24"
+      >
+        <circle 
+          className="opacity-25" 
+          cx="12" 
+          cy="12" 
+          r="10" 
+          stroke="currentColor" 
+          strokeWidth="4"
+        ></circle>
+        <path 
+          className="opacity-75" 
+          fill="currentColor" 
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <span className="sr-only">Loading...</span>
+    </div>
   );
 };
 
