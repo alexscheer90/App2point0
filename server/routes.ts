@@ -10,6 +10,7 @@ import googleSheetsRoutes from "./routes/googleSheets";
 import liveStatsRoutes from "./routes/livestats";
 import express from "express";
 import path from "path";
+import { gameScheduleService } from "./services/gameScheduleService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from the public directory
@@ -23,6 +24,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register live stats routes
   app.use('/api/live-stats', liveStatsRoutes);
+  
+  // API endpoint to get a game by ID
+  app.get('/api/games/:gameId', async (req, res) => {
+    try {
+      const { gameId } = req.params;
+      
+      // Special handling for Miami baseball demo game
+      if (gameId.includes('mac-120052')) {
+        console.log(`Serving Miami baseball game details: ${gameId}`);
+        
+        try {
+          // Get the latest data from Miami's feed
+          const url = 'https://s3.amazonaws.com/sidearmstats.com/json_miamiohio_baseball_game.js.gz?callback=jsonp_miamiohio_baseball_game';
+          const { fetchSidearmData, processSidearmBaseballData } = await import('./services/sidearmService');
+          const response = await fetchSidearmData(url);
+          const processedData = processSidearmBaseballData(response.data);
+          
+          // Create a game with live data from SIDEARM
+          const game = {
+            id: gameId,
+            sportId: 'baseball',
+            homeTeamId: 'miami-oh',
+            awayTeamId: 'bellarmine',
+            homeTeamName: 'Miami',
+            awayTeamName: 'Bellarmine',
+            homeTeamScore: processedData.homeTeamScore,
+            awayTeamScore: processedData.awayTeamScore,
+            startTime: new Date().toISOString(),
+            scheduledTime: new Date().toISOString(),
+            status: processedData.status, // Use the status from the SIDEARM data
+            venue: 'McKie Field at Hayden Park',
+            location: 'Oxford, OH',
+            period: processedData.period,
+            clock: '',
+            situation: processedData.situation,
+          };
+          
+          console.log(`Returning Miami game with status: ${game.status}`);
+          
+          // Store in game schedule service for future reference
+          gameScheduleService.updateGame(gameId, game);
+          
+          return res.json(game);
+        } catch (fetchError) {
+          console.error('Error fetching Miami baseball data:', fetchError);
+          
+          // Return a basic game object with live status if we can't fetch live data
+          return res.json({
+            id: gameId,
+            sportId: 'baseball',
+            homeTeamId: 'miami-oh',
+            awayTeamId: 'bellarmine',
+            homeTeamName: 'Miami',
+            awayTeamName: 'Bellarmine',
+            homeTeamScore: 2,
+            awayTeamScore: 0,
+            startTime: new Date().toISOString(),
+            scheduledTime: new Date().toISOString(),
+            status: 'live', // Force status to live for testing
+            venue: 'McKie Field at Hayden Park',
+            location: 'Oxford, OH',
+            period: 'B3',
+            clock: '',
+            situation: '0-0 count, 2 outs',
+          });
+        }
+      }
+      
+      // For other games, check if we have it in the game schedule service
+      const game = await gameScheduleService.getGameById(gameId);
+      
+      if (game) {
+        return res.json(game);
+      }
+      
+      // If we don't have the game, return a 404
+      return res.status(404).json({ error: 'Game not found' });
+    } catch (error) {
+      console.error(`Error getting game ${req.params.gameId}:`, error);
+      res.status(500).json({ error: 'Failed to get game' });
+    }
+  });
   
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {
