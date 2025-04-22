@@ -3,7 +3,7 @@ import { useParams } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Game } from '@shared/schema';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Spinner } from '../components/Spinner';
+import Spinner from '../components/Spinner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import LiveStatsDisplay from '../components/LiveStatsDisplay';
@@ -15,7 +15,7 @@ const GameDetails: React.FC = () => {
   const { gameId } = useParams();
   const [activeTab, setActiveTab] = useState<string>('overview');
   
-  const { data: game, isLoading, error } = useQuery({
+  const { data: game, isLoading, error } = useQuery<Game>({
     queryKey: [`/api/games/${gameId}`],
     enabled: !!gameId,
   });
@@ -23,7 +23,17 @@ const GameDetails: React.FC = () => {
   const { data: schools } = useMacSchools();
   
   // Check data source availability
-  const { data: dataSourceInfo, isLoading: dataSourceLoading } = useQuery({
+  interface DataSourceInfo {
+    success: boolean;
+    data: {
+      gameId: string;
+      sidearmAvailable: boolean;
+      espnAvailable: boolean;
+      recommendedSource: 'sidearm' | 'espn';
+    };
+  }
+  
+  const { data: dataSourceInfo, isLoading: dataSourceLoading } = useQuery<DataSourceInfo>({
     queryKey: [`/api/live-stats/availability/${gameId}`],
     enabled: !!gameId && game?.status === 'live',
   });

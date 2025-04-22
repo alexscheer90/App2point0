@@ -258,8 +258,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   console.log('WebSocket server initialized on path: /ws');
 
-  // Store connected clients
+  // Store connected clients and their subscriptions
   const clients = new Set<WebSocket>();
+  const gameSubscriptions = new Map<string, Set<WebSocket>>();
 
   // Helper function to broadcast to all connected clients
   const broadcast = (data: any) => {
@@ -271,10 +272,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   };
 
+  // Broadcast game update to subscribers of a specific game
+  const broadcastGameUpdate = (gameId: string, game: Game, dataSource: 'espn' | 'sidearm' | 'mac') => {
+    if (!gameSubscriptions.has(gameId)) return;
+    
+    const subscribers = gameSubscriptions.get(gameId);
+    if (!subscribers) return;
+    
+    const message = JSON.stringify({
+      type: 'gameUpdate',
+      gameId,
+      game,
+      dataSource,
+      timestamp: new Date().toISOString()
+    });
+    
+    subscribers.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+    
+    console.log(`Broadcasting game update for ${gameId} to ${subscribers.size} clients`);
+  };
+
   // WebSocket connection handler
   wss.on('connection', (ws) => {
     console.log('WebSocket client connected');
     clients.add(ws);
+    
+    // Keep track of the games this client is subscribed to
+    const clientSubscriptions = new Set<string>();
 
     // Handle incoming messages
     ws.on('message', (message) => {
@@ -284,10 +312,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         // Handle different message types
         switch (data.type) {
+          case 'subscribe':
+            // Client wants to subscribe to a game's updates
+            if (data.gameId) {
+              // Create a subscription set for this game if it doesn't exist
+              if (!gameSubscriptions.has(data.gameId)) {
+                gameSubscriptions.set(data.gameId, new Set<WebSocket>());
+              }
+              
+              // Add this client to the game's subscribers
+              const gameSubscribers = gameSubscriptions.get(data.gameId);
+              if (gameSubscribers) {
+                gameSubscribers.add(ws);
+                clientSubscriptions.add(data.gameId);
+                console.log(`Client subscribed to game ${data.gameId}, total subscribers: ${gameSubscribers.size}`);
+                
+                // Send an acknowledgment
+                ws.send(JSON.stringify({
+                  type: 'subscribed',
+                  gameId: data.gameId
+                }));
+              }
+            }
+            break;
+            
+          case 'unsubscribe':
+            // Client wants to unsubscribe from a game's updates
+            if (data.gameId && gameSubscriptions.has(data.gameId)) {
+              const gameSubscribers = gameSubscriptions.get(data.gameId);
+              if (gameSubscribers) {
+                gameSubscribers.delete(ws);
+                clientSubscriptions.delete(data.gameId);
+                console.log(`Client unsubscribed from game ${data.gameId}, remaining subscribers: ${gameSubscribers.size}`);
+                
+                // Clean up empty subscription sets
+                if (gameSubscribers.size === 0) {
+                  gameSubscriptions.delete(data.gameId);
+                }
+                
+                // Send an acknowledgment
+                ws.send(JSON.stringify({
+                  type: 'unsubscribed',
+                  gameId: data.gameId
+                }));
+              }
+            }
+            break;
+            
           case 'PING':
             // Respond to keep-alive pings
             ws.send(JSON.stringify({ type: 'PING' }));
             break;
+            
           default:
             console.log('Unknown message type:', data.type);
         }
@@ -299,6 +375,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Handle client disconnection
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
+      
+      // Remove this client from all game subscriptions
+      clientSubscriptions.forEach(gameId => {
+        const subscribers = gameSubscriptions.get(gameId);
+        if (subscribers) {
+          subscribers.delete(ws);
+          
+          // Clean up empty subscription sets
+          if (subscribers.size === 0) {
+            gameSubscriptions.delete(gameId);
+          }
+        }
+      });
+      
+      // Remove from the clients set
       clients.delete(ws);
     });
 
