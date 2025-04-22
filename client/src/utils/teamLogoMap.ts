@@ -617,15 +617,27 @@ export function findLogoByNamePattern(name: string): string {
   }
   
   // Special direct cases for known problematic schools
-  if (nameLower.includes("valparaiso") || nameLower.includes("valpo") || nameLower.includes("valparaiso beacons")) {
-    const valpoPath = "/school-logos/non-mac/valparaiso.png";
-    console.log(`Creating school with potential logo match: ${name} → ${valpoPath}`);
+  if (nameLower.includes("valparaiso") || nameLower.includes("valpo") || nameLower.includes("valparaiso beacons") || nameLower.includes("beacons")) {
+    const valpoPath = "/school-logos/non-mac/Valparaiso.png";
+    console.log(`Special case logo match: ${name} → ${valpoPath}`);
     return valpoPath;
   }
   
   if (nameLower.includes("northern kentucky") || nameLower.includes("nku") || nameLower.includes("norse")) {
-    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
-    console.log(`Creating school with potential logo match: ${name} → ${nkuPath}`);
+    const nkuPath = "/school-logos/non-mac/NorthernKentucky.png";
+    console.log(`Special case logo match: ${name} → ${nkuPath}`);
+    return nkuPath;
+  }
+  
+  if (nameLower.includes("valparaiso beacons")) {
+    const valpoPath = "/school-logos/non-mac/ValparaisoBeacons.png";
+    console.log(`Special case logo match: ${name} → ${valpoPath}`);
+    return valpoPath;
+  }
+  
+  if (nameLower.includes("northern kentucky university")) {
+    const nkuPath = "/school-logos/non-mac/NorthernKentuckyUniversity.png";
+    console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }
   
