@@ -161,7 +161,7 @@ router.get('/test-miami-feed', async (req, res) => {
     console.log('Testing fetch from:', url);
     
     // Directly use the sidearmService to test
-    const { fetchSidearmGameData } = await import('../services/sidearmService');
+    const { fetchSidearmGameData, processSidearmData } = await import('../services/sidearmService');
     const data = await fetchSidearmGameData('test', url);
     
     console.log('SIDEARM LIVE TEST DATA KEYS:', Object.keys(data.data || {}));
@@ -170,7 +170,29 @@ router.get('/test-miami-feed', async (req, res) => {
         ? JSON.stringify(data.data).substring(0, 200) + '...' 
         : typeof data.data);
     
-    res.json(data);
+    // Create a mock game for testing
+    const mockGame: Game = {
+      id: 'test-game-123',
+      sport: { id: 'baseball', name: 'Baseball' },
+      homeTeam: { id: 'miami-oh', name: 'Miami (OH)', mascot: 'RedHawks', shortName: 'Miami' },
+      awayTeam: { id: 'toledo', name: 'Toledo', mascot: 'Rockets', shortName: 'Toledo' },
+      status: 'live',
+      gameDate: new Date().toISOString(),
+      network: '',
+      location: data.data?.Location || 'Oxford, OH',
+      sidearmAvailable: true,
+      sidearmUrl: url
+    };
+    
+    // Process the data using our SIDEARM service
+    const processedData = processSidearmData(data.data, mockGame);
+    console.log('PROCESSED SIDEARM DATA:', JSON.stringify(processedData));
+    
+    // Return both raw and processed data
+    res.json({
+      raw: data,
+      processed: processedData
+    });
   } catch (error) {
     console.error('Error in test endpoint:', error);
     res.status(500).json({ 

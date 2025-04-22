@@ -196,6 +196,10 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       console.log(`Found VisitingTeam.Score: ${awayTeamScore}`);
     }
     
+    // Add the scores to the return object and log findings
+    const statusDetail = `Miami baseball format - Home: ${homeTeamScore}, Away: ${awayTeamScore}`;
+    console.log(statusDetail);
+    
     // Try to get period/inning/quarter information
     if (data.status && data.status.period) {
       period = data.status.period;
