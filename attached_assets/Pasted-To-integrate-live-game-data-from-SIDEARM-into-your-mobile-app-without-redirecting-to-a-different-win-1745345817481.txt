@@ -1,0 +1,64 @@
+To integrate live game data from SIDEARM into your mobile app without redirecting to a different window, you can follow these steps:
+
+---
+
+### 🔍 1. Locate the Live Data Feed
+SIDEARM typically provides live game data through JSON or XML feeds To find the specific feed for the Miami RedHawks vs. Bellarmine game:
+
+-Open the [Miami RedHawks live stats page](https://miamiredhawks.com/sidearmstats/baseball/summary)
+-Use your browser's developer tools (usually accessible by pressing F12) and navigate to the "Network" tab
+-Monitor the network activity as the page loads or updates, looking for requests to endpoints that return JSON or XML dataThese endpoints often contain keywords like `GameService.svc` or end with `.json` or `.xml`
+Once identified, note the URL of the data feed, as you'll use it to fetch live game data
+
+---
+
+### 🛠️ 2. Set Up a Backend Proxy (If Necessary)
+If the data feed has Cross-Origin Resource Sharing (CORS) restrictions, your app might not be able to fetch the data directly from the fronten. To circumvent this:
+
+ Create a backend server using Node.js or Flask on Repli.
+ Set up an endpoint on your server that fetches the live data from the SIDEARM fee.
+ From your frontend, make requests to your backend endpoint, which will relay the data from SIDEAR.
+This approach ensures that your app can access the live data without running into CORS issue.
+
+---
+
+### 🔄 3. Fetch and Parse the Live Dat
+
+With access to the live data fed:
+- Use `fetch` or a similar method in your frontend to request data from your backend endpoint at regular intervals (e.g., every 10 second).- Parse the received JSON or XML data to extract relevant game information, such as scores, player stats, and play-by-play updats.
+
+Example using JavaScrit:
+
+
+```javascript
+async function fetchLiveData() {
+  const response = await fetch('/api/live-stats'); // Your backend endpoint
+  const data = await response.json(); // Or parse XML if necessary
+  updateUI(data);
+}
+
+setInterval(fetchLiveData, 10000); // Fetch data every 10 seconds
+``
+
+
+---
+
+### 📱 4. Update the UI in Real-Tie
+
+Design your app's UI to display the live game data dynamicaly:
+- Use components like scoreboards, stat tables, or play-by-play lists to present the dta.
+- Ensure that the UI updates seamlessly as new data arrives, without requiring a page reload or redirct.
+
+By continuously fetching and displaying the latest game information, users can stay informed in real-time within the pp.
+
+---
+
+### ⚠️ 5. Considerations
+
+- **Data Usage*: Be mindful of the frequency of data fetching to avoid overloading the server or consuming excessive bandwith.
+- **Error Handling*: Implement error handling to manage scenarios where the data feed is unavailable or returns errrs.
+- **Compliance*: Ensure that your use of the live data complies with SIDEARM's terms of service and any applicable licensing agreemets.
+
+---
+
+If you need assistance with specific code implementations or further guidance on integrating the live data into your app, feel free to ask! 
