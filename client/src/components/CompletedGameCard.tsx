@@ -11,9 +11,16 @@ interface CompletedGameCardProps {
 }
 
 export default function CompletedGameCard({ game, showType = "card" }: CompletedGameCardProps) {
+  // Debug game data
+  console.log(`Game ID: ${game.id}, Home: "${game.homeTeam}", Away: "${game.awayTeam}"`);
+  
   // Find team data using the improved findSchoolByName function
   const homeTeam = findSchoolByName(game.homeTeam);
   const awayTeam = findSchoolByName(game.awayTeam);
+  
+  // Debug team resolution
+  console.log(`Team resolution - Home: ${homeTeam?.name || 'Not found'}, Logo: ${homeTeam?.logoUrl || 'No logo'}`);
+  console.log(`Team resolution - Away: ${awayTeam?.name || 'Not found'}, Logo: ${awayTeam?.logoUrl || 'No logo'}`);
   
   // Determine if the game is a rivalry
   const isRivalry = game.isRivalry;

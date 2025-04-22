@@ -525,19 +525,101 @@ export const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
  * @returns URL path to the logo file or generic logo if not found
  */
 export function findLogoByNamePattern(name: string): string {
-  // Clean and normalize the name
-  const cleanName = name.trim().replace(/[^\w\s]/g, "").replace(/\s+/g, "_");
+  if (!name) return "/school-logos/ncaa.png";
   
-  // Try different formats for the logo file name
-  const possibleFormats = [
-    `/school-logos/non-mac/${cleanName}.png`,
-    `/school-logos/non-mac/${cleanName}.svg.png`,
-    `/school-logos/non-mac/${cleanName}_logo.svg.png`,
-    `/school-logos/non-mac/${cleanName}_athletics_logo.svg.png`
+  // Clean and normalize the name
+  const cleanName = name.trim().toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, "");
+  
+  // Log for debugging
+  console.log(`Looking for logo for ${name} (cleaned: ${cleanName})`);
+  
+  // Special case for conference name
+  if (name.toLowerCase().includes("mid-american") || name.toLowerCase() === "mac") {
+    return "/school-logos/mac-conference.png";
+  }
+  
+  // MAC schools with direct file mapping
+  const macSchoolMap: Record<string, string> = {
+    "akron": "/school-logos/akron.png",
+    "ball state": "/school-logos/ballstate.png",
+    "bowling green": "/school-logos/bowlinggreen.png",
+    "buffalo": "/school-logos/buffalo.png",
+    "central michigan": "/school-logos/centralmichigan.png",
+    "eastern michigan": "/school-logos/easternmichigan.png",
+    "kent state": "/school-logos/kentstate.png",
+    "miami": "/school-logos/miamioh.png",
+    "miami (oh)": "/school-logos/miamioh.png",
+    "miami (ohio)": "/school-logos/miamioh.png",
+    "northern illinois": "/school-logos/northernillinois.png",
+    "ohio": "/school-logos/ohio.png",
+    "toledo": "/school-logos/toledo.png",
+    "western michigan": "/school-logos/westernmichigan.png",
+    "massachusetts": "/school-logos/massachusetts.png",
+    "umass": "/school-logos/massachusetts.png"
+  };
+  
+  // Check for MAC school direct match
+  if (macSchoolMap[name.toLowerCase()]) {
+    return macSchoolMap[name.toLowerCase()];
+  }
+  
+  // Common non-MAC schools with naming variations
+  const nonMacSchoolMap: Record<string, string> = {
+    "ohio state": "/school-logos/non-mac/ohiostate.png",
+    "michigan state": "/school-logos/non-mac/michiganstate.png",
+    "michigan": "/school-logos/non-mac/michigan.png",
+    "notre dame": "/school-logos/non-mac/notredame.png",
+    "clemson": "/school-logos/non-mac/clemson.png",
+    "florida": "/school-logos/non-mac/florida.png",
+    "georgia": "/school-logos/non-mac/georgia.png",
+    "alabama": "/school-logos/non-mac/alabama.png",
+    "texas": "/school-logos/non-mac/texas.png",
+    "penn state": "/school-logos/non-mac/pennstate.png",
+    "oklahoma": "/school-logos/non-mac/oklahoma.png",
+    "wisconsin": "/school-logos/non-mac/wisconsin.png",
+    "maryland": "/school-logos/non-mac/maryland.png",
+    "purdue": "/school-logos/non-mac/purdue.png",
+    "iowa": "/school-logos/non-mac/iowa.png",
+    "usc": "/school-logos/non-mac/usc.png",
+    "ucla": "/school-logos/non-mac/ucla.png",
+    "oregon": "/school-logos/non-mac/oregon.png",
+    "washington": "/school-logos/non-mac/washington.png"
+  };
+  
+  // Check for non-MAC school direct match
+  if (nonMacSchoolMap[name.toLowerCase()]) {
+    return nonMacSchoolMap[name.toLowerCase()];
+  }
+  
+  // Try variations of the name
+  const nameLower = name.toLowerCase();
+  
+  // Try to find by name pattern for common schools
+  for (const [key, logoPath] of Object.entries(nonMacSchoolMap)) {
+    // If the team name contains a known school name, use that logo
+    if (nameLower.includes(key)) {
+      return logoPath;
+    }
+  }
+  
+  // Try to find in the non-mac folder with various transformations
+  const transformedNames = [
+    nameLower.replace(/\s+/g, ""),            // Remove spaces
+    nameLower.replace(/\s+/g, "-"),           // Replace spaces with hyphens
+    nameLower.replace(/\s+/g, "_"),           // Replace spaces with underscores
+    nameLower.split(/\s+/)[0]                 // Use first word only
   ];
   
-  // Return generic logo as fallback
-  return "/school-logos/generic.png";
+  for (const transformed of transformedNames) {
+    const possiblePath = `/school-logos/non-mac/${transformed}.png`;
+    console.log(`Trying path: ${possiblePath}`);
+    // In a browser we can't check if the file exists, so we just return
+    // the first transformation and let the image fallback handle missing files
+    return possiblePath;
+  }
+  
+  // If all else fails, return NCAA generic logo
+  return "/school-logos/ncaa.png";
 }
 
 /**
