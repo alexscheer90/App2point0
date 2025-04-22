@@ -1,8 +1,25 @@
 import { School } from "@shared/schema";
 import { macSchools, ncaaLogoUrl } from "../data/macSchools";
+import { 
+  fixSouthCarolina, 
+  fixUSC, 
+  fixBulls, 
+  fixUT, 
+  fixAggies, 
+  fixUW, 
+  fixCowboys 
+} from "./teamLogoFixDuplicates";
 
 // Map of common nicknames or alternate versions of school names
 const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
+  // Import fixed duplicate entries
+  ...fixSouthCarolina,
+  ...fixUSC,
+  ...fixBulls,
+  ...fixUT,
+  ...fixAggies,
+  ...fixUW,
+  ...fixCowboys,
   // Common MAC school variants
   "NIU": "Northern Illinois",
   "CMU": "Central Michigan", 
@@ -166,8 +183,9 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "OU": "Oklahoma",
   "Sooners": "Oklahoma",
   "Oklahoma State": "Oklahoma State",
-  "OSU": "Oklahoma State",
-  "Cowboys": "Oklahoma State",
+  // "OSU": "Oklahoma State", // Commented out due to conflict with Ohio State
+  "OK State": "Oklahoma State",
+  "OK State Cowboys": "Oklahoma State",
   "Ole Miss": "Ole Miss",
   "Mississippi": "Ole Miss",
   "Oregon": "Oregon",
@@ -194,7 +212,6 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "Southern Methodist": "SMU",
   "South Alabama": "South Alabama",
   "South Carolina": "South Carolina",
-  "USC": "South Carolina",
   "Southern Miss": "Southern Miss",
   "USM": "Southern Miss",
   "Stanford": "Stanford",
@@ -203,7 +220,7 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "TCU": "TCU",
   "Texas Christian": "TCU",
   "Temple": "Temple",
-  "Owls": "Temple",
+  "Temple Owls": "Temple",
   "Tennessee": "Tennessee",
   "UT": "Tennessee",
   "Vols": "Tennessee",
@@ -1006,15 +1023,66 @@ export function findSchoolByName(name: string): School | undefined {
   );
   if (partialMatch) return partialMatch;
   
-  // Step 7: If all else fails, create a generic school object with NCAA logo
+  // Step 7: Try to map to a known logo file by converting the name to a filename format
+  // This will help utilize all the logo files available from the GitHub repo
+  const cleanFileName = name.toLowerCase()
+    .replace(/\s+/g, "") // Remove all spaces
+    .replace(/[^a-z0-9]/g, ""); // Remove special chars
+  
+  // Try to find a potential logo file match based on the team name
+  const potentialLogoUrl = `/school-logos/non-mac/${cleanFileName}.png`;
+  
+  // For popular conferences, define a default conference color
+  let primaryColor = "#0099D8"; // Default NCAA blue
+  let secondaryColor = "#FFFFFF";
+  
+  // Set conference-specific colors based on keywords in the name
+  if (name.includes("SEC") || 
+      name.includes("Alabama") || name.includes("Auburn") || 
+      name.includes("Florida") || name.includes("Georgia") || 
+      name.includes("Kentucky") || name.includes("LSU") || 
+      name.includes("Mississippi") || name.includes("Ole Miss") || 
+      name.includes("Missouri") || name.includes("South Carolina") || 
+      name.includes("Tennessee") || name.includes("Vanderbilt") || 
+      name.includes("Arkansas") || name.includes("Texas A&M")) {
+    primaryColor = "#14213D"; // SEC blue
+  } else if (name.includes("Big Ten") || 
+             name.includes("Michigan") || name.includes("Ohio State") || 
+             name.includes("Penn State") || name.includes("Wisconsin") || 
+             name.includes("Iowa") || name.includes("Minnesota") || 
+             name.includes("Illinois") || name.includes("Indiana") || 
+             name.includes("Purdue") || name.includes("Northwestern") || 
+             name.includes("Maryland") || name.includes("Rutgers") || 
+             name.includes("Nebraska")) {
+    primaryColor = "#B1063A"; // Big Ten red
+  } else if (name.includes("ACC") || 
+             name.includes("Clemson") || name.includes("Duke") || 
+             name.includes("Florida State") || name.includes("Georgia Tech") || 
+             name.includes("Miami") || name.includes("North Carolina") || 
+             name.includes("NC State") || name.includes("Pittsburgh") || 
+             name.includes("Syracuse") || name.includes("Virginia") || 
+             name.includes("Virginia Tech") || name.includes("Wake Forest")) {
+    primaryColor = "#013CA6"; // ACC blue
+  } else if (name.includes("Big 12") || 
+             name.includes("Baylor") || name.includes("Iowa State") || 
+             name.includes("Kansas") || name.includes("Kansas State") || 
+             name.includes("Oklahoma") || name.includes("Oklahoma State") || 
+             name.includes("TCU") || name.includes("Texas") || 
+             name.includes("Texas Tech") || name.includes("West Virginia")) {
+    primaryColor = "#BF5700"; // Big 12 orange
+  }
+  
+  console.log(`Creating team with potential logo: ${name} → ${potentialLogoUrl}`);
+  
+  // Step 8: If all else fails, create a school object with our best guess at a logo file
   return {
     id: name.toLowerCase().replace(/\s+/g, "-"),
     name: name,
     shortName: name,
     mascot: "",
-    primaryColor: "#0099D8", // NCAA blue
-    secondaryColor: "#FFFFFF",
-    logoUrl: ncaaLogoUrl,
+    primaryColor: primaryColor,
+    secondaryColor: secondaryColor,
+    logoUrl: potentialLogoUrl, // Try to use the logo filename we generated
     city: "",
     state: ""
   };
