@@ -70,7 +70,7 @@ export const gameSchema = z.object({
   startTime: z.string(),
   scheduledTime: z.string(),  // Added for schedule view
   status: gameStatusSchema,
-  period: z.number().optional(),
+  period: z.union([z.number(), z.string()]).optional(),
   clock: z.string().optional(),
   situation: z.string().optional(),
   venue: z.string().optional(),

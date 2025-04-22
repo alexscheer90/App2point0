@@ -1,0 +1,113 @@
+✅ 1. Validate the JSONP Callback Parsing
+Even though Replit says the JSONP format is supported, confirm the callback name is being stripped correctly.
+
+If the callback is jsonp_miamiohio_baseball_game(...), your parsing line in sidearmService.ts should exactly look like:
+
+ts
+Copy
+Edit
+const jsonString = decompressed
+  .replace(/^jsonp_miamiohio_baseball_game\(/, '')
+  .replace(/\);$/, '');
+If the callback name is dynamic (sometimes they are), you may want to dynamically detect and strip it using:
+
+ts
+Copy
+Edit
+const startIndex = decompressed.indexOf('(');
+const endIndex = decompressed.lastIndexOf(')');
+const jsonString = decompressed.slice(startIndex + 1, endIndex);
+Then try parsing that:
+
+ts
+Copy
+Edit
+const data = JSON.parse(jsonString);
+✅ Log the output of jsonString before parsing — make sure it's actual JSON.
+
+✅ 2. Log the Final data Structure
+After JSON is parsed, log the output. You should see a structure like:
+
+json
+Copy
+Edit
+{
+  "home": {
+    "name": "Miami (OH)",
+    "score": 3
+  },
+  "visitor": {
+    "name": "Bellarmine",
+    "score": 2
+  },
+  "innings": [...],
+  "players": [...],
+  ...
+}
+If it's empty, or undefined, your parsing logic is still off.
+
+✅ 3. Frontend Not Receiving Live Data
+Double-check your /api/livestats/miami/baseball endpoint is actually returning the live data from the backend. Use a test route like:
+
+ts
+Copy
+Edit
+router.get('/test-miami-feed', async (req, res) => {
+  const data = await getSidearmLiveGame('https://s3.amazonaws.com/sidearmstats.com/json_miamiohio_baseball_game.js.gz?callback=jsonp_miamiohio_baseball_game');
+  console.log('SIDEARM LIVE:', data);
+  res.json(data);
+});
+Then open that endpoint in your browser. Do you see real JSON stats? If not, the problem is in your backend parsing logic.
+
+✅ 4. Confirm the Game Is Still Live
+Sometimes the SIDEARM feed stops updating if the game is in a delay, or has ended but wasn't marked "Final" yet. Visit the original SIDEARM page and compare the scoreboard.
+
+Also: hit that .js.gz link directly in the browser (then copy-paste it to https://www.gunzip.org/ if you want to decompress manually and check the raw data).
+
+✅ 5. Frontend Component Not Rendering
+Make sure the LiveStatsDisplay.tsx is actually receiving data and not stuck behind a condition like:
+
+tsx
+Copy
+Edit
+if (!data) return <p>Game will start shortly...</p>;
+Add a quick debug line:
+
+tsx
+Copy
+Edit
+console.log("Live data:", data);
+Also confirm you're rendering actual fields from the JSON:
+
+tsx
+Copy
+Edit
+<h2>{data?.home?.name} vs {data?.visitor?.name}</h2>
+<h3>Score: {data?.home?.score} - {data?.visitor?.score}</h3>
+✅ 6. Force Fetch the Correct URL in schoolFeeds.ts
+Make sure that the exact working S3 URL is being passed through correctly:
+
+ts
+Copy
+Edit
+miami: {
+  baseball: {
+    sidearmFeed: "https://s3.amazonaws.com/sidearmstats.com/json_miamiohio_baseball_game.js.gz?callback=jsonp_miamiohio_baseball_game"
+  }
+}
+Then in the backend, log it:
+
+ts
+Copy
+Edit
+console.log("Fetching SIDEARM feed from:", config.sidearmFeed);
+Final Steps
+If you confirm:
+
+the JSON is being parsed correctly,
+
+the route is returning real data,
+
+and the frontend is rendering what it receives...
+
+🔥 then live stats will populate.

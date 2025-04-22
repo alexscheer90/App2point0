@@ -79,18 +79,33 @@ export async function fetchSidearmGameData(
     if (isJsonp && typeof data === 'string') {
       console.log('Processing JSONP response for SIDEARM data');
       try {
-        // Extract the JSON part from the JSONP response
-        // Example format: callbackName({...json data...})
-        const jsonStart = data.indexOf('(') + 1;
-        const jsonEnd = data.lastIndexOf(')');
-        
-        if (jsonStart > 0 && jsonEnd > jsonStart) {
-          const jsonStr = data.substring(jsonStart, jsonEnd);
-          data = JSON.parse(jsonStr);
-          console.log('Successfully parsed JSONP data');
+        // For the Miami baseball specific callback
+        if (feedUrl.includes('json_miamiohio_baseball_game')) {
+          console.log('Processing Miami baseball JSONP callback');
+          // Extract the JSON part from the JSONP response with the exact callback name
+          const cleanedData = data
+            .replace(/^jsonp_miamiohio_baseball_game\(/, '')
+            .replace(/\);$/, '');
+          
+          console.log('JSONP data after cleanup (first 100 chars):', cleanedData.substring(0, 100));
+          data = JSON.parse(cleanedData);
         } else {
-          console.error('Could not extract JSON from JSONP response');
+          // Generic approach for other JSONP responses
+          // Extract the JSON part from the JSONP response
+          // Example format: callbackName({...json data...})
+          const jsonStart = data.indexOf('(') + 1;
+          const jsonEnd = data.lastIndexOf(')');
+          
+          if (jsonStart > 0 && jsonEnd > jsonStart) {
+            const jsonStr = data.substring(jsonStart, jsonEnd);
+            console.log('JSONP data after generic extraction (first 100 chars):', jsonStr.substring(0, 100));
+            data = JSON.parse(jsonStr);
+          } else {
+            console.error('Could not extract JSON from JSONP response');
+          }
         }
+        
+        console.log('Successfully parsed JSONP data, keys:', Object.keys(data));
       } catch (jsonError) {
         console.error('Error parsing JSONP data:', jsonError);
         console.log('JSONP response starts with:', data.substring(0, 100));
@@ -149,12 +164,23 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
     // S3 SIDEARM format - typically different structure
     if (data.homeScore !== undefined) {
       homeTeamScore = typeof data.homeScore === 'string' ? 
-        parseInt(data.homeScore) : data.homeScore;
+        parseInt(data.homeScore) : Number(data.homeScore);
     }
     
     if (data.visitorScore !== undefined) {
       awayTeamScore = typeof data.visitorScore === 'string' ? 
-        parseInt(data.visitorScore) : data.visitorScore;
+        parseInt(data.visitorScore) : Number(data.visitorScore);
+    }
+    
+    // Try home/visitor structure (common in Miami baseball feed)
+    if (data.home && data.home.score !== undefined) {
+      homeTeamScore = typeof data.home.score === 'string' ?
+        parseInt(data.home.score) : Number(data.home.score);
+    }
+    
+    if (data.visitor && data.visitor.score !== undefined) {
+      awayTeamScore = typeof data.visitor.score === 'string' ?
+        parseInt(data.visitor.score) : Number(data.visitor.score);
     }
     
     // Try to get period/inning/quarter information

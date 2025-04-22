@@ -154,5 +154,31 @@ export function cleanupGameCache() {
 router.get('/data-sources/:gameId/:sport', getDataSources);
 router.get('/game-data/:gameId/:sport', getLiveGameData);
 
+// Test endpoint for direct testing of the Miami baseball feed
+router.get('/test-miami-feed', async (req, res) => {
+  try {
+    const url = 'https://s3.amazonaws.com/sidearmstats.com/json_miamiohio_baseball_game.js.gz?callback=jsonp_miamiohio_baseball_game';
+    console.log('Testing fetch from:', url);
+    
+    // Directly use the sidearmService to test
+    const { fetchSidearmGameData } = await import('../services/sidearmService');
+    const data = await fetchSidearmGameData('test', url);
+    
+    console.log('SIDEARM LIVE TEST DATA KEYS:', Object.keys(data.data || {}));
+    console.log('SIDEARM LIVE TEST DATA SAMPLE:', 
+      data.data && typeof data.data === 'object' 
+        ? JSON.stringify(data.data).substring(0, 200) + '...' 
+        : typeof data.data);
+    
+    res.json(data);
+  } catch (error) {
+    console.error('Error in test endpoint:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch test data',
+      message: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
 // Export the router as default
 export default router;
