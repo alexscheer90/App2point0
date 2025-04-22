@@ -622,7 +622,7 @@ export class DataImporter {
             startTime: gameDate.toISOString(),
             scheduledTime: gameDate.toISOString(),
             situation: opponentName, // Use opponent name as situation
-            isRivalryGame: false
+            isRivalry: false
           });
         }
       });
@@ -867,7 +867,7 @@ export class DataImporter {
               s_livestats: liveStatsUrl,
               s_boxscore: boxScoreUrl
             },
-            isRivalryGame: false // Would need additional logic to determine this
+            isRivalry: false // Would need additional logic to determine this
           });
           
         } catch (err) {
@@ -941,8 +941,23 @@ export class DataImporter {
       'vikings': 'clevelandstate'
     };
     
-    // Try to find a match in our map
+    // Special case for Ohio vs Ohio State (this needs to be checked first)
+    if (normalizedName.includes('ohio state') || normalizedName.includes('ohio st') || normalizedName.includes('buckeyes')) {
+      return 'ohiostate';
+    }
+    
+    if (normalizedName === 'ohio' || (normalizedName.includes('ohio') && normalizedName.includes('bobcat'))) {
+      return 'ohio';
+    }
+    
+    // For other schools, try to find a match in our map
     for (const [key, value] of Object.entries(schoolNameMap)) {
+      // Skip ohio entries since we handled them specially above
+      if (key === 'ohio' || key === 'ohio bobcats' || key === 'bobcats' || 
+          key === 'ohio state' || key === 'ohio st' || key === 'buckeyes') {
+        continue;
+      }
+      
       if (normalizedName.includes(key)) {
         return value;
       }
