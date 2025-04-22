@@ -171,10 +171,10 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
                     src={
-                      game.awayTeam?.includes("Valparaiso") || game.awayTeam?.toLowerCase().includes("valpo") 
-                        ? "/school-logos/non-mac/Valparaiso.png" 
-                        : game.awayTeam?.includes("Northern Kentucky") || game.awayTeam?.includes("NKU")
-                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                      game.awayTeam?.includes("Valparaiso") || game.awayTeam?.toLowerCase().includes("valpo") || game.awayTeam?.includes("Beacons") 
+                        ? "/img/valparaiso.png" 
+                        : game.awayTeam?.includes("Northern Kentucky") || game.awayTeam?.includes("NKU") || game.awayTeam?.includes("Norse")
+                          ? "/img/nku.png"
                           : awayTeam?.logoUrl || "/school-logos/generic.png"
                     } 
                     alt={game.awayTeam} 
@@ -197,10 +197,10 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
                     src={
-                      game.homeTeam?.includes("Valparaiso") || game.homeTeam?.toLowerCase().includes("valpo") 
-                        ? "/school-logos/non-mac/Valparaiso.png" 
-                        : game.homeTeam?.includes("Northern Kentucky") || game.homeTeam?.includes("NKU")
-                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                      game.homeTeam?.includes("Valparaiso") || game.homeTeam?.toLowerCase().includes("valpo") || game.homeTeam?.includes("Beacons")
+                        ? "/img/valparaiso.png" 
+                        : game.homeTeam?.includes("Northern Kentucky") || game.homeTeam?.includes("NKU") || game.homeTeam?.includes("Norse")
+                          ? "/img/nku.png"
                           : homeTeam?.logoUrl || "/school-logos/generic.png"
                     } 
                     alt={game.homeTeam} 

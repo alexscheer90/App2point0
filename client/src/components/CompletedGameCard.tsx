@@ -489,9 +489,9 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
                   <img 
                     src={
                       awayTeamInfo.name.includes("Valparaiso") || awayTeamInfo.name.toLowerCase().includes("valpo") 
-                        ? "/school-logos/non-mac/Valparaiso.png" 
+                        ? "/img/valparaiso.png" 
                         : awayTeamInfo.name.includes("Northern Kentucky") || awayTeamInfo.name.includes("NKU")
-                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                          ? "/img/nku.png"
                           : awayTeam?.logoUrl || "/school-logos/ncaa.png"
                     } 
                     alt={awayTeamInfo.name} 
@@ -515,9 +515,9 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
                   <img 
                     src={
                       homeTeamInfo.name.includes("Valparaiso") || homeTeamInfo.name.toLowerCase().includes("valpo") 
-                        ? "/school-logos/non-mac/Valparaiso.png" 
+                        ? "/img/valparaiso.png" 
                         : homeTeamInfo.name.includes("Northern Kentucky") || homeTeamInfo.name.includes("NKU")
-                          ? "/school-logos/non-mac/NorthernKentucky.png"
+                          ? "/img/nku.png"
                           : homeTeam?.logoUrl || "/school-logos/ncaa.png"
                     } 
                     alt={homeTeamInfo.name} 
