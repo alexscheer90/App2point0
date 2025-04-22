@@ -167,15 +167,3 @@ export function generateLiveStatsUrl(school: School, sport: Sport): string {
 export function shouldShowLiveStats(status: string): boolean {
   return status === 'live' || status === 'final';
 }
-
-/**
- * Checks if a game is a Toledo baseball game
- * 
- * @param homeTeamId The home team ID
- * @param awayTeamId The away team ID
- * @param sportId The sport ID
- * @returns Boolean indicating if this is a Toledo baseball game
- */
-export function isToledoBaseballGame(homeTeamId?: string, awayTeamId?: string, sportId?: string): boolean {
-  return sportId === 'baseball' && (homeTeamId === 'toledo' || awayTeamId === 'toledo');
-}

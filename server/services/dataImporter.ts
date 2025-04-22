@@ -891,7 +891,7 @@ export class DataImporter {
    * @param schoolName The name of the school from the calendar
    * @returns The corresponding school ID in our system
    */
-  public getSchoolIdFromName(schoolName: string): string {
+  private getSchoolIdFromName(schoolName: string): string {
     // Normalize the school name
     const normalizedName = schoolName.toLowerCase().trim();
     
@@ -934,9 +934,7 @@ export class DataImporter {
       'george mason': 'georgemason',
       'patriots': 'georgemason',
       'cleveland state': 'clevelandstate',
-      'vikings': 'clevelandstate',
-      'mid-american conference': 'mac',
-      'mac': 'mac'
+      'vikings': 'clevelandstate'
     };
     
     // Try to find a match in our map

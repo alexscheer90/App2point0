@@ -1,83 +1,28 @@
 import { School } from "@shared/schema";
-import { macSchools, ncaaLogoUrl, macLogoUrl } from "../data/macSchools";
-
-// For debugging
-const DEBUG_LOGO_PATH = false;
+import { macSchools, ncaaLogoUrl } from "../data/macSchools";
 
 // Map of common nicknames or alternate versions of school names
 const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
-  // Special non-MAC teams and organizations
-  "Mid-American Conference": "Mid-American Conference",
-  "MAC": "Mid-American Conference", 
-  "MAC Championship": "Mid-American Conference",
-  "University of Illinois-Chicago": "University of Illinois-Chicago",
-  "UIC": "University of Illinois-Chicago",
-  "Illinois-Chicago": "University of Illinois-Chicago",
-  
-  // Common MAC school variants with explicit name formats
+  // Common MAC school variants
   "NIU": "Northern Illinois",
-  "Northern Illinois University": "Northern Illinois",
-  "Northern Illinois Huskies": "Northern Illinois",
-  
   "CMU": "Central Michigan", 
-  "Central Michigan University": "Central Michigan",
-  "Central Michigan Chippewas": "Central Michigan",
-  
   "EMU": "Eastern Michigan",
-  "Eastern Michigan University": "Eastern Michigan",
-  "Eastern Michigan Eagles": "Eastern Michigan",
-  
   "WMU": "Western Michigan",
-  "Western Michigan University": "Western Michigan",
-  "Western Michigan Broncos": "Western Michigan",
-  
   "BGSU": "Bowling Green",
-  "Bowling Green State": "Bowling Green",
-  "Bowling Green State University": "Bowling Green",
-  "Bowling Green Falcons": "Bowling Green",
-  
   "UB": "Buffalo",
-  "University at Buffalo": "Buffalo",
-  "Buffalo Bulls": "Buffalo",
-  
   "Miami (OH)": "Miami",
   "Miami Ohio": "Miami",
-  "Miami University": "Miami",
-  "Miami of Ohio": "Miami",
   "RedHawks": "Miami",
-  "Miami RedHawks": "Miami",
-  
   "Kent State": "Kent State",
-  "Kent State University": "Kent State",
   "Golden Flashes": "Kent State",
-  "Kent State Golden Flashes": "Kent State",
-  
   "UMass": "Massachusetts",
   "Minutemen": "Massachusetts",
-  "Massachusetts Minutemen": "Massachusetts",
-  "University of Massachusetts": "Massachusetts",
-  
   "UT": "Toledo",
-  "Toledo Rockets": "Toledo",
-  "University of Toledo": "Toledo",
   "Rockets": "Toledo",
-  
   "Ball St": "Ball State",
-  "Ball State University": "Ball State",
   "Cardinals": "Ball State",
-  "Ball State Cardinals": "Ball State",
-  
-  "Akron": "Akron",
-  "University of Akron": "Akron",
   "Zips": "Akron",
-  "Akron Zips": "Akron",
-  
-  "Ohio": "Ohio",
-  "Ohio University": "Ohio",
   "Bobcats": "Ohio",
-  "Ohio Bobcats": "Ohio",
-  
-  // More explicit mascot mappings
   "Huskies": "Northern Illinois",
   "Chippewas": "Central Michigan",
   "Eagles": "Eastern Michigan",
@@ -139,33 +84,12 @@ interface NonMacSchool {
 
 // Define common non-MAC schools data
 const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
-  "Mid-American Conference": {
-    name: "Mid-American Conference",
-    shortName: "MAC",
-    primaryColor: "#0B213E", // MAC navy
-    secondaryColor: "#019E4F", // MAC green
-    logoUrl: macLogoUrl  // Using imported asset directly
-  },
-  "University of Illinois-Chicago": {
-    name: "University of Illinois-Chicago",
-    shortName: "UIC",
-    primaryColor: "#DE3337",
-    secondaryColor: "#003EAA",
-    logoUrl: "/school-logos/affiliate/uic.png"
-  },
   "Michigan": {
     name: "Michigan",
     shortName: "Michigan",
     primaryColor: "#00274C",
     secondaryColor: "#FFCB05",
-    logoUrl: "/school-logos/non-mac/michigan.png"
-  },
-  "University of Michigan": {
-    name: "Michigan",
-    shortName: "Michigan",
-    primaryColor: "#00274C",
-    secondaryColor: "#FFCB05",
-    logoUrl: "/school-logos/non-mac/michigan.png"
+    logoUrl: "/school-logos/non-mac/michigan.svg"
   },
   "Michigan State": {
     name: "Michigan State",
@@ -179,21 +103,21 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Notre Dame",
     primaryColor: "#0C2340",
     secondaryColor: "#C99700",
-    logoUrl: "/school-logos/non-mac/notredame.png"
+    logoUrl: "/school-logos/non-mac/notre-dame.svg"
   },
   "Ohio State": {
     name: "Ohio State",
     shortName: "OSU",
     primaryColor: "#BB0000",
     secondaryColor: "#666666",
-    logoUrl: "/school-logos/non-mac/ohiostate.png"
+    logoUrl: "/school-logos/non-mac/ohio-state.svg"
   },
   "Texas": {
     name: "Texas",
     shortName: "Texas",
     primaryColor: "#BF5700",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/texas.png"
+    logoUrl: "/school-logos/non-mac/texas.svg"
   },
   "Texas Tech": {
     name: "Texas Tech",
@@ -214,21 +138,21 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "UK",
     primaryColor: "#0033A0",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/kentucky.png"
+    logoUrl: "/school-logos/non-mac/kentucky.svg"
   },
   "Cincinnati": {
     name: "Cincinnati",
     shortName: "Cincinnati",
     primaryColor: "#E00122",
     secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/cincinnati.png"
+    logoUrl: "/school-logos/non-mac/cincinnati.svg"
   },
   "Western Kentucky": {
     name: "Western Kentucky",
     shortName: "WKU",
     primaryColor: "#C8102E",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/westernkentucky.png"
+    logoUrl: "/school-logos/non-mac/western-kentucky.svg"
   },
   "Maryland": {
     name: "Maryland",
@@ -242,42 +166,42 @@ const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
     shortName: "Nebraska",
     primaryColor: "#E41C38",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/nebraska.png"
+    logoUrl: "/school-logos/non-mac/nebraska.svg"
   },
   "Troy": {
     name: "Troy",
     shortName: "Troy",
     primaryColor: "#8A2432",
     secondaryColor: "#C3C5C8",
-    logoUrl: "/school-logos/non-mac/troy.png"
+    logoUrl: "/school-logos/non-mac/troy.svg"
   },
   "Washington State": {
     name: "Washington State",
     shortName: "WSU",
     primaryColor: "#981E32",
     secondaryColor: "#5E6A71",
-    logoUrl: "/school-logos/non-mac/washingtonstate.png"
+    logoUrl: "/school-logos/non-mac/washington-state.svg"
   },
   "Purdue": {
     name: "Purdue",
     shortName: "Purdue",
     primaryColor: "#CFB991",
     secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/purdue.png"
+    logoUrl: "/school-logos/non-mac/purdue.svg"
   },
   "Penn State": {
     name: "Penn State",
     shortName: "PSU",
     primaryColor: "#041E42",
     secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/pennstate.png"
+    logoUrl: "/school-logos/non-mac/penn-state.svg"
   },
   "Youngstown State": {
     name: "Youngstown State",
     shortName: "YSU",
     primaryColor: "#C8102E",
     secondaryColor: "#000000",
-    logoUrl: "/ncaa-logo.png"
+    logoUrl: "/school-logos/non-mac/youngstown-state.svg"
   }
 };
 
@@ -291,23 +215,6 @@ export function findSchoolByName(name: string): School | undefined {
   const lowerCaseName = name.toLowerCase();
   
   // Special case handling for specific schools appearing in the screenshots
-  if (lowerCaseName.includes("mid-american conference") || 
-      lowerCaseName === "mac" || 
-      lowerCaseName.includes("mac championship") || 
-      lowerCaseName.includes("mac tournament")) {
-    return {
-      id: "mid-american-conference",
-      name: "Mid-American Conference",
-      shortName: "MAC", 
-      mascot: "",
-      primaryColor: "#0B213E", // MAC navy
-      secondaryColor: "#019E4F", // MAC green
-      logoUrl: macLogoUrl, // Using imported asset directly
-      city: "",
-      state: ""
-    };
-  }
-  
   if (lowerCaseName.includes("michigan state") || 
       lowerCaseName.includes("michigan st") || 
       lowerCaseName === "msu" || 
@@ -321,86 +228,6 @@ export function findSchoolByName(name: string): School | undefined {
       secondaryColor: "#FFFFFF",
       logoUrl: "/school-logos/non-mac/michigan-state.png",
       city: "East Lansing",
-      state: "MI"
-    };
-  }
-  
-  // Explicitly handle University of Michigan to distinguish from MAC Michigan schools
-  if (lowerCaseName === "michigan" || 
-      lowerCaseName === "university of michigan" || 
-      lowerCaseName === "wolverines" || 
-      lowerCaseName === "u of m" || 
-      lowerCaseName === "u-m") {
-    return {
-      id: "university-of-michigan",
-      name: "Michigan",
-      shortName: "Michigan",
-      mascot: "Wolverines",
-      primaryColor: "#00274C",
-      secondaryColor: "#FFCB05",
-      logoUrl: "/school-logos/non-mac/michigan.png",
-      city: "Ann Arbor",
-      state: "MI"
-    };
-  }
-      
-  // Explicitly handle the MAC Michigan schools to prevent confusion with University of Michigan
-  if (lowerCaseName.includes("central michigan") || 
-      lowerCaseName === "cmu" || 
-      lowerCaseName.includes("chippewas")) {
-    // Find Central Michigan in macSchools array
-    const cmu = macSchools.find(school => school.id === "centralmichigan");
-    if (cmu) return cmu;
-    
-    return {
-      id: "centralmichigan",
-      name: "Central Michigan",
-      shortName: "CMU",
-      mascot: "Chippewas",
-      primaryColor: "#6A0032",
-      secondaryColor: "#FFC82E",
-      logoUrl: "/school-logos/centralmichigan.png",
-      city: "Mount Pleasant",
-      state: "MI"
-    };
-  }
-  
-  if (lowerCaseName.includes("eastern michigan") || 
-      lowerCaseName === "emu" || 
-      lowerCaseName.includes("eagles")) {
-    // Find Eastern Michigan in macSchools array
-    const emu = macSchools.find(school => school.id === "easternmichigan");
-    if (emu) return emu;
-    
-    return {
-      id: "easternmichigan",
-      name: "Eastern Michigan",
-      shortName: "EMU",
-      mascot: "Eagles",
-      primaryColor: "#046A38",
-      secondaryColor: "#777777",
-      logoUrl: "/school-logos/easternmichigan.png",
-      city: "Ypsilanti",
-      state: "MI"
-    };
-  }
-  
-  if (lowerCaseName.includes("western michigan") || 
-      lowerCaseName === "wmu" || 
-      lowerCaseName.includes("broncos")) {
-    // Find Western Michigan in macSchools array
-    const wmu = macSchools.find(school => school.id === "westernmichigan");
-    if (wmu) return wmu;
-    
-    return {
-      id: "westernmichigan",
-      name: "Western Michigan",
-      shortName: "WMU",
-      mascot: "Broncos",
-      primaryColor: "#6C4023",
-      secondaryColor: "#B5A167",
-      logoUrl: "/school-logos/westernmichigan.png",
-      city: "Kalamazoo",
       state: "MI"
     };
   }
@@ -434,22 +261,6 @@ export function findSchoolByName(name: string): School | undefined {
       logoUrl: "/school-logos/non-mac/north-texas.png",
       city: "Denton",
       state: "TX"
-    };
-  }
-  
-  if (lowerCaseName.includes("illinois-chicago") ||
-      lowerCaseName.includes("university of illinois chicago") ||
-      lowerCaseName === "uic") {
-    return {
-      id: "university-of-illinois-chicago",
-      name: "University of Illinois-Chicago",
-      shortName: "UIC",
-      mascot: "Flames",
-      primaryColor: "#DE3337",
-      secondaryColor: "#003EAA",
-      logoUrl: "/school-logos/affiliate/uic.png", 
-      city: "Chicago",
-      state: "IL"
     };
   }
   
@@ -542,59 +353,18 @@ export function findSchoolByName(name: string): School | undefined {
 }
 
 /**
- * Get a logo URL for a team based on its name or ID
+ * Get a logo URL for a team based on its name
  */
-export function getTeamLogoUrl(nameOrId: string): string {
-  if (!nameOrId) return ncaaLogoUrl;
-  
-  // Special case handling for MAC Conference (by name or id)
-  if (
-    nameOrId.toLowerCase().includes("mid-american conference") || 
-    nameOrId === "MAC" || 
-    nameOrId === "mac" ||
-    nameOrId === "mid-american-conference"
-  ) {
-    return macLogoUrl; // Using public path reference
+export function getTeamLogoUrl(name: string): string {
+  // Add debugging for the problematic schools
+  if (name && (
+      name.toLowerCase().includes("michigan state") || 
+      name.toLowerCase().includes("texas tech") || 
+      name.toLowerCase().includes("north texas"))) {
+    console.log(`Debug logoUrl - School name: "${name}", path: ${findSchoolByName(name)?.logoUrl}`);
   }
   
-  if (nameOrId.toLowerCase().includes("university of illinois-chicago") || 
-      nameOrId.toLowerCase().includes("illinois-chicago") || 
-      nameOrId === "UIC") {
-    return "/school-logos/affiliate/uic.png";
-  }
-  
-  if (nameOrId.toLowerCase().includes("bowling green")) {
-    return "/school-logos/bowlinggreen.png";
-  }
-  
-  // Special case handling for Michigan schools to avoid confusion
-  if (nameOrId.toLowerCase() === "michigan" || 
-      nameOrId.toLowerCase().includes("university of michigan") ||
-      nameOrId.toLowerCase().includes("wolverines")) {
-    return "/school-logos/non-mac/michigan.png";
-  }
-  
-  if (nameOrId.toLowerCase().includes("central michigan") || 
-      nameOrId.toLowerCase() === "cmu" ||
-      nameOrId.toLowerCase().includes("chippewas")) {
-    return "/school-logos/centralmichigan.png";
-  }
-  
-  if (nameOrId.toLowerCase().includes("eastern michigan") || 
-      nameOrId.toLowerCase() === "emu" ||
-      nameOrId.toLowerCase().includes("eagles")) {
-    return "/school-logos/easternmichigan.png";
-  }
-  
-  if (nameOrId.toLowerCase().includes("western michigan") || 
-      nameOrId.toLowerCase() === "wmu" ||
-      nameOrId.toLowerCase().includes("broncos")) {
-    return "/school-logos/westernmichigan.png";
-  }
-  
-  // Special school matching logic has been handled above
-  
-  const school = findSchoolByName(nameOrId);
+  const school = findSchoolByName(name);
   return school?.logoUrl || ncaaLogoUrl;
 }
 

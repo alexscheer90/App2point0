@@ -3,8 +3,8 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacSports } from "../hooks/useStandings";
 import ShareButton from "./ShareButton";
 import { format } from "date-fns";
-import { shouldShowLiveStats, isToledoBaseballGame } from "../utils/liveStatsUtils";
-import { ChevronRight, BarChart2 } from "lucide-react";
+import { shouldShowLiveStats } from "../utils/liveStatsUtils";
+import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
 
@@ -86,7 +86,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && homeTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo-official.png' // MAC logo using public path
+      ? '/mac-logo.png' // MAC logo
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
@@ -97,7 +97,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
     primaryColor: isMacConferenceGame ? '#0B213E' : '#0099D8', // MAC navy or NCAA blue 
     secondaryColor: '#ffffff',
     logoUrl: isMacConferenceGame && awayTeamName.includes('Mid-American Conference') 
-      ? '/mac-logo-official.png' // MAC logo using public path
+      ? '/mac-logo.png' // MAC logo
       : '/attached_assets/IMG_0788.png' // NCAA logo
   };
   
@@ -184,45 +184,6 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
                   src={defaultHomeTeam.logoUrl} 
                   alt={`${defaultHomeTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
-                  onError={(e) => {
-                    console.log(`Failed to load logo for: ${defaultHomeTeam.name} from ${defaultHomeTeam.logoUrl}`);
-                    e.currentTarget.onerror = null; // Prevent infinite error loop
-                    
-                    // Explicit handling for Michigan schools
-                    if (defaultHomeTeam.name === "Central Michigan" || 
-                        defaultHomeTeam.id === "centralmichigan" || 
-                        defaultHomeTeam.name.includes("Central Michigan")) {
-                      e.currentTarget.src = "/school-logos/centralmichigan.png";
-                      return;
-                    } else if (defaultHomeTeam.name === "Eastern Michigan" || 
-                               defaultHomeTeam.id === "easternmichigan" || 
-                               defaultHomeTeam.name.includes("Eastern Michigan")) {
-                      e.currentTarget.src = "/school-logos/easternmichigan.png";
-                      return;
-                    } else if (defaultHomeTeam.name === "Western Michigan" || 
-                               defaultHomeTeam.id === "westernmichigan" || 
-                               defaultHomeTeam.name.includes("Western Michigan")) {
-                      e.currentTarget.src = "/school-logos/westernmichigan.png";
-                      return;
-                    } else if (defaultHomeTeam.name === "Michigan" || 
-                               defaultHomeTeam.id === "michigan" || 
-                               defaultHomeTeam.name.includes("University of Michigan")) {
-                      e.currentTarget.src = "/school-logos/non-mac/michigan.png";
-                      return;
-                    }
-                    
-                    // Other special cases
-                    if (defaultHomeTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/school-logos/mac-conference.png";
-                    } else if (defaultHomeTeam.name === "Bowling Green") {
-                      e.currentTarget.src = "/school-logos/bowlinggreen.png";
-                    } else if (defaultHomeTeam.name?.includes("Illinois-Chicago")) {
-                      e.currentTarget.src = "/school-logos/affiliate/uic.png";
-                    } else {
-                      // Generic fallback to NCAA logo
-                      e.currentTarget.src = "/school-logos/ncaa.png";
-                    }
-                  }}
                 />
               </div>
             ) : (
@@ -249,45 +210,6 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
                   src={defaultAwayTeam.logoUrl} 
                   alt={`${defaultAwayTeam.name} logo`} 
                   className="max-h-full max-w-full object-contain" 
-                  onError={(e) => {
-                    console.log(`Failed to load logo for: ${defaultAwayTeam.name} from ${defaultAwayTeam.logoUrl}`);
-                    e.currentTarget.onerror = null; // Prevent infinite error loop
-                    
-                    // Explicit handling for Michigan schools
-                    if (defaultAwayTeam.name === "Central Michigan" || 
-                        defaultAwayTeam.id === "centralmichigan" || 
-                        defaultAwayTeam.name.includes("Central Michigan")) {
-                      e.currentTarget.src = "/school-logos/centralmichigan.png";
-                      return;
-                    } else if (defaultAwayTeam.name === "Eastern Michigan" || 
-                               defaultAwayTeam.id === "easternmichigan" || 
-                               defaultAwayTeam.name.includes("Eastern Michigan")) {
-                      e.currentTarget.src = "/school-logos/easternmichigan.png";
-                      return;
-                    } else if (defaultAwayTeam.name === "Western Michigan" || 
-                               defaultAwayTeam.id === "westernmichigan" || 
-                               defaultAwayTeam.name.includes("Western Michigan")) {
-                      e.currentTarget.src = "/school-logos/westernmichigan.png";
-                      return;
-                    } else if (defaultAwayTeam.name === "Michigan" || 
-                               defaultAwayTeam.id === "michigan" || 
-                               defaultAwayTeam.name.includes("University of Michigan")) {
-                      e.currentTarget.src = "/school-logos/non-mac/michigan.png";
-                      return;
-                    }
-                    
-                    // Other special cases
-                    if (defaultAwayTeam.name?.toLowerCase().includes("mid-american conference")) {
-                      e.currentTarget.src = "/school-logos/mac-conference.png";
-                    } else if (defaultAwayTeam.name === "Bowling Green") {
-                      e.currentTarget.src = "/school-logos/bowlinggreen.png";
-                    } else if (defaultAwayTeam.name?.includes("Illinois-Chicago")) {
-                      e.currentTarget.src = "/school-logos/affiliate/uic.png";
-                    } else {
-                      // Generic fallback to NCAA logo
-                      e.currentTarget.src = "/school-logos/ncaa.png";
-                    }
-                  }}
                 />
               </div>
             ) : (
@@ -322,21 +244,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
                 Box Score
               </a>
             )}
-            {/* Special label for Toledo baseball games */}
-            {hasStats && isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
-              <span 
-                className="text-green-600 flex items-center gap-1 font-medium" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/games/${game.id}`);
-                }}
-              >
-                <BarChart2 size={12} />
-                Toledo Live Stats
-              </span>
-            )}
-            {/* Regular stats button for other games */}
-            {hasStats && !isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
+            {hasStats && (
               <span 
                 className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
                 onClick={(e) => {
@@ -361,21 +269,7 @@ const GameScoreCard = ({ game }: GameScoreCardProps) => {
       ) : (
         <div className="bg-gray-100 text-xs px-3 py-2 flex flex-col">
           <div className="flex justify-between items-center">
-            {/* Special label for Toledo baseball games */}
-            {hasStats && isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
-              <span 
-                className="text-green-600 flex items-center gap-1 font-medium" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/games/${game.id}`);
-                }}
-              >
-                <BarChart2 size={12} />
-                Toledo Live Stats
-              </span>
-            )}
-            {/* Regular stats button for other games */}
-            {hasStats && !isToledoBaseballGame(game.homeTeamId, game.awayTeamId, game.sportId) && (
+            {hasStats && (
               <span 
                 className={`${hasSidearmStats ? 'text-green-600' : 'text-blue-600'} flex items-center gap-1`} 
                 onClick={(e) => {

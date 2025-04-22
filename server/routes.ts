@@ -7,8 +7,6 @@ import axios from "axios";
 import { WebSocketServer, WebSocket } from "ws";
 import importerRoutes from "./routes/importer";
 import googleSheetsRoutes from "./routes/googleSheets";
-import macRoutes from "./routes/mac";
-import toledoStatsRoutes from "./routes/toledoStats";
 import express from "express";
 import path from "path";
 
@@ -21,12 +19,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Google Sheets routes
   app.use('/api/sheets', googleSheetsRoutes);
-  
-  // Register MAC routes
-  app.use('/api/mac', macRoutes);
-  
-  // Register Toledo stats routes
-  app.use('/api/toledo', toledoStatsRoutes);
   
   // API endpoints for user preferences
   app.get("/api/preferences", async (req, res) => {
@@ -402,8 +394,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`Successfully connected to ESPN API for ${sportId}`);
           break; // Exit loop if successful
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : String(err);
-          console.error(`Error with URL format ${currentUrl}:`, errorMessage);
+          console.error(`Error with URL format ${currentUrl}:`, err.message);
           error = err;
           // Continue to next URL format
         }
