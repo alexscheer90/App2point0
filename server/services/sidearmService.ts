@@ -1,6 +1,12 @@
 /**
  * Service for fetching and processing SIDEARM live stats data
  */
+
+import zlib from 'zlib';
+import util from 'util';
+
+// Promisify the gunzip function from zlib
+const gunzipAsync = util.promisify(zlib.gunzip);
 import axios from 'axios';
 import { Game } from '../../shared/schema';
 import { getSidearmFeedUrl, mapSchoolNameToId } from '../config/schoolFeeds';
@@ -343,6 +349,206 @@ export function processSidearmData(rawData: any, game: Game): Partial<Game> {
       status: game.status,
       statusDetail: 'Error processing SIDEARM data',
       lastUpdated: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * Fetch SIDEARM data from a URL, handling gzipped and JSONP responses
+ * Special function for the Miami baseball game
+ */
+export async function fetchSidearmData(url: string): Promise<{data: any}> {
+  try {
+    console.log(`Fetching SIDEARM data from: ${url}`);
+    
+    // Check if this is a JSONP URL (contains callback parameter)
+    const isJsonp = url.includes('callback=');
+    // Check if this is a gzipped URL
+    const isGzipped = url.includes('.gz');
+    
+    const response = await axios.get(url, {
+      timeout: 7000,
+      headers: {
+        'Accept': 'application/json, text/plain, text/javascript, */*',
+        'Accept-Encoding': isGzipped ? 'gzip' : '*'
+      },
+      // Don't parse the response automatically
+      responseType: isGzipped ? 'arraybuffer' : 'text',
+      // Don't transform the response
+      transformResponse: [(data) => data]
+    });
+    
+    if (response.status !== 200) {
+      throw new Error(`SIDEARM API returned status ${response.status}`);
+    }
+    
+    let data = response.data;
+    
+    // Handle gzipped content
+    if (isGzipped && response.data instanceof ArrayBuffer) {
+      console.log('Decompressing gzipped SIDEARM data...');
+      try {
+        // Convert ArrayBuffer to Buffer
+        const buffer = Buffer.from(response.data);
+        // Decompress the gzipped data
+        const decompressed = await gunzipAsync(buffer);
+        // Convert to string
+        data = decompressed.toString('utf8');
+        console.log('Successfully decompressed gzipped data, starts with:', data.substring(0, 100));
+      } catch (gzipError) {
+        console.error('Error decompressing gzipped data:', gzipError);
+        throw gzipError;
+      }
+    }
+    
+    // Handle JSONP
+    if (isJsonp && typeof data === 'string') {
+      console.log('Processing JSONP response for SIDEARM data');
+      try {
+        // Extract the callback name from the URL
+        const callbackMatch = url.match(/callback=([^&]+)/);
+        const callbackName = callbackMatch ? callbackMatch[1] : 'jsonp';
+        
+        console.log(`Extracting JSON from JSONP with callback: ${callbackName}`);
+        
+        // Extract the JSON part from the JSONP response
+        const regex = new RegExp(`^${callbackName}\\((.*)\\);?$`);
+        const matches = data.match(regex);
+        
+        if (matches && matches[1]) {
+          data = JSON.parse(matches[1]);
+          console.log('Successfully parsed JSONP data, keys:', Object.keys(data));
+        } else {
+          // Try a more generic approach if the specific callback name doesn't work
+          const jsonStart = data.indexOf('(') + 1;
+          const jsonEnd = data.lastIndexOf(')');
+          
+          if (jsonStart > 0 && jsonEnd > jsonStart) {
+            const jsonStr = data.substring(jsonStart, jsonEnd);
+            console.log('JSONP data after generic extraction (first 100 chars):', jsonStr.substring(0, 100));
+            data = JSON.parse(jsonStr);
+          } else {
+            console.error('Could not extract JSON from JSONP response');
+            throw new Error('Invalid JSONP format');
+          }
+        }
+      } catch (jsonError) {
+        console.error('Error parsing JSONP data:', jsonError);
+        throw jsonError;
+      }
+    }
+    
+    return { data };
+  } catch (error) {
+    console.error('Error fetching SIDEARM data:', error);
+    throw error;
+  }
+}
+
+/**
+ * Process baseball-specific SIDEARM data into a format that can be used by the game
+ */
+export function processSidearmBaseballData(data: any): { 
+  homeTeamScore: number; 
+  awayTeamScore: number; 
+  status: 'scheduled' | 'live' | 'final' | 'postponed' | 'cancelled';
+  period: string;
+  situation: string;
+} {
+  try {
+    console.log('Processing baseball-specific SIDEARM data, keys:', Object.keys(data));
+    
+    // Extract scores
+    let homeTeamScore = 0;
+    let awayTeamScore = 0;
+    let status: 'scheduled' | 'live' | 'final' | 'postponed' | 'cancelled' = 'scheduled';
+    let period = '';
+    let situation = '';
+    
+    // Miami baseball specific format
+    if (data.HomeTeam && data.HomeTeam.Score !== undefined) {
+      homeTeamScore = typeof data.HomeTeam.Score === 'string' ?
+        parseInt(data.HomeTeam.Score) : Number(data.HomeTeam.Score);
+      console.log(`Found HomeTeam.Score: ${homeTeamScore}`);
+    }
+    
+    if (data.VisitingTeam && data.VisitingTeam.Score !== undefined) {
+      awayTeamScore = typeof data.VisitingTeam.Score === 'string' ?
+        parseInt(data.VisitingTeam.Score) : Number(data.VisitingTeam.Score);
+      console.log(`Found VisitingTeam.Score: ${awayTeamScore}`);
+    }
+    
+    // Game status - for baseball, if HasStarted is true and IsComplete is false, it's live
+    if (data.HasStarted === true && data.IsComplete === false) {
+      console.log('Detected LIVE game from baseball feed');
+      status = 'live';
+    } else if (data.IsComplete === true) {
+      console.log('Detected FINAL game from baseball feed');
+      status = 'final';
+    }
+    
+    // Period (inning)
+    if (data.Period !== undefined) {
+      if (typeof data.Period === 'string') {
+        // For example, "T4" for top of the 4th inning
+        period = data.Period;
+      } else if (typeof data.Period === 'number') {
+        // Convert numeric period to a string with the appropriate format
+        // For baseball, add 'T' (top) or 'B' (bottom) prefix based on context
+        const half = data.Context && data.Context.toLowerCase().includes('top') ? 'T' : 'B';
+        period = `${half}${data.Period}`;
+      }
+      console.log(`Found Period directly from baseball data: ${period}`);
+    }
+    
+    // Situation (count, outs, runners)
+    if (data.Situation) {
+      if (typeof data.Situation === 'object') {
+        // Build a situation string from the available information
+        const situationParts = [];
+        
+        if (data.Situation.Balls !== undefined && data.Situation.Strikes !== undefined) {
+          situationParts.push(`${data.Situation.Balls}-${data.Situation.Strikes} count`);
+        }
+        
+        if (data.Situation.Outs !== undefined) {
+          situationParts.push(`${data.Situation.Outs} out${data.Situation.Outs !== 1 ? 's' : ''}`);
+        }
+        
+        // Check for runners on base
+        const bases = [];
+        if (data.Situation.RunnerOnFirst) bases.push('1st');
+        if (data.Situation.RunnerOnSecond) bases.push('2nd');
+        if (data.Situation.RunnerOnThird) bases.push('3rd');
+        
+        if (bases.length > 0) {
+          situationParts.push(`runner${bases.length > 1 ? 's' : ''} on ${bases.join(', ')}`);
+        }
+        
+        situation = situationParts.join(', ');
+        console.log(`Built situation from baseball data object: ${situation}`);
+      } else if (typeof data.Situation === 'string') {
+        situation = data.Situation;
+        console.log(`Found situation directly from baseball data: ${situation}`);
+      }
+    }
+    
+    // Return the processed data
+    return {
+      homeTeamScore,
+      awayTeamScore,
+      status,
+      period,
+      situation
+    };
+  } catch (error) {
+    console.error('Error processing baseball SIDEARM data:', error);
+    return {
+      homeTeamScore: 0,
+      awayTeamScore: 0,
+      status: 'scheduled' as const,
+      period: '',
+      situation: ''
     };
   }
 }

@@ -37,12 +37,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           // Get the latest data from Miami's feed
           const url = 'https://s3.amazonaws.com/sidearmstats.com/json_miamiohio_baseball_game.js.gz?callback=jsonp_miamiohio_baseball_game';
-          const { fetchSidearmData, processSidearmBaseballData } = await import('./services/sidearmService');
-          const response = await fetchSidearmData(url);
-          const processedData = processSidearmBaseballData(response.data);
+          
+          // Import the sidearmService functions directly
+          const sidearmService = await import('./services/sidearmService');
+          const response = await sidearmService.fetchSidearmData(url);
+          const processedData = sidearmService.processSidearmBaseballData(response.data);
           
           // Create a game with live data from SIDEARM
-          const game = {
+          const game: Game = {
             id: gameId,
             sportId: 'baseball',
             homeTeamId: 'miami-oh',

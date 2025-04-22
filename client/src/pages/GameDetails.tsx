@@ -3,7 +3,7 @@ import { useParams } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Game } from '@shared/schema';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Spinner } from '../components/ui/spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import LiveStatsDisplay from '../components/LiveStatsDisplay';
