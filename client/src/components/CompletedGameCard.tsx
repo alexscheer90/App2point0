@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { findSchoolByName } from "../utils/findSchoolByName";
 import { Badge } from "./ui/badge";
 import { format } from "date-fns";
-import { CalendarIcon, ChevronRight, Clock } from "lucide-react";
+import { CalendarIcon, ChevronRight, Clock, Trophy, Headphones, Tv2 } from "lucide-react";
 
 // Type definition for team information
 interface TeamInfo {
@@ -43,8 +43,11 @@ function getTeamNameFromId(teamId: string | undefined): TeamInfo {
     "michiganstate": { name: "Michigan State", mascot: "Spartans" },
     "michigan": { name: "Michigan", mascot: "Wolverines" },
     "ohiostate": { name: "Ohio State", mascot: "Buckeyes" },
+    "ohio-state": { name: "Ohio State", mascot: "Buckeyes" },
     "valparaiso-beacons": { name: "Valparaiso", mascot: "Beacons" },
+    "valparaiso": { name: "Valparaiso", mascot: "Beacons" },
     "northern-kentucky-university": { name: "Northern Kentucky", mascot: "Norse" },
+    "northern-kentucky": { name: "Northern Kentucky", mascot: "Norse" },
     "mid-american-conference": { name: "MAC Championship", mascot: "Conference" },
     "notre-dame": { name: "Notre Dame", mascot: "Fighting Irish" },
   };
@@ -145,13 +148,16 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
   
   // Format date safely
   let formattedDate = "TBD";
+  let formattedTime = "";
   if (game.date) {
     const gameDate = new Date(game.date);
     formattedDate = format(gameDate, "MMM d, yyyy");
+    formattedTime = format(gameDate, "h:mm a");
   } else if (game.startTime) {
     // Fall back to startTime if date is not available
     const gameDate = new Date(game.startTime);
     formattedDate = format(gameDate, "MMM d, yyyy");
+    formattedTime = format(gameDate, "h:mm a");
   }
   
   // Format game result text
@@ -161,6 +167,31 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
   } else if (game.periodDetail) {
     resultText = `Final ${game.periodDetail}`;
   }
+  
+  // Get sport color based on type
+  const getSportColor = () => {
+    if (!game.sport) return "#6E44FF"; // Default purple for unknown sports
+    
+    switch (game.sport.toLowerCase()) {
+      case 'football':
+        return "#C2410C"; // Orange for football
+      case 'basketball':
+        return "#BE123C"; // Red for basketball
+      case 'baseball':
+        return "#047857"; // Green for baseball
+      case 'hockey':
+        return "#0891B2"; // Cyan for hockey
+      case 'soccer':
+        return "#4338CA"; // Indigo for soccer
+      default:
+        return "#6E44FF"; // Default purple for other sports
+    }
+  }
+  
+  // Format sport name with proper capitalization
+  const sportName = game.sport 
+    ? game.sport.charAt(0).toUpperCase() + game.sport.slice(1).toLowerCase() 
+    : "Sport";
   
   return (
     <Link href={`/games/${game.id}`}>
@@ -197,6 +228,21 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
               <CalendarIcon size={12} className="mr-1" />
               {formattedDate}
             </div>
+            
+            {/* Sport badge */}
+            <div className="flex items-center px-2 py-0.5 ml-1 rounded-full"
+                style={{ backgroundColor: getSportColor() }}>
+              <Trophy size={10} className="mr-1" />
+              <span className="text-xs">{sportName}</span>
+            </div>
+            
+            {/* Time badge if available */}
+            {formattedTime && (
+              <div className="flex items-center ml-1">
+                <Clock size={10} className="mr-1" />
+                <span className="text-xs">{formattedTime}</span>
+              </div>
+            )}
           </div>
           
           {/* Team display */}
