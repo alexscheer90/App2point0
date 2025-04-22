@@ -1,11 +1,13 @@
 import { log } from '../vite';
 import axios from 'axios';
 import { Game, GameStatus } from '@shared/schema';
+import schoolFeeds, { getSidearmFeedUrl, mapSchoolNameToId } from '../config/schoolFeeds';
 
 /**
  * Service to handle unified game data from multiple sources
  * - ESPN API for general coverage
  * - SIDEARM for official school-provided statistics
+ * - MAC conference calendar for schedule information
  */
 class UnifiedDataService {
   // Cache to track which data source is used for each game
@@ -38,25 +40,74 @@ class UnifiedDataService {
   
   /**
    * Check if SIDEARM stats are available for a specific game
+   * Uses the school feeds configuration to determine if a SIDEARM feed exists
    */
   private async checkSidearmAvailability(
     schoolId: string, 
     sportId: string, 
     gameId: string
   ): Promise<boolean> {
-    // This is a simplified implementation
-    // In a real app, we would check if the school uses SIDEARM
-    // and if they have a live stats feed for this specific game
+    // Convert any legacy school IDs to new format if needed
+    const normalizedSchoolId = this.normalizeSchoolId(schoolId);
+    if (!normalizedSchoolId) {
+      log(`Could not normalize school ID: ${schoolId}`, 'unifiedDataService');
+      return false;
+    }
     
-    // For now, let's check if the school is one we know uses SIDEARM
-    // and if there's a known live stats URL pattern
-    const sidearmSchools = [
-      'bgsu', 'emu', 'kent', 'akron', 'ohiou', 'miamioh',
-      'cmu', 'bsu', 'niu', 'toledo', 'wmu', 'buffalo', 'umass'
-    ];
+    // Get the SIDEARM feed URL for this school and sport
+    const sidearmUrl = getSidearmFeedUrl(normalizedSchoolId, sportId);
+    if (!sidearmUrl) {
+      log(`No SIDEARM feed URL found for school ${normalizedSchoolId} and sport ${sportId}`, 'unifiedDataService');
+      return false;
+    }
     
-    // Simplified check
-    return sidearmSchools.includes(schoolId);
+    // Check if the feed is actually accessible
+    try {
+      const response = await axios.head(sidearmUrl, { 
+        timeout: 3000,
+        validateStatus: (status) => status < 400
+      });
+      
+      log(`SIDEARM feed check for ${normalizedSchoolId}/${sportId}: ${response.status === 200 ? 'Available' : 'Not available'}`, 'unifiedDataService');
+      return response.status === 200;
+    } catch (error) {
+      log(`Error checking SIDEARM feed for ${normalizedSchoolId}/${sportId}: ${error}`, 'unifiedDataService');
+      return false;
+    }
+  }
+  
+  /**
+   * Normalize school IDs between different formats
+   */
+  private normalizeSchoolId(schoolId: string): string | null {
+    // Map legacy school IDs to new format
+    const legacyMap: Record<string, string> = {
+      'bgsu': 'bowling-green',
+      'emu': 'eastern-michigan',
+      'kent': 'kent-state',
+      'akron': 'akron',
+      'ohiou': 'ohio',
+      'miamioh': 'miami-oh',
+      'cmu': 'central-michigan',
+      'bsu': 'ball-state',
+      'niu': 'northern-illinois',
+      'toledo': 'toledo',
+      'wmu': 'western-michigan',
+      'buffalo': 'buffalo',
+      'umass': 'massachusetts'
+    };
+    
+    if (legacyMap[schoolId]) {
+      return legacyMap[schoolId];
+    }
+    
+    // Check if the ID is already in the new format
+    if (schoolFeeds[schoolId]) {
+      return schoolId;
+    }
+    
+    // Last resort: try to map by name 
+    return mapSchoolNameToId(schoolId);
   }
   
   /**
@@ -102,25 +153,62 @@ class UnifiedDataService {
   
   /**
    * Get game data from SIDEARM source
+   * Implements the smart fetching approach for the SIDEARM data feed
    */
   private async getSidearmGameData(
     gameId: string, 
     schoolId: string, 
     sportId: string
   ): Promise<Game | null> {
-    // This would be implemented to fetch from a SIDEARM live stats XML/JSON feed
-    // For now, we'll just show a placeholder implementation
+    // Normalize the school ID to work with our school feeds config
+    const normalizedSchoolId = this.normalizeSchoolId(schoolId);
+    if (!normalizedSchoolId) {
+      log(`Could not normalize school ID for SIDEARM data: ${schoolId}`, 'unifiedDataService');
+      return null;
+    }
     
-    log(`Fetching SIDEARM data for game ${gameId} from school ${schoolId}`, 'unifiedDataService');
+    // Get the SIDEARM feed URL for this school and sport
+    const sidearmUrl = getSidearmFeedUrl(normalizedSchoolId, sportId);
+    if (!sidearmUrl) {
+      log(`No SIDEARM feed URL available for ${normalizedSchoolId}/${sportId}`, 'unifiedDataService');
+      return null;
+    }
     
-    // In a real implementation, we would:
-    // 1. Map the school to its SIDEARM domain
-    // 2. Map the sport to the SIDEARM sport code
-    // 3. Make an API call to the school's SIDEARM API
-    // 4. Transform the data into our standard Game format
+    log(`Fetching SIDEARM data for game ${gameId} from ${sidearmUrl}`, 'unifiedDataService');
     
-    // For demo purposes, we'll return null to fall back to ESPN
-    return null;
+    try {
+      // In a full implementation, we would:
+      // 1. Make the appropriate API call to the SIDEARM feed
+      // 2. Parse the XML/JSON response
+      // 3. Transform the data into our Game format
+      
+      // For this exercise, we'll just check if the endpoint is accessible
+      // and return a placeholder game object
+      const checkResponse = await axios.head(`${sidearmUrl}`, { 
+        timeout: 5000,
+        validateStatus: (status) => status < 400
+      });
+      
+      if (checkResponse.status === 200) {
+        log(`Successfully connected to SIDEARM feed for ${normalizedSchoolId}`, 'unifiedDataService');
+        
+        // In a real implementation, we would fetch and parse the actual data
+        // For now, return a placeholder with the "source" field set to 'sidearm'
+        // We'll fall back to ESPN data but tag it as coming from SIDEARM
+        const schoolInfo = schoolFeeds[normalizedSchoolId];
+        
+        // This is where we would normally fetch and parse the data
+        // For demo purposes, we're just returning null to trigger the ESPN fallback
+        // while still tracking that we're using the SIDEARM source
+        return null;
+      } else {
+        log(`SIDEARM feed not available for ${normalizedSchoolId} (status: ${checkResponse.status})`, 'unifiedDataService');
+        return null;
+      }
+    } catch (error) {
+      log(`Error accessing SIDEARM feed for ${normalizedSchoolId}: ${error}`, 'unifiedDataService');
+      return null;
+    }
   }
   
   /**

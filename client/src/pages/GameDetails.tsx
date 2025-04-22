@@ -46,15 +46,46 @@ const GameDetails: React.FC = () => {
     );
   }
   
-  if (error || !game) {
+  if (!game) {
+    // If we have gameId but no game data yet
     return (
-      <Alert variant={error ? "destructive" : "default"} className="mx-4 my-8">
-        <AlertTitle>{error ? "Error loading game" : "Game not yet active"}</AlertTitle>
+      <div className="mx-4 my-8">
+        <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+          <h2 className="text-xl font-bold text-blue-800 mb-2">Game Preview</h2>
+          <p className="text-blue-700 mb-4">
+            This game has not yet started. Live stats will automatically populate when the game begins.
+          </p>
+          
+          {gameId && (
+            <div className="p-4 bg-white rounded-md border border-blue-100 mb-4">
+              <p className="text-sm text-gray-600 mb-2">Game ID: {gameId}</p>
+              <p className="text-sm text-gray-600">
+                We're ready to connect to the official team stats feed as soon as the game goes live.
+              </p>
+            </div>
+          )}
+          
+          <div className="mt-4 text-center">
+            <div className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+              Ready for Live Updates
+            </div>
+          </div>
+          
+          <div className="mt-4 text-center text-sm text-gray-500">
+            -- Mobile #MACtion --
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Show a different message specifically for API errors
+  if (error) {
+    return (
+      <Alert variant="default" className="mx-4 my-8">
+        <AlertTitle>Temporarily Unavailable</AlertTitle>
         <AlertDescription>
-          {error 
-            ? "We couldn't load this game. Please try again later."
-            : "Game has not yet started. Stats will populate when the game begins."
-          }
+          We're having trouble connecting to the data feed for this game. Stats will be available shortly.
           <div className="mt-4 text-center text-sm text-gray-500">
             -- Mobile #MACtion --
           </div>

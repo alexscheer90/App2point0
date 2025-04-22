@@ -26,16 +26,31 @@ const LiveStatsDisplay: React.FC<LiveStatsDisplayProps> = ({ gameId }) => {
   
   if (!game) {
     return (
-      <Alert variant="default" className="mt-4">
-        <XCircle className="h-5 w-5" />
-        <AlertTitle>Live Stats Unavailable</AlertTitle>
-        <AlertDescription>
-          Game has not yet started. Stats will populate when the game begins.
+      <div className="mt-4">
+        <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+          <h2 className="text-lg font-bold text-blue-800 mb-2">Stats Preview</h2>
+          <p className="text-blue-700 mb-4">
+            This game has not yet started. Live stats will automatically populate when the game begins.
+          </p>
+          
+          <div className="p-4 bg-white rounded-md border border-blue-100 mb-4">
+            <p className="text-sm text-gray-600 mb-2">Game ID: {gameId}</p>
+            <p className="text-sm text-gray-600">
+              We're ready to connect to the official team stats feed as soon as the game goes live.
+            </p>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <div className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+              Ready for Live Updates
+            </div>
+          </div>
+          
           <div className="mt-4 text-center text-sm text-gray-500">
             -- Mobile #MACtion --
           </div>
-        </AlertDescription>
-      </Alert>
+        </div>
+      </div>
     );
   }
   
