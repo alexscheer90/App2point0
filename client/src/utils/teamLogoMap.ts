@@ -353,16 +353,16 @@ export function getTeamLogo(schoolName: string): string {
     .replace(/[^a-z0-9]/g, '');
   
   if (isMacSchool(standardName)) {
-    // For MAC schools, we have a direct mapping in public folder
-    return `/public/school-logos/mac/${normalizedName}.png`;
+    // For MAC schools, use the correct path (without /public/ prefix)
+    return `/school-logos/mac/${normalizedName}.png`;
   } else {
     // For non-MAC schools
     // Special case for Northern Kentucky which has been problematic
     if (standardName === "Northern Kentucky" || standardName === "Norse" || standardName === "NKU") {
-      return `/public/school-logos/non-mac/northernkentucky.png`;
+      return `/school-logos/non-mac/northernkentucky.png`;
     }
     
-    return `/public/school-logos/non-mac/${normalizedName}.png`;
+    return `/school-logos/non-mac/${normalizedName}.png`;
   }
 }
 

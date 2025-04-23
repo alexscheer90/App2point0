@@ -79,25 +79,25 @@ export function getOptimizedImagePath(schoolName: string, isMacSchool: boolean =
   
   let imagePath: string;
   
-  // First check if we have an optimized version
+  // First check if we have an optimized version (without /public/ prefix)
   if (isMacSchool) {
-    imagePath = `/optimized/school-logos/mac/${normalizedName}.png`;
+    imagePath = `/school-logos/mac/${normalizedName}.png`;
   } else {
-    imagePath = `/optimized/school-logos/non-mac/${normalizedName}.png`;
+    imagePath = `/school-logos/non-mac/${normalizedName}.png`;
   }
   
   // Fallback paths
   const fallbackPaths = [
-    // Original location in public folder
+    // Original location in public folder (without /public/ prefix)
     isMacSchool ? 
-      `/public/school-logos/mac/${normalizedName}.png` : 
-      `/public/school-logos/non-mac/${normalizedName}.png`,
-    // Direct import from attached assets
+      `/school-logos/mac/${normalizedName}.png` : 
+      `/school-logos/non-mac/${normalizedName}.png`,
+    // Direct import from attached assets using asset import syntax
     isMacSchool ?
-      `/attached_assets/${schoolName}.png` :
-      `/attached_assets/${schoolName}.png`,
-    // Generic fallback
-    '/public/school-logos/generic-logo.png'
+      `/@fs/home/runner/workspace/attached_assets/${schoolName}.png` :
+      `/@fs/home/runner/workspace/attached_assets/${schoolName}.png`,
+    // Generic fallback (without /public/ prefix)
+    '/school-logos/generic-logo.png'
   ];
   
   // Cache the path for future use
@@ -133,10 +133,10 @@ export function handleImageError(event: React.SyntheticEvent<HTMLImageElement>):
   
   // Try fixed filename for Northern Kentucky (specific case)
   if (src.includes('northernkentucky') || src.toLowerCase().includes('northern kentucky')) {
-    img.src = '/public/school-logos/non-mac/northernkentucky.png';
+    img.src = '/school-logos/non-mac/northernkentucky.png';
     return;
   }
   
   // Try general fallback
-  img.src = '/public/school-logos/generic-logo.png';
+  img.src = '/school-logos/generic-logo.png';
 }
