@@ -28,75 +28,80 @@ export const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "BSU": "Ball State",
   
   "Bowling Green": "Bowling Green",
-  "Bowling Green State": "Bowling Green",
   "BGSU": "Bowling Green",
   "Falcons": "Bowling Green",
+  "Bowling Green State": "Bowling Green",
+  "BG": "Bowling Green",
   
   "Buffalo": "Buffalo",
-  "UB": "Buffalo",
   "Bulls": "Buffalo",
+  "UB": "Buffalo",
   
   "Central Michigan": "Central Michigan",
-  "CMU": "Central Michigan",
   "Chippewas": "Central Michigan",
+  "CMU": "Central Michigan",
   
   "Eastern Michigan": "Eastern Michigan",
-  "EMU": "Eastern Michigan",
   "Eagles": "Eastern Michigan",
+  "EMU": "Eastern Michigan",
   
   "Kent State": "Kent State",
-  "KSU": "Kent State",
   "Golden Flashes": "Kent State",
-  "Flashes": "Kent State",
+  "KSU (Kent)": "Kent State",
   
-  "Miami": "Miami (OH)",
   "Miami (OH)": "Miami (OH)",
+  "RedHawks": "Miami (OH)",
+  "Miami": "Miami (OH)",
   "Miami Ohio": "Miami (OH)",
   "Miami University": "Miami (OH)",
-  "Miami (Ohio)": "Miami (OH)",
-  "Miami RedHawks": "Miami (OH)",
-  "RedHawks": "Miami (OH)",
-  "MU": "Miami (OH)",
+  "MU (Miami)": "Miami (OH)",
   
   "Northern Illinois": "Northern Illinois",
+  "Huskies (NIU)": "Northern Illinois",
   "NIU": "Northern Illinois",
-  "Huskies": "Northern Illinois",
   
   "Ohio": "Ohio",
-  "OU": "Ohio",
   "Bobcats": "Ohio",
+  "OU (Ohio)": "Ohio",
+  "Ohio University": "Ohio",
   
   "Toledo": "Toledo",
-  "UT": "Toledo",
   "Rockets": "Toledo",
+  "UT (Toledo)": "Toledo",
   
   "Western Michigan": "Western Michigan",
+  "Broncos (WMU)": "Western Michigan",
   "WMU": "Western Michigan",
-  "Broncos": "Western Michigan",
   
-  // MAC Affiliate Members
-  "Massachusetts": "Massachusetts",
-  "UMass": "Massachusetts",
-  "Minutemen": "Massachusetts",
-  
-  "Missouri State": "Missouri State",
-  "MSU Bears": "Missouri State",
-  "Bears": "Missouri State",
-  
-  "Evansville": "Evansville",
-  "Purple Aces": "Evansville",
-  
-  "SIUE": "SIU Edwardsville",
+  // MAC Affiliate Members for Wrestling
   "SIU Edwardsville": "SIU Edwardsville",
+  "SIUE": "SIU Edwardsville",
+  "Cougars (SIUE)": "SIU Edwardsville",
   "Southern Illinois Edwardsville": "SIU Edwardsville",
-  "Edwardsville": "SIU Edwardsville",
   
-  "Bellarmine": "Bellarmine",
-  "Knights": "Bellarmine",
+  "Bloomsburg": "Bloomsburg",
+  "Huskies (Bloomsburg)": "Bloomsburg",
   
-  "Chicago State": "Chicago State",
-  "CSU": "Chicago State",
-  "Cougars": "Chicago State",
+  "Clarion": "Clarion", 
+  "Golden Eagles (Clarion)": "Clarion",
+  
+  "Edinboro": "Edinboro",
+  "Fighting Scots": "Edinboro",
+  
+  "George Mason": "George Mason",
+  "Patriots": "George Mason",
+  "GMU": "George Mason",
+  
+  "Lock Haven": "Lock Haven",
+  "Bald Eagles": "Lock Haven",
+  
+  "Rider": "Rider",
+  "Broncs (Rider)": "Rider",
+  
+  // Some common non-MAC schools we play
+  "Georgia State": "Georgia State",
+  "GSU": "Georgia State",
+  "Panthers (GSU)": "Georgia State",
   
   "Youngstown State": "Youngstown State",
   "YSU": "Youngstown State",
@@ -104,7 +109,7 @@ export const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   
   "Appalachian State": "Appalachian State",
   "App State": "Appalachian State",
-  "Mountaineers": "Appalachian State",
+  "Mountaineers (App)": "Appalachian State",
   
   "Old Dominion": "Old Dominion",
   "ODU": "Old Dominion",
@@ -112,32 +117,32 @@ export const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   
   "Cleveland State": "Cleveland State",
   "CSU": "Cleveland State",
-  "Vikings": "Cleveland State",
+  "Vikings (CSU)": "Cleveland State",
   
   "IUPUI": "IUPUI",
   "Indiana University–Purdue University Indianapolis": "IUPUI",
-  "Jaguars": "IUPUI",
+  "Jaguars (IUPUI)": "IUPUI",
   
   "Detroit Mercy": "Detroit Mercy",
   "Detroit": "Detroit Mercy",
   "UDM": "Detroit Mercy",
-  "Titans": "Detroit Mercy",
+  "Titans (Detroit)": "Detroit Mercy",
   
   "Robert Morris": "Robert Morris",
   "RMU": "Robert Morris",
   "Colonials": "Robert Morris",
   
   "Oakland": "Oakland",
-  "OU": "Oakland",
+  "OU (Oakland)": "Oakland",
   "Golden Grizzlies": "Oakland",
   
   "Wright State": "Wright State",
   "WSU": "Wright State",
-  "Raiders": "Wright State",
+  "Raiders (Wright)": "Wright State",
   
   "Milwaukee": "Milwaukee",
   "UWM": "Milwaukee",
-  "Panthers": "Milwaukee",
+  "Panthers (Milwaukee)": "Milwaukee",
   
   "Longwood": "Longwood",
   "Lancers": "Longwood",
@@ -148,555 +153,341 @@ export const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   
   "USC Upstate": "USC Upstate",
   "South Carolina Upstate": "USC Upstate",
-  "Spartans": "USC Upstate",
+  "Spartans (USC)": "USC Upstate",
   
-  "Gardner-Webb": "Gardner-Webb",
-  "GWU": "Gardner-Webb",
-  "Runnin' Bulldogs": "Gardner-Webb",
+  "Chicago State": "Chicago State",
+  "Cougars (Chicago)": "Chicago State",
   
-  "Wagner": "Wagner",
-  "Seahawks": "Wagner",
+  "Bellarmine": "Bellarmine",
+  "Knights": "Bellarmine",
   
-  "North Texas": "North Texas",
-  "UNT": "North Texas",
-  "Mean Green": "North Texas",
-
-  // Pennsylvania State Athletic Conference (PSAC) schools
-  "Bloomsburg": "Bloomsburg",
-  "Huskies": "Bloomsburg",
+  "Miami (FL)": "Miami (FL)",
+  "Hurricanes": "Miami (FL)",
+  "The U": "Miami (FL)",
   
-  "California (PA)": "California (PA)",
-  "Cal U": "California (PA)",
-  "Vulcans": "California (PA)",
+  "Cincinnati": "Cincinnati",
+  "Bearcats": "Cincinnati",
+  "UC": "Cincinnati",
   
-  "Clarion": "Clarion",
-  "Golden Eagles": "Clarion",
+  "Marshall": "Marshall",
+  "Thundering Herd": "Marshall",
+  "MU (Marshall)": "Marshall",
   
-  "Edinboro": "Edinboro",
-  "Fighting Scots": "Edinboro",
+  "Kentucky": "Kentucky",
+  "Wildcats (UK)": "Kentucky",
+  "UK": "Kentucky",
   
-  "Gannon": "Gannon",
-  "Golden Knights": "Gannon",
-  
-  "IUP": "Indiana (PA)",
-  "Indiana (PA)": "Indiana (PA)",
-  "Crimson Hawks": "Indiana (PA)",
-  
-  "Kutztown": "Kutztown",
-  "Golden Bears": "Kutztown",
-  
-  "Lock Haven": "Lock Haven",
-  "Bald Eagles": "Lock Haven",
-  
-  "Mansfield": "Mansfield",
-  "Mountaineers": "Mansfield",
-  
-  "Mercyhurst": "Mercyhurst",
-  "Lakers": "Mercyhurst",
-  
-  "Millersville": "Millersville",
-  "Marauders": "Millersville",
-  
-  "Seton Hill": "Seton Hill",
-  "Griffins": "Seton Hill",
-  
-  "Shepherd": "Shepherd",
-  "Rams": "Shepherd",
-  
-  "Shippensburg": "Shippensburg",
-  "Raiders": "Shippensburg",
-  
-  "Slippery Rock": "Slippery Rock",
-  "The Rock": "Slippery Rock",
-  "SRU": "Slippery Rock",
-  
-  "West Chester": "West Chester",
-  "Golden Rams": "West Chester",
-  
-  // Big Ten Schools
-  "Michigan": "Michigan",
-  "UM": "Michigan",
-  "Wolverines": "Michigan",
-  
-  "Michigan State": "Michigan State",
-  "MSU": "Michigan State",
-  "Spartans": "Michigan State",
+  "Notre Dame": "Notre Dame",
+  "Fighting Irish": "Notre Dame",
+  "ND": "Notre Dame",
   
   "Ohio State": "Ohio State",
-  "OSU": "Ohio State",
   "Buckeyes": "Ohio State",
+  "OSU": "Ohio State",
+  "The Ohio State University": "Ohio State",
+  
+  "Pittsburgh": "Pittsburgh",
+  "Pitt": "Pittsburgh",
+  "Panthers (Pitt)": "Pittsburgh",
+  
+  "Michigan": "Michigan",
+  "Wolverines": "Michigan",
+  "UM": "Michigan",
+  "UofM": "Michigan",
+  
+  "Michigan State": "Michigan State",
+  "Spartans (MSU)": "Michigan State",
+  "MSU": "Michigan State",
   
   "Penn State": "Penn State",
-  "PSU": "Penn State",
   "Nittany Lions": "Penn State",
+  "PSU": "Penn State",
   
-  "Indiana": "Indiana",
-  "IU": "Indiana",
-  "Hoosiers": "Indiana",
-  
-  "Purdue": "Purdue",
-  "Boilermakers": "Purdue",
-  
-  "Illinois": "Illinois",
-  "Fighting Illini": "Illinois",
-  "Illini": "Illinois",
-  
-  "Northwestern": "Northwestern",
-  "Wildcats": "Northwestern",
-  
-  "Iowa": "Iowa",
-  "Hawkeyes": "Iowa",
-  
-  "Minnesota": "Minnesota",
-  "Golden Gophers": "Minnesota",
-  "Gophers": "Minnesota",
-  
-  "Wisconsin": "Wisconsin",
-  "Badgers": "Wisconsin",
-  
-  "Nebraska": "Nebraska",
-  "Cornhuskers": "Nebraska",
-  "Huskers": "Nebraska",
+  "Syracuse": "Syracuse",
+  "Orange": "Syracuse",
+  "SU": "Syracuse",
   
   "Maryland": "Maryland",
   "Terrapins": "Maryland",
   "Terps": "Maryland",
+  "UMD": "Maryland",
+  
+  "Northwestern": "Northwestern",
+  "Wildcats (NU)": "Northwestern",
+  "NU": "Northwestern",
+  
+  "Nebraska": "Nebraska",
+  "Cornhuskers": "Nebraska",
+  "Huskers": "Nebraska",
+  "UNL": "Nebraska",
   
   "Rutgers": "Rutgers",
   "Scarlet Knights": "Rutgers",
+  "RU": "Rutgers",
   
-  // Other Major Conferences
-  "Cincinnati": "Cincinnati",
-  "UC": "Cincinnati",
-  "Bearcats": "Cincinnati",
+  "Purdue": "Purdue",
+  "Boilermakers": "Purdue",
   
-  "Kentucky": "Kentucky",
-  "UK": "Kentucky",
-  "Wildcats": "Kentucky",
+  "Indiana": "Indiana",
+  "Hoosiers": "Indiana",
+  "IU": "Indiana",
   
-  "Louisville": "Louisville",
-  "UL": "Louisville",
-  "Cardinals": "Louisville",
+  "Illinois": "Illinois",
+  "Fighting Illini": "Illinois",
+  "UI": "Illinois",
   
-  "Pittsburgh": "Pittsburgh",
-  "Pitt": "Pittsburgh",
-  "Panthers": "Pittsburgh",
+  "Iowa": "Iowa",
+  "Hawkeyes": "Iowa",
   
-  "Syracuse": "Syracuse",
-  "Orange": "Syracuse",
+  "Wisconsin": "Wisconsin",
+  "Badgers": "Wisconsin",
+  "UW": "Wisconsin",
   
-  "West Virginia": "West Virginia",
-  "WVU": "West Virginia",
-  "Mountaineers": "West Virginia",
+  "Minnesota": "Minnesota",
+  "Golden Gophers": "Minnesota",
+  "Gophers": "Minnesota",
+  "UMN": "Minnesota",
   
-  "Alabama": "Alabama",
-  "Crimson Tide": "Alabama",
+  "Northern Kentucky": "Northern Kentucky",
+  "Norse": "Northern Kentucky",
+  "NKU": "Northern Kentucky",
   
-  "Auburn": "Auburn",
-  "Tigers": "Auburn",
+  "Valparaiso": "Valparaiso",
+  "Valpo": "Valparaiso",
+  "Beacons": "Valparaiso",
   
-  "Florida": "Florida",
-  "UF": "Florida",
-  "Gators": "Florida",
+  "UMass Lowell": "UMass Lowell",
+  "River Hawks": "UMass Lowell",
+  "Massachusetts Lowell": "UMass Lowell",
   
-  "Georgia": "Georgia",
-  "UGA": "Georgia",
-  "Bulldogs": "Georgia",
+  "UTSA": "UTSA",
+  "Texas-San Antonio": "UTSA",
+  "Roadrunners": "UTSA",
   
-  "Tennessee": "Tennessee",
-  "UT": "Tennessee",
-  "Volunteers": "Tennessee",
-  "Vols": "Tennessee"
+  "UTEP": "UTEP",
+  "Texas-El Paso": "UTEP",
+  "Miners": "UTEP",
   
-  // Additional mappings can be added as needed
+  "North Texas": "North Texas",
+  "Mean Green": "North Texas",
+  "UNT": "North Texas",
+  
+  "Rice": "Rice",
+  "Owls (Rice)": "Rice",
+  
+  "UAB": "UAB",
+  "Alabama-Birmingham": "UAB",
+  "Blazers": "UAB",
+  
+  "Western Kentucky": "Western Kentucky",
+  "WKU": "Western Kentucky",
+  "Hilltoppers": "Western Kentucky",
+  
+  "Middle Tennessee": "Middle Tennessee",
+  "Middle Tennessee State": "Middle Tennessee",
+  "MTSU": "Middle Tennessee",
+  "Blue Raiders": "Middle Tennessee",
+  
+  "Liberty": "Liberty",
+  "Flames": "Liberty",
+  
+  "New Mexico State": "New Mexico State",
+  "NMSU": "New Mexico State",
+  "Aggies (NMSU)": "New Mexico State",
+  
+  "Jacksonville State": "Jacksonville State",
+  "JSU (Jacksonville)": "Jacksonville State",
+  "Gamecocks (JSU)": "Jacksonville State",
+  
+  "Sam Houston": "Sam Houston",
+  "Sam Houston State": "Sam Houston",
+  "SHSU": "Sam Houston",
+  "Bearkats": "Sam Houston",
+  
+  "Kennesaw State": "Kennesaw State",
+  "KSU (Kennesaw)": "Kennesaw State",
+  "Owls (Kennesaw)": "Kennesaw State",
+  
+  "Florida Atlantic": "Florida Atlantic",
+  "FAU": "Florida Atlantic",
+  "Owls (FAU)": "Florida Atlantic",
+  
+  "Louisiana Tech": "Louisiana Tech",
+  "LA Tech": "Louisiana Tech",
+  "Bulldogs (LA Tech)": "Louisiana Tech",
+  
+  "FIU": "FIU",
+  "Florida International": "FIU",
+  "Panthers (FIU)": "FIU",
+  
+  "Tennessee Southern": "Tennessee Southern",
+  "Sewanee": "Tennessee Southern",
+  "Tigers (TSU)": "Tennessee Southern",
+  
+  "Jackson State": "Jackson State",
+  "JSU (Jackson)": "Jackson State",
+  "Tigers (Jackson)": "Jackson State",
+  
+  "Purdue Fort Wayne": "Purdue Fort Wayne",
+  "PFW": "Purdue Fort Wayne",
+  "Mastodons": "Purdue Fort Wayne",
 };
 
-/**
- * Non-MAC schools data with their colors and logo information
- */
-export const NON_MAC_SCHOOLS: Record<string, NonMacSchool> = {
-  "Michigan": {
-    name: "Michigan",
-    shortName: "Michigan",
-    primaryColor: "#00274C",
-    secondaryColor: "#FFCB05",
-    logoUrl: "/school-logos/non-mac/Michigan.png",
-    conference: "Big Ten"
-  },
-  "Michigan State": {
-    name: "Michigan State",
-    shortName: "Michigan St",
-    primaryColor: "#18453B",
-    secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/Michigan_State_Spartans_logo-300x300.png",
-    conference: "Big Ten"
-  },
-  "Ohio State": {
-    name: "Ohio State",
-    shortName: "Ohio State",
-    primaryColor: "#BB0000",
-    secondaryColor: "#666666",
-    logoUrl: "/school-logos/non-mac/ohiostate.png",
-    conference: "Big Ten"
-  },
-  "Penn State": {
-    name: "Penn State",
-    shortName: "Penn St",
-    primaryColor: "#041E42",
-    secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/Penn_State_Nittany_Lions_logo.svg.png",
-    conference: "Big Ten"
-  },
-  "Maryland": {
-    name: "Maryland",
-    shortName: "Maryland",
-    primaryColor: "#E03a3e",
-    secondaryColor: "#FFD520",
-    logoUrl: "/school-logos/non-mac/Maryland_Terrapins_logo-300x300.png",
-    conference: "Big Ten"
-  },
-  "Bloomsburg": {
-    name: "Bloomsburg",
-    shortName: "Bloomsburg",
-    primaryColor: "#8B2131",
-    secondaryColor: "#231F20",
-    logoUrl: "/school-logos/non-mac/Bloomsburg Huskies Logo-01.png",
-    conference: "PSAC"
-  },
-  "Clarion": {
-    name: "Clarion",
-    shortName: "Clarion",
-    primaryColor: "#00529B",
-    secondaryColor: "#FFD320",
-    logoUrl: "/school-logos/non-mac/Clarion_Golden_Eagles_logo.svg.png",
-    conference: "PSAC"
-  },
-  "Edinboro": {
-    name: "Edinboro",
-    shortName: "Edinboro",
-    primaryColor: "#AF1E2D",
-    secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/Edinboro_Fighting_Scots_current_logo.svg.png",
-    conference: "PSAC"
-  },
-  "Lock Haven": {
-    name: "Lock Haven",
-    shortName: "Lock Haven",
-    primaryColor: "#9D2235",
-    secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/Lock_Haven_Bald_Eagles_logo.svg.png",
-    conference: "PSAC"
-  },
-  "Shippensburg": {
-    name: "Shippensburg",
-    shortName: "Shippensburg",
-    primaryColor: "#891C1A",
-    secondaryColor: "#8996AA",
-    logoUrl: "/school-logos/non-mac/Shippensburg_Raiders_logo.svg.png",
-    conference: "PSAC"
-  },
-  "Slippery Rock": {
-    name: "Slippery Rock",
-    shortName: "Slippery Rock",
-    primaryColor: "#00684A",
-    secondaryColor: "#A3AAAE",
-    logoUrl: "/school-logos/non-mac/Slippery_Rock_athletics_logo.svg.png",
-    conference: "PSAC"
-  },
-  "North Texas": {
-    name: "North Texas",
-    shortName: "North Texas",
-    primaryColor: "#00853E",
-    secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/North_Texas_Mean_Green_logo-300x300.png",
-    conference: "American Athletic"
-  },
-  "Appalachian State": {
-    name: "Appalachian State",
-    shortName: "App State",
-    primaryColor: "#000000",
-    secondaryColor: "#FFCC00",
-    logoUrl: "/school-logos/non-mac/Appalachian_State_Mountaineers_logo.svg.png",
-    conference: "Sun Belt"
-  },
-  "James Madison": {
-    name: "James Madison",
-    shortName: "JMU",
-    primaryColor: "#450084",
-    secondaryColor: "#B5A76C",
-    logoUrl: "/school-logos/non-mac/JMU_Duke_Dog_Head_logo.png",
-    conference: "Sun Belt"
-  },
-  "Louisville": {
-    name: "Louisville",
-    shortName: "Louisville",
-    primaryColor: "#AD0000",
-    secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/Louisville_Cardinals_logo.svg.png",
-    conference: "ACC"
-  },
-  "Pittsburgh": {
-    name: "Pittsburgh",
-    shortName: "Pitt",
-    primaryColor: "#003594",
-    secondaryColor: "#FFB81C",
-    logoUrl: "/school-logos/non-mac/Pittsburgh_Panthers_logo.svg.png",
-    conference: "ACC"
-  },
-  "Syracuse": {
-    name: "Syracuse",
-    shortName: "Syracuse",
-    primaryColor: "#F76900",
-    secondaryColor: "#00205B",
-    logoUrl: "/school-logos/non-mac/Syracuse_Orange_logo.svg.png",
-    conference: "ACC"
-  },
-  "Rider": {
-    name: "Rider",
-    shortName: "Rider",
-    primaryColor: "#98002E",
-    secondaryColor: "#6C6F70",
-    logoUrl: "/school-logos/non-mac/Rider_Broncs.svg.png",
-    conference: "MAAC"
-  },
-  "George Mason": {
-    name: "George Mason",
-    shortName: "GMU",
-    primaryColor: "#006633",
-    secondaryColor: "#FFCC33",
-    logoUrl: "/school-logos/non-mac/George Mason.png",
-    conference: "Atlantic 10"
-  },
-  "Cleveland State": {
-    name: "Cleveland State",
-    shortName: "CSU",
-    primaryColor: "#006F53",
-    secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/Cleveland State.png",
-    conference: "Horizon League"
-  },
-  "Detroit Mercy": {
-    name: "Detroit Mercy",
-    shortName: "UDM",
-    primaryColor: "#BA0C2F",
-    secondaryColor: "#0C2340",
-    logoUrl: "/school-logos/non-mac/Detroit_Titans_logo.svg.png",
-    conference: "Horizon League"
-  },
-  "Bellarmine": {
-    name: "Bellarmine",
-    shortName: "Bellarmine",
-    primaryColor: "#F1AB31",
-    secondaryColor: "#97999B",
-    logoUrl: "/school-logos/non-mac/Bellarmine.png",
-    conference: "ASUN"
-  },
-  "Chicago State": {
-    name: "Chicago State",
-    shortName: "CSU",
-    primaryColor: "#006400",
-    secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/Chicago_State_Cougars_logo.svg.png",
-    conference: "Independent"
-  },
-  "Longwood": {
-    name: "Longwood",
-    shortName: "Longwood",
-    primaryColor: "#004990",
-    secondaryColor: "#B9B9B9",
-    logoUrl: "/school-logos/non-mac/Longwood_Lancers_logo.svg.png",
-    conference: "Big South"
-  },
-  "SIU Edwardsville": {
-    name: "SIU Edwardsville",
-    shortName: "SIUE",
-    primaryColor: "#CC0000",
-    secondaryColor: "#000000",
-    logoUrl: "/school-logos/non-mac/SIU Edwardsville.png",
-    conference: "Ohio Valley"
-  },
-};
+// MAC conference brand colors
+export const macNavy = "#0B213E";
+export const macGreen = "#019E4F";
+export const macGray = "#9DA5A8";
 
 /**
- * Attempts to find a logo file based on school name pattern
- * Uses standard naming conventions for logo files
- * 
- * @param name The name of the school to search
- * @returns URL path to the logo file or generic logo if not found
+ * Gets the team logo path for a given school name
+ * @param schoolName The name of the school to get the logo for
+ * @returns The path to the team logo
  */
-export function findLogoByNamePattern(name: string): string {
-  if (!name) return "/school-logos/ncaa.png";
+export function getTeamLogo(schoolName: string): string {
+  // If the name is in our mapping, use the standardized name
+  const standardName = SCHOOL_NAME_MAPPINGS[schoolName] || schoolName;
   
-  // Clean and normalize the name
-  const cleanName = name.trim().toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, "");
+  // Convert to lowercase with no spaces for file naming
+  const normalizedName = standardName.toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[^a-z0-9]/g, '');
   
-  // Log for debugging
-  console.log(`Looking for logo for ${name} (cleaned: ${cleanName})`);
-  
-  // Special case for conference name, championship, or tournament
-  if (name.toLowerCase().includes("mid-american") || 
-      name.toLowerCase() === "mac" ||
-      name.toLowerCase().includes("mac championship") ||
-      name.toLowerCase().includes("mac tournament") ||
-      (name.toLowerCase().includes("mac") && 
-       (name.toLowerCase().includes("championship") || name.toLowerCase().includes("tournament")))) {
-    return "/school-logos/mac-conference.png";
-  }
-  
-  // MAC schools with direct file mapping
-  const macSchoolMap: Record<string, string> = {
-    "akron": "/school-logos/akron.png",
-    "ball state": "/school-logos/ballstate.png",
-    "bowling green": "/school-logos/bowlinggreen.png",
-    "buffalo": "/school-logos/buffalo.png",
-    "central michigan": "/school-logos/centralmichigan.png",
-    "eastern michigan": "/school-logos/easternmichigan.png",
-    "kent state": "/school-logos/kentstate.png",
-    "miami": "/school-logos/miamioh.png",
-    "miami (oh)": "/school-logos/miamioh.png",
-    "miami (ohio)": "/school-logos/miamioh.png",
-    "northern illinois": "/school-logos/northernillinois.png",
-    "ohio": "/school-logos/ohio.png",
-    "toledo": "/school-logos/toledo.png",
-    "western michigan": "/school-logos/westernmichigan.png",
-    "massachusetts": "/school-logos/massachusetts.png",
-    "umass": "/school-logos/massachusetts.png",
-    "mac championship": "/school-logos/mac-conference.png",
-    "mac tournament": "/school-logos/mac-conference.png"
-  };
-  
-  // Check for MAC school direct match
-  if (macSchoolMap[name.toLowerCase()]) {
-    return macSchoolMap[name.toLowerCase()];
-  }
-  
-  // Common non-MAC schools with naming variations
-  const nonMacSchoolMap: Record<string, string> = {
-    "ohio state": "/school-logos/non-mac/ohiostate.png",
-    "michigan state": "/school-logos/non-mac/michiganstate.png",
-    "michigan": "/school-logos/non-mac/michigan.png",
-    "notre dame": "/school-logos/non-mac/notredame.png",
-    "valparaiso": "/school-logos/non-mac/valparaiso.png",
-    "valpo": "/school-logos/non-mac/valparaiso.png",
-    "valparaiso beacons": "/school-logos/non-mac/valparaiso.png",
-    "beacons": "/school-logos/non-mac/valparaiso.png",
-    "northern kentucky": "/school-logos/non-mac/northernkentucky.png",
-    "nku": "/school-logos/non-mac/northernkentucky.png",
-    "northern kentucky university": "/school-logos/non-mac/northernkentucky.png",
-    "northern kentucky norse": "/school-logos/non-mac/northernkentucky.png",
-    "norse": "/school-logos/non-mac/northernkentucky.png",
-    "clemson": "/school-logos/non-mac/clemson.png",
-    "florida": "/school-logos/non-mac/florida.png",
-    "georgia": "/school-logos/non-mac/georgia.png",
-    "alabama": "/school-logos/non-mac/alabama.png",
-    "texas": "/school-logos/non-mac/texas.png",
-    "penn state": "/school-logos/non-mac/pennstate.png",
-    "oklahoma": "/school-logos/non-mac/oklahoma.png",
-    "wisconsin": "/school-logos/non-mac/wisconsin.png",
-    "maryland": "/school-logos/non-mac/maryland.png",
-    "purdue": "/school-logos/non-mac/purdue.png",
-    "iowa": "/school-logos/non-mac/iowa.png",
-    "usc": "/school-logos/non-mac/usc.png",
-    "ucla": "/school-logos/non-mac/ucla.png",
-    "oregon": "/school-logos/non-mac/oregon.png",
-    "washington": "/school-logos/non-mac/washington.png"
-  };
-  
-  // Check for non-MAC school direct match
-  if (nonMacSchoolMap[name.toLowerCase()]) {
-    return nonMacSchoolMap[name.toLowerCase()];
-  }
-  
-  // Try variations of the name
-  const nameLower = name.toLowerCase();
-  
-  // Try to find by name pattern for common schools
-  for (const [key, logoPath] of Object.entries(nonMacSchoolMap)) {
-    // If the team name contains a known school name, use that logo
-    if (nameLower.includes(key)) {
-      return logoPath;
+  if (isMacSchool(standardName)) {
+    // For MAC schools, we have a direct mapping in public folder
+    return `/public/school-logos/mac/${normalizedName}.png`;
+  } else {
+    // For non-MAC schools
+    // Special case for Northern Kentucky which has been problematic
+    if (standardName === "Northern Kentucky" || standardName === "Norse" || standardName === "NKU") {
+      return `/public/school-logos/non-mac/northernkentucky.png`;
     }
+    
+    return `/public/school-logos/non-mac/${normalizedName}.png`;
   }
-  
-  // Special direct cases for known problematic schools
-  if (nameLower.includes("valparaiso") || nameLower.includes("valpo") || nameLower.includes("valparaiso beacons") || nameLower.includes("beacons")) {
-    const valpoPath = "/school-logos/non-mac/valparaiso.png";
-    console.log(`Special case logo match: ${name} → ${valpoPath}`);
-    return valpoPath;
-  }
-  
-  if (nameLower.includes("northern kentucky") || nameLower.includes("nku") || nameLower.includes("norse")) {
-    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
-    console.log(`Special case logo match: ${name} → ${nkuPath}`);
-    return nkuPath;
-  }
-  
-  if (nameLower.includes("valparaiso beacons")) {
-    const valpoPath = "/school-logos/non-mac/valparaiso.png";
-    console.log(`Special case logo match: ${name} → ${valpoPath}`);
-    return valpoPath;
-  }
-  
-  if (nameLower.includes("northern kentucky university")) {
-    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
-    console.log(`Special case logo match: ${name} → ${nkuPath}`);
-    return nkuPath;
-  }
-  
-  // Try to find in the non-mac folder with various transformations
-  const transformedNames = [
-    nameLower.replace(/\s+/g, ""),            // Remove spaces
-    nameLower.replace(/\s+/g, "-"),           // Replace spaces with hyphens
-    nameLower.replace(/\s+/g, "_"),           // Replace spaces with underscores
-    nameLower.split(/\s+/)[0]                 // Use first word only
-  ];
-  
-  for (const transformed of transformedNames) {
-    const possiblePath = `/school-logos/non-mac/${transformed}.png`;
-    console.log(`Trying path: ${possiblePath}`);
-    return possiblePath; // Return the first possible path
-  }
-  
-  // If all else fails, return NCAA generic logo
-  return "/school-logos/ncaa.png";
 }
 
 /**
- * Guesses team colors based on conference or common color patterns
- * Used when we don't have explicit color information for a team
- * 
- * @param name The name of the school
- * @returns Object with primary and secondary colors in hex format
+ * Gets the team colors for a given school name
+ * @param schoolName The name of the school to get colors for
+ * @returns An object with primary and secondary color values
  */
-export function guessTeamColors(name: string): { primary: string, secondary: string } {
-  // Default MAC conference colors
-  const macNavy = "#0B213E";
-  const macGreen = "#019E4F";
+export function getTeamColors(schoolName: string): {primary: string, secondary: string} {
+  // If the name is in our mapping, use the standardized name
+  const standardName = SCHOOL_NAME_MAPPINGS[schoolName] || schoolName;
   
-  // Look for keywords in the name that might indicate specific colors
-  const nameLower = name.toLowerCase();
+  // Convert to lowercase for comparison
+  const nameLower = standardName.toLowerCase();
   
-  // Colors for specific states or regions
-  if (nameLower.includes("blue") || nameLower.includes("navy")) {
-    return { primary: "#004B98", secondary: "#FFFFFF" };
+  // MAC Schools
+  if (nameLower.includes("akron")) {
+    return { primary: "#041E42", secondary: "#A89968" };
   }
-  if (nameLower.includes("red") || nameLower.includes("cardinal")) {
-    return { primary: "#CC0000", secondary: "#FFFFFF" };
+  if (nameLower.includes("ball state")) {
+    return { primary: "#BA0C2F", secondary: "#000000" };
+  }
+  if (nameLower.includes("bowling green")) {
+    return { primary: "#FE5000", secondary: "#4F2C1D" };
+  }
+  if (nameLower.includes("buffalo")) {
+    return { primary: "#005BBB", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("central michigan")) {
+    return { primary: "#6A0032", secondary: "#FFC82E" };
+  }
+  if (nameLower.includes("eastern michigan")) {
+    return { primary: "#006633", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("kent state")) {
+    return { primary: "#002664", secondary: "#EAAB00" };
+  }
+  if (nameLower.includes("miami") && (nameLower.includes("oh") || nameLower.includes("ohio"))) {
+    return { primary: "#B61E2E", secondary: "#000000" };
+  }
+  if (nameLower.includes("northern illinois")) {
+    return { primary: "#CC0000", secondary: "#000000" };
+  }
+  if (nameLower === "ohio" || nameLower.includes("ohio university")) {
+    return { primary: "#00694E", secondary: "#CDA077" };
+  }
+  if (nameLower.includes("toledo")) {
+    return { primary: "#003E7E", secondary: "#FFD200" };
+  }
+  if (nameLower.includes("western michigan")) {
+    return { primary: "#6C4023", secondary: "#B5A167" };
+  }
+  
+  // Non-MAC Schools - just a sampling of common opponents
+  if (nameLower.includes("michigan state")) {
+    return { primary: "#18453B", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("michigan") && !nameLower.includes("state") && !nameLower.includes("central") && !nameLower.includes("eastern") && !nameLower.includes("western")) {
+    return { primary: "#00274C", secondary: "#FFCB05" };
+  }
+  if (nameLower.includes("ohio state")) {
+    return { primary: "#BB0000", secondary: "#666666" };
+  }
+  if (nameLower.includes("notre dame")) {
+    return { primary: "#0C2340", secondary: "#C99700" };
+  }
+  if (nameLower.includes("cincinnati")) {
+    return { primary: "#000000", secondary: "#E00122" };
+  }
+  if (nameLower.includes("kentucky")) {
+    return { primary: "#0033A0", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("penn state")) {
+    return { primary: "#041E42", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("pittsburgh") || nameLower === "pitt") {
+    return { primary: "#003594", secondary: "#FFB81C" };
+  }
+  if (nameLower.includes("syracuse")) {
+    return { primary: "#D44500", secondary: "#000000" };
+  }
+  if (nameLower.includes("northwestern")) {
+    return { primary: "#4E2A84", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("indiana") && !nameLower.includes("purdue")) {
+    return { primary: "#990000", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("purdue")) {
+    return { primary: "#CEB888", secondary: "#000000" };
+  }
+  if (nameLower.includes("illinois")) {
+    return { primary: "#13294B", secondary: "#E84A27" };
+  }
+  if (nameLower.includes("wisconsin")) {
+    return { primary: "#C5050C", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("minnesota")) {
+    return { primary: "#7A0019", secondary: "#FFCC33" };
+  }
+  if (nameLower.includes("iowa")) {
+    return { primary: "#000000", secondary: "#FFCD00" };
+  }
+  if (nameLower.includes("northern kentucky")) {
+    return { primary: "#000000", secondary: "#FFC72C" };
+  }
+  if (nameLower.includes("valparaiso") || nameLower === "valpo") {
+    return { primary: "#613318", secondary: "#FFC425" };
+  }
+  if (nameLower.includes("cleveland state")) {
+    return { primary: "#006A4D", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("wright state")) {
+    return { primary: "#026937", secondary: "#CEA052" };
   }
   if (nameLower.includes("green")) {
     return { primary: "#006633", secondary: "#FFFFFF" };
   }
-  if (nameLower.includes("gold") || nameLower.includes("yellow")) {
+  if (nameLower.includes("blue")) {
+    return { primary: "#0033A0", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("red")) {
+    return { primary: "#CC0000", secondary: "#FFFFFF" };
+  }
+  if (nameLower.includes("gold")) {
     return { primary: "#FFD700", secondary: "#000000" };
-  }
-  if (nameLower.includes("purple")) {
-    return { primary: "#4B2E83", secondary: "#FFFFFF" };
-  }
-  if (nameLower.includes("orange")) {
-    return { primary: "#FF7F00", secondary: "#000000" };
-  }
-  if (nameLower.includes("maroon")) {
-    return { primary: "#800000", secondary: "#FFFFFF" };
   }
   if (nameLower.includes("crimson")) {
     return { primary: "#A71930", secondary: "#FFFFFF" };
@@ -720,6 +511,7 @@ export function isMacSchool(name: string): boolean {
   ];
   
   // Check both the name and any possible mappings
+  const standardName = SCHOOL_NAME_MAPPINGS[name];
   return macSchoolNames.includes(name) || 
-         (SCHOOL_NAME_MAPPINGS[name] && macSchoolNames.includes(SCHOOL_NAME_MAPPINGS[name]));
+         (standardName !== undefined && macSchoolNames.includes(standardName));
 }

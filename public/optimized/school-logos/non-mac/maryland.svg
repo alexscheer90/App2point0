@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path fill="#E03a3e" d="M50,0 C22.4,0 0,22.4 0,50 C0,77.6 22.4,100 50,100 C77.6,100 100,77.6 100,50 C100,22.4 77.6,0 50,0 Z" />
+  <path fill="#FFD520" d="M25,25 L50,25 L50,50 L25,50 Z" />
+  <path fill="#000000" d="M50,25 L75,25 L75,50 L50,50 Z" />
+  <path fill="#FFFFFF" d="M25,50 L50,50 L50,75 L25,75 Z" />
+  <path fill="#000000" d="M50,50 L75,50 L75,75 L50,75 Z" />
+  <g transform="translate(25, 25) scale(0.5)">
+    <path fill="#E03a3e" d="M0,0 L50,0 L50,50 L0,50 Z" />
+    <path fill="#FFD520" d="M50,0 L100,0 L100,50 L50,50 Z" />
+    <path fill="#000000" d="M0,50 L50,50 L50,100 L0,100 Z" />
+    <path fill="#FFFFFF" d="M50,50 L100,50 L100,100 L50,100 Z" />
+  </g>
+</svg>

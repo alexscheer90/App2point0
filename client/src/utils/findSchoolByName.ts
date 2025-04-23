@@ -1,11 +1,6 @@
 import { School } from "@shared/schema";
 import { macSchools, ncaaLogoUrl } from "../data/macSchools";
-import { 
-  SCHOOL_NAME_MAPPINGS, 
-  findLogoByNamePattern, 
-  guessTeamColors,
-  NonMacSchool
-} from "./teamLogoMap";
+import { SCHOOL_NAME_MAPPINGS, getTeamLogo, getTeamColors, NonMacSchool } from "./teamLogoMap";
 
 /**
  * Find a matching school object by name
@@ -16,8 +11,33 @@ import {
  * @param context Optional context string to help resolve ambiguous names
  * @returns School object or undefined
  */
-// Import NON_MAC_SCHOOLS directly from teamLogoMap
-import { NON_MAC_SCHOOLS } from "./teamLogoMap";
+// Define a dynamic mapping for non-MAC schools (to replace the previous NON_MAC_SCHOOLS constant)
+const nonMacSchoolsMap: Record<string, NonMacSchool> = {
+  "Northern Kentucky": {
+    name: "Northern Kentucky",
+    shortName: "NKU",
+    primaryColor: "#000000",
+    secondaryColor: "#FFC72C",
+    logoUrl: "/public/school-logos/non-mac/northernkentucky.png",
+    conference: "Horizon"
+  },
+  "Valparaiso": {
+    name: "Valparaiso",
+    shortName: "Valpo",
+    primaryColor: "#613318",
+    secondaryColor: "#FFC425",
+    logoUrl: "/public/school-logos/non-mac/valparaiso.png",
+    conference: "Missouri Valley"
+  },
+  "Ohio State": {
+    name: "Ohio State",
+    shortName: "OSU",
+    primaryColor: "#BB0000",
+    secondaryColor: "#666666",
+    logoUrl: "/public/school-logos/non-mac/ohiostate.png",
+    conference: "Big Ten"
+  }
+};
 
 export function findSchoolByName(name: string | undefined, context?: string): School | undefined {
   if (!name) return undefined;
@@ -79,7 +99,7 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
     if (mappedMacSchool) return mappedMacSchool;
     
     // If not a MAC school, check if it's in our non-MAC schools
-    const nonMacSchool = NON_MAC_SCHOOLS[mappedName];
+    const nonMacSchool = nonMacSchoolsMap[mappedName];
     if (nonMacSchool) {
       return {
         id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
@@ -96,7 +116,7 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
   }
   
   // Direct lookup in non-MAC schools
-  const nonMacSchool = NON_MAC_SCHOOLS[normalizedName];
+  const nonMacSchool = nonMacSchoolsMap[normalizedName];
   if (nonMacSchool) {
     return {
       id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
@@ -111,10 +131,9 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
     };
   }
   
-  // Try to match with non-MAC schools based on filename pattern
-  // This helps use more of the available logo files
-  const logoUrl = findLogoByNamePattern(normalizedName);
-  const colors = guessTeamColors(normalizedName);
+  // Try to get a logo based on name pattern
+  const logoUrl = getTeamLogo(normalizedName);
+  const colors = getTeamColors(normalizedName);
     
   // Fuzzy matching - first with MAC schools
   for (const school of macSchools) {
@@ -129,22 +148,21 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
   }
   
   // Then with non-MAC schools
-  for (const [key, school] of Object.entries(NON_MAC_SCHOOLS)) {
-    const nonMacSchool = school as NonMacSchool;
+  for (const [key, school] of Object.entries(nonMacSchoolsMap)) {
     if (
-      nonMacSchool.name.toLowerCase().includes(normalizedName.toLowerCase()) ||
-      normalizedName.toLowerCase().includes(nonMacSchool.name.toLowerCase()) ||
-      nonMacSchool.shortName.toLowerCase().includes(normalizedName.toLowerCase()) ||
-      normalizedName.toLowerCase().includes(nonMacSchool.shortName.toLowerCase())
+      school.name.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(school.name.toLowerCase()) ||
+      school.shortName.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(school.shortName.toLowerCase())
     ) {
       return {
-        id: nonMacSchool.name.toLowerCase().replace(/\s+/g, "-"),
-        name: nonMacSchool.name,
-        shortName: nonMacSchool.shortName,
+        id: school.name.toLowerCase().replace(/\s+/g, "-"),
+        name: school.name,
+        shortName: school.shortName,
         mascot: "",
-        primaryColor: nonMacSchool.primaryColor,
-        secondaryColor: nonMacSchool.secondaryColor,
-        logoUrl: nonMacSchool.logoUrl,
+        primaryColor: school.primaryColor,
+        secondaryColor: school.secondaryColor,
+        logoUrl: school.logoUrl,
         city: "",
         state: ""
       };
