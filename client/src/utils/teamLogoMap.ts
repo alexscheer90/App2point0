@@ -626,7 +626,7 @@ export function findLogoByNamePattern(name: string): string {
   }
   
   if (nameLower.includes("northern kentucky") || nameLower.includes("nku") || nameLower.includes("norse")) {
-    const nkuPath = "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png";
+    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
     console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }
@@ -638,7 +638,7 @@ export function findLogoByNamePattern(name: string): string {
   }
   
   if (nameLower.includes("northern kentucky university")) {
-    const nkuPath = "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png";
+    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
     console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }
