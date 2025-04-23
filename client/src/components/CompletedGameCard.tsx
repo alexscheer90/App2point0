@@ -4,6 +4,7 @@ import { findSchoolByName } from "../utils/findSchoolByName";
 import { Badge } from "./ui/badge";
 import { format } from "date-fns";
 import { CalendarIcon, ChevronRight, Clock, Trophy, Headphones, Tv2 } from "lucide-react";
+import { getOptimizedImagePath, handleImageError } from "../utils/imageOptimizer";
 
 // Type definition for team information
 interface TeamInfo {
@@ -488,14 +489,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
                     src={
-                      awayTeamInfo.name.includes("Valparaiso") || awayTeamInfo.name.toLowerCase().includes("valpo") 
-                        ? "/school-logos/non-mac/valparaiso.png" 
-                        : awayTeamInfo.name.includes("Northern Kentucky") || awayTeamInfo.name.includes("NKU")
-                          ? "/school-logos/non-mac/northernkentucky.png"
-                          : awayTeam?.logoUrl || "/school-logos/ncaa.png"
+                      awayTeam?.logoUrl || 
+                      getOptimizedImagePath(awayTeamInfo.name, false)
                     } 
                     alt={awayTeamInfo.name} 
                     className={`object-contain w-full h-full p-1 ${awayWinner ? 'ring-2 ring-yellow-400' : ''}`}
+                    onError={handleImageError}
+                    loading="lazy"
                   />
                 </div>
                 <div>
@@ -514,14 +514,13 @@ export default function CompletedGameCard({ game, showType = "card" }: Completed
                 <div className="w-12 h-12 mr-3 overflow-hidden bg-white rounded-full shadow-md">
                   <img 
                     src={
-                      homeTeamInfo.name.includes("Valparaiso") || homeTeamInfo.name.toLowerCase().includes("valpo") 
-                        ? "/school-logos/non-mac/valparaiso.png" 
-                        : homeTeamInfo.name.includes("Northern Kentucky") || homeTeamInfo.name.includes("NKU")
-                          ? "/school-logos/non-mac/northernkentucky.png"
-                          : homeTeam?.logoUrl || "/school-logos/ncaa.png"
+                      homeTeam?.logoUrl || 
+                      getOptimizedImagePath(homeTeamInfo.name, false)
                     } 
                     alt={homeTeamInfo.name} 
                     className={`object-contain w-full h-full p-1 ${homeWinner ? 'ring-2 ring-yellow-400' : ''}`}
+                    onError={handleImageError}
+                    loading="lazy"
                   />
                 </div>
                 <div>
