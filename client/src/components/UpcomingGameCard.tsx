@@ -6,6 +6,7 @@ import ShareButton from "./ShareButton";
 import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { ExternalLink, Ticket } from "lucide-react";
 import { findSchoolByName, getTeamColors } from "../utils/teamLogoUtils";
+import { getOptimizedImagePath, handleImageError } from "../utils/imageOptimizer";
 
 interface UpcomingGameCardProps {
   game: Game;
@@ -110,9 +111,14 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
-                  src={homeTeam.logoUrl} 
+                  src={homeTeam.logoUrl}
                   alt={`${homeTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = getOptimizedImagePath(homeTeam.name, true);
+                    handleImageError(e);
+                  }}
+                  loading="lazy"
                 />
               </div>
             ) : homeTeam ? (
@@ -133,7 +139,7 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
             )}
             <span className="font-semibold text-sm">{homeTeam?.name || game.homeTeamName || 'Home Team'}</span>
           </div>
-          {game.isRivalryGame && (
+          {game.isRivalry && (
             <span className="text-xs font-semibold text-[#C8102E] flex items-center">
               <span className="inline-block mr-1">🏆</span> Rivalry Game
             </span>
@@ -145,9 +151,14 @@ const UpcomingGameCard = ({ game }: UpcomingGameCardProps) => {
               // When logo is available
               <div className="w-8 h-8 mr-3 flex items-center justify-center">
                 <img 
-                  src={awayTeam.logoUrl} 
+                  src={awayTeam.logoUrl}
                   alt={`${awayTeam.name} logo`} 
-                  className="max-h-full max-w-full object-contain" 
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = getOptimizedImagePath(awayTeam.name, true);
+                    handleImageError(e);
+                  }}
+                  loading="lazy"
                 />
               </div>
             ) : awayTeam ? (

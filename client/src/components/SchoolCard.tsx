@@ -1,5 +1,6 @@
 import { School } from "@shared/schema";
 import { Link } from "wouter";
+import { getOptimizedImagePath, handleImageError } from "../utils/imageOptimizer";
 
 interface SchoolCardProps {
   school: School;
@@ -22,9 +23,14 @@ const SchoolCard = ({ school }: SchoolCardProps) => {
           // When logo is available
           <div className="h-16 w-16 flex items-center justify-center">
             <img 
-              src={school.logoUrl} 
+              src={school.logoUrl}
               alt={`${school.name} logo`} 
               className="max-h-full max-w-full object-contain"
+              onError={(e) => {
+                e.currentTarget.src = getOptimizedImagePath(school.name, true);
+                handleImageError(e);
+              }}
+              loading="lazy"
             />
           </div>
         ) : (
