@@ -579,10 +579,12 @@ export function findLogoByNamePattern(name: string): string {
     "valparaiso": "/school-logos/non-mac/valparaiso.png",
     "valpo": "/school-logos/non-mac/valparaiso.png",
     "valparaiso beacons": "/school-logos/non-mac/valparaiso.png",
+    "beacons": "/school-logos/non-mac/valparaiso.png",
     "northern kentucky": "/school-logos/non-mac/northernkentucky.png",
     "nku": "/school-logos/non-mac/northernkentucky.png",
     "northern kentucky university": "/school-logos/non-mac/northernkentucky.png",
     "northern kentucky norse": "/school-logos/non-mac/northernkentucky.png",
+    "norse": "/school-logos/non-mac/northernkentucky.png",
     "clemson": "/school-logos/non-mac/clemson.png",
     "florida": "/school-logos/non-mac/florida.png",
     "georgia": "/school-logos/non-mac/georgia.png",
@@ -618,25 +620,25 @@ export function findLogoByNamePattern(name: string): string {
   
   // Special direct cases for known problematic schools
   if (nameLower.includes("valparaiso") || nameLower.includes("valpo") || nameLower.includes("valparaiso beacons") || nameLower.includes("beacons")) {
-    const valpoPath = "/school-logos/non-mac/Valparaiso.png";
+    const valpoPath = "/school-logos/non-mac/valparaiso.png";
     console.log(`Special case logo match: ${name} → ${valpoPath}`);
     return valpoPath;
   }
   
   if (nameLower.includes("northern kentucky") || nameLower.includes("nku") || nameLower.includes("norse")) {
-    const nkuPath = "/school-logos/non-mac/NorthernKentucky.png";
+    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
     console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }
   
   if (nameLower.includes("valparaiso beacons")) {
-    const valpoPath = "/school-logos/non-mac/ValparaisoBeacons.png";
+    const valpoPath = "/school-logos/non-mac/valparaiso.png";
     console.log(`Special case logo match: ${name} → ${valpoPath}`);
     return valpoPath;
   }
   
   if (nameLower.includes("northern kentucky university")) {
-    const nkuPath = "/school-logos/non-mac/NorthernKentuckyUniversity.png";
+    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
     console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }

@@ -36,7 +36,7 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
       mascot: "Beacons",
       primaryColor: "#402E82", // Valpo colors 
       secondaryColor: "#FDAC43",
-      logoUrl: "/school-logos/non-mac/valparaiso.png",
+      logoUrl: "/school-logos/non-mac/valparaiso.png", // Using consistent path
       city: "Valparaiso",
       state: "IN"
     };
