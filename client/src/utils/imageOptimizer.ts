@@ -8,6 +8,7 @@
  * - Fallback handling
  * - Dynamic image path resolution
  */
+import { isMacSchool } from "./teamLogoMap";
 
 // Cache for preloaded images
 const preloadCache = new Set<string>();
@@ -128,6 +129,8 @@ export function handleImageError(event: React.SyntheticEvent<HTMLImageElement>):
   const img = event.currentTarget;
   const src = img.src;
   
+  console.log(`Image loading failed for: ${src}, alt: ${img.alt}`);
+  
   // Don't fall back more than once
   if (src.includes('generic-logo.png')) return;
   
@@ -137,6 +140,27 @@ export function handleImageError(event: React.SyntheticEvent<HTMLImageElement>):
     return;
   }
   
-  // Try general fallback
-  img.src = '/school-logos/generic-logo.png';
+  // Try to extract a school name from either alt text or src
+  const schoolName = img.alt || src.split('/').pop()?.split('.')[0] || '';
+  
+  // For MAC schools, try direct path with lowercase transformation
+  const normalizedName = schoolName.toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[^a-z0-9]/g, '');
+  
+  // Try MAC logo first if it's in attached_assets
+  const attachedAssetPath = `/@fs/home/runner/workspace/attached_assets/${schoolName}.png`;
+  img.onerror = () => {
+    // If attached asset fails, try standard paths
+    img.onerror = () => {
+      // If MAC logo fails, try non-MAC
+      img.onerror = () => {
+        // Finally, use generic logo
+        img.src = '/school-logos/generic-logo.png';
+      };
+      img.src = `/school-logos/non-mac/${normalizedName}.png`;
+    };
+    img.src = `/school-logos/mac/${normalizedName}.png`;
+  };
+  img.src = attachedAssetPath;
 }
