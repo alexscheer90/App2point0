@@ -2,29 +2,33 @@ import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
+import { useState } from "react";
 
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import FavoriteSchoolBanner from "./components/FavoriteSchoolBanner";
 import FavoriteSchoolModal from "./components/FavoriteSchoolModal";
 import { NotificationProvider } from "./contexts/NotificationContext";
+import { lazyLoad } from "./utils/lazyLoad";
 
+// Main pages - eagerly loaded because they're frequently accessed
 import ScoresPage from "./pages/ScoresPage";
-import StandingsPage from "./pages/StandingsPage";
-import NewsPage from "./pages/NewsPage";
-import SchoolsPage from "./pages/SchoolsPage";
-import SchoolProfile from "./pages/SchoolProfile";
-import RivalriesPage from "./pages/RivalriesPage";
-import SoundsPage from "./pages/SoundsPage";
-import LocalEatsPage from "./pages/LocalEatsPage";
-import PodcastPage from "./pages/PodcastPage";
 import SchedulePage from "./pages/SchedulePage";
-import GameStatsPage from "./pages/GameStatsPage";
-import GameDetails from "./pages/GameDetails";
-import TestNotificationsPage from "./pages/TestNotificationsPage";
-import AdminPage from "./pages/AdminPage";
-import NotFound from "@/pages/not-found";
-import { useState } from "react";
+
+// Lazily loaded pages
+const StandingsPage = lazyLoad(() => import("./pages/StandingsPage"), 'page');
+const NewsPage = lazyLoad(() => import("./pages/NewsPage"), 'page');
+const SchoolsPage = lazyLoad(() => import("./pages/SchoolsPage"), 'page');
+const SchoolProfile = lazyLoad(() => import("./pages/SchoolProfile"), 'page');
+const RivalriesPage = lazyLoad(() => import("./pages/RivalriesPage"), 'page');
+const SoundsPage = lazyLoad(() => import("./pages/SoundsPage"), 'page');
+const LocalEatsPage = lazyLoad(() => import("./pages/LocalEatsPage"), 'page');
+const PodcastPage = lazyLoad(() => import("./pages/PodcastPage"), 'page');
+const GameStatsPage = lazyLoad(() => import("./pages/GameStatsPage"), 'page');
+const GameDetails = lazyLoad(() => import("./pages/GameDetails"), 'page');
+const TestNotificationsPage = lazyLoad(() => import("./pages/TestNotificationsPage"), 'page');
+const AdminPage = lazyLoad(() => import("./pages/AdminPage"), 'page');
+const NotFound = lazyLoad(() => import("@/pages/not-found"), 'page');
 
 function App() {
   console.log("App component rendering");
