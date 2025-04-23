@@ -53,7 +53,7 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
       mascot: "Norse",
       primaryColor: "#FFC72C", // NKU colors
       secondaryColor: "#000000",
-      logoUrl: "/school-logos/non-mac/northernkentucky.png",
+      logoUrl: "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png", // Direct path to attached asset
       city: "Highland Heights",
       state: "KY"
     };

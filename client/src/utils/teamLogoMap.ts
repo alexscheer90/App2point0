@@ -580,11 +580,11 @@ export function findLogoByNamePattern(name: string): string {
     "valpo": "/school-logos/non-mac/valparaiso.png",
     "valparaiso beacons": "/school-logos/non-mac/valparaiso.png",
     "beacons": "/school-logos/non-mac/valparaiso.png",
-    "northern kentucky": "/school-logos/non-mac/northernkentucky.png",
-    "nku": "/school-logos/non-mac/northernkentucky.png",
-    "northern kentucky university": "/school-logos/non-mac/northernkentucky.png",
-    "northern kentucky norse": "/school-logos/non-mac/northernkentucky.png",
-    "norse": "/school-logos/non-mac/northernkentucky.png",
+    "northern kentucky": "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png",
+    "nku": "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png",
+    "northern kentucky university": "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png",
+    "northern kentucky norse": "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png",
+    "norse": "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png",
     "clemson": "/school-logos/non-mac/clemson.png",
     "florida": "/school-logos/non-mac/florida.png",
     "georgia": "/school-logos/non-mac/georgia.png",
@@ -626,7 +626,7 @@ export function findLogoByNamePattern(name: string): string {
   }
   
   if (nameLower.includes("northern kentucky") || nameLower.includes("nku") || nameLower.includes("norse")) {
-    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
+    const nkuPath = "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png";
     console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }
@@ -638,7 +638,7 @@ export function findLogoByNamePattern(name: string): string {
   }
   
   if (nameLower.includes("northern kentucky university")) {
-    const nkuPath = "/school-logos/non-mac/northernkentucky.png";
+    const nkuPath = "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png";
     console.log(`Special case logo match: ${name} → ${nkuPath}`);
     return nkuPath;
   }

@@ -174,7 +174,7 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
                       game.awayTeam?.includes("Valparaiso") || game.awayTeam?.toLowerCase().includes("valpo") || game.awayTeam?.includes("Beacons") 
                         ? "/school-logos/non-mac/valparaiso.png" 
                         : game.awayTeam?.includes("Northern Kentucky") || game.awayTeam?.includes("NKU") || game.awayTeam?.includes("Norse")
-                          ? "/school-logos/non-mac/northernkentucky.png"
+                          ? "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png"
                           : awayTeam?.logoUrl || "/school-logos/generic.png"
                     } 
                     alt={game.awayTeam} 
@@ -200,7 +200,7 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
                       game.homeTeam?.includes("Valparaiso") || game.homeTeam?.toLowerCase().includes("valpo") || game.homeTeam?.includes("Beacons")
                         ? "/school-logos/non-mac/valparaiso.png" 
                         : game.homeTeam?.includes("Northern Kentucky") || game.homeTeam?.includes("NKU") || game.homeTeam?.includes("Norse")
-                          ? "/school-logos/non-mac/northernkentucky.png"
+                          ? "/@fs/home/runner/workspace/attached_assets/Northern_Kentucky_Norse_logo.svg.png"
                           : homeTeam?.logoUrl || "/school-logos/generic.png"
                     } 
                     alt={game.homeTeam} 
