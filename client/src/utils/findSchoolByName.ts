@@ -18,7 +18,7 @@ const nonMacSchoolsMap: Record<string, NonMacSchool> = {
     shortName: "NKU",
     primaryColor: "#000000",
     secondaryColor: "#FFC72C",
-    logoUrl: "/public/school-logos/non-mac/northernkentucky.png",
+    logoUrl: "/school-logos/non-mac/northernkentucky.png",
     conference: "Horizon"
   },
   "Valparaiso": {
@@ -26,7 +26,7 @@ const nonMacSchoolsMap: Record<string, NonMacSchool> = {
     shortName: "Valpo",
     primaryColor: "#613318",
     secondaryColor: "#FFC425",
-    logoUrl: "/public/school-logos/non-mac/valparaiso.png",
+    logoUrl: "/school-logos/non-mac/valparaiso.png",
     conference: "Missouri Valley"
   },
   "Ohio State": {
@@ -34,7 +34,7 @@ const nonMacSchoolsMap: Record<string, NonMacSchool> = {
     shortName: "OSU",
     primaryColor: "#BB0000",
     secondaryColor: "#666666",
-    logoUrl: "/public/school-logos/non-mac/ohiostate.png",
+    logoUrl: "/school-logos/non-mac/ohiostate.png",
     conference: "Big Ten"
   }
 };
