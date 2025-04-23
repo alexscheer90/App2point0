@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useSchool } from '@/hooks/useSchool';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy } from 'lucide-react';
+import { getOptimizedImagePath, handleImageError } from '../utils/imageOptimizer';
 
 interface RivalryCardProps {
   rivalry: Rivalry;
@@ -39,9 +40,14 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
       {team.logoUrl ? (
         <div className={`${size} mb-2 flex items-center justify-center`}>
           <img 
-            src={team.logoUrl} 
-            alt={`${team.name} logo`} 
-            className="max-h-full max-w-full object-contain" 
+            src={team.logoUrl}
+            alt={`${team.name} logo`}
+            className="max-h-full max-w-full object-contain"
+            onError={(e) => {
+              e.currentTarget.src = getOptimizedImagePath(team.name, true);
+              handleImageError(e);
+            }}
+            loading="lazy"
           />
         </div>
       ) : (

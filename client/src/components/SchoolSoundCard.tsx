@@ -216,9 +216,14 @@ const SchoolSoundCard = ({ sound }: SchoolSoundCardProps) => {
                     {school?.logoUrl && (
                       <div className="w-6 h-6 flex-shrink-0">
                         <img 
-                          src={school.logoUrl} 
+                          src={school.logoUrl}
                           alt={`${school.name} logo`} 
                           className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.src = getOptimizedImagePath(school.name, true);
+                            handleImageError(e);
+                          }}
+                          loading="lazy"
                         />
                       </div>
                     )}
