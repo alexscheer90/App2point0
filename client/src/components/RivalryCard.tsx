@@ -99,8 +99,8 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
     </div>
   );
 
-  // Get trophy image path
-  const trophyImagePath = getTrophyImagePath(rivalry.trophyName);
+  // Determine trophy image path from either direct path or mapping
+  const imagePath = rivalry.trophyImagePath || getTrophyImagePath(rivalry.trophyName);
   
   return (
     <Card className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 h-full">
@@ -108,14 +108,14 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-semibold">{rivalry.name}</CardTitle>
           {rivalry.trophyName && (
-            trophyImagePath ? (
+            imagePath ? (
               // Display trophy image if available
               <div 
                 className="trophy-image h-12 ml-2 flex-shrink-0 relative group cursor-pointer" 
                 title={rivalry.trophyName}
               >
                 <img 
-                  src={trophyImagePath} 
+                  src={imagePath} 
                   alt={rivalry.trophyName}
                   className="h-full object-contain" 
                 />
