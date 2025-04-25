@@ -1,7 +1,35 @@
-// Function to get sport name and handle all variants of IDs
-export const getSportName = (sportId: string): string => {
+import { Game } from "@shared/schema";
+
+// MAC colors
+export const MAC_NAVY = "#0B213E";
+export const MAC_GREEN = "#019E4F";
+export const MAC_GRAY = "#9DA5A8";
+
+// Function to categorize games by sport
+export const groupGamesBySport = (games: Game[]): Record<string, Game[]> => {
+  const sportGroups: Record<string, Game[]> = {};
+  
+  games.forEach(game => {
+    const sportName = getSportDisplayName(game.sportId || '');
+    if (!sportGroups[sportName]) {
+      sportGroups[sportName] = [];
+    }
+    sportGroups[sportName].push(game);
+  });
+  
+  // Sort sports alphabetically
+  return Object.keys(sportGroups)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = sportGroups[key];
+      return obj;
+    }, {} as Record<string, Game[]>);
+};
+
+// Function to get sport display name from sport ID
+export const getSportDisplayName = (sportId: string): string => {
   // Normalize the sport ID for consistent matching
-  const normalizedId = sportId.toLowerCase().trim();
+  const normalizedId = sportId?.toLowerCase().trim() || '';
   
   // Handle men's and women's basketball IDs (both genders exist in MAC)
   if (normalizedId === 'mbball' || normalizedId === 'm-basketball' || 
@@ -31,67 +59,126 @@ export const getSportName = (sportId: string): string => {
     return "Women's Lacrosse";
   }
   
-  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) return "Women's Lacrosse";
+  if (normalizedId === 'lacrosse' || normalizedId.includes('lacrosse')) {
+    return "Women's Lacrosse"; // All MAC lacrosse is women's
+  }
   
-  // Soccer - men's and women's versions in MAC
+  // Soccer - primarily women's in MAC
+  if (normalizedId === 'wsoccer' || normalizedId === 'w-soccer' || 
+      (normalizedId.includes('soccer') && normalizedId.includes('women'))) {
+    return "Women's Soccer";
+  }
+  
   if (normalizedId === 'msoccer' || normalizedId === 'm-soccer' || 
-    (normalizedId.includes('soccer') && normalizedId.includes('men'))) {
+      (normalizedId.includes('soccer') && normalizedId.includes('men'))) {
     return "Men's Soccer";
   }
   
-  if (normalizedId === 'wsoccer' || normalizedId === 'w-soccer' || 
-    (normalizedId.includes('soccer') && normalizedId.includes('women'))) {
-    return "Soccer";  // Women's soccer referred to as just "Soccer"
-  }
-  
-  // Generic soccer (assumes women's in MAC context)
   if (normalizedId === 'soccer' || normalizedId.includes('soccer')) {
-    return "Soccer";
+    return "Women's Soccer"; // Default to women's soccer for MAC
   }
   
-  // Consolidated sports - combining men's and women's variants
-  if (normalizedId === 'golf' || 
-      normalizedId === 'mgolf' || 
-      normalizedId === 'wgolf' ||
-      normalizedId.includes('golf')) {
-    return "Golf";
+  // Field Hockey - only women's in MAC
+  if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) {
+    return "Field Hockey";
   }
   
-  if (normalizedId === 'tennis' || 
-      normalizedId === 'mtennis' || 
-      normalizedId === 'wtennis' ||
-      normalizedId.includes('tennis')) {
-    return "Tennis";
+  // Swimming & Diving
+  if (normalizedId === 'mswimming' || normalizedId === 'm-swimming' || normalizedId === 'mswim' || 
+      (normalizedId.includes('swimming') && normalizedId.includes('men'))) {
+    return "Men's Swimming & Diving";
   }
   
-  if (normalizedId === 'swimming' || 
-      normalizedId === 'mswim' || 
-      normalizedId === 'wswim' ||
-      normalizedId.includes('swimming') ||
-      normalizedId.includes('swim')) {
+  if (normalizedId === 'wswimming' || normalizedId === 'w-swimming' || normalizedId === 'wswim' || 
+      (normalizedId.includes('swimming') && normalizedId.includes('women'))) {
+    return "Women's Swimming & Diving";
+  }
+  
+  if (normalizedId === 'swimming' || normalizedId.includes('swimming') || normalizedId.includes('swim')) {
     return "Swimming & Diving";
   }
   
-  // Other sports
-  if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) return 'Field Hockey';
-  if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) return 'Wrestling';
-  if (normalizedId === 'track' || normalizedId.includes('track')) return 'Track & Field';
-  if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) return 'Cross Country';
-  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return 'Gymnastics';
-  if (normalizedId === 'rowing' || normalizedId.includes('rowing')) return 'Rowing';
+  // Tennis
+  if (normalizedId === 'mtennis' || normalizedId === 'm-tennis' || 
+      (normalizedId.includes('tennis') && normalizedId.includes('men'))) {
+    return "Men's Tennis";
+  }
   
-  // Default formatting for unknown sports
-  return sportId.charAt(0).toUpperCase() + sportId.slice(1);
+  if (normalizedId === 'wtennis' || normalizedId === 'w-tennis' || 
+      (normalizedId.includes('tennis') && normalizedId.includes('women'))) {
+    return "Women's Tennis";
+  }
+  
+  if (normalizedId === 'tennis' || normalizedId.includes('tennis')) {
+    return "Tennis";
+  }
+  
+  // Golf
+  if (normalizedId === 'mgolf' || normalizedId === 'm-golf' || 
+      (normalizedId.includes('golf') && normalizedId.includes('men'))) {
+    return "Men's Golf";
+  }
+  
+  if (normalizedId === 'wgolf' || normalizedId === 'w-golf' || 
+      (normalizedId.includes('golf') && normalizedId.includes('women'))) {
+    return "Women's Golf";
+  }
+  
+  if (normalizedId === 'golf' || normalizedId.includes('golf')) {
+    return "Golf";
+  }
+  
+  // Track & Field and Cross Country
+  if (normalizedId === 'mtrack' || normalizedId === 'm-track' || 
+      (normalizedId.includes('track') && normalizedId.includes('men'))) {
+    return "Men's Track & Field";
+  }
+  
+  if (normalizedId === 'wtrack' || normalizedId === 'w-track' || 
+      (normalizedId.includes('track') && normalizedId.includes('women'))) {
+    return "Women's Track & Field";
+  }
+  
+  if (normalizedId === 'track' || normalizedId.includes('track')) {
+    return "Track & Field";
+  }
+  
+  if (normalizedId === 'mcrosscountry' || normalizedId === 'm-crosscountry' || 
+      (normalizedId.includes('cross') && normalizedId.includes('men'))) {
+    return "Men's Cross Country";
+  }
+  
+  if (normalizedId === 'wcrosscountry' || normalizedId === 'w-crosscountry' || 
+      (normalizedId.includes('cross') && normalizedId.includes('women'))) {
+    return "Women's Cross Country";
+  }
+  
+  if (normalizedId === 'crosscountry' || normalizedId.includes('cross')) {
+    return "Cross Country";
+  }
+  
+  // Wrestling - only men's in MAC
+  if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) {
+    return "Wrestling";
+  }
+  
+  // Gymnastics - only women's in MAC
+  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) {
+    return "Women's Gymnastics";
+  }
+  
+  // For empty or unknown values, return a generic name
+  return sportId || "Other Sports";
 };
 
-// Function to get badge style based on sport
+// Function to get the color style for a sport badge
 export const getSportBadgeStyle = (sportId: string): string => {
   // Normalize the sport ID for consistent matching
-  const normalizedId = sportId.toLowerCase().trim();
+  const normalizedId = sportId?.toLowerCase().trim() || '';
   
-  // Football - Amber
+  // Football - Blue
   if (normalizedId === 'football' || normalizedId.includes('football')) {
-    return 'bg-amber-50 text-amber-800 border-amber-200';
+    return 'bg-blue-50 text-blue-800 border-blue-200';
   }
   
   // Men's Basketball - Orange
@@ -139,55 +226,26 @@ export const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-lime-50 text-lime-800 border-lime-200';
   }
   
-  // Wrestling - Rich Red
+  // Men's Tennis - Sky Blue
+  if (normalizedId === 'mtennis' || normalizedId === 'm-tennis' || 
+      (normalizedId.includes('tennis') && normalizedId.includes('men'))) {
+    return 'bg-sky-100 text-sky-800 border-sky-300';
+  }
+  
+  // Women's Tennis - Light Blue
+  if (normalizedId === 'wtennis' || normalizedId === 'w-tennis' || 
+      (normalizedId.includes('tennis') && normalizedId.includes('women'))) {
+    return 'bg-sky-50 text-sky-800 border-sky-200';
+  }
+  
+  // Consolidated Tennis (no gender) - Sky Blue
+  if (normalizedId === 'tennis' || normalizedId.includes('tennis')) {
+    return 'bg-sky-50 text-sky-800 border-sky-200';
+  }
+  
+  // Wrestling - Stone Gray
   if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) {
-    return 'bg-red-50 text-red-800 border-red-200';
-  }
-  
-  // Swimming & Diving - Consolidated Blue Style
-  if (normalizedId === 'swimming' || 
-      normalizedId === 'mswim' || 
-      normalizedId === 'wswim' || 
-      normalizedId === 'm-swimming' || 
-      normalizedId === 'w-swimming' ||
-      normalizedId.includes('swimming') ||
-      normalizedId.includes('swim')) {
-    return 'bg-blue-50 text-blue-800 border-blue-200';
-  }
-  
-  // Track & Field - Indigo
-  if (normalizedId === 'track' || normalizedId.includes('track')) {
-    return 'bg-indigo-50 text-indigo-800 border-indigo-200';
-  }
-  
-  // Cross Country - Fuchsia
-  if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) {
-    return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
-  }
-  
-  // Golf - Consolidated Teal Style
-  if (normalizedId === 'golf' || 
-      normalizedId === 'mgolf' || 
-      normalizedId === 'wgolf' || 
-      normalizedId === 'm-golf' || 
-      normalizedId === 'w-golf' ||
-      normalizedId.includes('golf')) {
-    return 'bg-teal-50 text-teal-800 border-teal-200';
-  }
-  
-  // Tennis - Consolidated Cyan Style 
-  if (normalizedId === 'tennis' || 
-      normalizedId === 'mtennis' || 
-      normalizedId === 'wtennis' || 
-      normalizedId === 'm-tennis' || 
-      normalizedId === 'w-tennis' ||
-      normalizedId.includes('tennis')) {
-    return 'bg-cyan-50 text-cyan-800 border-cyan-200';
-  }
-  
-  // Gymnastics - Rose
-  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) {
-    return 'bg-rose-50 text-rose-800 border-rose-200';
+    return 'bg-stone-50 text-stone-800 border-stone-200';
   }
   
   // Women's Lacrosse - Violet
@@ -196,9 +254,70 @@ export const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-violet-50 text-violet-800 border-violet-200';
   }
   
-  // Rowing - Slate
-  if (normalizedId === 'rowing' || normalizedId.includes('rowing')) {
-    return 'bg-slate-50 text-slate-800 border-slate-200';
+  // Men's Golf - Deep Teal (darker)
+  if (normalizedId === 'mgolf' || normalizedId === 'm-golf' || 
+      (normalizedId.includes('golf') && normalizedId.includes('men'))) {
+    return 'bg-teal-100 text-teal-900 border-teal-300';
+  }
+  
+  // Women's Golf - Light Teal
+  if (normalizedId === 'wgolf' || normalizedId === 'w-golf' || 
+      (normalizedId.includes('golf') && normalizedId.includes('women'))) {
+    return 'bg-teal-50 text-teal-800 border-teal-200';
+  }
+  
+  // Consolidated Golf (no gender) - Teal
+  if (normalizedId === 'golf' || normalizedId.includes('golf')) {
+    return 'bg-teal-50 text-teal-800 border-teal-200';
+  }
+  
+  // Men's Swimming - Deep Cyan (darker)
+  if (normalizedId === 'mswimming' || normalizedId === 'm-swimming' || normalizedId === 'mswim' || 
+      (normalizedId.includes('swimming') && normalizedId.includes('men'))) {
+    return 'bg-cyan-100 text-cyan-900 border-cyan-300';
+  }
+  
+  // Women's Swimming - Light Cyan
+  if (normalizedId === 'wswimming' || normalizedId === 'w-swimming' || normalizedId === 'wswim' || 
+      (normalizedId.includes('swimming') && normalizedId.includes('women'))) {
+    return 'bg-cyan-50 text-cyan-800 border-cyan-200';
+  }
+  
+  // Consolidated Swimming (no gender) - Cyan
+  if (normalizedId === 'swimming' || normalizedId.includes('swimming') || normalizedId.includes('swim')) {
+    return 'bg-cyan-50 text-cyan-800 border-cyan-200';
+  }
+  
+  // Women's Gymnastics - Rose
+  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) {
+    return 'bg-rose-50 text-rose-800 border-rose-200';
+  }
+  
+  // Men's Cross Country/Track - Deep Indigo (darker)
+  if ((normalizedId === 'mtrack' || normalizedId === 'm-track' || 
+      (normalizedId.includes('track') && normalizedId.includes('men'))) ||
+      (normalizedId === 'mcrosscountry' || normalizedId === 'm-crosscountry' || 
+      (normalizedId.includes('cross') && normalizedId.includes('men')))) {
+    return 'bg-indigo-100 text-indigo-900 border-indigo-300';
+  }
+  
+  // Women's Cross Country/Track - Light Indigo
+  if ((normalizedId === 'wtrack' || normalizedId === 'w-track' || 
+      (normalizedId.includes('track') && normalizedId.includes('women'))) || 
+      (normalizedId === 'wcrosscountry' || normalizedId === 'w-crosscountry' || 
+      (normalizedId.includes('cross') && normalizedId.includes('women')))) {
+    return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+  }
+  
+  // Consolidated Track/Cross Country (no gender) - Indigo
+  if (normalizedId === 'track' || normalizedId.includes('track') ||
+      normalizedId === 'crosscountry' || normalizedId.includes('cross')) {
+    return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+  }
+  
+  // Cross Country - Fuchsia
+  if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) {
+    return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
   }
   
   // Default style for unknown sports

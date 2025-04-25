@@ -4,7 +4,8 @@ import { Game as BaseGame } from "@shared/schema";
 import { Link } from "wouter";
 import { findSchoolByName } from "../utils/findSchoolByName";
 import { ExternalLink } from "lucide-react";
-import { getSportName, getSportBadgeStyle } from "../utils/sportUtils";
+import { getSportDisplayName, getSportBadgeStyle, MAC_GREEN, MAC_NAVY } from "../utils/sportUtils";
+import { getTeamLogo } from "../utils/teamLogoMap";
 
 // Extended Game interface with additional properties used in the UI
 interface Game extends BaseGame {
@@ -14,9 +15,7 @@ interface Game extends BaseGame {
   tvChannel?: string;
 }
 
-// MAC official colors
-const MAC_GREEN = "#019E4F";
-const MAC_NAVY = "#0B213E";
+// Using MAC colors imported from sportUtils
 
 interface TableScheduleViewProps {
   games: Game[];
@@ -41,7 +40,7 @@ export default function TableScheduleView({ games, date, showLogos = false }: Ta
     sortedGames.forEach(game => {
       // Get normalized sport name
       const sportId = game.sportId || "unknown";
-      const sportName = getSportName(sportId);
+      const sportName = getSportDisplayName(sportId);
       
       // Create group if it doesn't exist
       if (!groups[sportName]) {

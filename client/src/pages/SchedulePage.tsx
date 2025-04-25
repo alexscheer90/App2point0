@@ -238,10 +238,10 @@ const getSportBadgeStyle = (sportId: string): string => {
 const SchedulePage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
+  const [showLogos, setShowLogos] = useState<boolean>(true);
   const [currentView, setCurrentView] = useState<"calendar" | "all">("calendar");
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
-  const [showLogos, setShowLogos] = useState<boolean>(false);
   
   // Always use "date" as our grouping method
   const groupBy = "date";
@@ -280,23 +280,32 @@ const SchedulePage = () => {
   
   // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
   const availableSports = useMemo(() => {
-    // Complete list of MAC sports (gender only specified where multiple versions exist)
+    // Complete list of MAC sports with proper gender designations
     const allMacSports = [
       { id: "baseball", name: "Baseball", gender: "mens" },
       { id: "cross-country", name: "Cross Country", gender: "mixed" },
       { id: "field-hockey", name: "Field Hockey", gender: "womens" },
       { id: "football", name: "Football", gender: "mens" },
-      { id: "gymnastics", name: "Gymnastics", gender: "womens" },
-      { id: "mbball", name: "Basketball", gender: "mens" },
-      // Consolidated sports (no gender variants)
-      { id: "golf", name: "Golf", gender: "mixed" },
-      { id: "swimming", name: "Swimming & Diving", gender: "mixed" },
-      { id: "tennis", name: "Tennis", gender: "mixed" },
+      { id: "gymnastics", name: "Women's Gymnastics", gender: "womens" },
+      { id: "mbball", name: "Men's Basketball", gender: "mens" },
+      { id: "wbball", name: "Women's Basketball", gender: "womens" },
+      
+      // Sports with gender variants
+      { id: "mgolf", name: "Men's Golf", gender: "mens" },
+      { id: "wgolf", name: "Women's Golf", gender: "womens" },
+      { id: "mtennis", name: "Men's Tennis", gender: "mens" },
+      { id: "wtennis", name: "Women's Tennis", gender: "womens" },
+      { id: "mswimming", name: "Men's Swimming & Diving", gender: "mens" },
+      { id: "wswimming", name: "Women's Swimming & Diving", gender: "womens" },
+      { id: "mtrack", name: "Men's Track & Field", gender: "mens" },
+      { id: "wtrack", name: "Women's Track & Field", gender: "womens" },
+      
+      // Sports with only one gender in MAC
       { id: "softball", name: "Softball", gender: "womens" },
-      { id: "track", name: "Track and Field", gender: "mixed" },
-      { id: "wbball", name: "Basketball", gender: "womens" },
-      { id: "lacrosse", name: "Lacrosse", gender: "womens" },
-      { id: "soccer", name: "Soccer", gender: "womens" },
+      { id: "wlacrosse", name: "Women's Lacrosse", gender: "womens" },
+      { id: "lacrosse", name: "Women's Lacrosse", gender: "womens" }, // Adding standard version too
+      { id: "wsoccer", name: "Women's Soccer", gender: "womens" },
+      { id: "soccer", name: "Women's Soccer", gender: "womens" }, // Adding standard version too
       { id: "volleyball", name: "Volleyball", gender: "womens" },
       { id: "wrestling", name: "Wrestling", gender: "mens" }
     ];
