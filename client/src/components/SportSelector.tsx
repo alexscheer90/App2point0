@@ -7,6 +7,7 @@ interface Sport {
   gender: string;
   scheduleOnly?: boolean;
   displayName?: string;
+  hidden?: boolean; // New property to hide items from dropdown but keep for data filtering
 }
 
 interface SportSelectorProps {
@@ -17,29 +18,51 @@ interface SportSelectorProps {
   standingsView?: boolean; // If true, hide scheduleOnly sports
 }
 
+// Updated with gender-specific names to match our improved data structure
 const SPORT_DISPLAY_NAMES: Record<string, string> = {
+  // Men's sports
   "baseball": "Baseball",
-  "mbball": "Basketball - Men",
-  "wbball": "Basketball - Women",
+  "football": "Football",
+  "mbball": "Men's Basketball",
+  "mgolf": "Men's Golf",
+  "mtennis": "Men's Tennis",
+  "mswimming": "Men's Swimming & Diving",
+  "mtrack": "Men's Track & Field",
+  "wrestling": "Wrestling",
+  
+  // Women's sports
+  "field-hockey": "Field Hockey",
+  "gymnastics": "Women's Gymnastics",
+  "softball": "Softball",
+  "volleyball": "Volleyball",
+  "wbball": "Women's Basketball",
+  "wgolf": "Women's Golf",
+  "wlacrosse": "Women's Lacrosse",
+  "wsoccer": "Women's Soccer",
+  "wswimming": "Women's Swimming & Diving",
+  "wtennis": "Women's Tennis",
+  "wtrack": "Women's Track & Field",
+  
+  // Mixed/gender-neutral sports
+  "cross-country": "Cross Country",
+  
+  // Legacy and compatibility IDs
+  "lacrosse": "Women's Lacrosse",
+  "soccer": "Women's Soccer",
   "xc": "Cross Country",
   "fhockey": "Field Hockey",
-  "football": "Football",
   "golf": "Golf",
-  "mgolf": "Golf",
-  "wgolf": "Golf",
-  "gym": "Gymnastics",
-  "wlax": "Lacrosse",
-  "wsoc": "Soccer - Women",
-  "softball": "Softball",
+  "gym": "Women's Gymnastics",
+  "wlax": "Women's Lacrosse",
+  "wsoc": "Women's Soccer",
   "swimming": "Swimming & Diving",
-  "mswim": "Swimming & Diving",
-  "wswim": "Swimming & Diving",
+  "mswim": "Men's Swimming & Diving",
+  "wswim": "Women's Swimming & Diving",
   "tennis": "Tennis",
-  "mten": "Tennis",
-  "wten": "Tennis",
+  "mten": "Men's Tennis",
+  "wten": "Women's Tennis",
   "track": "Track & Field",
-  "wvball": "Volleyball",
-  "wrestling": "Wrestling"
+  "wvball": "Volleyball"
 };
 
 const SportSelector = ({ 
@@ -55,10 +78,20 @@ const SportSelector = ({
   // Use provided sports if available, otherwise use API data
   let sports = providedSports || apiSports || [];
   
-  // If in standings view, filter out scheduleOnly sports
-  if (standingsView) {
-    sports = sports.filter(sport => !sport.scheduleOnly);
-  }
+  // Filter out appropriate sports based on view and hidden property
+  sports = sports.filter(sport => {
+    // Filter out schedule-only sports in standings view
+    if (standingsView && sport.scheduleOnly) {
+      return false;
+    }
+    
+    // Filter out hidden sports (used for maintaining legacy IDs)
+    if (sport.hidden) {
+      return false;
+    }
+    
+    return true;
+  });
   
   return (
     <div className="relative">

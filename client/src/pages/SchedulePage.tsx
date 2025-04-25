@@ -280,34 +280,41 @@ const SchedulePage = () => {
   
   // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
   const availableSports = useMemo(() => {
-    // Complete list of MAC sports with proper gender designations
+    // Complete list of MAC sports with proper gender designations, no duplicates
     const allMacSports = [
+      // Men's sports
       { id: "baseball", name: "Baseball", gender: "mens" },
-      { id: "cross-country", name: "Cross Country", gender: "mixed" },
-      { id: "field-hockey", name: "Field Hockey", gender: "womens" },
       { id: "football", name: "Football", gender: "mens" },
-      { id: "gymnastics", name: "Women's Gymnastics", gender: "womens" },
       { id: "mbball", name: "Men's Basketball", gender: "mens" },
-      { id: "wbball", name: "Women's Basketball", gender: "womens" },
-      
-      // Sports with gender variants
       { id: "mgolf", name: "Men's Golf", gender: "mens" },
-      { id: "wgolf", name: "Women's Golf", gender: "womens" },
       { id: "mtennis", name: "Men's Tennis", gender: "mens" },
-      { id: "wtennis", name: "Women's Tennis", gender: "womens" },
       { id: "mswimming", name: "Men's Swimming & Diving", gender: "mens" },
-      { id: "wswimming", name: "Women's Swimming & Diving", gender: "womens" },
       { id: "mtrack", name: "Men's Track & Field", gender: "mens" },
-      { id: "wtrack", name: "Women's Track & Field", gender: "womens" },
+      { id: "wrestling", name: "Wrestling", gender: "mens" },
       
-      // Sports with only one gender in MAC
+      // Women's sports
       { id: "softball", name: "Softball", gender: "womens" },
-      { id: "wlacrosse", name: "Women's Lacrosse", gender: "womens" },
-      { id: "lacrosse", name: "Women's Lacrosse", gender: "womens" }, // Adding standard version too
+      { id: "wbball", name: "Women's Basketball", gender: "womens" },
+      { id: "wgolf", name: "Women's Golf", gender: "womens" },
+      { id: "wtennis", name: "Women's Tennis", gender: "womens" },
+      { id: "wswimming", name: "Women's Swimming & Diving", gender: "womens" },
+      { id: "wtrack", name: "Women's Track & Field", gender: "womens" },
+      { id: "field-hockey", name: "Field Hockey", gender: "womens" },
+      { id: "gymnastics", name: "Women's Gymnastics", gender: "womens" },
+      { id: "wlacrosse", name: "Women's Lacrosse", gender: "womens" }, // Main entry for Women's Lacrosse
       { id: "wsoccer", name: "Women's Soccer", gender: "womens" },
-      { id: "soccer", name: "Women's Soccer", gender: "womens" }, // Adding standard version too
       { id: "volleyball", name: "Volleyball", gender: "womens" },
-      { id: "wrestling", name: "Wrestling", gender: "mens" }
+      
+      // Mixed sports (with both men's and women's teams)
+      { id: "cross-country", name: "Cross Country", gender: "mixed" },
+      
+      // Legacy IDs for compatibility with existing data
+      { id: "lacrosse", hidden: true, name: "Women's Lacrosse", gender: "womens" }, // Hidden legacy entry
+      { id: "soccer", hidden: true, name: "Women's Soccer", gender: "womens" },     // Hidden legacy entry
+      { id: "golf", hidden: true, name: "Golf", gender: "mixed" },                  // Hidden legacy entry
+      { id: "tennis", hidden: true, name: "Tennis", gender: "mixed" },              // Hidden legacy entry
+      { id: "swimming", hidden: true, name: "Swimming & Diving", gender: "mixed" }, // Hidden legacy entry
+      { id: "track", hidden: true, name: "Track and Field", gender: "mixed" }       // Hidden legacy entry
     ];
     
     // Log available sports from calendar data for debugging
