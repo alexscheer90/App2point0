@@ -174,7 +174,7 @@ export default function TableScheduleView({ games, date, showLogos = false }: Ta
   return (
     <div className="overflow-hidden">
       {Object.entries(sportGroups).map(([sportName, sportGames]) => (
-        <div key={sportName} className="mb-4">
+        <div key={sportName} className="mb-6 overflow-hidden rounded-lg shadow-sm border border-gray-200">
           <div 
             className="py-2 px-4 font-medium text-white"
             style={{ backgroundColor: MAC_GREEN }}
@@ -182,34 +182,33 @@ export default function TableScheduleView({ games, date, showLogos = false }: Ta
             {format(date, "EEEE, MMMM d, yyyy")} — {sportName}
           </div>
           
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b border-r">Away</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b border-r">Home</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b border-r">Time</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b border-r">Location</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Links</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Away</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Home</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Time</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-700 border-b">Location</th>
                 </tr>
               </thead>
-              <tbody>
-                {sportGames.map((game) => (
-                  <tr key={game.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 border-b border-r">
+              <tbody className="divide-y divide-gray-200">
+                {sportGames.map((game, index) => (
+                  <tr 
+                    key={game.id} 
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-3">
                       {renderTeam(game.awayTeamName, game.awayTeamId, false)}
                     </td>
-                    <td className="px-4 py-3 border-b border-r">
+                    <td className="px-4 py-3">
                       {renderTeam(game.homeTeamName, game.homeTeamId, true)}
                     </td>
-                    <td className="px-4 py-3 border-b border-r">
+                    <td className="px-4 py-3">
                       {formatGameTime(game.scheduledTime)}
                     </td>
-                    <td className="px-4 py-3 border-b border-r">
+                    <td className="px-4 py-3">
                       {formatLocation(game)}
-                    </td>
-                    <td className="px-4 py-3 border-b">
-                      {renderLinks(game)}
                     </td>
                   </tr>
                 ))}
