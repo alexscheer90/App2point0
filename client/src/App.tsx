@@ -52,7 +52,7 @@ function App() {
             
             <FavoriteSchoolBanner onChangeFavorite={() => setShowFavoriteModal(true)} />
             
-            <main className="flex-1 overflow-y-auto pb-32">
+            <main className="flex-1 overflow-y-auto pb-20">
               <Switch>
                 <Route path="/" component={ScoresPage} />
                 <Route path="/scores" component={ScoresPage} />
@@ -72,13 +72,8 @@ function App() {
               </Switch>
             </main>
             
-            <div className="relative z-10">
-              <Footer />
-            </div>
-            
-            <div className="relative z-20">
-              <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
-            </div>
+            <Footer />
+            <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
             
             <FavoriteSchoolModal 
               isOpen={showFavoriteModal} 
