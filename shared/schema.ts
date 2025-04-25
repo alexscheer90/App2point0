@@ -143,6 +143,7 @@ export const rivalrySchema = z.object({
     ties: z.number(),
   }),
   trophyName: z.string().optional(),
+  trophyImagePath: z.string().optional(), // Path to the trophy image
   firstGame: z.string().optional(),
   description: z.string().optional(),
   lastGameId: z.string().optional(),

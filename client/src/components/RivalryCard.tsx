@@ -7,6 +7,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy } from 'lucide-react';
 import { getOptimizedImagePath, handleImageError } from '../utils/imageOptimizer';
 
+// Import trophy images
+import bronzeStalkPath from '@assets/Bronze Stalk.webp';
+import battleOfBricksPath from '@assets/Battle of the bricks.jpg';
+import battleOfI75Path from '@assets/battle_of_i-75_trophy.0.jpg';
+import michiganMacTrophyPath from '@assets/Michigan MAC trophy.jpg';
+import anniversaryAwardPath from '@assets/Anniversary_Award_Front.jpg';
+import wagonWheelPath from '@assets/Wagon Wheel.jpg';
+
 interface RivalryCardProps {
   rivalry: Rivalry;
 }
@@ -35,6 +43,33 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
     }
   };
 
+  // Helper function to get trophy image path based on trophy name
+  const getTrophyImagePath = (trophyName: string | undefined): string | undefined => {
+    if (!trophyName) return undefined;
+    
+    const trophyMap: Record<string, string> = {
+      'Bronze Stalk': bronzeStalkPath,
+      'Battle of the Bricks': battleOfBricksPath,
+      'Battle of I-75': battleOfI75Path,
+      'Michigan MAC Trophy': michiganMacTrophyPath,
+      'Anniversary Award': anniversaryAwardPath,
+      'Wagon Wheel': wagonWheelPath,
+    };
+    
+    // Try exact match first
+    if (trophyMap[trophyName]) {
+      return trophyMap[trophyName];
+    }
+    
+    // Try partial match if exact match fails
+    const key = Object.keys(trophyMap).find(k => 
+      trophyName.toLowerCase().includes(k.toLowerCase()) || 
+      k.toLowerCase().includes(trophyName.toLowerCase())
+    );
+    
+    return key ? trophyMap[key] : undefined;
+  };
+  
   const renderTeamLogo = (team: School, size: string = "w-16 h-16") => (
     <div className="flex flex-col items-center text-center">
       {team.logoUrl ? (
@@ -64,16 +99,37 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
     </div>
   );
 
+  // Get trophy image path
+  const trophyImagePath = getTrophyImagePath(rivalry.trophyName);
+  
   return (
     <Card className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 h-full">
       <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 pb-2">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-semibold">{rivalry.name}</CardTitle>
           {rivalry.trophyName && (
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Trophy className="h-3 w-3" />
-              {rivalry.trophyName}
-            </Badge>
+            trophyImagePath ? (
+              // Display trophy image if available
+              <div 
+                className="trophy-image h-12 ml-2 flex-shrink-0 relative group cursor-pointer" 
+                title={rivalry.trophyName}
+              >
+                <img 
+                  src={trophyImagePath} 
+                  alt={rivalry.trophyName}
+                  className="h-full object-contain" 
+                />
+                <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 text-white text-xs p-1 rounded bottom-0 left-0 right-0 text-center">
+                  {rivalry.trophyName}
+                </div>
+              </div>
+            ) : (
+              // Fallback to badge if image not available
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Trophy className="h-3 w-3" />
+                {rivalry.trophyName}
+              </Badge>
+            )
           )}
         </div>
       </CardHeader>
