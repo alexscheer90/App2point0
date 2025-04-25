@@ -21,6 +21,14 @@ const nonMacSchoolsMap: Record<string, NonMacSchool> = {
     logoUrl: "/school-logos/non-mac/northernkentucky.png",
     conference: "Horizon"
   },
+  "Kentucky": {
+    name: "Kentucky",
+    shortName: "UK",
+    primaryColor: "#0033A0",
+    secondaryColor: "#FFFFFF",
+    logoUrl: "/school-logos/non-mac/kentucky.png",
+    conference: "SEC"
+  },
   "Valparaiso": {
     name: "Valparaiso",
     shortName: "Valpo",
@@ -44,6 +52,45 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
   
   // Normalize the name for comparison
   const normalizedName = name.trim();
+  
+  // Special case for Kentucky vs Northern Kentucky disambiguation
+  // Check for exact match with locations and timing
+  if (normalizedName.toLowerCase() === "northern kentucky" && 
+      context?.toLowerCase().includes("lexington")) {
+    // This is likely University of Kentucky in Lexington, not Northern Kentucky University
+    return {
+      id: "kentucky",
+      name: "Kentucky",
+      shortName: "UK",
+      mascot: "Wildcats",
+      primaryColor: "#0033A0", // UK colors
+      secondaryColor: "#FFFFFF",
+      logoUrl: "/school-logos/non-mac/kentucky.png",
+      logoPath: "/school-logos/non-mac/kentucky.png",
+      city: "Lexington",
+      state: "KY",
+      isMacSchool: false
+    };
+  }
+  
+  // Special case handling for University of Kentucky
+  if (normalizedName.toLowerCase() === "kentucky" || 
+      normalizedName.toLowerCase() === "uk" ||
+      normalizedName.toLowerCase().includes("wildcats")) {
+    return {
+      id: "kentucky",
+      name: "Kentucky",
+      shortName: "UK",
+      mascot: "Wildcats",
+      primaryColor: "#0033A0", // UK colors
+      secondaryColor: "#FFFFFF",
+      logoUrl: "/school-logos/non-mac/kentucky.png",
+      logoPath: "/school-logos/non-mac/kentucky.png",
+      city: "Lexington",
+      state: "KY",
+      isMacSchool: false
+    };
+  }
   
   // Special case handling for Valparaiso
   if (normalizedName.toLowerCase().includes("valparaiso") || 
