@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
+import Footer from "./components/Footer";
 import FavoriteSchoolBanner from "./components/FavoriteSchoolBanner";
 import FavoriteSchoolModal from "./components/FavoriteSchoolModal";
 import { NotificationProvider } from "./contexts/NotificationContext";
@@ -51,7 +52,7 @@ function App() {
             
             <FavoriteSchoolBanner onChangeFavorite={() => setShowFavoriteModal(true)} />
             
-            <main className="flex-1 overflow-y-auto pb-16">
+            <main className="flex-1 overflow-y-auto pb-32">
               <Switch>
                 <Route path="/" component={ScoresPage} />
                 <Route path="/scores" component={ScoresPage} />
@@ -71,7 +72,13 @@ function App() {
               </Switch>
             </main>
             
-            <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
+            <div className="relative z-10">
+              <Footer />
+            </div>
+            
+            <div className="relative z-20">
+              <BottomNav activeTab={currentRoute.substring(1).split('/')[0]} />
+            </div>
             
             <FavoriteSchoolModal 
               isOpen={showFavoriteModal} 
