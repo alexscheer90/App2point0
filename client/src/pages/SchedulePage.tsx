@@ -1897,19 +1897,29 @@ const SchedulePage = () => {
                   <h3 className="text-base font-medium text-gray-800">
                     Games on {format(selectedDay, 'EEEE, MMMM d, yyyy')}
                   </h3>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setSelectedDay(null)}
-                  >
-                    Close
-                  </Button>
+                  <div className="flex items-center">
+                    <div className="flex items-center mr-4">
+                      <label htmlFor="show-logos" className="text-sm mr-2">Show Logos</label>
+                      <Switch 
+                        id="show-logos" 
+                        checked={showLogos} 
+                        onCheckedChange={setShowLogos} 
+                      />
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setSelectedDay(null)}
+                    >
+                      Close
+                    </Button>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  {gamesByDate[format(selectedDay, 'yyyy-MM-dd')].map(game => (
-                    <GameCard key={game.id} game={game} />
-                  ))}
-                </div>
+                <TableScheduleView 
+                  games={gamesByDate[format(selectedDay, 'yyyy-MM-dd')]} 
+                  date={selectedDay}
+                  showLogos={showLogos}
+                />
               </div>
             ) : (
               selectedDay ? (
@@ -1925,21 +1935,31 @@ const SchedulePage = () => {
         ) : (
           // Regular Game List View
           filteredGames && filteredGames.length > 0 ? (
-            // Group by date
-            Object.keys(gamesByDate)
-              .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
-              .map(dateStr => (
-                <div key={dateStr} className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
-                    {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
-                  </h3>
-                  <div>
-                    {gamesByDate[dateStr].map(game => (
-                      <GameCard key={game.id} game={game} />
-                    ))}
-                  </div>
+            <div>
+              <div className="flex items-center justify-end mb-4">
+                <div className="flex items-center">
+                  <label htmlFor="show-logos-list" className="text-sm mr-2">Show Logos</label>
+                  <Switch 
+                    id="show-logos-list" 
+                    checked={showLogos} 
+                    onCheckedChange={setShowLogos} 
+                  />
                 </div>
-              ))
+              </div>
+              
+              {/* Group by date */}
+              {Object.keys(gamesByDate)
+                .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
+                .map(dateStr => (
+                  <div key={dateStr} className="mb-8">
+                    <TableScheduleView 
+                      games={gamesByDate[dateStr]} 
+                      date={parseISO(dateStr)}
+                      showLogos={showLogos}
+                    />
+                  </div>
+                ))}
+            </div>
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <p className="text-gray-500">No games found for the selected filters.</p>
