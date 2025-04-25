@@ -1,5 +1,4 @@
-import { Badge } from "./ui/badge";
-import { macNavy, macGreen } from "../utils/teamLogoMap";
+import { macNavy } from "../utils/teamLogoMap";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -18,16 +17,6 @@ export default function Footer() {
           <p className="text-[10px] text-gray-500">
             All logos property of the associated schools and organizations.
           </p>
-        </div>
-        
-        <div className="flex justify-center mt-1">
-          <Badge 
-            variant="outline" 
-            className="text-[10px] h-4 px-2 border-none" 
-            style={{ backgroundColor: macGreen, color: 'white' }}
-          >
-            Official MAC App
-          </Badge>
         </div>
       </div>
     </footer>
