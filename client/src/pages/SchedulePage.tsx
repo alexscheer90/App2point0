@@ -8,11 +8,13 @@ import { useMacSchools } from "../hooks/useSchool";
 import { useMacCalendar } from "../hooks/useMacCalendar";
 import { queryClient } from "../lib/queryClient";
 import SportSelector from "../components/SportSelector";
+import TableScheduleView from "../components/TableScheduleView";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -239,6 +241,7 @@ const SchedulePage = () => {
   const [currentView, setCurrentView] = useState<"calendar" | "all">("calendar");
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [showLogos, setShowLogos] = useState<boolean>(false);
   
   // Always use "date" as our grouping method
   const groupBy = "date";
