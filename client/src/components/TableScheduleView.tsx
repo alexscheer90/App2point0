@@ -125,25 +125,24 @@ export default function TableScheduleView({ games, date, showLogos = false }: Ta
     );
   };
   
-  const getTeamLogo = (teamName: string | null | undefined, teamId: string | null | undefined) => {
+  const getLogoPath = (teamName: string | null | undefined, teamId: string | null | undefined) => {
     if (!teamName) return null;
     
     const schoolInfo = findSchoolByName(teamName, teamId || undefined);
-    // The logoPath comes from the findSchoolByName utility
-    return schoolInfo?.logoPath;
+    // Use logoPath if available, otherwise fall back to logoUrl
+    return schoolInfo?.logoPath || schoolInfo?.logoUrl;
   };
   
   const renderTeam = (teamName: string | null | undefined, teamId: string | null | undefined, isHome: boolean) => {
     if (!teamName) return <span>TBD</span>;
     
-    const logo = showLogos ? getTeamLogo(teamName, teamId) : null;
+    const logo = showLogos ? getLogoPath(teamName, teamId) : null;
     const schoolInfo = findSchoolByName(teamName, teamId || undefined);
     
     const displayName = schoolInfo?.name || teamName;
     
-    // In findSchoolByName, MAC schools have the isMacSchool property
-    // Used to determine if we should link to the school profile
-    if (schoolInfo?.isMacSchool && teamId) {
+    // Link to school profile if it's a MAC school
+    if (schoolInfo?.isMacSchool === true && teamId) {
       return (
         <Link to={`/schools/${teamId}`} className="hover:underline flex items-center">
           {logo && <img src={logo} alt={displayName} className="w-5 h-5 mr-2" />}
