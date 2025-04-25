@@ -57,8 +57,10 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
       primaryColor: "#402E82", // Valpo colors 
       secondaryColor: "#FDAC43",
       logoUrl: "/school-logos/non-mac/valparaiso.png", // Using consistent path
+      logoPath: "/school-logos/non-mac/valparaiso.png", // Duplicate for compatibility 
       city: "Valparaiso",
-      state: "IN"
+      state: "IN",
+      isMacSchool: false
     };
   }
   
@@ -74,8 +76,10 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
       primaryColor: "#FFC72C", // NKU colors
       secondaryColor: "#000000",
       logoUrl: "/school-logos/non-mac/northernkentucky.png",
+      logoPath: "/school-logos/non-mac/northernkentucky.png",
       city: "Highland Heights",
-      state: "KY"
+      state: "KY",
+      isMacSchool: false
     };
   }
   
@@ -181,7 +185,9 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
     logoUrl: logoUrl, // Try to use a matching logo file based on name
+    logoPath: logoUrl, // Same as logoUrl for consistency
     city: "",
-    state: ""
+    state: "",
+    isMacSchool: false
   };
 }

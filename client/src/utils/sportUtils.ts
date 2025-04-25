@@ -167,7 +167,13 @@ export const getSportDisplayName = (sportId: string): string => {
     return "Women's Gymnastics";
   }
   
-  // For empty or unknown values, return a generic name
+  // Special case for games labeled as 'unknown'
+  if (normalizedId === 'unknown') {
+    // Based on our analysis, games marked as unknown in April are usually women's lacrosse
+    return "Women's Lacrosse";
+  }
+  
+  // For other empty or unknown values, return a generic name
   return sportId || "Other Sports";
 };
 
@@ -320,6 +326,11 @@ export const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200';
   }
   
-  // Default style for unknown sports
+  // Special case for unknown - map to women's lacrosse style (violet)
+  if (normalizedId === 'unknown') {
+    return 'bg-violet-50 text-violet-800 border-violet-200';
+  }
+  
+  // Default style for other unknown sports
   return 'bg-gray-50 text-gray-800 border-gray-200';
 };

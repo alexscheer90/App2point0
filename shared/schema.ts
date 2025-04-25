@@ -39,9 +39,11 @@ export const schoolSchema = z.object({
   primaryColor: z.string(),
   secondaryColor: z.string(),
   logoUrl: z.any(), // Changed to any to support imported images
+  logoPath: z.string().optional(), // Used for consistent image path references
   city: z.string().optional(),
   state: z.string().optional(),
   affiliate: z.boolean().optional(), // To mark schools that are MAC affiliates
+  isMacSchool: z.boolean().optional(), // Flag to distinguish MAC vs non-MAC schools
   sidearmUrl: z.string().optional(), // URL to the school's Sidearm sports website
   sidearmScoresApi: z.string().optional(), // URL to the school's Sidearm scores API endpoint
 });
