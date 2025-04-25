@@ -371,13 +371,62 @@ const SchedulePage = () => {
   
   // Helper function to detect and extract sport info from game data
   const extractSportFromGame = (game: Game): string | undefined => {
-    // First handle specific cases like Women's Lacrosse that might be embedded in team names
-    if ((game.homeTeamName && game.homeTeamName.includes("Women's Lacrosse")) ||
-        (game.awayTeamName && game.awayTeamName.includes("Women's Lacrosse"))) {
-      return 'lacrosse';
+    // Log the game info for debugging
+    if (!game.sportId || game.sportId === 'unknown') {
+      console.log(`Analyzing unknown sport game: ${game.homeTeamName || game.homeTeamId} vs ${game.awayTeamName || game.awayTeamId}`);
+    }
+
+    // STEP 1: Try to extract from team names that explicitly mention the sport
+    const teamNames = [
+      game.homeTeamName || '', 
+      game.awayTeamName || '',
+      game.homeTeamId || '',
+      game.awayTeamId || ''
+    ].join(' ').toLowerCase();
+
+    // Check for specific sports in team names
+    if (teamNames.includes("lacrosse") || 
+        (game.homeTeamName && game.homeTeamName.includes("Lacrosse")) || 
+        (game.awayTeamName && game.awayTeamName.includes("Lacrosse"))) {
+      return 'wlacrosse'; // Women's Lacrosse (MAC only has women's lacrosse)
     }
     
-    // Check for location information which sometimes contains sport info
+    if (teamNames.includes("soccer") || 
+        (game.homeTeamName && game.homeTeamName.includes("Soccer")) || 
+        (game.awayTeamName && game.awayTeamName.includes("Soccer"))) {
+      return 'wsoccer'; // Women's Soccer (MAC only has women's soccer)
+    }
+    
+    if (teamNames.includes("football")) {
+      return 'football';
+    }
+    
+    if (teamNames.includes("volleyball")) {
+      return 'volleyball';
+    }
+    
+    if (teamNames.includes("baseball")) {
+      return 'baseball';
+    }
+    
+    if (teamNames.includes("softball")) {
+      return 'softball';
+    }
+    
+    if (teamNames.includes("basketball")) {
+      // Determine gender for basketball
+      if (teamNames.includes("women") || 
+          teamNames.includes("woman") || 
+          teamNames.includes("female") ||
+          (game.homeTeamName && /women|woman|female/i.test(game.homeTeamName)) ||
+          (game.awayTeamName && /women|woman|female/i.test(game.awayTeamName))) {
+        return 'wbball';
+      } else {
+        return 'mbball';
+      }
+    }
+    
+    // STEP 2: Check event location for venue clues
     if (game.location) {
       const locationLower = game.location.toLowerCase();
       
@@ -386,91 +435,247 @@ const SchedulePage = () => {
       if (tennisVenues.some(venue => locationLower.includes(venue))) {
         // Check if it's men's or women's tennis based on team names or location
         if (locationLower.includes("women") || 
-            game.homeTeamName?.toLowerCase().includes("women") || 
-            game.awayTeamName?.toLowerCase().includes("women")) {
+            teamNames.includes("women") || 
+            teamNames.includes("woman") || 
+            teamNames.includes("female")) {
           return 'wtennis';
         } else if (locationLower.includes("men") || 
-                  game.homeTeamName?.toLowerCase().includes("men") || 
-                  game.awayTeamName?.toLowerCase().includes("men")) {
+                  teamNames.includes("men") || 
+                  teamNames.includes("man") || 
+                  teamNames.includes("male")) {
           return 'mtennis';
         }
-        // If no gender indicator, default to the original sport ID if it has one
+        
+        // Most games in April for MAC tennis are women's tennis
+        if (game.scheduledTime && (
+            game.scheduledTime.includes('2025-04-') ||
+            game.scheduledTime.includes('2025-05-'))) {
+          return 'wtennis';
+        }
+        
+        // If still no gender determination, check for original sport ID
         if (game.sportId?.includes('tennis')) {
+          if (game.sportId === 'wtennis' || game.sportId === 'wten') {
+            return 'wtennis';
+          } else if (game.sportId === 'mtennis' || game.sportId === 'mten') {
+            return 'mtennis';
+          }
           return game.sportId;
         }
-        // Still no match - default to men's tennis for now
-        return 'mtennis';
+        
+        // Default to women's tennis in spring season (most active)
+        return 'wtennis';
       }
       
       // Check for golf venues
       const golfVenues = ['golf', 'course', 'club', 'country club'];
       if (golfVenues.some(venue => locationLower.includes(venue))) {
-        // Check gender the same way as tennis
+        // Determine gender based on context
         if (locationLower.includes("women") || 
-            game.homeTeamName?.toLowerCase().includes("women") || 
-            game.awayTeamName?.toLowerCase().includes("women")) {
+            teamNames.includes("women") || 
+            teamNames.includes("woman") || 
+            teamNames.includes("female")) {
           return 'wgolf';
         } else if (locationLower.includes("men") || 
-                  game.homeTeamName?.toLowerCase().includes("men") || 
-                  game.awayTeamName?.toLowerCase().includes("men")) {
+                  teamNames.includes("men") || 
+                  teamNames.includes("man") || 
+                  teamNames.includes("male")) {
           return 'mgolf';
         }
-        // If no gender indicator, default to the original sport ID if it has one
+        
+        // If no gender indicator, use original sport ID if it exists
         if (game.sportId?.includes('golf')) {
+          if (game.sportId === 'wgolf') {
+            return 'wgolf';
+          } else if (game.sportId === 'mgolf') {
+            return 'mgolf';
+          }
           return game.sportId;
         }
-        // Still no match - default to men's golf for now
+        
+        // In spring, more likely to be women's golf
+        if (game.scheduledTime && (
+            game.scheduledTime.includes('2025-04-') ||
+            game.scheduledTime.includes('2025-05-'))) {
+          return 'wgolf';
+        }
+        
+        // Default to men's golf if can't determine
         return 'mgolf';
       }
       
       // Check for swimming venues
       const swimVenues = ['pool', 'natatorium', 'aquatic', 'swimming', 'swim'];
       if (swimVenues.some(venue => locationLower.includes(venue))) {
-        // Check gender the same way as tennis
+        // Determine gender based on context
         if (locationLower.includes("women") || 
-            game.homeTeamName?.toLowerCase().includes("women") || 
-            game.awayTeamName?.toLowerCase().includes("women")) {
-          return 'wswim';
+            teamNames.includes("women") || 
+            teamNames.includes("woman") || 
+            teamNames.includes("female")) {
+          return 'wswimming';
         } else if (locationLower.includes("men") || 
-                  game.homeTeamName?.toLowerCase().includes("men") || 
-                  game.awayTeamName?.toLowerCase().includes("men")) {
-          return 'mswim';
+                  teamNames.includes("men") || 
+                  teamNames.includes("man") || 
+                  teamNames.includes("male")) {
+          return 'mswimming';
         }
-        // If no gender indicator, default to the original sport ID if it has one
+        
+        // If no gender indicator, use original sport ID if available
         if (game.sportId?.includes('swim')) {
+          if (game.sportId === 'wswim' || game.sportId === 'wswimming') {
+            return 'wswimming';
+          } else if (game.sportId === 'mswim' || game.sportId === 'mswimming') {
+            return 'mswimming';
+          }
           return game.sportId;
         }
-        // Still no match - default to women's swimming for now (more common in MAC)
-        return 'wswim';
+        
+        // Default to women's swimming (more common in MAC)
+        return 'wswimming';
+      }
+      
+      // Check for track venues
+      const trackVenues = ['track', 'field', 'stadium'];
+      if (trackVenues.some(venue => locationLower.includes(venue))) {
+        // Determine if it's track and field
+        if (locationLower.includes("track") || 
+            teamNames.includes("track")) {
+          // Determine gender
+          if (locationLower.includes("women") || 
+              teamNames.includes("women") || 
+              teamNames.includes("woman") || 
+              teamNames.includes("female")) {
+            return 'wtrack';
+          } else if (locationLower.includes("men") || 
+                    teamNames.includes("men") || 
+                    teamNames.includes("man") || 
+                    teamNames.includes("male")) {
+            return 'mtrack';
+          }
+          
+          // If no gender, check for original sport ID
+          if (game.sportId?.includes('track')) {
+            return game.sportId;
+          }
+          
+          // Default to both men's and women's (common to have both)
+          return 'track';
+        }
       }
     }
     
-    // Specific cases for games on April 18th that appear in screenshots
-    if (game.id === 'mac-118340-1744942929170' || // Use the actual ID from your data
+    // STEP 3: Special cases for specific known games
+    
+    // Handle specific known games by ID or team matchups
+    if (game.id === 'mac-118340-1744942929170' || 
         (game.homeTeamId === 'miami' && game.awayTeamId === 'northern-illinois' && 
          game.scheduledTime && game.scheduledTime.includes('2025-04-18'))) {
       return 'mtennis'; // It's men's tennis based on the data
     }
     
-    // Special cases for April 25th games
-    if (game.scheduledTime && game.scheduledTime.includes('2025-04-25')) {
-      // Unknown games on April 25 are actually women's sports
-      if (!game.sportId || game.sportId === 'unknown') {
-        // Check for tennis games by looking at teams, location, or other context
-        if (game.location && game.location.toLowerCase().includes('tennis')) {
-          return 'wtennis'; // Women's tennis on April 25
-        }
-        
-        // The "unknown" sport on April 25 is Women's Lacrosse
+    // Special cases for April 25-27th games (Women's Lacrosse)
+    if (game.scheduledTime && 
+        (game.scheduledTime.includes('2025-04-25') || 
+         game.scheduledTime.includes('2025-04-26') ||
+         game.scheduledTime.includes('2025-04-27'))) {
+         
+      // Check for specific teams known to be for women's lacrosse matches
+      const lacrosseTeams = ['youngstown state', 'detroit mercy', 'marquette', 'robert morris'];
+      if (lacrosseTeams.some(team => 
+          (game.homeTeamName && game.homeTeamName.toLowerCase().includes(team)) ||
+          (game.awayTeamName && game.awayTeamName.toLowerCase().includes(team)))) {
         return 'wlacrosse';
       }
       
-      // If it's already identified as tennis but no gender, make it women's tennis
-      if (game.sportId === 'tennis') {
+      // Women's Tennis games in April
+      if (game.location && game.location.toLowerCase().includes('tennis')) {
         return 'wtennis';
+      }
+      
+      // Unknown games on April 25-27 are likely women's lacrosse
+      if (!game.sportId || game.sportId === 'unknown') {
+        return 'wlacrosse';
       }
     }
     
+    // STEP 4: Handle sport IDs with mapping to canonical versions
+    if (game.sportId) {
+      // Map sport IDs to canonical versions
+      if (game.sportId === 'lacrosse' || game.sportId === 'wlax') {
+        return 'wlacrosse';
+      }
+      if (game.sportId === 'soccer' || game.sportId === 'wsoc') {
+        return 'wsoccer';
+      }
+      if (game.sportId === 'tennis') {
+        return 'wtennis'; // Default gender for tennis (most common in MAC)
+      }
+      if (game.sportId === 'mten') {
+        return 'mtennis';
+      }
+      if (game.sportId === 'wten') {
+        return 'wtennis';
+      }
+      if (game.sportId === 'wswim') {
+        return 'wswimming';
+      }
+      if (game.sportId === 'mswim') {
+        return 'mswimming';
+      }
+      if (game.sportId === 'swimming') {
+        return 'wswimming'; // Default gender for swimming
+      }
+      if (game.sportId === 'gym') {
+        return 'gymnastics';
+      }
+      if (game.sportId === 'fhockey') {
+        return 'field-hockey';
+      }
+      if (game.sportId === 'xc') {
+        return 'cross-country';
+      }
+      if (game.sportId === 'wvball') {
+        return 'volleyball';
+      }
+    }
+    
+    // STEP 5: If still unknown, make a best guess based on season
+    if (!game.sportId || game.sportId === 'unknown') {
+      // Log that we're making a best guess
+      console.log(`Making best guess for unknown sport in game: ${game.homeTeamName || game.homeTeamId} vs ${game.awayTeamName || game.awayTeamId}`);
+      
+      if (game.scheduledTime) {
+        const month = new Date(game.scheduledTime).getMonth() + 1; // 1-12
+        
+        // Fall sports (Aug-Nov): football, volleyball, soccer
+        if (month >= 8 && month <= 11) {
+          // If it has "MAC Championship" or similar, likely football
+          if ((game.homeTeamName && game.homeTeamName.includes("Championship")) ||
+              (game.awayTeamName && game.awayTeamName.includes("Championship")) ||
+              (game.homeTeamName && game.homeTeamName.includes("Conference")) ||
+              (game.awayTeamName && game.awayTeamName.includes("Conference"))) {
+            return 'football';
+          }
+          return 'football'; // Most common fall sport with unknown designation
+        }
+        
+        // Winter sports (Dec-Feb): basketball, swimming
+        if (month >= 12 || month <= 2) {
+          return 'mbball'; // Basketball most common winter sport
+        }
+        
+        // Spring sports (Mar-May): baseball, softball, lacrosse, tennis
+        if (month >= 3 && month <= 5) {
+          // Late April-May is likely women's lacrosse for unknown sports
+          if (month === 4 || month === 5) {
+            return 'wlacrosse';
+          }
+          return 'baseball'; // Baseball most common spring sport
+        }
+      }
+    }
+    
+    // If all else fails, return original sport ID
     return game.sportId;
   };
 
