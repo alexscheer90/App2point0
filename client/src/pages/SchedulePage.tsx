@@ -384,7 +384,7 @@ const SchedulePage = () => {
     return result;
   }, [activeGames]);
   
-  // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
+  // Create a filtered list of MAC sports for the SportSelector based on selected school
   const availableSports = useMemo(() => {
     // Complete list of MAC sports (gender only specified where multiple versions exist)
     const allMacSports = [
@@ -407,6 +407,33 @@ const SchedulePage = () => {
       { id: "wrestling", name: "Wrestling", gender: "mens" }
     ];
     
+    // If a team is selected, filter sports to only those that team participates in
+    if (selectedTeam !== "all" && macCalendarGames) {
+      // Find all sports for the selected team
+      const teamSportIds = new Set<string>();
+      
+      macCalendarGames.forEach(game => {
+        if ((game.homeTeamId === selectedTeam || game.awayTeamId === selectedTeam) && game.sportId) {
+          teamSportIds.add(game.sportId.toLowerCase());
+        }
+      });
+      
+      console.log(`Sports available for ${selectedTeam}:`, Array.from(teamSportIds));
+      
+      // Filter the full sports list to only include sports this team plays
+      const teamSports = allMacSports.filter(sport => {
+        // Handle special cases like 'mbball' vs 'basketball'
+        if (sport.id === 'mbball' && teamSportIds.has('basketball')) return true;
+        if (sport.id === 'wbball' && (teamSportIds.has('wbasketball') || teamSportIds.has('w-basketball'))) return true;
+        
+        return teamSportIds.has(sport.id.toLowerCase()) || 
+               Array.from(teamSportIds).some(id => id.includes(sport.id.toLowerCase()));
+      });
+      
+      // Return team-specific sports plus 'all' option
+      return teamSports.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    
     // Log available sports from calendar data for debugging
     if (macCalendarGames) {
       const sportIdsMap: Record<string, boolean> = {};
@@ -427,7 +454,7 @@ const SchedulePage = () => {
     }
     
     return allMacSports.sort((a, b) => a.name.localeCompare(b.name));
-  }, [macCalendarGames]);
+  }, [macCalendarGames, selectedTeam]);
   
   const handleChangeSport = (sportId: string) => {
     setSelectedSport(sportId);
@@ -648,39 +675,13 @@ const SchedulePage = () => {
       
     return teamFilter && sportFilter && viewFilter;
   }).sort((a: Game, b: Game) => {
-    // First sort by sport category (using the same priority as in the sport headers)
-    const sportPriority: Record<string, number> = {
-      'football': 1,
-      'mbball': 2,
-      'wbball': 3,
-      'basketball': 4,
-      'baseball': 5,
-      'softball': 6,
-      'volleyball': 7,
-      'soccer': 8,
-      'wsoccer': 9,
-      'msoccer': 10,
-      'lacrosse': 11,
-      'wlacrosse': 12,
-      'wrestling': 13,
-      'swimming': 14,
-      'track': 15,
-      'golf': 16,
-      'tennis': 17,
-      'gymnastics': 18,
-      'cross-country': 19,
-      'unknown': 99
-    };
+    // First sort alphabetically by sport name
+    const sportNameA = getSportName(a.sportId || 'unknown');
+    const sportNameB = getSportName(b.sportId || 'unknown');
     
-    const sportA = a.sportId?.toLowerCase() || 'unknown';
-    const sportB = b.sportId?.toLowerCase() || 'unknown';
-    
-    const priorityA = sportPriority[sportA] || 50;
-    const priorityB = sportPriority[sportB] || 50;
-    
-    // If sports are different, sort by sport priority
-    if (priorityA !== priorityB) {
-      return priorityA - priorityB;
+    // If sports are different, sort alphabetically
+    if (sportNameA !== sportNameB) {
+      return sportNameA.localeCompare(sportNameB);
     }
     
     // If same sport, sort by date
@@ -1845,7 +1846,14 @@ const SchedulePage = () => {
           sports={availableSports}
         />
         
-        <Select value={selectedTeam} onValueChange={(value) => setSelectedTeam(value)}>
+        <Select 
+          value={selectedTeam} 
+          onValueChange={(value) => {
+            // When a team is selected, reset sport to "all" to show all sports for that team
+            setSelectedTeam(value);
+            setSelectedSport("all");
+          }}
+        >
           <SelectTrigger className="w-full md:w-[200px]">
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
@@ -2046,36 +2054,12 @@ const SchedulePage = () => {
                 {/* For each sport on the selected day - sorted by importance */}
                 {Object.keys(gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')])
                   .sort((a, b) => {
-                    // Define sport priority order (football and basketball first)
-                    const sportPriority: Record<string, number> = {
-                      'football': 1,
-                      'mbball': 2,
-                      'wbball': 3,
-                      'basketball': 4,
-                      'baseball': 5,
-                      'softball': 6,
-                      'volleyball': 7,
-                      'soccer': 8,
-                      'wsoccer': 9,
-                      'msoccer': 10,
-                      'lacrosse': 11,
-                      'wlacrosse': 12,
-                      'wrestling': 13,
-                      'swimming': 14,
-                      'track': 15,
-                      'golf': 16,
-                      'tennis': 17,
-                      'gymnastics': 18,
-                      'cross-country': 19,
-                      'unknown': 99
-                    };
+                    // Get sport names for alphabetical sorting
+                    const sportNameA = getSportName(a);
+                    const sportNameB = getSportName(b);
                     
-                    // Get priority for each sport (default to 50 if not in list)
-                    const priorityA = sportPriority[a.toLowerCase()] || 50;
-                    const priorityB = sportPriority[b.toLowerCase()] || 50;
-                    
-                    // Sort by priority
-                    return priorityA - priorityB;
+                    // Sort alphabetically
+                    return sportNameA.localeCompare(sportNameB);
                   })
                   .map(sportId => {
                     const games = gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')][sportId];
@@ -2184,36 +2168,12 @@ const SchedulePage = () => {
                     {/* For each date, iterate through sports - sorted by importance */}
                     {Object.keys(gamesByDateAndSport[dateStr])
                       .sort((a, b) => {
-                        // Define sport priority order (football and basketball first)
-                        const sportPriority: Record<string, number> = {
-                          'football': 1,
-                          'mbball': 2,
-                          'wbball': 3,
-                          'basketball': 4,
-                          'baseball': 5,
-                          'softball': 6,
-                          'volleyball': 7,
-                          'soccer': 8,
-                          'wsoccer': 9,
-                          'msoccer': 10,
-                          'lacrosse': 11,
-                          'wlacrosse': 12,
-                          'wrestling': 13,
-                          'swimming': 14,
-                          'track': 15,
-                          'golf': 16,
-                          'tennis': 17,
-                          'gymnastics': 18,
-                          'cross-country': 19,
-                          'unknown': 99
-                        };
+                        // Get sport names for alphabetical sorting
+                        const sportNameA = getSportName(a);
+                        const sportNameB = getSportName(b);
                         
-                        // Get priority for each sport (default to 50 if not in list)
-                        const priorityA = sportPriority[a.toLowerCase()] || 50;
-                        const priorityB = sportPriority[b.toLowerCase()] || 50;
-                        
-                        // Sort by priority
-                        return priorityA - priorityB;
+                        // Sort alphabetically
+                        return sportNameA.localeCompare(sportNameB);
                       })
                       .map(sportId => {
                         const games = gamesByDateAndSport[dateStr][sportId];
