@@ -337,8 +337,12 @@ const SchedulePage = () => {
     };
   }, []);
   
-  // Only use MAC calendar data now
-  const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(selectedSport, selectedTeam !== "all" ? selectedTeam : undefined);
+  // Use MAC calendar data with additional client-side filtering
+  const { data: macCalendarGames, isLoading: isMacCalendarLoading } = useMacCalendar(
+    // Use 'all' for the API call to get all sports data, then filter client-side
+    "all", 
+    selectedTeam !== "all" ? selectedTeam : undefined
+  );
   const { data: schools } = useMacSchools();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
@@ -624,48 +628,90 @@ const SchedulePage = () => {
                normalizedGameSport.includes('golf');
       }
       
-      // Handle football
+      // Handle football - needs to be exact match, not partial
       if (normalizedSelectedSport === 'football') {
-        return normalizedGameSport.includes('football');
+        return normalizedGameSport === 'football';
       }
       
-      // Handle basketball variants
+      // Handle basketball variants - being more specific with matches
       if (normalizedSelectedSport === 'mbball') {
-        return (normalizedGameSport.includes('basketball') && normalizedGameSport.includes('men')) || 
-               normalizedGameSport === 'mbball' || 
-               normalizedGameSport === 'm-basketball';
+        return normalizedGameSport === 'mbball' || 
+               normalizedGameSport === 'm-basketball' ||
+               normalizedGameSport === 'mens-basketball' ||
+               (normalizedGameSport.includes('basketball') && normalizedGameSport.includes('men'));
       }
       
       if (normalizedSelectedSport === 'wbball') {
-        return (normalizedGameSport.includes('basketball') && normalizedGameSport.includes('women')) || 
-               normalizedGameSport === 'wbball' || 
-               normalizedGameSport === 'w-basketball';
+        return normalizedGameSport === 'wbball' || 
+               normalizedGameSport === 'w-basketball' ||
+               normalizedGameSport === 'womens-basketball' ||
+               (normalizedGameSport.includes('basketball') && normalizedGameSport.includes('women'));
       }
       
-      // Handle soccer variants
+      // Handle baseball with exact match
+      if (normalizedSelectedSport === 'baseball') {
+        return normalizedGameSport === 'baseball';
+      }
+      
+      // Handle softball with exact match
+      if (normalizedSelectedSport === 'softball') {
+        return normalizedGameSport === 'softball';
+      }
+      
+      // Handle soccer variants with exact match
       if (normalizedSelectedSport === 'soccer') {
-        return normalizedGameSport.includes('soccer') && 
-               (normalizedGameSport.includes('women') || !normalizedGameSport.includes('men'));
+        return normalizedGameSport === 'soccer' ||
+               normalizedGameSport === 'w-soccer' ||
+               normalizedGameSport === 'wsoccer' ||
+               normalizedGameSport === 'womens-soccer';
       }
       
-      // Special handling for Women's Lacrosse
+      // Special handling for Women's Lacrosse with specific matching
       if (normalizedSelectedSport === 'lacrosse') {
-        return normalizedGameSport.includes('lacrosse') || 
+        return normalizedGameSport === 'lacrosse' || 
                normalizedGameSport === 'wlacrosse' || 
-               normalizedGameSport === 'w-lacrosse';
+               normalizedGameSport === 'w-lacrosse' ||
+               normalizedGameSport === 'womens-lacrosse';
       }
       
-      // Handle other sports that might have gender variants in the feed
+      // Handle track with specific sport IDs
       if (normalizedSelectedSport === 'track') {
-        return normalizedGameSport.includes('track') || normalizedGameSport.includes('field');
+        return normalizedGameSport === 'track' || 
+               normalizedGameSport === 'track-field' ||
+               normalizedGameSport === 'mtrack' ||
+               normalizedGameSport === 'wtrack';
       }
       
+      // Handle cross-country with specific sport IDs
       if (normalizedSelectedSport === 'cross-country') {
-        return normalizedGameSport.includes('cross') || normalizedGameSport.includes('country');
+        return normalizedGameSport === 'cross-country' ||
+               normalizedGameSport === 'mcross' ||
+               normalizedGameSport === 'wcross';
       }
       
-      // For all other sports, check for inclusion
-      return normalizedGameSport.includes(normalizedSelectedSport) || normalizedGameSport === normalizedSelectedSport;
+      // Handle volleyball with exact match
+      if (normalizedSelectedSport === 'volleyball') {
+        return normalizedGameSport === 'volleyball';
+      }
+      
+      // Handle wrestling with exact match
+      if (normalizedSelectedSport === 'wrestling') {
+        return normalizedGameSport === 'wrestling';
+      }
+      
+      // Handle field hockey with exact match
+      if (normalizedSelectedSport === 'field-hockey') {
+        return normalizedGameSport === 'field-hockey';
+      }
+      
+      // Handle gymnastics with exact match
+      if (normalizedSelectedSport === 'gymnastics') {
+        return normalizedGameSport === 'gymnastics' || 
+               normalizedGameSport === 'wgymnastics';
+      }
+      
+      // For all other sports, exact match is safer
+      return normalizedGameSport === normalizedSelectedSport;
     })();
       
     // Filter by view (calendar view or all games)
