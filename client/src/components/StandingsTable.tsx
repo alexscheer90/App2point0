@@ -38,8 +38,8 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   // Check if this sport shows ties (soccer)
   const showTies = sport === 'soccer' || sport === 'wsoc' || sport === 'msoc';
   
-  // Check if this is wrestling (which has East/West divisions)
-  const hasEastWestDivision = sport === 'wrestling';
+  // Check if this is a sport with East/West divisions
+  const hasEastWestDivision = sport === 'wrestling' || sport === 'wten';
 
   // Calculate column span for table headers
   const conferenceColSpan = showTies ? 4 : 3;
@@ -48,9 +48,19 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
   
   if (hasEastWestDivision) {
-    // Define East and West division schools for wrestling if not already specified in the data
-    const eastSchools = ['lockhaven', 'georgemason', 'rider', 'edinboro', 'clevelandstate', 'clarion', 'bloomsburg'];
-    const westSchools = ['northernillinois', 'centralmichigan', 'ohio', 'siuedwardsville', 'buffalo', 'kentstate'];
+    // Define division schools based on sport
+    let eastSchools: string[] = [];
+    let westSchools: string[] = [];
+    
+    if (sport === 'wrestling') {
+      // Wrestling division schools
+      eastSchools = ['lockhaven', 'georgemason', 'rider', 'edinboro', 'clevelandstate', 'clarion', 'bloomsburg'];
+      westSchools = ['northernillinois', 'centralmichigan', 'ohio', 'siuedwardsville', 'buffalo', 'kentstate'];
+    } else if (sport === 'wten') {
+      // Women's Tennis division schools
+      eastSchools = ['buffalo', 'ballstate', 'toledo', 'miamioh'];
+      westSchools = ['northernillinois', 'westernmichigan', 'bowlinggreen', 'easternmichigan'];
+    }
     
     // First check if division information is already in the entries
     const hasDivisionData = processedEntries.some(entry => entry.division !== undefined);
