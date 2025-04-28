@@ -1,5 +1,4 @@
 import { StandingsEntry } from "@shared/schema";
-import { useState } from "react";
 import { useMacSchools } from "../hooks/useSchool";
 
 // MAC colors
@@ -26,10 +25,10 @@ interface ExtendedStandingsEntry extends StandingsEntry {
 }
 
 const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProps) => {
-  const { data: schools_data } = useMacSchools();
+  const { data: schools } = useMacSchools();
   
   // Handle loading state
-  if (!schools_data) {
+  if (!schools) {
     return (
       <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 p-4 animate-pulse">
         <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
@@ -38,8 +37,6 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
       </div>
     );
   }
-  
-  const [schools] = useState(() => schools_data);
   
   // Log the entries and school IDs for debugging
   console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.conference.wins}-${e.conference.losses})`));
