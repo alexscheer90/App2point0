@@ -43,7 +43,11 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   console.log("Available school IDs:", schools.map(s => s.id));
   
   // Women's soccer needs to show ties (W-L-T format)
-  const showTies = sport === 'wsoc' || sport === 'wsoccer';
+  const isWomensSoccer = sport === 'wsoc' || sport === 'wsoccer';
+  
+  // Show ties if this is women's soccer or if any entry has ties
+  const showTies = isWomensSoccer || entries.some(e => 
+    e.conference.ties !== undefined || e.overall.ties !== undefined);
   
   // Check if this is wrestling (which has East/West divisions)
   const hasEastWestDivision = sport === 'wrestling';

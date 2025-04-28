@@ -36,22 +36,24 @@ export class GoogleSheetsService {
       overallRecord: 5,   // Column F - Overall Record
       overallPercentage: 8 // Column I - Overall Percentage
     },
-    // Women's Soccer mapping (Columns A, E, G, H, J)
+    // Women's Soccer mapping (Columns A, D, E, G, H, I, J)
     'wsoc': {
       schoolId: 0,        // Column A - School Name
-      confRecord: 3,      // Column D - Conference Record
+      confRecord: 3,      // Column D - Conference Record (W-L-T format)
       confPercentage: 4,  // Column E - Conference Percentage
       points: 6,          // Column G - Points
       goals: 7,           // Column H - Goals For/Against
+      overallRecord: 8,   // Column I - Overall Record (W-L-T format)
       overallPercentage: 9 // Column J - Overall Percentage
     },
     // Also map wsoccer to the same schema
     'wsoccer': {
       schoolId: 0,        // Column A - School Name
-      confRecord: 3,      // Column D - Conference Record  
+      confRecord: 3,      // Column D - Conference Record (W-L-T format)
       confPercentage: 4,  // Column E - Conference Percentage
       points: 6,          // Column G - Points
       goals: 7,           // Column H - Goals For/Against
+      overallRecord: 8,   // Column I - Overall Record (W-L-T format)
       overallPercentage: 9 // Column J - Overall Percentage
     },
     // Wrestling mapping (Columns A, C, E, F, I with division)
