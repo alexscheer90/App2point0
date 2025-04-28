@@ -442,9 +442,14 @@ const backupStandings: Record<string, StandingsEntry[]> = {
   'football': footballStandings,
 };
 
-// Mock Google Sheet data for testing (these would come from the real Google Sheets API)
-// In a real implementation, you would fetch this data from a Google Sheet API endpoint
-const mockGoogleSheetData: Record<string, any[][]> = {
+// TODO: For production, implement API call to fetch real data from the actual Google Sheet:
+// https://docs.google.com/spreadsheets/d/1Vq8UJeuIxVBwYKIJKOlFvZY2ITrApOvgMKhgjvoCmTs/
+// As instructed by the client, we should only fetch data from the authorized sources
+// For development, we're using the MAC website scraping as primary data source
+
+// Sample data structure format for reference only (not used in the actual code)
+/* Example of expected data format:
+const SAMPLE_FORMAT = {
   // Women's Soccer example with points and goals columns (Columns A, D, E, G, H, J)
   'wsoc': [
     ['School', 'Mascot', 'Division', 'Record', 'Conf Pct', 'GP', 'Points', 'Goals', 'GF/GA', 'Overall Pct'],
@@ -642,38 +647,13 @@ const mockGoogleSheetData: Record<string, any[][]> = {
     ['Eastern Michigan', 'Eagles', '', '1-7', '0.125', '5-17', '3-8', '2-9', '0.227'],
     ['Northern Illinois', 'Huskies', '', '0-8', '0.000', '3-19', '2-9', '1-10', '0.136']
   ],
-  // Volleyball: Columns A, D, E, F, I
-  'volleyball': [
-    ['School', 'Mascot', 'Division', 'Conference', 'Conf Pct', 'Overall', 'Home', 'Away', 'Overall Pct'],
-    ['Ball State', 'Cardinals', '', '16-2', '0.889', '25-8', '14-2', '11-6', '0.758'],
-    ['Bowling Green', 'Falcons', '', '15-3', '0.833', '23-9', '13-3', '10-6', '0.719'],
-    ['Western Michigan', 'Broncos', '', '14-4', '0.778', '22-10', '12-4', '10-6', '0.688'],
-    ['Akron', 'Zips', '', '13-5', '0.722', '19-10', '11-4', '8-6', '0.655'],
-    ['Ohio', 'Bobcats', '', '10-8', '0.556', '15-13', '9-5', '6-8', '0.536'],
-    ['Central Michigan', 'Chippewas', '', '9-9', '0.500', '14-15', '8-6', '6-9', '0.483'],
-    ['Kent State', 'Golden Flashes', '', '8-10', '0.444', '13-16', '7-7', '6-9', '0.448'],
-    ['Northern Illinois', 'Huskies', '', '7-11', '0.389', '12-18', '6-8', '6-10', '0.400'],
-    ['Eastern Michigan', 'Eagles', '', '6-12', '0.333', '11-19', '6-9', '5-10', '0.367'],
-    ['Toledo', 'Rockets', '', '5-13', '0.278', '10-21', '5-10', '5-11', '0.323'],
-    ['Buffalo', 'Bulls', '', '4-14', '0.222', '9-22', '4-11', '5-11', '0.290'],
-    ['Miami (OH)', 'RedHawks', '', '1-17', '0.056', '6-25', '3-12', '3-13', '0.194']
-  ],
-  // set wvball to use the same data as volleyball
-  'wvball': [
-    ['School', 'Mascot', 'Division', 'Conference', 'Conf Pct', 'Overall', 'Home', 'Away', 'Overall Pct'],
-    ['Ball State', 'Cardinals', '', '16-2', '0.889', '25-8', '14-2', '11-6', '0.758'],
-    ['Bowling Green', 'Falcons', '', '15-3', '0.833', '23-9', '13-3', '10-6', '0.719'],
-    ['Western Michigan', 'Broncos', '', '14-4', '0.778', '22-10', '12-4', '10-6', '0.688'],
-    ['Akron', 'Zips', '', '13-5', '0.722', '19-10', '11-4', '8-6', '0.655'],
-    ['Ohio', 'Bobcats', '', '10-8', '0.556', '15-13', '9-5', '6-8', '0.536'],
-    ['Central Michigan', 'Chippewas', '', '9-9', '0.500', '14-15', '8-6', '6-9', '0.483'],
-    ['Kent State', 'Golden Flashes', '', '8-10', '0.444', '13-16', '7-7', '6-9', '0.448'],
-    ['Northern Illinois', 'Huskies', '', '7-11', '0.389', '12-18', '6-8', '6-10', '0.400'],
-    ['Eastern Michigan', 'Eagles', '', '6-12', '0.333', '11-19', '6-9', '5-10', '0.367'],
-    ['Toledo', 'Rockets', '', '5-13', '0.278', '10-21', '5-10', '5-11', '0.323'],
-    ['Buffalo', 'Bulls', '', '4-14', '0.222', '9-22', '4-11', '5-11', '0.290'],
-    ['Miami (OH)', 'RedHawks', '', '1-17', '0.056', '6-25', '3-12', '3-13', '0.194']
-  ]
+  // ... more sports would follow with similar data structure
+}
+*/
+
+// Note: This is a backup data set that is only used when MAC website doesn't return data
+const backupStandings: Record<string, StandingsEntry[]> = {
+  // Backup standings in case the MAC website is down
 };
 
 /**
@@ -698,38 +678,24 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     
     console.log(`Fetching ${sportId} standings from MAC website`);
     
-    // First: Try to get data from Google Sheets (mock data for now)
-    // In a production environment, you would fetch this data from an actual Google Sheet
-    // using the Google Sheets API with proper authentication
+    // For development, always use MAC website scraping as the primary source
     let standings: StandingsEntry[] = [];
     
-    if (mockGoogleSheetData[sportId]) {
-      // Process the Google Sheet data with our new method
-      standings = googleSheetsService.processGoogleSheetData(sportId, mockGoogleSheetData[sportId]);
-      console.log(`Successfully processed ${standings.length} standings entries from Google Sheets`);
-    }
+    // First: Try to get data from the MAC website
+    let macSportId = sportId;
     
-    // Second: If no Google Sheet data, try to get data from the MAC website
-    if (standings.length === 0) {
-      let macSportId = sportId;
-      if (sportId === 'mbball') {
-        macSportId = 'mbball';
-      } else if (sportId === 'wbball') {
-        macSportId = 'wbball';
-      }
-      
-      console.log(`No Google Sheet data found, fetching from MAC website instead`);
-      standings = await googleSheetsService.fetchStandings(macSportId);
-    }
+    // Get the data directly from the MAC website
+    standings = await googleSheetsService.fetchStandings(macSportId);
+    console.log(`Fetched ${standings.length} entries from MAC website`);
     
-    // Third: If we still have no data, use our backup data if available
+    // Second: If we have no data, use our backup data if available
     if (standings.length === 0) {
       if (backupStandings[sportId]) {
-        console.log(`No data returned from sources. Using backup data for ${sportId}`);
+        console.log(`No data returned from MAC website. Using backup data for ${sportId}`);
         standings = backupStandings[sportId];
       } else {
-        // No backup data available, generate some data for this sport
-        console.log(`No data or backup available for ${sportId}. Generating fallback data.`);
+        // For development only: Generate standings with conference records only
+        console.log(`No data available for ${sportId}. Generating development records.`);
         standings = generateStandingsForSport(sportId);
       }
     }
