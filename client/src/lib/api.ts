@@ -335,45 +335,22 @@ export async function getNews(schoolId?: string): Promise<NewsItem[]> {
   }
 }
 
-// Standings API - Implementation using real data from Google Sheets and MAC website scraping
+// Standings API - Implementation using real data from Google Sheets
 export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
   try {
     console.log(`Fetching standings for: ${sportId}`);
     
-    // Special case for women's soccer - use the MAC website scraper directly
-    if (sportId === 'wsoc' || sportId === 'wsoccer') {
-      console.log("Using MAC website scraper for women's soccer standings");
-      try {
-        // Try to get women's soccer standings directly from MAC website via our server API
-        const response = await apiRequest("GET", `/api/mac/standings/${sportId}`);
-        const result = await response.json();
-        
-        if (result.success && result.data && Array.isArray(result.data)) {
-          console.log(`Successfully fetched ${result.data.length} women's soccer standings entries from MAC website`);
-          return result.data;
-        }
-      } catch (err) {
-        console.error("Failed to fetch women's soccer standings from MAC website:", err);
-        // Continue to next data source if MAC scraper fails
-      }
-    }
-    
     // Try to get standings from our Google Sheets API endpoint
-    try {
-      const response = await apiRequest("GET", `/api/sheets/standings/${sportId}`);
-      const result = await response.json();
-      
-      if (result.success && result.data && Array.isArray(result.data)) {
-        console.log(`Successfully fetched ${result.data.length} standings entries from Google Sheets`);
-        return result.data;
-      }
-    } catch (err) {
-      console.error("Failed to fetch standings from Google Sheets:", err);
-      // Continue to next data source if Google Sheets fails
+    const response = await apiRequest("GET", `/api/sheets/standings/${sportId}`);
+    const result = await response.json();
+    
+    if (result.success && result.data && Array.isArray(result.data)) {
+      console.log(`Successfully fetched ${result.data.length} standings entries from Google Sheets`);
+      return result.data;
     }
     
-    // If both direct methods failed, fall back to client-side scraping as a last resort
-    console.log("Primary data sources not available, falling back to client-side scraper");
+    // If Google Sheets fetch failed, fall back to scraper
+    console.log("Google Sheets data not available, falling back to scraper");
     const sport = macSports.find(s => s.id === sportId);
     
     if (!sport) {
@@ -386,16 +363,12 @@ export async function getStandings(sportId: string): Promise<StandingsEntry[]> {
       return [];
     }
     
-    // Use the client-side scraper to get real-time data as a last resort
-    try {
-      const standings = await scrapeStandingsForSport(sport);
-      
-      // If we got real data, return it
-      if (standings.length > 0) {
-        return standings;
-      }
-    } catch (err) {
-      console.error("Failed to fetch standings from client-side scraper:", err);
+    // Use the scraper to get real-time data as a backup
+    const standings = await scrapeStandingsForSport(sport);
+    
+    // If we got real data, return it
+    if (standings.length > 0) {
+      return standings;
     }
     
     // If all methods failed, return empty array

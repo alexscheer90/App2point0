@@ -173,7 +173,7 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
                   <img 
                     src={
                       awayTeam?.logoUrl || 
-                      (game.awayTeam ? `/@fs/home/runner/workspace/attached_assets/${game.awayTeam}.png` : '/school-logos/generic-logo.png')
+                      getOptimizedImagePath(game.awayTeam || "", false)
                     } 
                     alt={game.awayTeam} 
                     className="object-contain w-full h-full p-1"
@@ -198,7 +198,7 @@ export default function GameScoreCard({ game, isLive = false, showType = "card" 
                   <img 
                     src={
                       homeTeam?.logoUrl || 
-                      (game.homeTeam ? `/@fs/home/runner/workspace/attached_assets/${game.homeTeam}.png` : '/school-logos/generic-logo.png')
+                      getOptimizedImagePath(game.homeTeam || "", false)
                     } 
                     alt={game.homeTeam} 
                     className="object-contain w-full h-full p-1"

@@ -39,11 +39,9 @@ export const schoolSchema = z.object({
   primaryColor: z.string(),
   secondaryColor: z.string(),
   logoUrl: z.any(), // Changed to any to support imported images
-  logoPath: z.string().optional(), // Used for consistent image path references
   city: z.string().optional(),
   state: z.string().optional(),
   affiliate: z.boolean().optional(), // To mark schools that are MAC affiliates
-  isMacSchool: z.boolean().optional(), // Flag to distinguish MAC vs non-MAC schools
   sidearmUrl: z.string().optional(), // URL to the school's Sidearm sports website
   sidearmScoresApi: z.string().optional(), // URL to the school's Sidearm scores API endpoint
 });
@@ -55,7 +53,6 @@ export const sportSchema = z.object({
   officialUrl: z.string().optional(),
   scheduleOnly: z.boolean().optional(), // Used to mark sports that should only appear in schedule views
   displayName: z.string().optional(), // Display name for the sport in dropdowns
-  hidden: z.boolean().optional(), // Used to hide legacy IDs from dropdowns but keep for data filtering
 });
 
 export const gameStatusSchema = z.enum(["scheduled", "live", "final", "postponed", "cancelled"]);
@@ -103,19 +100,20 @@ export const gameSchema = z.object({
 export const standingsEntrySchema = z.object({
   id: z.string(),
   schoolId: z.string(),
-  schoolName: z.string().optional(), // Added for display purposes
   sportId: z.string(),
-  division: z.string().optional(), // Changed to string to support any division name
-  confWins: z.number(), // Changed from nested object to flat structure
-  confLosses: z.number(),
-  confTies: z.number().optional(),
-  confWinPercentage: z.number(),
-  overallWins: z.number().optional(), // Made overall stats optional
-  overallLosses: z.number().optional(),
-  overallTies: z.number().optional(),
-  overallWinPercentage: z.number().optional(),
-  points: z.number().optional(), // Added for sports like soccer that use points
-  notes: z.string().optional(), // For any additional information
+  division: z.enum(["East", "West"]).optional(),
+  conference: z.object({
+    wins: z.number(),
+    losses: z.number(),
+    ties: z.number().optional(),
+    winningPercentage: z.number(),
+  }),
+  overall: z.object({
+    wins: z.number(),
+    losses: z.number(),
+    ties: z.number().optional(),
+    winningPercentage: z.number(),
+  }),
 });
 
 export const newsItemSchema = z.object({
@@ -142,7 +140,6 @@ export const rivalrySchema = z.object({
     ties: z.number(),
   }),
   trophyName: z.string().optional(),
-  trophyImagePath: z.string().optional(), // Path to the trophy image
   firstGame: z.string().optional(),
   description: z.string().optional(),
   lastGameId: z.string().optional(),

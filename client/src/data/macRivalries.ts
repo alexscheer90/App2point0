@@ -14,7 +14,6 @@ export const macRivalries: Rivalry[] = [
       ties: 6
     },
     trophyName: "Anniversary Award",
-    trophyImagePath: "@assets/Anniversary_Award_Front.jpg",
     firstGame: "1920-11-06",
     description: "The Anniversary Award is presented to the winner of the football game between Kent State and Bowling Green. The award commemorates the founding of both institutions, which trace their roots back to 1910, with the award being inaugurated in 1985."
   },
@@ -42,7 +41,6 @@ export const macRivalries: Rivalry[] = [
       ties: 4
     },
     trophyName: "I-75 Trophy",
-    trophyImagePath: "@assets/battle_of_i-75_trophy.0.jpg",
     firstGame: "1919-11-06",
     description: "The Battle of I-75 is played between the Toledo Rockets and the Bowling Green Falcons, named after Interstate 75 which connects the two schools, separating them by just 25 miles. The rivalry dates back to 1919 and is one of the most heated in the MAC.",
     lastGameId: "game1"
@@ -57,8 +55,6 @@ export const macRivalries: Rivalry[] = [
       team2Wins: 40,
       ties: 2
     },
-    trophyName: "Battle of the Bricks",
-    trophyImagePath: "@assets/Battle of the bricks.jpg",
     firstGame: "1908-11-28",
     description: "The Battle of the Bricks is contested between Miami University and Ohio University, two of the oldest universities in Ohio. The name references the brick architecture that both historic campuses share. The rivalry began in 1908 and is one of the oldest in the MAC."
   },
@@ -73,7 +69,6 @@ export const macRivalries: Rivalry[] = [
       ties: 2
     },
     trophyName: "Bronze Stalk",
-    trophyImagePath: "@assets/Bronze Stalk.webp",
     firstGame: "1941-09-27",
     description: "The Bronze Stalk trophy represents the importance of corn to the local economies of Illinois and Indiana. The trophy was introduced in 2008, though the rivalry between Northern Illinois and Ball State dates back to 1941."
   },
@@ -88,7 +83,6 @@ export const macRivalries: Rivalry[] = [
       ties: 1
     },
     trophyName: "Wagon Wheel",
-    trophyImagePath: "@assets/Wagon Wheel.jpg",
     firstGame: "1923-11-09",
     description: "The Battle for the Wagon Wheel is contested between Kent State and Akron. The trophy originated when Dr. Kenneth Clement found a small wooden wagon wheel in an Akron barn that is believed to have been part of the carriage that carried John R. Buchtel, the founder of what became the University of Akron."
   },
@@ -119,7 +113,6 @@ export const macRivalries: Rivalry[] = [
       ties: 0
     },
     trophyName: "Michigan MAC Trophy",
-    trophyImagePath: "@assets/Michigan MAC trophy.jpg",
     firstGame: "1907-10-16",
     description: "The Michigan MAC Trophy is contested between Central Michigan, Eastern Michigan, and Western Michigan. The trophy was established in 2005 to be awarded to the Michigan-based MAC school with the best head-to-head record each year."
   },

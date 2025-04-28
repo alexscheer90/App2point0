@@ -18,23 +18,15 @@ const nonMacSchoolsMap: Record<string, NonMacSchool> = {
     shortName: "NKU",
     primaryColor: "#000000",
     secondaryColor: "#FFC72C",
-    logoUrl: "/school-logos/non-mac/northernkentucky.png",
+    logoUrl: "/public/school-logos/non-mac/northernkentucky.png",
     conference: "Horizon"
-  },
-  "Kentucky": {
-    name: "Kentucky",
-    shortName: "UK",
-    primaryColor: "#0033A0",
-    secondaryColor: "#FFFFFF",
-    logoUrl: "/school-logos/non-mac/kentucky.png",
-    conference: "SEC"
   },
   "Valparaiso": {
     name: "Valparaiso",
     shortName: "Valpo",
     primaryColor: "#613318",
     secondaryColor: "#FFC425",
-    logoUrl: "/school-logos/non-mac/valparaiso.png",
+    logoUrl: "/public/school-logos/non-mac/valparaiso.png",
     conference: "Missouri Valley"
   },
   "Ohio State": {
@@ -42,7 +34,7 @@ const nonMacSchoolsMap: Record<string, NonMacSchool> = {
     shortName: "OSU",
     primaryColor: "#BB0000",
     secondaryColor: "#666666",
-    logoUrl: "/school-logos/non-mac/ohiostate.png",
+    logoUrl: "/public/school-logos/non-mac/ohiostate.png",
     conference: "Big Ten"
   }
 };
@@ -52,45 +44,6 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
   
   // Normalize the name for comparison
   const normalizedName = name.trim();
-  
-  // Special case for Kentucky vs Northern Kentucky disambiguation
-  // Check for exact match with locations and timing
-  if (normalizedName.toLowerCase() === "northern kentucky" && 
-      context?.toLowerCase().includes("lexington")) {
-    // This is likely University of Kentucky in Lexington, not Northern Kentucky University
-    return {
-      id: "kentucky",
-      name: "Kentucky",
-      shortName: "UK",
-      mascot: "Wildcats",
-      primaryColor: "#0033A0", // UK colors
-      secondaryColor: "#FFFFFF",
-      logoUrl: "/school-logos/non-mac/kentucky.png",
-      logoPath: "/school-logos/non-mac/kentucky.png",
-      city: "Lexington",
-      state: "KY",
-      isMacSchool: false
-    };
-  }
-  
-  // Special case handling for University of Kentucky
-  if (normalizedName.toLowerCase() === "kentucky" || 
-      normalizedName.toLowerCase() === "uk" ||
-      normalizedName.toLowerCase().includes("wildcats")) {
-    return {
-      id: "kentucky",
-      name: "Kentucky",
-      shortName: "UK",
-      mascot: "Wildcats",
-      primaryColor: "#0033A0", // UK colors
-      secondaryColor: "#FFFFFF",
-      logoUrl: "/school-logos/non-mac/kentucky.png",
-      logoPath: "/school-logos/non-mac/kentucky.png",
-      city: "Lexington",
-      state: "KY",
-      isMacSchool: false
-    };
-  }
   
   // Special case handling for Valparaiso
   if (normalizedName.toLowerCase().includes("valparaiso") || 
@@ -104,10 +57,8 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
       primaryColor: "#402E82", // Valpo colors 
       secondaryColor: "#FDAC43",
       logoUrl: "/school-logos/non-mac/valparaiso.png", // Using consistent path
-      logoPath: "/school-logos/non-mac/valparaiso.png", // Duplicate for compatibility 
       city: "Valparaiso",
-      state: "IN",
-      isMacSchool: false
+      state: "IN"
     };
   }
   
@@ -123,10 +74,8 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
       primaryColor: "#FFC72C", // NKU colors
       secondaryColor: "#000000",
       logoUrl: "/school-logos/non-mac/northernkentucky.png",
-      logoPath: "/school-logos/non-mac/northernkentucky.png",
       city: "Highland Heights",
-      state: "KY",
-      isMacSchool: false
+      state: "KY"
     };
   }
   
@@ -232,9 +181,7 @@ export function findSchoolByName(name: string | undefined, context?: string): Sc
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
     logoUrl: logoUrl, // Try to use a matching logo file based on name
-    logoPath: logoUrl, // Same as logoUrl for consistency
     city: "",
-    state: "",
-    isMacSchool: false
+    state: ""
   };
 }

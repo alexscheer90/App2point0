@@ -1,5 +1,4 @@
 import { StandingsEntry } from "@shared/schema";
-import { useState } from "react";
 import { useMacSchools } from "../hooks/useSchool";
 
 // MAC colors
@@ -13,11 +12,16 @@ interface StandingsTableProps {
   favoriteSchoolId?: string | null;
 }
 
+// Extend StandingsEntry to include division information for wrestling
+interface ExtendedStandingsEntry extends StandingsEntry {
+  division?: 'East' | 'West';
+}
+
 const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProps) => {
-  const { data: schools_data } = useMacSchools();
+  const { data: schools } = useMacSchools();
   
   // Handle loading state
-  if (!schools_data) {
+  if (!schools) {
     return (
       <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 p-4 animate-pulse">
         <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
@@ -27,34 +31,22 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     );
   }
   
-  const [schools] = useState(() => schools_data);
-  
   // Log the entries and school IDs for debugging
-  console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.confWins}-${e.confLosses})`));
+  console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.conference.wins}-${e.conference.losses})`));
   console.log("Available school IDs:", schools.map(s => s.id));
+  
+  // Check if this sport shows ties (soccer)
+  const showTies = sport === 'soccer' || sport === 'wsoc' || sport === 'msoc';
   
   // Check if this is wrestling (which has East/West divisions)
   const hasEastWestDivision = sport === 'wrestling';
-  
-  // Check if this is women's soccer (has W-L-T format and possibly points columns)
-  const isWomensSoccer = sport === 'wsoc' || sport === 'wsoccer';
-  
-  // Show ties if this is women's soccer or if any entry has ties
-  const showTies = isWomensSoccer || entries.some(e => e.confTies !== undefined && e.confTies > 0);
-  
-  // Check if any entries have points data
-  const hasPoints = entries.some(e => e.points !== undefined && e.points > 0);
 
   // Calculate column span for table headers
-  // PTS (if applicable), W, L, [T], PCT
-  // Adjust column count based on points and ties
-  let columnCount = 3; // W, L, PCT by default
-  if (showTies) columnCount++;
-  if (hasPoints) columnCount++;
-  const conferenceColSpan = columnCount;
+  const conferenceColSpan = showTies ? 4 : 3;
+  const overallColSpan = showTies ? 4 : 3;
   
-  // Create a local copy of entries for processing
-  let processedEntries = [...entries];
+  // Process entries based on sport
+  let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
   
   if (hasEastWestDivision) {
     // Define East and West division schools for wrestling if not already specified in the data
@@ -68,9 +60,9 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
       // If division data is not available in the entries, set it based on school lists
       processedEntries = processedEntries.map(entry => {
         if (eastSchools.includes(entry.schoolId)) {
-          return { ...entry, division: 'East' };
+          return { ...entry, division: 'East' as const };
         } else if (westSchools.includes(entry.schoolId)) {
-          return { ...entry, division: 'West' };
+          return { ...entry, division: 'West' as const };
         }
         return entry;
       });
@@ -79,26 +71,26 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     // Sort entries within each division by winning percentage
     const eastEntries = processedEntries
       .filter(entry => entry.division === 'East')
-      .sort((a, b) => b.confWinPercentage - a.confWinPercentage);
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
     
     const westEntries = processedEntries
       .filter(entry => entry.division === 'West')
-      .sort((a, b) => b.confWinPercentage - a.confWinPercentage);
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
     
     // Other entries that don't have a division
     const otherEntries = processedEntries
       .filter(entry => !entry.division)
-      .sort((a, b) => b.confWinPercentage - a.confWinPercentage);
+      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
     
     // Combine entries in division order
     processedEntries = [...eastEntries, ...westEntries, ...otherEntries];
   } else {
     // For other sports, just sort by winning percentage
-    processedEntries.sort((a, b) => b.confWinPercentage - a.confWinPercentage);
+    processedEntries.sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
   }
   
   // Render team row
-  const renderTeamRow = (entry: StandingsEntry) => {
+  const renderTeamRow = (entry: ExtendedStandingsEntry) => {
     const school = schools.find(s => s.id === entry.schoolId);
     if (!school) return null;
     
@@ -138,52 +130,45 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
             </div>
           </div>
         </td>
-        
-        {/* Points column for soccer if applicable */}
-        {hasPoints && (
-          <td className="px-1 py-3 text-center text-sm">
-            {entry.points || 0}
-          </td>
-        )}
-        
-        {/* Conference Record (always shown) */}
+        {/* Conference Record */}
         <td className="px-1 py-3 text-center text-sm">
-          {entry.confWins}
+          {entry.conference.wins}
         </td>
         <td className="px-1 py-3 text-center text-sm">
-          {entry.confLosses}
+          {entry.conference.losses}
         </td>
         {showTies && (
           <td className="px-1 py-3 text-center text-sm">
-            {entry.confTies || 0}
+            {entry.conference.ties || 0}
           </td>
         )}
-        
-        {/* Conference Percentage */}
         <td className="px-1 py-3 text-center text-sm">
-          {entry.confWinPercentage.toFixed(3).replace(/^0+/, '')}
+          {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
+        </td>
+        {/* Overall Record */}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.overall.wins}
+        </td>
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.overall.losses}
+        </td>
+        {showTies && (
+          <td className="px-1 py-3 text-center text-sm">
+            {entry.overall.ties || 0}
+          </td>
+        )}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.overall.winningPercentage.toFixed(3).replace(/^0+/, '')}
         </td>
       </tr>
     );
-  };
-  
-  // Calculate the total number of columns in the table for colSpan values
-  const getTotalColumns = () => {
-    let columns = 1; // Team column
-    
-    // Conference columns (W, L, [T], PCT)
-    columns += showTies ? 4 : 3;
-    
-    // No longer counting Overall columns as they've been removed
-    
-    return columns;
   };
   
   // Render division header
   const renderDivisionHeader = (divisionName: string) => (
     <tr className="bg-gray-100">
       <td
-        colSpan={getTotalColumns()}
+        colSpan={showTies ? 9 : 7}
         className="px-3 py-2 text-sm font-medium text-gray-700"
       >
         {divisionName} DIVISION
@@ -203,23 +188,23 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th colSpan={conferenceColSpan} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Conference
               </th>
+              <th colSpan={overallColSpan} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
+                Overall
+              </th>
             </tr>
             <tr style={{ backgroundColor: MAC_NAVY }}>
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
-              
-              {/* Points column for soccer if applicable */}
-              {hasPoints && (
-                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PTS</th>
-              )}
-              
-              {/* Standard W-L-T columns (always shown) */}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
               {showTies && (
                 <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
               )}
-              
-              {/* PCT column shown for all */}
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+              {showTies && (
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
+              )}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
             </tr>
           </thead>

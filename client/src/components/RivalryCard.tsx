@@ -1,9 +1,10 @@
 import React from 'react';
 import { Rivalry, School } from '@shared/schema';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useSchool } from '@/hooks/useSchool';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Trophy } from 'lucide-react';
 import { getOptimizedImagePath, handleImageError } from '../utils/imageOptimizer';
 
 interface RivalryCardProps {
@@ -33,7 +34,7 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
       }
     }
   };
-  
+
   const renderTeamLogo = (team: School, size: string = "w-16 h-16") => (
     <div className="flex flex-col items-center text-center">
       {team.logoUrl ? (
@@ -66,8 +67,14 @@ const RivalryCard = ({ rivalry }: RivalryCardProps) => {
   return (
     <Card className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 h-full">
       <CardHeader className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 pb-2">
-        <div className="flex justify-center items-center text-center">
+        <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-semibold">{rivalry.name}</CardTitle>
+          {rivalry.trophyName && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Trophy className="h-3 w-3" />
+              {rivalry.trophyName}
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent className="pt-4">

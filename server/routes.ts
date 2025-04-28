@@ -8,7 +8,6 @@ import { WebSocketServer, WebSocket } from "ws";
 import importerRoutes from "./routes/importer";
 import googleSheetsRoutes from "./routes/googleSheets";
 import liveStatsRoutes from "./routes/livestats";
-import macStandingsRoutes from "./routes/macStandings";
 import express from "express";
 import path from "path";
 import { gameScheduleService } from "./services/gameScheduleService";
@@ -25,9 +24,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register live stats routes
   app.use('/api/live-stats', liveStatsRoutes);
-  
-  // Register MAC standings scraper routes
-  app.use('/api/mac', macStandingsRoutes);
   
   // API endpoint to get a game by ID
   app.get('/api/games/:gameId', async (req, res) => {

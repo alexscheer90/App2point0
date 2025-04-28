@@ -792,31 +792,10 @@ export class DataImporter {
           const homeTeamName = teamMatch[1].trim();
           const awayTeamName = teamMatch[2].trim();
           
-          // Normalize the team names for mapping
-          // Special case fix for "Kentucky" vs "Northern Kentucky" confusion
-          let normalizedHomeTeam = homeTeamName;
-          let normalizedAwayTeam = awayTeamName;
-          
-          // Exact match check for Kentucky/Northern Kentucky to prevent confusion
-          if (homeTeamName.toLowerCase() === 'kentucky') {
-            normalizedHomeTeam = 'Kentucky';
-            console.log('Fixed team name: Normalized homeTeam to "Kentucky"');
-          } else if (homeTeamName.toLowerCase() === 'northern kentucky') {
-            normalizedHomeTeam = 'Northern Kentucky';
-            console.log('Fixed team name: Normalized homeTeam to "Northern Kentucky"');
-          }
-          
-          if (awayTeamName.toLowerCase() === 'kentucky') {
-            normalizedAwayTeam = 'Kentucky';
-            console.log('Fixed team name: Normalized awayTeam to "Kentucky"');
-          } else if (awayTeamName.toLowerCase() === 'northern kentucky') {
-            normalizedAwayTeam = 'Northern Kentucky';
-            console.log('Fixed team name: Normalized awayTeam to "Northern Kentucky"');
-          }
-          
           // Convert team names to IDs based on our known schools
-          const homeTeamId = this.getSchoolIdFromName(normalizedHomeTeam);
-          const awayTeamId = this.getSchoolIdFromName(normalizedAwayTeam);
+          // This is simplified and might need more sophisticated matching
+          const homeTeamId = this.getSchoolIdFromName(homeTeamName);
+          const awayTeamId = this.getSchoolIdFromName(awayTeamName);
           
           // If a school filter was set and neither team matches, skip
           if (filterSchoolId && homeTeamId !== filterSchoolId && awayTeamId !== filterSchoolId) {
@@ -904,9 +883,9 @@ export class DataImporter {
             sportId: this.normalizeSportId(sportId),
             homeTeamId,
             awayTeamId,
-            // Use normalized team names to ensure consistency
-            homeTeamName: normalizedHomeTeam,
-            awayTeamName: normalizedAwayTeam,
+            // Add team names for teams that might not be in our database
+            homeTeamName: homeTeamName,
+            awayTeamName: awayTeamName,
             homeTeamScore: homeTeamScore,
             awayTeamScore: awayTeamScore,
             status,
@@ -1000,15 +979,6 @@ export class DataImporter {
     
     if (normalizedName === 'ohio' || (normalizedName.includes('ohio') && normalizedName.includes('bobcat'))) {
       return 'ohio';
-    }
-    
-    // Special case for Kentucky vs Northern Kentucky which are easily confused
-    if (normalizedName === 'northern kentucky' || normalizedName === 'nku' || normalizedName === 'norse') {
-      return 'northernkentucky';
-    }
-    
-    if (normalizedName === 'kentucky' || normalizedName === 'wildcats' || normalizedName === 'uk') {
-      return 'kentucky';
     }
     
     // For other schools, try to find a match in our map

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SportSelector from "../components/SportSelector";
 import StandingsTable from "../components/StandingsTable";
@@ -6,12 +6,11 @@ import { useStandings, useMacSports } from "../hooks/useStandings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sport } from "@shared/schema";
 import macLogo from "@assets/IMG_0693.png";
-import { useLocation } from "wouter";
 
 const StandingsPage = () => {
-  const [selectedSport, setSelectedSport] = useState<string>("none");
+  const [selectedSport, setSelectedSport] = useState<string>("football");
   
-  const { data: standings, isLoading: isStandingsLoading } = useStandings(selectedSport === "none" ? "" : selectedSport);
+  const { data: standings, isLoading: isStandingsLoading } = useStandings(selectedSport);
   const { data: sports } = useMacSports();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
@@ -24,20 +23,10 @@ const StandingsPage = () => {
   
   // Find the sport and format its display name
   const selectedSportObj = sports?.find((sport: Sport) => sport.id === selectedSport);
-  const sportName = selectedSport === "none" 
-    ? "" 
-    : selectedSportObj 
-      ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
-      : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
+  const sportName = selectedSportObj 
+    ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
+    : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
   
-  // No longer needed since we removed the test sports section
-
-  // Get selected sport data for mapping wsoc/wsoccer -> women's soccer in the UI
-  const mapSportIdToName = (sportId: string) => {
-    if (sportId === 'wsoc' || sportId === 'wsoccer') return 'Women\'s Soccer';
-    return sportId.charAt(0).toUpperCase() + sportId.slice(1);
-  };
-
   return (
     <div className="py-4">
       <div className="px-4 mb-4">
@@ -50,9 +39,7 @@ const StandingsPage = () => {
       
       <div className="px-4 relative">
         <div className="flex items-center mb-3">
-          <h2 className="font-bold text-xl mr-3">
-            {selectedSport === "none" ? "Conference Standings" : `${sportName} Conference Standings`}
-          </h2>
+          <h2 className="font-bold text-xl mr-3">{sportName} Standings</h2>
           {/* MAC Logo next to title */}
           <div className="w-10 h-10">
             <img 
@@ -63,20 +50,7 @@ const StandingsPage = () => {
           </div>
         </div>
         
-        {selectedSport === "none" ? (
-          // When no sport is selected, show the transparent MAC logo background
-          <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200 relative overflow-hidden min-h-[300px]">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <img 
-                src={macLogo} 
-                alt="MAC Conference Logo" 
-                className="w-1/2 max-w-[200px]"
-                style={{ opacity: 0.35 }}
-              />
-            </div>
-            <p className="relative z-10 text-gray-700 font-medium">Select a sport to view standings</p>
-          </div>
-        ) : isStandingsLoading ? (
+        {isStandingsLoading ? (
           <Skeleton className="w-full h-96" />
         ) : standings && standings.length > 0 ? (
           <div className="relative">
@@ -91,8 +65,6 @@ const StandingsPage = () => {
             <p className="text-gray-500">No standings data available for {sportName}.</p>
           </div>
         )}
-        
-
       </div>
     </div>
   );
