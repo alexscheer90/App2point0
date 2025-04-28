@@ -115,11 +115,28 @@ const ScoresPage = () => {
           )}
           
           {liveGames.length === 0 && upcomingGames.length === 0 && recentGames.length === 0 && (
-            <div className="px-4 py-8 text-center">
-              <p className="text-gray-500 mb-2">No games found for the selected criteria.</p>
-              <p className="text-sm text-gray-400">
-                Live data from ESPN may not be available for some sports or dates.
-              </p>
+            <div className="px-4 py-12 text-center relative min-h-[300px] flex flex-col items-center justify-center">
+              {/* MAC Logo Background */}
+              <div 
+                className="absolute inset-0 flex items-center justify-center opacity-40 z-0"
+                aria-hidden="true"
+              >
+                <img 
+                  src="/mac-logo.png" 
+                  alt="MAC Logo" 
+                  className="max-w-[250px] max-h-[250px] object-contain"
+                />
+              </div>
+              
+              {/* Fun Message */}
+              <div className="relative z-10">
+                <h2 className="text-2xl font-bold mb-2 text-[#0B213E]">
+                  No #MACtion today, but never fear!
+                </h2>
+                <p className="text-xl font-semibold text-[#019E4F]">
+                  More #MACtion is coming soon!
+                </p>
+              </div>
             </div>
           )}
         </>
