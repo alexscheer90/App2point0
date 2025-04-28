@@ -63,6 +63,70 @@ export class GoogleSheetsService {
       confPercentage: 4,  // Column E - Conference Percentage
       overallRecord: 5,   // Column F - Overall Record
       overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Field Hockey (use default mapping)
+    'field-hockey': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Gymnastics (use default mapping)
+    'gymnastics': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Women's Lacrosse
+    'wlacrosse': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Women's Lacrosse (wlax alias)
+    'wlax': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Softball
+    'softball': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Women's Tennis
+    'wtennis': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Volleyball
+    'volleyball': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
+    },
+    // Volleyball (wvball alias)
+    'wvball': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      overallRecord: 5,   // Column F - Overall Record
+      overallPercentage: 8 // Column I - Overall Percentage
     }
   };
   
