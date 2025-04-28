@@ -469,7 +469,7 @@ export class GoogleSheetsService {
           if (columnMapping.confRecord !== undefined) {
             // Parse W-L format (e.g. "17-4" or "17-4-2" for ties)
             const confRecordStr = row[columnMapping.confRecord]?.toString() || '0-0';
-            const confParts = confRecordStr.split('-').map(p => parseInt(p.trim()));
+            const confParts = confRecordStr.split('-').map((p: string) => parseInt(p.trim()));
             
             confWins = confParts[0] || 0;
             confLosses = confParts[1] || 0;
@@ -486,7 +486,7 @@ export class GoogleSheetsService {
           if (columnMapping.overallRecord !== undefined) {
             // Parse W-L format
             const overallRecordStr = row[columnMapping.overallRecord]?.toString() || '0-0';
-            const overallParts = overallRecordStr.split('-').map(p => parseInt(p.trim()));
+            const overallParts = overallRecordStr.split('-').map((p: string) => parseInt(p.trim()));
             
             overallWins = overallParts[0] || 0;
             overallLosses = overallParts[1] || 0;

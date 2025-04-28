@@ -13,8 +13,15 @@ interface StandingsTableProps {
 }
 
 // Extend StandingsEntry to include division information for wrestling
+// and metadata for special columns like points and goals in women's soccer
 interface ExtendedStandingsEntry extends StandingsEntry {
   division?: 'East' | 'West';
+  metadata?: {
+    points?: number;
+    goalsFor?: number;
+    goalsAgainst?: number;
+    [key: string]: any;
+  };
 }
 
 const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProps) => {
@@ -40,13 +47,25 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   
   // Check if this is wrestling (which has East/West divisions)
   const hasEastWestDivision = sport === 'wrestling';
+  
+  // Check if this is women's soccer (has points & goals columns)
+  const isWomensSoccer = sport === 'wsoc';
+  
+  // Process entries based on sport - create this variable first
+  let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
+  
+  // Has soccer points? (Check if any entry has metadata.points)
+  const hasPoints = isWomensSoccer && processedEntries.some(e => e.metadata?.points !== undefined);
+  
+  // Has goals data? (Check if any entry has metadata.goalsFor/goalsAgainst)
+  const hasGoals = isWomensSoccer && processedEntries.some(e => 
+    e.metadata?.goalsFor !== undefined || e.metadata?.goalsAgainst !== undefined
+  );
 
   // Calculate column span for table headers
-  const conferenceColSpan = showTies ? 4 : 3;
+  // For women's soccer with points/goals, we have a different layout
+  const conferenceColSpan = isWomensSoccer ? (hasPoints ? 2 : (showTies ? 4 : 3)) : (showTies ? 4 : 3);
   const overallColSpan = showTies ? 4 : 3;
-  
-  // Process entries based on sport
-  let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
   
   if (hasEastWestDivision) {
     // Define East and West division schools for wrestling if not already specified in the data
@@ -130,21 +149,43 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
             </div>
           </div>
         </td>
-        {/* Conference Record */}
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.conference.wins}
-        </td>
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.conference.losses}
-        </td>
-        {showTies && (
-          <td className="px-1 py-3 text-center text-sm">
-            {entry.conference.ties || 0}
+        
+        {/* Women's Soccer Points (if available) */}
+        {isWomensSoccer && hasPoints && (
+          <td className="px-1 py-3 text-center text-sm font-semibold">
+            {entry.metadata?.points || 0}
           </td>
         )}
+        
+        {/* Women's Soccer Goals (if available) */}
+        {isWomensSoccer && hasGoals && (
+          <td className="px-1 py-3 text-center text-sm">
+            {entry.metadata?.goalsFor || 0}-{entry.metadata?.goalsAgainst || 0}
+          </td>
+        )}
+        
+        {/* Standard Conference Record (not shown for Women's Soccer with points) */}
+        {!isWomensSoccer && (
+          <>
+            <td className="px-1 py-3 text-center text-sm">
+              {entry.conference.wins}
+            </td>
+            <td className="px-1 py-3 text-center text-sm">
+              {entry.conference.losses}
+            </td>
+            {showTies && (
+              <td className="px-1 py-3 text-center text-sm">
+                {entry.conference.ties || 0}
+              </td>
+            )}
+          </>
+        )}
+        
+        {/* Conference Percentage (shown for all sports) */}
         <td className="px-1 py-3 text-center text-sm">
           {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
         </td>
+        
         {/* Overall Record */}
         <td className="px-1 py-3 text-center text-sm">
           {entry.overall.wins}
@@ -164,11 +205,37 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     );
   };
   
+  // Calculate the total number of columns in the table for colSpan values
+  const getTotalColumns = () => {
+    let columns = 1; // Team column
+    
+    // Conference columns
+    if (isWomensSoccer) {
+      columns += hasPoints ? 1 : 0;
+      columns += hasGoals ? 1 : 0;
+      
+      // If no special columns for women's soccer, use standard columns
+      if (!hasPoints && !hasGoals) {
+        columns += showTies ? 4 : 3;
+      } else {
+        // Always include conference percentage
+        columns += 1;
+      }
+    } else {
+      columns += showTies ? 4 : 3;
+    }
+    
+    // Overall columns
+    columns += showTies ? 4 : 3;
+    
+    return columns;
+  };
+  
   // Render division header
   const renderDivisionHeader = (divisionName: string) => (
     <tr className="bg-gray-100">
       <td
-        colSpan={showTies ? 9 : 7}
+        colSpan={getTotalColumns()}
         className="px-3 py-2 text-sm font-medium text-gray-700"
       >
         {divisionName} DIVISION
@@ -194,12 +261,32 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
             </tr>
             <tr style={{ backgroundColor: MAC_NAVY }}>
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
-              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
-              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
-              {showTies && (
-                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
+              
+              {/* Women's Soccer Points (if available) */}
+              {isWomensSoccer && hasPoints && (
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PTS</th>
               )}
+              
+              {/* Women's Soccer Goals (if available) */}
+              {isWomensSoccer && hasGoals && (
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">GOALS</th>
+              )}
+              
+              {/* Standard W-L-T columns (not shown for Women's Soccer with points/goals) */}
+              {(!isWomensSoccer || (!hasPoints && !hasGoals)) && (
+                <>
+                  <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
+                  <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+                  {showTies && (
+                    <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
+                  )}
+                </>
+              )}
+              
+              {/* PCT column shown for all */}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
+              
+              {/* Overall record columns */}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
               {showTies && (
