@@ -63,15 +63,8 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   );
 
   // Calculate column span for table headers
-  // For women's soccer with points/goals, we add those columns to the standard layout
-  let conferenceColSpan = showTies ? 4 : 3; // Base columns: W, L, [T], PCT
-  
-  // Add extra columns for women's soccer's special fields
-  if (isWomensSoccer) {
-    if (hasPoints) conferenceColSpan += 1;
-    if (hasGoals) conferenceColSpan += 1;
-  }
-  
+  // W, L, [T], PCT - Ties column only for women's soccer
+  const conferenceColSpan = showTies ? 4 : 3;
   const overallColSpan = showTies ? 4 : 3;
   
   if (hasEastWestDivision) {
@@ -157,19 +150,7 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
           </div>
         </td>
         
-        {/* Women's Soccer Points (if available) */}
-        {isWomensSoccer && hasPoints && (
-          <td className="px-1 py-3 text-center text-sm font-semibold">
-            {entry.metadata?.points || 0}
-          </td>
-        )}
-        
-        {/* Women's Soccer Goals (if available) */}
-        {isWomensSoccer && hasGoals && (
-          <td className="px-1 py-3 text-center text-sm">
-            {entry.metadata?.goalsFor || 0}-{entry.metadata?.goalsAgainst || 0}
-          </td>
-        )}
+        {/* No special columns for women's soccer anymore - just W-L-T */}
         
         {/* Standard Conference Record (always shown) */}
         <td className="px-1 py-3 text-center text-sm">
@@ -215,12 +196,6 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     // Conference columns (W, L, [T], PCT)
     columns += showTies ? 4 : 3;
     
-    // Add special columns for women's soccer
-    if (isWomensSoccer) {
-      if (hasPoints) columns += 1;
-      if (hasGoals) columns += 1;
-    }
-    
     // Overall columns (W, L, [T], PCT)
     columns += showTies ? 4 : 3;
     
@@ -258,15 +233,7 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
             <tr style={{ backgroundColor: MAC_NAVY }}>
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
               
-              {/* Women's Soccer Points (if available) */}
-              {isWomensSoccer && hasPoints && (
-                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PTS</th>
-              )}
-              
-              {/* Women's Soccer Goals (if available) */}
-              {isWomensSoccer && hasGoals && (
-                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">GOALS</th>
-              )}
+              {/* No special headers for women's soccer */}
               
               {/* Standard W-L-T columns (always shown) */}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
