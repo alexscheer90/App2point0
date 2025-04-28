@@ -113,9 +113,7 @@ const SportSelector = ({
           {/* Default "Pick a sport..." option */}
           <SelectItem value="none">Pick a sport...</SelectItem>
           
-          {showAllOption && (
-            <SelectItem value="all">All Sports</SelectItem>
-          )}
+          {/* All Sports option removed per client request */}
           {sports?.map((sport) => (
             <SelectItem key={sport.id} value={sport.id}>
               {SPORT_DISPLAY_NAMES[sport.id] || sport.name}

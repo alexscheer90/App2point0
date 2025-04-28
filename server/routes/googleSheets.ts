@@ -678,24 +678,21 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     
     console.log(`Fetching ${sportId} standings from MAC website`);
     
-    // For development, always use MAC website scraping as the primary source
+    // For production, use the MAC website directly
     let standings: StandingsEntry[] = [];
     
-    // First: Try to get data from the MAC website
-    let macSportId = sportId;
-    
     // Get the data directly from the MAC website
-    standings = await googleSheetsService.fetchStandings(macSportId);
+    standings = await googleSheetsService.fetchStandings(sportId);
     console.log(`Fetched ${standings.length} entries from MAC website`);
     
-    // Second: If we have no data, use our backup data if available
+    // If we have no data, use our backup data if available
     if (standings.length === 0) {
       if (backupStandings[sportId]) {
         console.log(`No data returned from MAC website. Using backup data for ${sportId}`);
         standings = backupStandings[sportId];
       } else {
-        // For development only: Generate standings with conference records only
-        console.log(`No data available for ${sportId}. Generating development records.`);
+        // As a last resort, generate standings with conference records only
+        console.log(`No data available for ${sportId}. Generating fallback records.`);
         standings = generateStandingsForSport(sportId);
       }
     }
