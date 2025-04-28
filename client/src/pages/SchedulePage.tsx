@@ -2014,7 +2014,6 @@ const SchedulePage = () => {
                               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Home</th>
                               <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                              <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Links</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -2050,30 +2049,30 @@ const SchedulePage = () => {
                                   </td>
                                   <td className="px-3 py-3 text-sm">
                                     {game.location || (game.venue || '')}
-                                  </td>
-                                  <td className="px-3 py-3 text-center text-sm">
-                                    <div className="flex justify-center space-x-2">
-                                      {game.liveStatsUrl && (
-                                        <a 
-                                          href={game.liveStatsUrl} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className="text-blue-600 hover:underline"
-                                        >
-                                          Stats
-                                        </a>
-                                      )}
-                                      {game.videoUrl && (
-                                        <a 
-                                          href={game.videoUrl} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className="text-blue-600 hover:underline"
-                                        >
-                                          Video
-                                        </a>
-                                      )}
-                                    </div>
+                                    {(game.liveStatsUrl || game.videoUrl) && (
+                                      <div className="mt-1 flex space-x-2 text-xs">
+                                        {game.liveStatsUrl && (
+                                          <a 
+                                            href={game.liveStatsUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                          >
+                                            Stats
+                                          </a>
+                                        )}
+                                        {game.videoUrl && (
+                                          <a 
+                                            href={game.videoUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                          >
+                                            Video
+                                          </a>
+                                        )}
+                                      </div>
+                                    )}
                                   </td>
                                 </tr>
                               );
@@ -2145,24 +2144,10 @@ const SchedulePage = () => {
                                   return (
                                     <tr key={game.id} className="border-b border-gray-200 hover:bg-gray-50">
                                       <td className="px-3 py-3 text-sm">
-                                        <div className="flex items-center">
-                                          {awayTeam && awayTeam.logoUrl && (
-                                            <div className="w-6 h-6 mr-2 flex-shrink-0">
-                                              <img src={awayTeam.logoUrl} alt={`${awayTeam.name} logo`} className="w-full h-full object-contain" />
-                                            </div>
-                                          )}
-                                          <span>{game.awayTeamName || (awayTeam && awayTeam.name) || 'Away Team'}</span>
-                                        </div>
+                                        {game.awayTeamName || (awayTeam && awayTeam.name) || 'Away Team'}
                                       </td>
                                       <td className="px-3 py-3 text-sm">
-                                        <div className="flex items-center">
-                                          {homeTeam && homeTeam.logoUrl && (
-                                            <div className="w-6 h-6 mr-2 flex-shrink-0">
-                                              <img src={homeTeam.logoUrl} alt={`${homeTeam.name} logo`} className="w-full h-full object-contain" />
-                                            </div>
-                                          )}
-                                          <span>{game.homeTeamName || (homeTeam && homeTeam.name) || 'Home Team'}</span>
-                                        </div>
+                                        {game.homeTeamName || (homeTeam && homeTeam.name) || 'Home Team'}
                                       </td>
                                       <td className="px-3 py-3 text-center text-sm">
                                         {gameDateStr}
