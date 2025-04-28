@@ -369,6 +369,18 @@ const SchedulePage = () => {
       result[dateStr][sportId].push(game);
     });
     
+    // Sort games within each sport by time
+    Object.keys(result).forEach(dateStr => {
+      Object.keys(result[dateStr]).forEach(sportId => {
+        // Sort games by start time
+        result[dateStr][sportId].sort((a, b) => {
+          const timeA = new Date(a.startTime).getTime();
+          const timeB = new Date(b.startTime).getTime();
+          return timeA - timeB;
+        });
+      });
+    });
+    
     return result;
   }, [activeGames]);
   
@@ -636,11 +648,44 @@ const SchedulePage = () => {
       
     return teamFilter && sportFilter && viewFilter;
   }).sort((a: Game, b: Game) => {
-    // Sort by date - upcoming games sorted by ascending date, past games by descending date
+    // First sort by sport category (using the same priority as in the sport headers)
+    const sportPriority: Record<string, number> = {
+      'football': 1,
+      'mbball': 2,
+      'wbball': 3,
+      'basketball': 4,
+      'baseball': 5,
+      'softball': 6,
+      'volleyball': 7,
+      'soccer': 8,
+      'wsoccer': 9,
+      'msoccer': 10,
+      'lacrosse': 11,
+      'wlacrosse': 12,
+      'wrestling': 13,
+      'swimming': 14,
+      'track': 15,
+      'golf': 16,
+      'tennis': 17,
+      'gymnastics': 18,
+      'cross-country': 19,
+      'unknown': 99
+    };
+    
+    const sportA = a.sportId?.toLowerCase() || 'unknown';
+    const sportB = b.sportId?.toLowerCase() || 'unknown';
+    
+    const priorityA = sportPriority[sportA] || 50;
+    const priorityB = sportPriority[sportB] || 50;
+    
+    // If sports are different, sort by sport priority
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    
+    // If same sport, sort by date
     const dateA = new Date(a.scheduledTime);
     const dateB = new Date(b.scheduledTime);
-    
-    // In all views, sort chronologically
     return dateA.getTime() - dateB.getTime(); // Upcoming games: soonest first
   });
   
@@ -1998,22 +2043,55 @@ const SchedulePage = () => {
                   </Button>
                 </div>
                 
-                {/* For each sport on the selected day */}
-                {Object.keys(gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')]).map(sportId => {
-                  const games = gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')][sportId];
-                  // Skip if no games for this sport
-                  if (!games || games.length === 0) return null;
-                  
-                  const sportName = getSportName(sportId);
-                  return (
-                    <div key={`${format(selectedDay, 'yyyy-MM-dd')}-${sportId}`} className="mb-4">
-                      {/* Sport header with dark blue background */}
-                      <div 
-                        style={{ backgroundColor: MAC_NAVY }} 
-                        className="text-white px-3 py-2 text-sm font-medium mb-2"
-                      >
-                        {sportName}
-                      </div>
+                {/* For each sport on the selected day - sorted by importance */}
+                {Object.keys(gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')])
+                  .sort((a, b) => {
+                    // Define sport priority order (football and basketball first)
+                    const sportPriority: Record<string, number> = {
+                      'football': 1,
+                      'mbball': 2,
+                      'wbball': 3,
+                      'basketball': 4,
+                      'baseball': 5,
+                      'softball': 6,
+                      'volleyball': 7,
+                      'soccer': 8,
+                      'wsoccer': 9,
+                      'msoccer': 10,
+                      'lacrosse': 11,
+                      'wlacrosse': 12,
+                      'wrestling': 13,
+                      'swimming': 14,
+                      'track': 15,
+                      'golf': 16,
+                      'tennis': 17,
+                      'gymnastics': 18,
+                      'cross-country': 19,
+                      'unknown': 99
+                    };
+                    
+                    // Get priority for each sport (default to 50 if not in list)
+                    const priorityA = sportPriority[a.toLowerCase()] || 50;
+                    const priorityB = sportPriority[b.toLowerCase()] || 50;
+                    
+                    // Sort by priority
+                    return priorityA - priorityB;
+                  })
+                  .map(sportId => {
+                    const games = gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')][sportId];
+                    // Skip if no games for this sport
+                    if (!games || games.length === 0) return null;
+                    
+                    const sportName = getSportName(sportId);
+                    return (
+                      <div key={`${format(selectedDay, 'yyyy-MM-dd')}-${sportId}`} className="mb-4">
+                        {/* Sport header with dark blue background */}
+                        <div 
+                          style={{ backgroundColor: MAC_NAVY }} 
+                          className="text-white px-3 py-2 text-sm font-medium mb-2"
+                        >
+                          {sportName}
+                        </div>
                       
                       {/* Game table */}
                       <div className="overflow-x-auto">
@@ -2103,22 +2181,55 @@ const SchedulePage = () => {
                     {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
                   </h3>
                   <div>
-                    {/* For each date, iterate through sports */}
-                    {Object.keys(gamesByDateAndSport[dateStr]).map(sportId => {
-                      const games = gamesByDateAndSport[dateStr][sportId];
-                      // Skip if no games for this sport
-                      if (!games || games.length === 0) return null;
-                      
-                      const sportName = getSportName(sportId);
-                      return (
-                        <div key={`${dateStr}-${sportId}`} className="mb-4">
-                          {/* Sport header with dark blue background */}
-                          <div 
-                            style={{ backgroundColor: MAC_NAVY }} 
-                            className="text-white px-3 py-2 text-sm font-medium mb-2"
-                          >
-                            {sportName}
-                          </div>
+                    {/* For each date, iterate through sports - sorted by importance */}
+                    {Object.keys(gamesByDateAndSport[dateStr])
+                      .sort((a, b) => {
+                        // Define sport priority order (football and basketball first)
+                        const sportPriority: Record<string, number> = {
+                          'football': 1,
+                          'mbball': 2,
+                          'wbball': 3,
+                          'basketball': 4,
+                          'baseball': 5,
+                          'softball': 6,
+                          'volleyball': 7,
+                          'soccer': 8,
+                          'wsoccer': 9,
+                          'msoccer': 10,
+                          'lacrosse': 11,
+                          'wlacrosse': 12,
+                          'wrestling': 13,
+                          'swimming': 14,
+                          'track': 15,
+                          'golf': 16,
+                          'tennis': 17,
+                          'gymnastics': 18,
+                          'cross-country': 19,
+                          'unknown': 99
+                        };
+                        
+                        // Get priority for each sport (default to 50 if not in list)
+                        const priorityA = sportPriority[a.toLowerCase()] || 50;
+                        const priorityB = sportPriority[b.toLowerCase()] || 50;
+                        
+                        // Sort by priority
+                        return priorityA - priorityB;
+                      })
+                      .map(sportId => {
+                        const games = gamesByDateAndSport[dateStr][sportId];
+                        // Skip if no games for this sport
+                        if (!games || games.length === 0) return null;
+                        
+                        const sportName = getSportName(sportId);
+                        return (
+                          <div key={`${dateStr}-${sportId}`} className="mb-4">
+                            {/* Sport header with dark blue background */}
+                            <div 
+                              style={{ backgroundColor: MAC_NAVY }} 
+                              className="text-white px-3 py-2 text-sm font-medium mb-2"
+                            >
+                              {sportName}
+                            </div>
                           
                           {/* Game table */}
                           <div className="overflow-x-auto">
