@@ -13,18 +13,6 @@ interface StandingsTableProps {
   favoriteSchoolId?: string | null;
 }
 
-// Extend StandingsEntry to include division information for wrestling
-// and metadata for special columns like points and goals in women's soccer
-interface ExtendedStandingsEntry extends StandingsEntry {
-  division?: 'East' | 'West';
-  metadata?: {
-    points?: number;
-    goalsFor?: number;
-    goalsAgainst?: number;
-    [key: string]: any;
-  };
-}
-
 const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProps) => {
   const { data: schools_data } = useMacSchools();
   
@@ -42,34 +30,31 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   const [schools] = useState(() => schools_data);
   
   // Log the entries and school IDs for debugging
-  console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.conference.wins}-${e.conference.losses})`));
+  console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.confWins}-${e.confLosses})`));
   console.log("Available school IDs:", schools.map(s => s.id));
   
   // Check if this is wrestling (which has East/West divisions)
   const hasEastWestDivision = sport === 'wrestling';
   
-  // Check if this is women's soccer (has W-L-T format and possibly points & goals columns)
+  // Check if this is women's soccer (has W-L-T format and possibly points columns)
   const isWomensSoccer = sport === 'wsoc' || sport === 'wsoccer';
   
   // Show ties if this is women's soccer or if any entry has ties
-  const showTies = isWomensSoccer || entries.some(e => 
-    e.conference.ties !== undefined || e.overall.ties !== undefined);
+  const showTies = isWomensSoccer || entries.some(e => e.confTies !== undefined && e.confTies > 0);
   
-  // Process entries based on sport - create this variable first
-  let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
-  
-  // Has soccer points? (Check if any entry has metadata.points)
-  const hasPoints = isWomensSoccer && processedEntries.some(e => e.metadata?.points !== undefined);
-  
-  // Has goals data? (Check if any entry has metadata.goalsFor/goalsAgainst)
-  const hasGoals = isWomensSoccer && processedEntries.some(e => 
-    e.metadata?.goalsFor !== undefined || e.metadata?.goalsAgainst !== undefined
-  );
+  // Check if any entries have points data
+  const hasPoints = entries.some(e => e.points !== undefined && e.points > 0);
 
   // Calculate column span for table headers
-  // W, L, [T], PCT - Ties column only for women's soccer
-  const conferenceColSpan = showTies ? 4 : 3;
-  const overallColSpan = showTies ? 4 : 3;
+  // PTS (if applicable), W, L, [T], PCT
+  // Adjust column count based on points and ties
+  let columnCount = 3; // W, L, PCT by default
+  if (showTies) columnCount++;
+  if (hasPoints) columnCount++;
+  const conferenceColSpan = columnCount;
+  
+  // Create a local copy of entries for processing
+  let processedEntries = [...entries];
   
   if (hasEastWestDivision) {
     // Define East and West division schools for wrestling if not already specified in the data
@@ -83,9 +68,9 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
       // If division data is not available in the entries, set it based on school lists
       processedEntries = processedEntries.map(entry => {
         if (eastSchools.includes(entry.schoolId)) {
-          return { ...entry, division: 'East' as const };
+          return { ...entry, division: 'East' };
         } else if (westSchools.includes(entry.schoolId)) {
-          return { ...entry, division: 'West' as const };
+          return { ...entry, division: 'West' };
         }
         return entry;
       });
@@ -94,26 +79,26 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     // Sort entries within each division by winning percentage
     const eastEntries = processedEntries
       .filter(entry => entry.division === 'East')
-      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
+      .sort((a, b) => b.confWinPercentage - a.confWinPercentage);
     
     const westEntries = processedEntries
       .filter(entry => entry.division === 'West')
-      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
+      .sort((a, b) => b.confWinPercentage - a.confWinPercentage);
     
     // Other entries that don't have a division
     const otherEntries = processedEntries
       .filter(entry => !entry.division)
-      .sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
+      .sort((a, b) => b.confWinPercentage - a.confWinPercentage);
     
     // Combine entries in division order
     processedEntries = [...eastEntries, ...westEntries, ...otherEntries];
   } else {
     // For other sports, just sort by winning percentage
-    processedEntries.sort((a, b) => b.conference.winningPercentage - a.conference.winningPercentage);
+    processedEntries.sort((a, b) => b.confWinPercentage - a.confWinPercentage);
   }
   
   // Render team row
-  const renderTeamRow = (entry: ExtendedStandingsEntry) => {
+  const renderTeamRow = (entry: StandingsEntry) => {
     const school = schools.find(s => s.id === entry.schoolId);
     if (!school) return null;
     
@@ -154,26 +139,30 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
           </div>
         </td>
         
-        {/* No special columns for women's soccer anymore - just W-L-T */}
-        
-        {/* Standard Conference Record (always shown) */}
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.conference.wins}
-        </td>
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.conference.losses}
-        </td>
-        {showTies && (
+        {/* Points column for soccer if applicable */}
+        {hasPoints && (
           <td className="px-1 py-3 text-center text-sm">
-            {entry.conference.ties || 0}
+            {entry.points || 0}
           </td>
         )}
         
-        {/* Conference Percentage (shown for all sports) */}
+        {/* Conference Record (always shown) */}
         <td className="px-1 py-3 text-center text-sm">
-          {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
+          {entry.confWins}
         </td>
-        {/* Overall Record - removed as requested */}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.confLosses}
+        </td>
+        {showTies && (
+          <td className="px-1 py-3 text-center text-sm">
+            {entry.confTies || 0}
+          </td>
+        )}
+        
+        {/* Conference Percentage */}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.confWinPercentage.toFixed(3).replace(/^0+/, '')}
+        </td>
       </tr>
     );
   };
@@ -218,7 +207,10 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
             <tr style={{ backgroundColor: MAC_NAVY }}>
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
               
-              {/* No special headers for women's soccer */}
+              {/* Points column for soccer if applicable */}
+              {hasPoints && (
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PTS</th>
+              )}
               
               {/* Standard W-L-T columns (always shown) */}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>

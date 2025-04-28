@@ -103,20 +103,19 @@ export const gameSchema = z.object({
 export const standingsEntrySchema = z.object({
   id: z.string(),
   schoolId: z.string(),
+  schoolName: z.string().optional(), // Added for display purposes
   sportId: z.string(),
-  division: z.enum(["East", "West"]).optional(),
-  conference: z.object({
-    wins: z.number(),
-    losses: z.number(),
-    ties: z.number().optional(),
-    winningPercentage: z.number(),
-  }),
-  overall: z.object({
-    wins: z.number(),
-    losses: z.number(),
-    ties: z.number().optional(),
-    winningPercentage: z.number(),
-  }),
+  division: z.string().optional(), // Changed to string to support any division name
+  confWins: z.number(), // Changed from nested object to flat structure
+  confLosses: z.number(),
+  confTies: z.number().optional(),
+  confWinPercentage: z.number(),
+  overallWins: z.number().optional(), // Made overall stats optional
+  overallLosses: z.number().optional(),
+  overallTies: z.number().optional(),
+  overallWinPercentage: z.number().optional(),
+  points: z.number().optional(), // Added for sports like soccer that use points
+  notes: z.string().optional(), // For any additional information
 });
 
 export const newsItemSchema = z.object({

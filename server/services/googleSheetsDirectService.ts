@@ -1,12 +1,12 @@
-import { google, sheets_v4 } from 'googleapis';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { StandingsEntry } from '@shared/schema';
 
 /**
- * Service to directly access Google Sheets data using the Google Sheets API
+ * Service to directly access Google Sheets data
  */
 export class GoogleSheetsDirectService {
+  // This is the ID of the public Google Sheet with MAC standings data
   private readonly spreadsheetId = '1Vq8UJKIJeuIxVBwYKOlFvZY2ITrApOvgMKhgjvoCmTs';
-  private readonly sheets: sheets_v4.Sheets;
   
   // Mapping of sport IDs to their corresponding tab names in the Google Sheet
   private readonly sportTabNames: Record<string, string> = {
@@ -98,22 +98,6 @@ export class GoogleSheetsDirectService {
     'robert morris': 'robertmorris'
   };
 
-  constructor() {
-    // Initialize Google Sheets API client
-    this.sheets = google.sheets({ version: 'v4', auth: this.getAuth() });
-  }
-
-  /**
-   * Get the auth client for accessing Google Sheets
-   * In a real implementation, this would use OAuth2 or service account
-   */
-  private getAuth() {
-    // For development, we're using API key authentication
-    // In production, you would use OAuth2 or a service account
-    // This is a placeholder - we would need actual credentials in production
-    return process.env.GOOGLE_API_KEY || '';
-  }
-
   /**
    * Fetch standings data for a specific sport from Google Sheets
    * 
@@ -131,23 +115,25 @@ export class GoogleSheetsDirectService {
 
       console.log(`Fetching standings for ${sportId} from Google Sheet tab "${sheetName}"`);
 
-      // Check if we have API credentials before proceeding
-      if (!this.getAuth()) {
-        console.warn('No Google API key available. Cannot fetch from Google Sheets');
+      // Initialize the Google Sheet - no auth needed for public sheets
+      const doc = new GoogleSpreadsheet(this.spreadsheetId);
+      await doc.loadInfo(); // loads document properties and worksheets
+      
+      // Find the sheet by title
+      const sheet = doc.sheetsByTitle[sheetName];
+      if (!sheet) {
+        console.warn(`Sheet "${sheetName}" not found in Google Sheet`);
         return [];
       }
-
-      // Get all data from the sheet
-      const response = await this.sheets.spreadsheets.values.get({
-        spreadsheetId: this.spreadsheetId,
-        range: `${sheetName}!A:J` // Get columns A through J
-      });
-
-      const rows = response.data.values;
+      
+      // Load the rows from the sheet
+      const rows = await sheet.getRows();
       if (!rows || rows.length === 0) {
         console.warn(`No data found in sheet: ${sheetName}`);
         return [];
       }
+
+      console.log(`Loaded ${rows.length} rows from sheet "${sheetName}"`);
 
       // Process the data into standings entries
       return this.processSheetData(rows, sportId);
@@ -160,26 +146,22 @@ export class GoogleSheetsDirectService {
   /**
    * Process Google Sheet data into StandingsEntry objects
    * 
-   * @param data The raw data from Google Sheets
+   * @param rows The rows from Google Sheets
    * @param sportId The sport ID for these standings
    * @returns Array of standings entries
    */
-  private processSheetData(data: any[][], sportId: string): StandingsEntry[] {
-    // Skip the header row
-    const rows = data.slice(1);
+  private processSheetData(rows: any[], sportId: string): StandingsEntry[] {
     const standings: StandingsEntry[] = [];
 
-    // Get the column indexes based on the sport
-    const schoolCol = 0; // Column A is always the school name
-    let confRecordCol = 3; // Column D is usually the conference record
-    
-    // Based on the sport, get the specific columns needed
+    // Based on the sport, determine how to process the data
     if (sportId === 'wsoc' || sportId === 'wsoccer') {
       // Women's soccer has a different structure with points and goals
       for (const row of rows) {
         try {
-          const schoolName = row[schoolCol]?.toString() || '';
-          if (!schoolName) continue;
+          // Skip header rows or empty rows
+          if (!row.School || row.School === 'School') continue;
+          
+          const schoolName = row.School;
           
           // Clean the school name and get the schoolId
           const cleanedName = schoolName.toLowerCase().trim();
@@ -190,16 +172,16 @@ export class GoogleSheetsDirectService {
             continue;
           }
           
-          // Get values from the row
-          const confRecord = row[confRecordCol]?.toString() || '0-0-0';
-          const points = row[6]?.toString() || '0'; // Column G - Points
+          // Get values from the row - adjust field names based on sheet headers
+          const confRecord = row.Record || '0-0-0';
+          const points = row.Points || '0';
           
           // Extract W-L-T from the conference record
           const [confWins, confLosses, confTies] = this.parseRecord(confRecord);
           
-          // Create the standings entry with the conference record only
+          // Create the standings entry
           standings.push({
-            id: `${sportId}-${schoolId}`,
+            id: `${sportId}-${schoolId}-${Date.now()}`,
             schoolId,
             schoolName,
             sportId,
@@ -221,11 +203,13 @@ export class GoogleSheetsDirectService {
         }
       }
     } else if (sportId === 'wrestling') {
-      // Wrestling has divisions in column C
+      // Wrestling has divisions
       for (const row of rows) {
         try {
-          const schoolName = row[schoolCol]?.toString() || '';
-          if (!schoolName) continue;
+          // Skip header rows or empty rows
+          if (!row.School || row.School === 'School') continue;
+          
+          const schoolName = row.School;
           
           // Clean the school name and get the schoolId
           const cleanedName = schoolName.toLowerCase().trim();
@@ -236,16 +220,16 @@ export class GoogleSheetsDirectService {
             continue;
           }
           
-          // Get values from the row
-          const division = row[2]?.toString() || ''; // Column C - Division
-          const confRecord = row[confRecordCol]?.toString() || '0-0';
+          // Get values from the row - adjust field names based on sheet headers
+          const division = row.Division || '';
+          const confRecord = row.Record || '0-0';
           
           // Extract W-L from the conference record
           const [confWins, confLosses, confTies] = this.parseRecord(confRecord);
           
-          // Create the standings entry with the conference record only
+          // Create the standings entry
           standings.push({
-            id: `${sportId}-${schoolId}`,
+            id: `${sportId}-${schoolId}-${Date.now()}`,
             schoolId,
             schoolName,
             sportId,
@@ -269,8 +253,10 @@ export class GoogleSheetsDirectService {
       // Default processing for most sports
       for (const row of rows) {
         try {
-          const schoolName = row[schoolCol]?.toString() || '';
-          if (!schoolName) continue;
+          // Skip header rows or empty rows
+          if (!row.School || row.School === 'School') continue;
+          
+          const schoolName = row.School;
           
           // Clean the school name and get the schoolId
           const cleanedName = schoolName.toLowerCase().trim();
@@ -281,15 +267,16 @@ export class GoogleSheetsDirectService {
             continue;
           }
           
-          // Get values from the row
-          const confRecord = row[confRecordCol]?.toString() || '0-0';
+          // Get values from the row - adjust field names based on sheet headers
+          // The actual column name may vary depending on the sheet
+          const confRecord = row.Record || row.Conference || row['Conf Record'] || '0-0';
           
           // Extract W-L from the conference record
           const [confWins, confLosses, confTies] = this.parseRecord(confRecord);
           
-          // Create the standings entry with the conference record only
+          // Create the standings entry
           standings.push({
-            id: `${sportId}-${schoolId}`,
+            id: `${sportId}-${schoolId}-${Date.now()}`,
             schoolId,
             schoolName,
             sportId,
@@ -311,7 +298,7 @@ export class GoogleSheetsDirectService {
       }
     }
 
-    // Sort standings by conf wins (descending), then conf losses (ascending)
+    // Sort standings by conference win percentage (descending)
     return standings.sort((a, b) => {
       // Sort by win % first (descending)
       if (b.confWinPercentage !== a.confWinPercentage) {

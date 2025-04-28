@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { googleSheetsService } from '../services/googleSheetsService';
+import { googleSheetsDirectService } from '../services/googleSheetsDirectService';
 import { StandingsEntry } from '@shared/schema';
 
 const router = Router();
@@ -651,10 +651,8 @@ const SAMPLE_FORMAT = {
 }
 */
 
-// Note: This is a backup data set that is only used when MAC website doesn't return data
-const backupStandings: Record<string, StandingsEntry[]> = {
-  // Backup standings in case the MAC website is down
-};
+// We've already defined backupStandings above, so we don't need to redefine it here
+// This section can be removed to fix the duplicate declaration error
 
 /**
  * Root endpoint for standings
@@ -676,25 +674,18 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
   try {
     const { sportId } = req.params;
     
-    console.log(`Fetching ${sportId} standings from MAC website`);
+    console.log(`Fetching ${sportId} standings directly from Google Sheet`);
     
-    // For production, use the MAC website directly
+    // Use the Google Sheets direct service to fetch data
     let standings: StandingsEntry[] = [];
     
-    // Get the data directly from the MAC website
-    standings = await googleSheetsService.fetchStandings(sportId);
-    console.log(`Fetched ${standings.length} entries from MAC website`);
+    // Get the data directly from the Google Sheet
+    standings = await googleSheetsDirectService.fetchStandings(sportId);
+    console.log(`Fetched ${standings.length} entries from Google Sheet`);
     
-    // If we have no data, use our backup data if available
+    // For empty results (like if a sport doesn't have a tab in the sheet)
     if (standings.length === 0) {
-      if (backupStandings[sportId]) {
-        console.log(`No data returned from MAC website. Using backup data for ${sportId}`);
-        standings = backupStandings[sportId];
-      } else {
-        // As a last resort, generate standings with conference records only
-        console.log(`No data available for ${sportId}. Generating fallback records.`);
-        standings = generateStandingsForSport(sportId);
-      }
+      console.warn(`No data found in Google Sheet for sport: ${sportId}`);
     }
     
     return res.json({
