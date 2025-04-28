@@ -1,69 +1,53 @@
 import express from 'express';
-import { scrapeWomensSoccerStandings } from '../services/macStandingsScraper';
+import { fetchMacStandingsBySport } from '../services/macStandingsScraper';
 
 const router = express.Router();
 
-// Cache the standings to avoid hammering the MAC website
-type StandingsCache = {
-  data: any;
-  timestamp: number;
-};
-
-const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
-const standingsCache: Record<string, StandingsCache> = {};
-
 /**
  * GET /api/mac/standings/:sportId
- * Returns standings for a specific sport scraped directly from MAC website
+ * Endpoint to get standings from MAC website scraped data
  */
 router.get('/standings/:sportId', async (req, res) => {
   try {
     const { sportId } = req.params;
     
-    // Currently only support women's soccer
-    if (sportId !== 'wsoc' && sportId !== 'wsoccer') {
+    // Validate the sport ID
+    if (!sportId) {
       return res.status(400).json({
         success: false,
-        error: `Sport ${sportId} not supported for direct MAC website scraping`
+        message: 'Sport ID is required'
       });
     }
     
-    // Check the cache first
-    const cacheKey = sportId === 'wsoccer' ? 'wsoc' : sportId; // Normalize keys
-    const cachedData = standingsCache[cacheKey];
-    const now = Date.now();
+    console.log(`Server fetching MAC standings for sport: ${sportId}`);
     
-    // If we have cached data and it's still fresh, return it
-    if (cachedData && (now - cachedData.timestamp) < CACHE_DURATION) {
-      console.log(`Returning cached MAC standings for ${sportId}`);
+    // Fetch standings for the specified sport
+    const standings = await fetchMacStandingsBySport(sportId);
+    
+    if (standings.length === 0) {
+      console.log(`No MAC standings found for sport: ${sportId}`);
       return res.json({
-        success: true,
-        data: cachedData.data,
-        source: 'mac-website-cache'
+        success: false,
+        message: `No standings found for sport: ${sportId}`,
+        data: []
       });
     }
     
-    // Otherwise fetch fresh data
-    console.log(`Scraping fresh MAC standings for ${sportId}`);
-    const standings = await scrapeWomensSoccerStandings();
+    console.log(`Successfully fetched ${standings.length} MAC standings entries for ${sportId}`);
     
-    // Cache the result
-    standingsCache[cacheKey] = {
-      data: standings,
-      timestamp: now
-    };
-    
+    // Return the standings data
     return res.json({
       success: true,
-      data: standings,
-      source: 'mac-website'
+      message: `Successfully fetched MAC standings for ${sportId}`,
+      data: standings
     });
     
   } catch (error) {
-    console.error('Error fetching MAC standings:', error);
-    return res.status(500).json({
+    console.error(`Error fetching MAC standings: ${error}`);
+    res.status(500).json({
       success: false,
-      error: 'Failed to fetch standings from MAC website'
+      message: 'Failed to fetch MAC standings',
+      error: error instanceof Error ? error.message : String(error)
     });
   }
 });
