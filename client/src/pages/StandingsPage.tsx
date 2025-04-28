@@ -9,9 +9,9 @@ import macLogo from "@assets/IMG_0693.png";
 import { useLocation } from "wouter";
 
 const StandingsPage = () => {
-  const [selectedSport, setSelectedSport] = useState<string>("football");
+  const [selectedSport, setSelectedSport] = useState<string>("none");
   
-  const { data: standings, isLoading: isStandingsLoading } = useStandings(selectedSport);
+  const { data: standings, isLoading: isStandingsLoading } = useStandings(selectedSport === "none" ? "" : selectedSport);
   const { data: sports } = useMacSports();
   const { data: favoriteSchoolData } = useQuery<{ favoriteSchool: string | null }>({
     queryKey: ['/api/preferences/favorite-school'],
@@ -24,9 +24,11 @@ const StandingsPage = () => {
   
   // Find the sport and format its display name
   const selectedSportObj = sports?.find((sport: Sport) => sport.id === selectedSport);
-  const sportName = selectedSportObj 
-    ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
-    : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
+  const sportName = selectedSport === "none" 
+    ? "" 
+    : selectedSportObj 
+      ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
+      : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
   
   // Define a list of test sports to quickly check implementations
   const testSports = [
@@ -54,7 +56,9 @@ const StandingsPage = () => {
       
       <div className="px-4 relative">
         <div className="flex items-center mb-3">
-          <h2 className="font-bold text-xl mr-3">{sportName} Standings</h2>
+          <h2 className="font-bold text-xl mr-3">
+            {selectedSport === "none" ? "Conference Standings" : `${sportName} Conference Standings`}
+          </h2>
           {/* MAC Logo next to title */}
           <div className="w-10 h-10">
             <img 
@@ -65,7 +69,20 @@ const StandingsPage = () => {
           </div>
         </div>
         
-        {isStandingsLoading ? (
+        {selectedSport === "none" ? (
+          // When no sport is selected, show the transparent MAC logo background
+          <div className="bg-white rounded-lg shadow-md p-8 text-center border border-gray-200 relative overflow-hidden min-h-[300px]">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img 
+                src={macLogo} 
+                alt="MAC Conference Logo" 
+                className="w-1/2 max-w-[200px]"
+                style={{ opacity: 0.35 }}
+              />
+            </div>
+            <p className="relative z-10 text-gray-700 font-medium">Select a sport to view standings</p>
+          </div>
+        ) : isStandingsLoading ? (
           <Skeleton className="w-full h-96" />
         ) : standings && standings.length > 0 ? (
           <div className="relative">

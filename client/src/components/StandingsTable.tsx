@@ -173,22 +173,7 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
         <td className="px-1 py-3 text-center text-sm">
           {entry.conference.winningPercentage.toFixed(3).replace(/^0+/, '')}
         </td>
-        
-        {/* Overall Record */}
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.overall.wins}
-        </td>
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.overall.losses}
-        </td>
-        {showTies && (
-          <td className="px-1 py-3 text-center text-sm">
-            {entry.overall.ties || 0}
-          </td>
-        )}
-        <td className="px-1 py-3 text-center text-sm">
-          {entry.overall.winningPercentage.toFixed(3).replace(/^0+/, '')}
-        </td>
+        {/* Overall Record - removed as requested */}
       </tr>
     );
   };
@@ -200,8 +185,7 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
     // Conference columns (W, L, [T], PCT)
     columns += showTies ? 4 : 3;
     
-    // Overall columns (W, L, [T], PCT)
-    columns += showTies ? 4 : 3;
+    // No longer counting Overall columns as they've been removed
     
     return columns;
   };
@@ -230,9 +214,6 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               <th colSpan={conferenceColSpan} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
                 Conference
               </th>
-              <th colSpan={overallColSpan} className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">
-                Overall
-              </th>
             </tr>
             <tr style={{ backgroundColor: MAC_NAVY }}>
               <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-white"></th>
@@ -247,14 +228,6 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
               )}
               
               {/* PCT column shown for all */}
-              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
-              
-              {/* Overall record columns */}
-              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
-              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
-              {showTies && (
-                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
-              )}
               <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">PCT</th>
             </tr>
           </thead>

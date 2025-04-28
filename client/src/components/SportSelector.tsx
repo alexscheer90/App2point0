@@ -104,6 +104,9 @@ const SportSelector = ({
           <SelectValue placeholder="Select a sport" />
         </SelectTrigger>
         <SelectContent>
+          {/* Default "Pick a sport..." option */}
+          <SelectItem value="none">Pick a sport...</SelectItem>
+          
           {showAllOption && (
             <SelectItem value="all">All Sports</SelectItem>
           )}
