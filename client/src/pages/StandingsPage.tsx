@@ -30,13 +30,7 @@ const StandingsPage = () => {
       ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
       : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
   
-  // Define a list of test sports to quickly check implementations
-  const testSports = [
-    { id: 'football', name: 'Football' },
-    { id: 'baseball', name: 'Baseball' },
-    { id: 'wrestling', name: 'Wrestling' },
-    { id: 'wsoccer', name: 'Women\'s Soccer' }
-  ];
+  // No longer needed since we removed the test sports section
 
   // Get selected sport data for mapping wsoc/wsoccer -> women's soccer in the UI
   const mapSportIdToName = (sportId: string) => {
@@ -98,28 +92,7 @@ const StandingsPage = () => {
           </div>
         )}
         
-        {/* Quick Test Navigation for Development */}
-        <div className="mt-6 bg-white rounded-lg shadow-md p-4 border border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-600 mb-2">Sport-Specific Implementations</h3>
-          <div className="flex flex-wrap gap-2">
-            {testSports.map(sport => (
-              <button
-                key={sport.id}
-                onClick={() => setSelectedSport(sport.id)}
-                className={`px-3 py-1 text-sm rounded-full transition-colors 
-                  ${selectedSport === sport.id 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-              >
-                {sport.name}
-              </button>
-            ))}
-          </div>
-          <p className="mt-2 text-xs text-gray-500">
-            Testing sport-specific column handling: 
-            Women's Soccer (points, goals) | Wrestling (divisions)
-          </p>
-        </div>
+
       </div>
     </div>
   );
