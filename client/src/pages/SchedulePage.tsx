@@ -2134,7 +2134,6 @@ const SchedulePage = () => {
                                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Home</th>
                                   <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Links</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -2170,30 +2169,30 @@ const SchedulePage = () => {
                                       </td>
                                       <td className="px-3 py-3 text-sm">
                                         {game.location || (game.venue || '')}
-                                      </td>
-                                      <td className="px-3 py-3 text-center text-sm">
-                                        <div className="flex justify-center space-x-2">
-                                          {game.liveStatsUrl && (
-                                            <a 
-                                              href={game.liveStatsUrl} 
-                                              target="_blank" 
-                                              rel="noopener noreferrer"
-                                              className="text-blue-600 hover:underline"
-                                            >
-                                              Stats
-                                            </a>
-                                          )}
-                                          {game.videoUrl && (
-                                            <a 
-                                              href={game.videoUrl} 
-                                              target="_blank" 
-                                              rel="noopener noreferrer"
-                                              className="text-blue-600 hover:underline"
-                                            >
-                                              Video
-                                            </a>
-                                          )}
-                                        </div>
+                                        {(game.liveStatsUrl || game.videoUrl) && (
+                                          <div className="mt-1 flex space-x-2 text-xs">
+                                            {game.liveStatsUrl && (
+                                              <a 
+                                                href={game.liveStatsUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                              >
+                                                Stats
+                                              </a>
+                                            )}
+                                            {game.videoUrl && (
+                                              <a 
+                                                href={game.videoUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                              >
+                                                Video
+                                              </a>
+                                            )}
+                                          </div>
+                                        )}
                                       </td>
                                     </tr>
                                   );
