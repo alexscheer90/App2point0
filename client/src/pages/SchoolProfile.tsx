@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause, Users, BarChart } from "lucide-react";
+import { ChevronLeft, Star, Trophy, Music, Utensils, Headphones, Mic, Play, Pause, Users, BarChart, Ticket } from "lucide-react";
 
 // Import school logo images
 import akronLogo from "@assets/Akron.png";
@@ -138,6 +138,38 @@ const SchoolProfile = () => {
     }
   };
   
+  // Function to get the ticket website URL for each school
+  const getTicketUrl = (schoolId: string): string => {
+    switch (schoolId) {
+      case "akron":
+        return "https://gozips.com/sports/2018/7/19/tickets.aspx";
+      case "ballstate":
+        return "https://ballstatesports.com/sports/2015/2/23/GEN_0223151523.aspx";
+      case "bowlinggreen":
+        return "https://bgsufalcons.com/sports/2018/7/27/tickets.aspx";
+      case "buffalo":
+        return "https://ubbulls.com/sports/2018/7/24/tickets.aspx";
+      case "centralmichigan":
+        return "https://cmuchippewas.com/sports/2018/6/8/tickets-centmic-tickets-html.aspx";
+      case "easternmichigan":
+        return "https://emueagles.com/sports/2018/7/26/tickets.aspx";
+      case "kentstate":
+        return "https://kentstatesports.com/sports/2018/7/24/tickets-kenst-tickets-html.aspx";
+      case "miamioh":
+        return "https://miamiredhawks.com/sports/2018/7/24/tickets-miami-tickets-html.aspx";
+      case "northernillinois":
+        return "https://niuhuskies.com/sports/2018/7/25/tickets.aspx";
+      case "ohio":
+        return "https://ohiobobcats.com/sports/2018/7/25/tickets.aspx";
+      case "toledo":
+        return "https://utrockets.com/sports/2018/7/26/tickets.aspx";
+      case "westernmichigan":
+        return "https://wmubroncos.com/sports/2018/7/26/tickets.aspx";
+      default:
+        return "";
+    }
+  };
+  
   if (isSchoolLoading) {
     return (
       <div className="p-4">
@@ -208,40 +240,71 @@ const SchoolProfile = () => {
                 school.primaryColor : school.secondaryColor 
           }}
         >
-          <div className="flex items-center">
-            <div 
-              className="w-16 h-16 flex items-center justify-center mr-3 overflow-hidden"
-              style={{ 
-                backgroundColor: "transparent",
-                padding: "0"
-              }}
-            >
-              {getSchoolLogo(school.id) ? (
-                <img 
-                  src={getSchoolLogo(school.id)} 
-                  alt={`${school.name} logo`} 
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <span className="font-bold text-xl" style={{ color: school.primaryColor }}>
-                  {school.shortName.charAt(0)}
-                </span>
-              )}
-            </div>
-            <div>
-              <CardTitle className="text-xl italic">{school.name}</CardTitle>
-              <CardDescription 
-                className="font-semibold"
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
+              <div 
+                className="w-16 h-16 flex items-center justify-center mr-3 overflow-hidden"
                 style={{ 
-                  color: 
-                    school.id === "buffalo" || 
-                    school.id === "easternmichigan" || 
-                    school.id === "centralmichigan" ? 
-                      school.primaryColor : school.secondaryColor 
+                  backgroundColor: "transparent",
+                  padding: "0"
                 }}
               >
-                {school.mascot}
-              </CardDescription>
+                {getSchoolLogo(school.id) ? (
+                  <img 
+                    src={getSchoolLogo(school.id)} 
+                    alt={`${school.name} logo`} 
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <span className="font-bold text-xl" style={{ color: school.primaryColor }}>
+                    {school.shortName.charAt(0)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <CardTitle className="text-xl italic">{school.name}</CardTitle>
+                <CardDescription 
+                  className="font-semibold"
+                  style={{ 
+                    color: 
+                      school.id === "buffalo" || 
+                      school.id === "easternmichigan" || 
+                      school.id === "centralmichigan" ? 
+                        school.primaryColor : school.secondaryColor 
+                  }}
+                >
+                  {school.mascot}
+                </CardDescription>
+              </div>
+            </div>
+            
+            <div>
+              <a 
+                href={getTicketUrl(school.id)} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="border-2 font-medium"
+                  style={{
+                    borderColor: 
+                      school.id === "buffalo" || 
+                      school.id === "easternmichigan" || 
+                      school.id === "centralmichigan" ? 
+                        school.primaryColor : school.secondaryColor,
+                    color: 
+                      school.id === "buffalo" || 
+                      school.id === "easternmichigan" || 
+                      school.id === "centralmichigan" ? 
+                        school.primaryColor : school.secondaryColor
+                  }}
+                >
+                  <Ticket className="h-4 w-4 mr-1" />
+                  Buy Tickets
+                </Button>
+              </a>
             </div>
           </div>
         </CardHeader>
