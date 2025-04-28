@@ -1971,7 +1971,62 @@ const SchedulePage = () => {
                 return (
                   <div 
                     key={dayStr}
-                    onClick={() => setSelectedDay(gamesOnThisDay.length > 0 ? day : null)}
+                    onClick={() => {
+                      // Only set selected day if there are games on this day
+                      if (gamesOnThisDay.length > 0) {
+                        setSelectedDay(day);
+                        
+                        // Keep the filtering when clicking a date by preparing filtered games for this day
+                        const filteredGamesForDay = gamesOnThisDay.filter(game => {
+                          // Apply team filter
+                          const teamFilter = 
+                            selectedTeam === "all" || 
+                            game.homeTeamId === selectedTeam || 
+                            game.awayTeamId === selectedTeam;
+                            
+                          // Apply sport filter using the same logic as in the main filter
+                          const sportFilter = selectedSport === "all" || (() => {
+                            const gameActualSportId = extractSportFromGame(game) || game.sportId;
+                            const normalizedSelectedSport = selectedSport.toLowerCase().trim();
+                            const normalizedGameSport = gameActualSportId?.toLowerCase()?.trim() || '';
+                            
+                            // Use the same sport matching logic as in the main filter
+                            if (normalizedSelectedSport === 'tennis') {
+                              return normalizedGameSport === 'tennis' || 
+                                    normalizedGameSport === 'mtennis' || 
+                                    normalizedGameSport === 'wtennis' ||
+                                    normalizedGameSport === 'm-tennis' || 
+                                    normalizedGameSport === 'w-tennis' ||
+                                    normalizedGameSport.includes('tennis');
+                            }
+                            
+                            // Special case for Swimming - consolidated version
+                            if (normalizedSelectedSport === 'swimming') {
+                              return normalizedGameSport === 'swimming' || 
+                                    normalizedGameSport === 'mswim' || 
+                                    normalizedGameSport === 'wswim' ||
+                                    normalizedGameSport === 'm-swimming' || 
+                                    normalizedGameSport === 'w-swimming' ||
+                                    normalizedGameSport.includes('swimming') ||
+                                    normalizedGameSport.includes('swim');
+                            }
+                            
+                            // Direct match or substring match
+                            return normalizedGameSport === normalizedSelectedSport || 
+                                  normalizedGameSport.includes(normalizedSelectedSport);
+                          })();
+                          
+                          return teamFilter && sportFilter;
+                        });
+                        
+                        // If no games match filters, don't show detail view
+                        if (filteredGamesForDay.length === 0) {
+                          setSelectedDay(null);
+                        }
+                      } else {
+                        setSelectedDay(null);
+                      }
+                    }}
                     className={`
                       min-h-[90px] p-1 border rounded relative cursor-pointer transition-all
                       ${gamesOnThisDay.length ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white'} 
@@ -2041,6 +2096,11 @@ const SchedulePage = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium text-gray-800">
                     Games on {format(selectedDay, 'EEEE, MMMM d, yyyy')}
+                    {(selectedTeam !== "all" || selectedSport !== "all") && (
+                      <span className="ml-2 text-sm text-gray-600">
+                        (Filtered by current selections)
+                      </span>
+                    )}
                   </h3>
                   <Button 
                     variant="ghost" 
@@ -2062,9 +2122,54 @@ const SchedulePage = () => {
                     return sportNameA.localeCompare(sportNameB);
                   })
                   .map(sportId => {
-                    const games = gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')][sportId];
-                    // Skip if no games for this sport
-                    if (!games || games.length === 0) return null;
+                    // Get all games for this sport on this day
+                    const allGamesForSport = gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')][sportId];
+                    
+                    // Apply current filters to the games
+                    const filteredGames = allGamesForSport.filter(game => {
+                      // Apply team filter
+                      const teamFilter = 
+                        selectedTeam === "all" || 
+                        game.homeTeamId === selectedTeam || 
+                        game.awayTeamId === selectedTeam;
+                      
+                      // Apply sport filter
+                      const sportFilter = selectedSport === "all" || (() => {
+                        const gameActualSportId = extractSportFromGame(game) || game.sportId;
+                        const normalizedSelectedSport = selectedSport.toLowerCase().trim();
+                        const normalizedGameSport = gameActualSportId?.toLowerCase()?.trim() || '';
+                        
+                        // Use the same sport matching logic as in the main filter
+                        if (normalizedSelectedSport === 'tennis') {
+                          return normalizedGameSport === 'tennis' || 
+                                normalizedGameSport === 'mtennis' || 
+                                normalizedGameSport === 'wtennis' ||
+                                normalizedGameSport === 'm-tennis' || 
+                                normalizedGameSport === 'w-tennis' ||
+                                normalizedGameSport.includes('tennis');
+                        }
+                        
+                        // Special case for Swimming - consolidated version
+                        if (normalizedSelectedSport === 'swimming') {
+                          return normalizedGameSport === 'swimming' || 
+                                normalizedGameSport === 'mswim' || 
+                                normalizedGameSport === 'wswim' ||
+                                normalizedGameSport === 'm-swimming' || 
+                                normalizedGameSport === 'w-swimming' ||
+                                normalizedGameSport.includes('swimming') ||
+                                normalizedGameSport.includes('swim');
+                        }
+                        
+                        // Match other sports
+                        return normalizedGameSport === normalizedSelectedSport || 
+                              normalizedGameSport.includes(normalizedSelectedSport);
+                      })();
+                      
+                      return teamFilter && sportFilter;
+                    });
+                    
+                    // Skip if no filtered games for this sport
+                    if (!filteredGames || filteredGames.length === 0) return null;
                     
                     const sportName = getSportName(sportId);
                     return (
@@ -2089,7 +2194,7 @@ const SchedulePage = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {games.map(game => {
+                            {filteredGames.map((game: Game) => {
                               const awayTeam = schools.find(s => s.id === game.awayTeamId);
                               const homeTeam = schools.find(s => s.id === game.homeTeamId);
                               const gameDateStr = format(new Date(game.startTime), 'h:mm a');
