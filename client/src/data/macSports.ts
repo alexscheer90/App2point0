@@ -122,25 +122,17 @@ export const macSports: Sport[] = [
     showInStandings: false
   },
   {
-    id: "tennis",
-    name: "Tennis",
-    gender: "mixed", // Hidden gender
-    displayName: "Tennis",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=mten",
-    scheduleOnly: true
-  },
-  {
     id: "mten",
     name: "Tennis",
-    gender: "men", // Hidden gender
-    displayName: "Tennis",
+    gender: "men", // Show gender in dropdown
+    displayName: "Tennis - Men",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=mten"
   },
   {
     id: "wten",
     name: "Tennis",
-    gender: "women", // Hidden gender
-    displayName: "Tennis",
+    gender: "women", // Show gender in dropdown
+    displayName: "Tennis - Women",
     officialUrl: "https://getsomemaction.com/standings.aspx?path=wten"
   },
   {

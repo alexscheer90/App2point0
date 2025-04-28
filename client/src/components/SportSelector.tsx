@@ -36,8 +36,8 @@ const SPORT_DISPLAY_NAMES: Record<string, string> = {
   "mswim": "Swimming & Diving",
   "wswim": "Swimming & Diving",
   "tennis": "Tennis",
-  "mten": "Tennis",
-  "wten": "Tennis",
+  "mten": "Tennis - Men",
+  "wten": "Tennis - Women",
   "track": "Track & Field",
   "wvball": "Volleyball",
   "wrestling": "Wrestling"
