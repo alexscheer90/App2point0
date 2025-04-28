@@ -33,12 +33,12 @@ const StandingsPage = () => {
     { id: 'football', name: 'Football' },
     { id: 'baseball', name: 'Baseball' },
     { id: 'wrestling', name: 'Wrestling' },
-    { id: 'wsoc', name: 'Women\'s Soccer' }
+    { id: 'wsoccer', name: 'Women\'s Soccer' }
   ];
 
-  // Get selected sport data for mapping wsoc -> women's soccer in the UI
+  // Get selected sport data for mapping wsoc/wsoccer -> women's soccer in the UI
   const mapSportIdToName = (sportId: string) => {
-    if (sportId === 'wsoc') return 'Women\'s Soccer';
+    if (sportId === 'wsoc' || sportId === 'wsoccer') return 'Women\'s Soccer';
     return sportId.charAt(0).toUpperCase() + sportId.slice(1);
   };
 

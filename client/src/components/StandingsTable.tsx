@@ -42,14 +42,14 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   console.log("Standings entries:", entries.map(e => `${e.schoolId} (${e.conference.wins}-${e.conference.losses})`));
   console.log("Available school IDs:", schools.map(s => s.id));
   
-  // Based on the screenshot, women's soccer should NOT show ties
-  const showTies = false;
+  // Women's soccer needs to show ties (W-L-T format)
+  const showTies = sport === 'wsoc' || sport === 'wsoccer';
   
   // Check if this is wrestling (which has East/West divisions)
   const hasEastWestDivision = sport === 'wrestling';
   
   // Check if this is women's soccer (has points & goals columns)
-  const isWomensSoccer = sport === 'wsoc';
+  const isWomensSoccer = sport === 'wsoc' || sport === 'wsoccer';
   
   // Process entries based on sport - create this variable first
   let processedEntries: ExtendedStandingsEntry[] = [...entries] as ExtendedStandingsEntry[];
