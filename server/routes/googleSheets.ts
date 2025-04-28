@@ -378,8 +378,77 @@ const backupStandings: Record<string, StandingsEntry[]> = {
   'football': footballStandings,
 };
 
+// Mock Google Sheet data for testing (these would come from the real Google Sheets API)
+// In a real implementation, you would fetch this data from a Google Sheet API endpoint
+const mockGoogleSheetData: Record<string, any[][]> = {
+  // Default: Columns A, D, E, F, I (school name, conference record, conference percentage, overall record, overall percentage)
+  'football': [
+    ['Team', 'Mascot', 'Rank', 'Conference', 'Conf Pct', 'Overall', 'Division', 'Points', 'Overall Pct'],
+    ['Akron', 'Zips', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Ball State', 'Cardinals', '', '0-0', '0.000', '0-0', 'West', '0', '0.000'],
+    ['Bowling Green', 'Falcons', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Buffalo', 'Bulls', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Central Michigan', 'Chippewas', '', '0-0', '0.000', '0-0', 'West', '0', '0.000'],
+    ['Eastern Michigan', 'Eagles', '', '0-0', '0.000', '0-0', 'West', '0', '0.000'],
+    ['Kent State', 'Golden Flashes', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Massachusetts', 'Minutemen', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Miami (OH)', 'RedHawks', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Northern Illinois', 'Huskies', '', '0-0', '0.000', '0-0', 'West', '0', '0.000'],
+    ['Ohio', 'Bobcats', '', '0-0', '0.000', '0-0', 'East', '0', '0.000'],
+    ['Toledo', 'Rockets', '', '0-0', '0.000', '0-0', 'West', '0', '0.000'],
+    ['Western Michigan', 'Broncos', '', '0-0', '0.000', '0-0', 'West', '0', '0.000']
+  ],
+  // Baseball: Columns A, D, E, F, I
+  'baseball': [
+    ['School', 'Mascot', 'Division', 'Conference', 'Conf Pct', 'Overall', 'Home', 'Away', 'Overall Pct'],
+    ['Ball State', 'Cardinals', '', '17-4', '0.810', '17-4', '10-2', '7-2', '0.810'],
+    ['Kent State', 'Golden Flashes', '', '16-5', '0.762', '16-5', '10-2', '6-3', '0.762'],
+    ['Miami (OH)', 'RedHawks', '', '18-6', '0.750', '18-6', '11-3', '7-3', '0.750'],
+    ['Bowling Green', 'Falcons', '', '16-8', '0.667', '16-8', '9-3', '7-5', '0.667'],
+    ['Toledo', 'Rockets', '', '10-11', '0.476', '10-11', '5-5', '5-6', '0.476'],
+    ['Eastern Michigan', 'Eagles', '', '9-12', '0.429', '9-12', '5-6', '4-6', '0.429'],
+    ['Central Michigan', 'Chippewas', '', '9-12', '0.429', '9-12', '4-6', '5-6', '0.429'],
+    ['Western Michigan', 'Broncos', '', '8-13', '0.381', '8-13', '4-7', '4-6', '0.381'],
+    ['Akron', 'Zips', '', '7-17', '0.292', '7-17', '4-9', '3-8', '0.292'],
+    ['Northern Illinois', 'Huskies', '', '5-16', '0.238', '5-16', '3-8', '2-8', '0.238'],
+    ['Ohio', 'Bobcats', '', '5-16', '0.238', '5-16', '3-9', '2-7', '0.238']
+  ],
+  // Wrestling example with divisions: Columns A, C, E, F, I
+  'wrestling': [
+    ['School', 'Mascot', 'Division', 'Record', 'Conf Pct', 'Overall', 'Bonus', 'Pins', 'Overall Pct'],
+    ['Clarion', 'Golden Eagles', 'East', '4-1', '0.800', '9-5', '42', '14', '0.643'],
+    ['Rider', 'Broncs', 'East', '4-1', '0.800', '8-5', '35', '12', '0.615'],
+    ['George Mason', 'Patriots', 'East', '3-2', '0.600', '7-7', '32', '9', '0.500'],
+    ['Lock Haven', 'Bald Eagles', 'East', '2-3', '0.400', '6-8', '28', '8', '0.429'],
+    ['Cleveland State', 'Vikings', 'East', '1-4', '0.200', '4-9', '19', '6', '0.308'],
+    ['Bloomsburg', 'Huskies', 'East', '1-4', '0.200', '3-10', '15', '5', '0.231'],
+    ['Central Michigan', 'Chippewas', 'West', '5-0', '1.000', '12-2', '56', '23', '0.857'],
+    ['Northern Illinois', 'Huskies', 'West', '4-1', '0.800', '10-4', '48', '18', '0.714'],
+    ['Ohio', 'Bobcats', 'West', '3-2', '0.600', '8-6', '35', '15', '0.571'],
+    ['Kent State', 'Golden Flashes', 'West', '2-3', '0.400', '6-8', '26', '9', '0.429'],
+    ['SIU Edwardsville', 'Cougars', 'West', '1-4', '0.200', '4-10', '18', '7', '0.286'],
+    ['Buffalo', 'Bulls', 'West', '0-5', '0.000', '2-12', '12', '4', '0.143']
+  ],
+  // Women's Soccer example: Columns A, E, G, H, J
+  'wsoc': [
+    ['School', 'Mascot', 'Division', 'Record', 'Conf Pct', 'GP', 'Points', 'Goals', 'GF/GA', 'Overall Pct'],
+    ['Bowling Green', 'Falcons', '', '6-2-2', '0.700', '10', '20', '18-9', '0.722'],
+    ['Kent State', 'Golden Flashes', '', '6-3-1', '0.650', '10', '19', '17-11', '0.700'],
+    ['Ball State', 'Cardinals', '', '6-4-0', '0.600', '10', '18', '15-10', '0.667'],
+    ['Buffalo', 'Bulls', '', '5-3-2', '0.600', '10', '17', '14-10', '0.650'],
+    ['Toledo', 'Rockets', '', '5-4-1', '0.550', '10', '16', '16-15', '0.600'],
+    ['Miami (OH)', 'RedHawks', '', '5-5-0', '0.500', '10', '15', '14-16', '0.550'],
+    ['Western Michigan', 'Broncos', '', '4-4-2', '0.500', '10', '14', '12-12', '0.550'],
+    ['Central Michigan', 'Chippewas', '', '4-5-1', '0.450', '10', '13', '11-13', '0.500'],
+    ['Eastern Michigan', 'Eagles', '', '3-5-2', '0.400', '10', '11', '10-14', '0.450'],
+    ['Northern Illinois', 'Huskies', '', '3-6-1', '0.350', '10', '10', '10-16', '0.400'],
+    ['Ohio', 'Bobcats', '', '3-7-0', '0.300', '10', '9', '8-18', '0.350'],
+    ['Akron', 'Zips', '', '1-8-1', '0.150', '10', '4', '5-20', '0.200']
+  ]
+};
+
 /**
- * Get standings for a specific sport from MAC website
+ * Get standings for a specific sport from Google Sheets or MAC website
  * GET /api/sheets/standings/:sportId
  */
 router.get('/standings/:sportId', async (req: Request, res: Response) => {
@@ -388,22 +457,33 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     
     console.log(`Fetching ${sportId} standings from MAC website`);
     
-    // Map sport IDs to the correct paths on the MAC website
-    let macSportId = sportId;
-    if (sportId === 'mbball') {
-      // For men's basketball, try the direct ID
-      macSportId = 'mbball';
-    } else if (sportId === 'wbball') {
-      // For women's basketball, try the direct ID
-      macSportId = 'wbball';
+    // First: Try to get data from Google Sheets (mock data for now)
+    // In a production environment, you would fetch this data from an actual Google Sheet
+    // using the Google Sheets API with proper authentication
+    let standings: StandingsEntry[] = [];
+    
+    if (mockGoogleSheetData[sportId]) {
+      // Process the Google Sheet data with our new method
+      standings = googleSheetsService.processGoogleSheetData(sportId, mockGoogleSheetData[sportId]);
+      console.log(`Successfully processed ${standings.length} standings entries from Google Sheets`);
     }
     
-    // First try to get data from the MAC website
-    let standings = await googleSheetsService.fetchStandings(macSportId);
+    // Second: If no Google Sheet data, try to get data from the MAC website
+    if (standings.length === 0) {
+      let macSportId = sportId;
+      if (sportId === 'mbball') {
+        macSportId = 'mbball';
+      } else if (sportId === 'wbball') {
+        macSportId = 'wbball';
+      }
+      
+      console.log(`No Google Sheet data found, fetching from MAC website instead`);
+      standings = await googleSheetsService.fetchStandings(macSportId);
+    }
     
-    // If we got no data, use our backup data
+    // Third: If we still have no data, use our backup data if available
     if (standings.length === 0 && backupStandings[sportId]) {
-      console.log(`No data returned from MAC website. Using backup data for ${sportId}`);
+      console.log(`No data returned from sources. Using backup data for ${sportId}`);
       standings = backupStandings[sportId];
     }
     
@@ -414,12 +494,12 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
       message: `Successfully fetched ${standings.length} standings entries for ${sportId}`
     });
   } catch (error) {
-    console.error('Error fetching standings from MAC website:', error);
+    console.error('Error fetching standings from data sources:', error);
     
     // On error, check if we have backup data for this sport
     const sportId = req.params.sportId;
     if (backupStandings[sportId]) {
-      console.log(`Error with MAC website. Using backup data for ${sportId}`);
+      console.log(`Error with data sources. Using backup data for ${sportId}`);
       
       return res.json({
         success: true,
@@ -430,7 +510,7 @@ router.get('/standings/:sportId', async (req: Request, res: Response) => {
     }
     
     return res.status(500).json({
-      error: 'Failed to fetch standings from MAC website',
+      error: 'Failed to fetch standings data',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
