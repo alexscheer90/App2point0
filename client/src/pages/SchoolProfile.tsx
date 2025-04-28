@@ -142,7 +142,7 @@ const SchoolProfile = () => {
   const getTicketUrl = (schoolId: string): string => {
     switch (schoolId) {
       case "akron":
-        return "https://gozips.com/sports/2018/7/19/tickets.aspx";
+        return "https://gozips.evenue.net/list/GS";
       case "ballstate":
         return "https://ballstatesports.com/sports/2015/2/23/GEN_0223151523.aspx";
       case "bowlinggreen":
