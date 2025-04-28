@@ -168,7 +168,12 @@ const getSportName = (sportId: string): string => {
   if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return "Women's Gymnastics";
   if (normalizedId === 'rowing' || normalizedId.includes('rowing')) return 'Rowing';
   
-  // Default formatting for unknown sports
+  // Handle special case for "unknown" sportId (Women's Lacrosse in the screenshot)
+  if (sportId === 'unknown') {
+    return "Women's Lacrosse"; 
+  }
+  
+  // Default formatting for other sports
   return sportId.charAt(0).toUpperCase() + sportId.slice(1);
 };
 
@@ -289,7 +294,12 @@ const getSportBadgeStyle = (sportId: string): string => {
     return 'bg-slate-50 text-slate-800 border-slate-200';
   }
   
-  // Default style for unknown sports
+  // Handle "unknown" sportId as Women's Lacrosse
+  if (sportId === 'unknown') {
+    return 'bg-violet-50 text-violet-800 border-violet-200'; // Same as Women's Lacrosse
+  }
+  
+  // Default style for other unidentified sports
   return 'bg-gray-50 text-gray-800 border-gray-200';
 };
 
