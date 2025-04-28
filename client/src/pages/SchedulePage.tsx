@@ -2025,24 +2025,10 @@ const SchedulePage = () => {
                               return (
                                 <tr key={game.id} className="border-b border-gray-200 hover:bg-gray-50">
                                   <td className="px-3 py-3 text-sm">
-                                    <div className="flex items-center">
-                                      {awayTeam && awayTeam.logoUrl && (
-                                        <div className="w-6 h-6 mr-2 flex-shrink-0">
-                                          <img src={awayTeam.logoUrl} alt={`${awayTeam.name} logo`} className="w-full h-full object-contain" />
-                                        </div>
-                                      )}
-                                      <span>{game.awayTeamName || (awayTeam && awayTeam.name) || 'Away Team'}</span>
-                                    </div>
+                                    {game.awayTeamName || (awayTeam && awayTeam.name) || 'Away Team'}
                                   </td>
                                   <td className="px-3 py-3 text-sm">
-                                    <div className="flex items-center">
-                                      {homeTeam && homeTeam.logoUrl && (
-                                        <div className="w-6 h-6 mr-2 flex-shrink-0">
-                                          <img src={homeTeam.logoUrl} alt={`${homeTeam.name} logo`} className="w-full h-full object-contain" />
-                                        </div>
-                                      )}
-                                      <span>{game.homeTeamName || (homeTeam && homeTeam.name) || 'Home Team'}</span>
-                                    </div>
+                                    {game.homeTeamName || (homeTeam && homeTeam.name) || 'Home Team'}
                                   </td>
                                   <td className="px-3 py-3 text-center text-sm">
                                     {gameDateStr}
