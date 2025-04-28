@@ -63,8 +63,15 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   );
 
   // Calculate column span for table headers
-  // For women's soccer with points/goals, we have a different layout
-  const conferenceColSpan = isWomensSoccer ? (hasPoints ? 2 : (showTies ? 4 : 3)) : (showTies ? 4 : 3);
+  // For women's soccer with points/goals, we add those columns to the standard layout
+  let conferenceColSpan = showTies ? 4 : 3; // Base columns: W, L, [T], PCT
+  
+  // Add extra columns for women's soccer's special fields
+  if (isWomensSoccer) {
+    if (hasPoints) conferenceColSpan += 1;
+    if (hasGoals) conferenceColSpan += 1;
+  }
+  
   const overallColSpan = showTies ? 4 : 3;
   
   if (hasEastWestDivision) {
@@ -164,21 +171,17 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
           </td>
         )}
         
-        {/* Standard Conference Record (not shown for Women's Soccer with points) */}
-        {!isWomensSoccer && (
-          <>
-            <td className="px-1 py-3 text-center text-sm">
-              {entry.conference.wins}
-            </td>
-            <td className="px-1 py-3 text-center text-sm">
-              {entry.conference.losses}
-            </td>
-            {showTies && (
-              <td className="px-1 py-3 text-center text-sm">
-                {entry.conference.ties || 0}
-              </td>
-            )}
-          </>
+        {/* Standard Conference Record (always shown) */}
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.conference.wins}
+        </td>
+        <td className="px-1 py-3 text-center text-sm">
+          {entry.conference.losses}
+        </td>
+        {showTies && (
+          <td className="px-1 py-3 text-center text-sm">
+            {entry.conference.ties || 0}
+          </td>
         )}
         
         {/* Conference Percentage (shown for all sports) */}
@@ -209,23 +212,16 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   const getTotalColumns = () => {
     let columns = 1; // Team column
     
-    // Conference columns
+    // Conference columns (W, L, [T], PCT)
+    columns += showTies ? 4 : 3;
+    
+    // Add special columns for women's soccer
     if (isWomensSoccer) {
-      columns += hasPoints ? 1 : 0;
-      columns += hasGoals ? 1 : 0;
-      
-      // If no special columns for women's soccer, use standard columns
-      if (!hasPoints && !hasGoals) {
-        columns += showTies ? 4 : 3;
-      } else {
-        // Always include conference percentage
-        columns += 1;
-      }
-    } else {
-      columns += showTies ? 4 : 3;
+      if (hasPoints) columns += 1;
+      if (hasGoals) columns += 1;
     }
     
-    // Overall columns
+    // Overall columns (W, L, [T], PCT)
     columns += showTies ? 4 : 3;
     
     return columns;
@@ -272,15 +268,11 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
                 <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">GOALS</th>
               )}
               
-              {/* Standard W-L-T columns (not shown for Women's Soccer with points/goals) */}
-              {(!isWomensSoccer || (!hasPoints && !hasGoals)) && (
-                <>
-                  <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
-                  <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
-                  {showTies && (
-                    <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
-                  )}
-                </>
+              {/* Standard W-L-T columns (always shown) */}
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">W</th>
+              <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">L</th>
+              {showTies && (
+                <th className="px-1 py-2 text-center text-xs font-medium uppercase tracking-wider text-white">T</th>
               )}
               
               {/* PCT column shown for all */}
