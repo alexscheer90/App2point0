@@ -2314,9 +2314,14 @@ const SchedulePage = () => {
                 <div key={dateStr} className="mb-6">
                   <h3 className="text-sm font-medium text-gray-500 mb-2">
                     {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
+                    {(selectedTeam !== "all" || selectedSport !== "all") && (
+                      <span className="ml-2 text-xs text-gray-600">
+                        (Filtered view)
+                      </span>
+                    )}
                   </h3>
                   <div>
-                    {/* For each date, iterate through sports - sorted by importance */}
+                    {/* For each date, iterate through sports - sorted alphabetically */}
                     {Object.keys(gamesByDateAndSport[dateStr])
                       .sort((a, b) => {
                         // Get sport names for alphabetical sorting
@@ -2327,9 +2332,63 @@ const SchedulePage = () => {
                         return sportNameA.localeCompare(sportNameB);
                       })
                       .map(sportId => {
-                        const games = gamesByDateAndSport[dateStr][sportId];
-                        // Skip if no games for this sport
-                        if (!games || games.length === 0) return null;
+                        // Get all games for this sport on this date
+                        const allGamesForSport = gamesByDateAndSport[dateStr][sportId];
+                        
+                        // Apply current filters to the games
+                        const filteredGamesForSport = allGamesForSport.filter(game => {
+                          // Apply team filter
+                          const teamFilter = 
+                            selectedTeam === "all" || 
+                            game.homeTeamId === selectedTeam || 
+                            game.awayTeamId === selectedTeam;
+                          
+                          // Apply sport filter using the same logic as in the main filter
+                          const sportFilter = selectedSport === "all" || (() => {
+                            const gameActualSportId = extractSportFromGame(game) || game.sportId;
+                            const normalizedSelectedSport = selectedSport.toLowerCase().trim();
+                            const normalizedGameSport = gameActualSportId?.toLowerCase()?.trim() || '';
+                            
+                            // Football - exact match 
+                            if (normalizedSelectedSport === 'football') {
+                              return normalizedGameSport === 'football';
+                            }
+                            
+                            // Tennis consolidation
+                            if (normalizedSelectedSport === 'tennis') {
+                              return normalizedGameSport === 'tennis' || 
+                                    normalizedGameSport === 'mtennis' || 
+                                    normalizedGameSport === 'wtennis' ||
+                                    normalizedGameSport === 'm-tennis' || 
+                                    normalizedGameSport === 'w-tennis';
+                            }
+                            
+                            // Swimming consolidation
+                            if (normalizedSelectedSport === 'swimming') {
+                              return normalizedGameSport === 'swimming' || 
+                                    normalizedGameSport === 'mswim' || 
+                                    normalizedGameSport === 'wswim' ||
+                                    normalizedGameSport === 'm-swimming' || 
+                                    normalizedGameSport === 'w-swimming';
+                            }
+                            
+                            // Baseball - exact match
+                            if (normalizedSelectedSport === 'baseball') {
+                              return normalizedGameSport === 'baseball';
+                            }
+                            
+                            // Default to exact match
+                            return normalizedGameSport === normalizedSelectedSport;
+                          })();
+                          
+                          return teamFilter && sportFilter;
+                        });
+                        
+                        // Skip if no filtered games for this sport
+                        if (!filteredGamesForSport || filteredGamesForSport.length === 0) return null;
+                        
+                        // Use the filtered games instead of all games
+                        const games = filteredGamesForSport;
                         
                         const sportName = getSportName(sportId);
                         return (
