@@ -275,6 +275,30 @@ const SchedulePage = () => {
     select: (data) => data || { favoriteSchool: null }
   });
   
+  // Group games by date and sport for the new table display
+  const gamesByDateAndSport = useMemo(() => {
+    if (!activeGames) return {};
+    
+    const result: Record<string, Record<string, Game[]>> = {};
+    
+    activeGames.forEach(game => {
+      const dateStr = format(new Date(game.startTime), 'yyyy-MM-dd');
+      const sportId = game.sportId || 'unknown';
+      
+      if (!result[dateStr]) {
+        result[dateStr] = {};
+      }
+      
+      if (!result[dateStr][sportId]) {
+        result[dateStr][sportId] = [];
+      }
+      
+      result[dateStr][sportId].push(game);
+    });
+    
+    return result;
+  }, [activeGames]);
+  
   // Create a complete list of MAC sports for the SportSelector, regardless of calendar data
   const availableSports = useMemo(() => {
     // Complete list of MAC sports (gender only specified where multiple versions exist)
@@ -1888,7 +1912,8 @@ const SchedulePage = () => {
             </div>
             
             {/* Game details for selected day - shown when clicking on a day */}
-            {selectedDay && gamesByDate[format(selectedDay, 'yyyy-MM-dd')] ? (
+            {selectedDay && gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')] && 
+             Object.keys(gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')]).length > 0 ? (
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium text-gray-800">
@@ -1902,11 +1927,103 @@ const SchedulePage = () => {
                     Close
                   </Button>
                 </div>
-                <div className="space-y-3">
-                  {gamesByDate[format(selectedDay, 'yyyy-MM-dd')].map(game => (
-                    <GameCard key={game.id} game={game} />
-                  ))}
-                </div>
+                
+                {/* For each sport on the selected day */}
+                {Object.keys(gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')]).map(sportId => {
+                  const games = gamesByDateAndSport[format(selectedDay, 'yyyy-MM-dd')][sportId];
+                  // Skip if no games for this sport
+                  if (!games || games.length === 0) return null;
+                  
+                  const sportName = getSportName(sportId);
+                  return (
+                    <div key={`${format(selectedDay, 'yyyy-MM-dd')}-${sportId}`} className="mb-4">
+                      {/* Sport header with dark blue background */}
+                      <div 
+                        style={{ backgroundColor: MAC_NAVY }} 
+                        className="text-white px-3 py-2 text-sm font-medium mb-2"
+                      >
+                        {sportName}
+                      </div>
+                      
+                      {/* Game table */}
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full border-collapse">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Away</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Home</th>
+                              <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                              <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Links</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {games.map(game => {
+                              const awayTeam = schools.find(s => s.id === game.awayTeamId);
+                              const homeTeam = schools.find(s => s.id === game.homeTeamId);
+                              const gameDateStr = format(new Date(game.startTime), 'h:mm a');
+                              
+                              return (
+                                <tr key={game.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                  <td className="px-3 py-3 text-sm">
+                                    <div className="flex items-center">
+                                      {awayTeam && awayTeam.logoUrl && (
+                                        <div className="w-6 h-6 mr-2 flex-shrink-0">
+                                          <img src={awayTeam.logoUrl} alt={`${awayTeam.name} logo`} className="w-full h-full object-contain" />
+                                        </div>
+                                      )}
+                                      <span>{game.awayTeamName || (awayTeam && awayTeam.name) || 'Away Team'}</span>
+                                    </div>
+                                  </td>
+                                  <td className="px-3 py-3 text-sm">
+                                    <div className="flex items-center">
+                                      {homeTeam && homeTeam.logoUrl && (
+                                        <div className="w-6 h-6 mr-2 flex-shrink-0">
+                                          <img src={homeTeam.logoUrl} alt={`${homeTeam.name} logo`} className="w-full h-full object-contain" />
+                                        </div>
+                                      )}
+                                      <span>{game.homeTeamName || (homeTeam && homeTeam.name) || 'Home Team'}</span>
+                                    </div>
+                                  </td>
+                                  <td className="px-3 py-3 text-center text-sm">
+                                    {gameDateStr}
+                                  </td>
+                                  <td className="px-3 py-3 text-sm">
+                                    {game.location || (game.venue || '')}
+                                  </td>
+                                  <td className="px-3 py-3 text-center text-sm">
+                                    <div className="flex justify-center space-x-2">
+                                      {game.liveStatsUrl && (
+                                        <a 
+                                          href={game.liveStatsUrl} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 hover:underline"
+                                        >
+                                          Stats
+                                        </a>
+                                      )}
+                                      {game.videoUrl && (
+                                        <a 
+                                          href={game.videoUrl} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 hover:underline"
+                                        >
+                                          Video
+                                        </a>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               selectedDay ? (
@@ -1922,8 +2039,8 @@ const SchedulePage = () => {
         ) : (
           // Regular Game List View
           filteredGames && filteredGames.length > 0 ? (
-            // Group by date
-            Object.keys(gamesByDate)
+            // Group by date and sport
+            Object.keys(gamesByDateAndSport)
               .sort((a, b) => parseISO(a).getTime() - parseISO(b).getTime())
               .map(dateStr => (
                 <div key={dateStr} className="mb-6">
@@ -1931,9 +2048,102 @@ const SchedulePage = () => {
                     {format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')}
                   </h3>
                   <div>
-                    {gamesByDate[dateStr].map(game => (
-                      <GameCard key={game.id} game={game} />
-                    ))}
+                    {/* For each date, iterate through sports */}
+                    {Object.keys(gamesByDateAndSport[dateStr]).map(sportId => {
+                      const games = gamesByDateAndSport[dateStr][sportId];
+                      // Skip if no games for this sport
+                      if (!games || games.length === 0) return null;
+                      
+                      const sportName = getSportName(sportId);
+                      return (
+                        <div key={`${dateStr}-${sportId}`} className="mb-4">
+                          {/* Sport header with dark blue background */}
+                          <div 
+                            style={{ backgroundColor: MAC_NAVY }} 
+                            className="text-white px-3 py-2 text-sm font-medium mb-2"
+                          >
+                            {sportName}
+                          </div>
+                          
+                          {/* Game table */}
+                          <div className="overflow-x-auto">
+                            <table className="min-w-full border-collapse">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Away</th>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Home</th>
+                                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Links</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {games.map(game => {
+                                  const awayTeam = schools.find(s => s.id === game.awayTeamId);
+                                  const homeTeam = schools.find(s => s.id === game.homeTeamId);
+                                  const gameDateStr = format(new Date(game.startTime), 'h:mm a');
+                                  
+                                  return (
+                                    <tr key={game.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                      <td className="px-3 py-3 text-sm">
+                                        <div className="flex items-center">
+                                          {awayTeam && awayTeam.logoUrl && (
+                                            <div className="w-6 h-6 mr-2 flex-shrink-0">
+                                              <img src={awayTeam.logoUrl} alt={`${awayTeam.name} logo`} className="w-full h-full object-contain" />
+                                            </div>
+                                          )}
+                                          <span>{game.awayTeamName || (awayTeam && awayTeam.name) || 'Away Team'}</span>
+                                        </div>
+                                      </td>
+                                      <td className="px-3 py-3 text-sm">
+                                        <div className="flex items-center">
+                                          {homeTeam && homeTeam.logoUrl && (
+                                            <div className="w-6 h-6 mr-2 flex-shrink-0">
+                                              <img src={homeTeam.logoUrl} alt={`${homeTeam.name} logo`} className="w-full h-full object-contain" />
+                                            </div>
+                                          )}
+                                          <span>{game.homeTeamName || (homeTeam && homeTeam.name) || 'Home Team'}</span>
+                                        </div>
+                                      </td>
+                                      <td className="px-3 py-3 text-center text-sm">
+                                        {gameDateStr}
+                                      </td>
+                                      <td className="px-3 py-3 text-sm">
+                                        {game.location || (game.venue || '')}
+                                      </td>
+                                      <td className="px-3 py-3 text-center text-sm">
+                                        <div className="flex justify-center space-x-2">
+                                          {game.liveStatsUrl && (
+                                            <a 
+                                              href={game.liveStatsUrl} 
+                                              target="_blank" 
+                                              rel="noopener noreferrer"
+                                              className="text-blue-600 hover:underline"
+                                            >
+                                              Stats
+                                            </a>
+                                          )}
+                                          {game.videoUrl && (
+                                            <a 
+                                              href={game.videoUrl} 
+                                              target="_blank" 
+                                              rel="noopener noreferrer"
+                                              className="text-blue-600 hover:underline"
+                                            >
+                                              Video
+                                            </a>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))
