@@ -53,6 +53,7 @@ export const sportSchema = z.object({
   officialUrl: z.string().optional(),
   scheduleOnly: z.boolean().optional(), // Used to mark sports that should only appear in schedule views
   displayName: z.string().optional(), // Display name for the sport in dropdowns
+  showInStandings: z.boolean().optional(), // Used to mark sports that should not appear in standings views
 });
 
 export const gameStatusSchema = z.enum(["scheduled", "live", "final", "postponed", "cancelled"]);

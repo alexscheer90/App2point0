@@ -28,7 +28,8 @@ export const macSports: Sport[] = [
     name: "Cross Country",
     gender: "mixed", // Hidden gender
     displayName: "Cross Country",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=xc"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=xc",
+    showInStandings: false
   },
   {
     id: "fhockey",
@@ -57,14 +58,16 @@ export const macSports: Sport[] = [
     name: "Golf",
     gender: "men", // Hidden gender
     displayName: "Golf",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mgolf",
+    showInStandings: false
   },
   {
     id: "wgolf",
     name: "Golf",
     gender: "women", // Hidden gender
     displayName: "Golf",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=wgolf"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wgolf",
+    showInStandings: false
   },
   {
     id: "gym",
@@ -107,14 +110,16 @@ export const macSports: Sport[] = [
     name: "Swimming & Diving",
     gender: "men", // Hidden gender
     displayName: "Swimming & Diving",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=mswim",
+    showInStandings: false
   },
   {
     id: "wswim",
     name: "Swimming & Diving",
     gender: "women", // Hidden gender
     displayName: "Swimming & Diving",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=wswim"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=wswim",
+    showInStandings: false
   },
   {
     id: "tennis",
@@ -143,7 +148,8 @@ export const macSports: Sport[] = [
     name: "Track & Field",
     gender: "mixed", // Hidden gender
     displayName: "Track & Field",
-    officialUrl: "https://getsomemaction.com/standings.aspx?path=track"
+    officialUrl: "https://getsomemaction.com/standings.aspx?path=track",
+    showInStandings: false
   },
   {
     id: "wvball",

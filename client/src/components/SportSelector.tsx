@@ -7,6 +7,7 @@ interface Sport {
   gender: string;
   scheduleOnly?: boolean;
   displayName?: string;
+  showInStandings?: boolean;
 }
 
 interface SportSelectorProps {
@@ -55,9 +56,9 @@ const SportSelector = ({
   // Use provided sports if available, otherwise use API data
   let sports = providedSports || apiSports || [];
   
-  // If in standings view, filter out scheduleOnly sports
+  // If in standings view, filter out scheduleOnly sports and sports flagged not to show in standings
   if (standingsView) {
-    sports = sports.filter(sport => !sport.scheduleOnly);
+    sports = sports.filter(sport => !sport.scheduleOnly && sport.showInStandings !== false);
   }
   
   return (

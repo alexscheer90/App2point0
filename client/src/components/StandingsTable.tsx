@@ -152,7 +152,7 @@ const StandingsTable = ({ sport, entries, favoriteSchoolId }: StandingsTableProp
   const renderDivisionHeader = (divisionName: string) => (
     <tr className="bg-gray-100">
       <td
-        colSpan={showTies ? 9 : 7}
+        colSpan={showTies ? 5 : 4}
         className="px-3 py-2 text-sm font-medium text-gray-700"
       >
         {divisionName} DIVISION
