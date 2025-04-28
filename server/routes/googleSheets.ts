@@ -381,6 +381,38 @@ const backupStandings: Record<string, StandingsEntry[]> = {
 // Mock Google Sheet data for testing (these would come from the real Google Sheets API)
 // In a real implementation, you would fetch this data from a Google Sheet API endpoint
 const mockGoogleSheetData: Record<string, any[][]> = {
+  // Women's Soccer example with points and goals columns (Columns A, D, E, G, H, J)
+  'wsoc': [
+    ['School', 'Mascot', 'Division', 'Record', 'Conf Pct', 'GP', 'Points', 'Goals', 'GF/GA', 'Overall Pct'],
+    ['Bowling Green', 'Falcons', '', '6-2-2', '0.700', '10', '20', '18-9', '0.722'],
+    ['Kent State', 'Golden Flashes', '', '6-3-1', '0.650', '10', '19', '17-11', '0.700'],
+    ['Ball State', 'Cardinals', '', '6-4-0', '0.600', '10', '18', '15-10', '0.667'],
+    ['Buffalo', 'Bulls', '', '5-3-2', '0.600', '10', '17', '14-10', '0.650'],
+    ['Toledo', 'Rockets', '', '5-4-1', '0.550', '10', '16', '16-15', '0.600'],
+    ['Miami (OH)', 'RedHawks', '', '5-5-0', '0.500', '10', '15', '14-16', '0.550'],
+    ['Western Michigan', 'Broncos', '', '4-4-2', '0.500', '10', '14', '12-12', '0.550'],
+    ['Central Michigan', 'Chippewas', '', '4-5-1', '0.450', '10', '13', '11-13', '0.500'],
+    ['Eastern Michigan', 'Eagles', '', '3-5-2', '0.400', '10', '11', '10-14', '0.450'],
+    ['Northern Illinois', 'Huskies', '', '3-6-1', '0.350', '10', '10', '10-16', '0.400'],
+    ['Ohio', 'Bobcats', '', '3-7-0', '0.300', '10', '9', '8-18', '0.350'],
+    ['Akron', 'Zips', '', '1-8-1', '0.150', '10', '4', '5-20', '0.200']
+  ],
+  // Map wsoccer to the same data
+  'wsoccer': [
+    ['School', 'Mascot', 'Division', 'Record', 'Conf Pct', 'GP', 'Points', 'Goals', 'GF/GA', 'Overall Pct'],
+    ['Bowling Green', 'Falcons', '', '6-2-2', '0.700', '10', '20', '18-9', '0.722'],
+    ['Kent State', 'Golden Flashes', '', '6-3-1', '0.650', '10', '19', '17-11', '0.700'],
+    ['Ball State', 'Cardinals', '', '6-4-0', '0.600', '10', '18', '15-10', '0.667'],
+    ['Buffalo', 'Bulls', '', '5-3-2', '0.600', '10', '17', '14-10', '0.650'],
+    ['Toledo', 'Rockets', '', '5-4-1', '0.550', '10', '16', '16-15', '0.600'],
+    ['Miami (OH)', 'RedHawks', '', '5-5-0', '0.500', '10', '15', '14-16', '0.550'],
+    ['Western Michigan', 'Broncos', '', '4-4-2', '0.500', '10', '14', '12-12', '0.550'],
+    ['Central Michigan', 'Chippewas', '', '4-5-1', '0.450', '10', '13', '11-13', '0.500'],
+    ['Eastern Michigan', 'Eagles', '', '3-5-2', '0.400', '10', '11', '10-14', '0.450'],
+    ['Northern Illinois', 'Huskies', '', '3-6-1', '0.350', '10', '10', '10-16', '0.400'],
+    ['Ohio', 'Bobcats', '', '3-7-0', '0.300', '10', '9', '8-18', '0.350'],
+    ['Akron', 'Zips', '', '1-8-1', '0.150', '10', '4', '5-20', '0.200']
+  ],
   // Default: Columns A, D, E, F, I (school name, conference record, conference percentage, overall record, overall percentage)
   'football': [
     ['Team', 'Mascot', 'Rank', 'Conference', 'Conf Pct', 'Overall', 'Division', 'Points', 'Overall Pct'],
@@ -428,22 +460,6 @@ const mockGoogleSheetData: Record<string, any[][]> = {
     ['Kent State', 'Golden Flashes', 'West', '2-3', '0.400', '6-8', '26', '9', '0.429'],
     ['SIU Edwardsville', 'Cougars', 'West', '1-4', '0.200', '4-10', '18', '7', '0.286'],
     ['Buffalo', 'Bulls', 'West', '0-5', '0.000', '2-12', '12', '4', '0.143']
-  ],
-  // Women's Soccer example: Columns A, E, G, H, J
-  'wsoc': [
-    ['School', 'Mascot', 'Division', 'Record', 'Conf Pct', 'GP', 'Points', 'Goals', 'GF/GA', 'Overall Pct'],
-    ['Bowling Green', 'Falcons', '', '6-2-2', '0.700', '10', '20', '18-9', '0.722'],
-    ['Kent State', 'Golden Flashes', '', '6-3-1', '0.650', '10', '19', '17-11', '0.700'],
-    ['Ball State', 'Cardinals', '', '6-4-0', '0.600', '10', '18', '15-10', '0.667'],
-    ['Buffalo', 'Bulls', '', '5-3-2', '0.600', '10', '17', '14-10', '0.650'],
-    ['Toledo', 'Rockets', '', '5-4-1', '0.550', '10', '16', '16-15', '0.600'],
-    ['Miami (OH)', 'RedHawks', '', '5-5-0', '0.500', '10', '15', '14-16', '0.550'],
-    ['Western Michigan', 'Broncos', '', '4-4-2', '0.500', '10', '14', '12-12', '0.550'],
-    ['Central Michigan', 'Chippewas', '', '4-5-1', '0.450', '10', '13', '11-13', '0.500'],
-    ['Eastern Michigan', 'Eagles', '', '3-5-2', '0.400', '10', '11', '10-14', '0.450'],
-    ['Northern Illinois', 'Huskies', '', '3-6-1', '0.350', '10', '10', '10-16', '0.400'],
-    ['Ohio', 'Bobcats', '', '3-7-0', '0.300', '10', '9', '8-18', '0.350'],
-    ['Akron', 'Zips', '', '1-8-1', '0.150', '10', '4', '5-20', '0.200']
   ]
 };
 

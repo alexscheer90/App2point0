@@ -39,6 +39,16 @@ export class GoogleSheetsService {
     // Women's Soccer mapping (Columns A, E, G, H, J)
     'wsoc': {
       schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record
+      confPercentage: 4,  // Column E - Conference Percentage
+      points: 6,          // Column G - Points
+      goals: 7,           // Column H - Goals For/Against
+      overallPercentage: 9 // Column J - Overall Percentage
+    },
+    // Also map wsoccer to the same schema
+    'wsoccer': {
+      schoolId: 0,        // Column A - School Name
+      confRecord: 3,      // Column D - Conference Record  
       confPercentage: 4,  // Column E - Conference Percentage
       points: 6,          // Column G - Points
       goals: 7,           // Column H - Goals For/Against

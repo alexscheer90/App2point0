@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SportSelector from "../components/SportSelector";
 import StandingsTable from "../components/StandingsTable";
@@ -6,6 +6,7 @@ import { useStandings, useMacSports } from "../hooks/useStandings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sport } from "@shared/schema";
 import macLogo from "@assets/IMG_0693.png";
+import { useLocation } from "wouter";
 
 const StandingsPage = () => {
   const [selectedSport, setSelectedSport] = useState<string>("football");
@@ -27,6 +28,20 @@ const StandingsPage = () => {
     ? `${selectedSportObj.name}${selectedSportObj.gender !== "mixed" ? ` (${selectedSportObj.gender.charAt(0).toUpperCase() + selectedSportObj.gender.slice(1)})` : ""}`
     : selectedSport.charAt(0).toUpperCase() + selectedSport.slice(1);
   
+  // Define a list of test sports to quickly check implementations
+  const testSports = [
+    { id: 'football', name: 'Football' },
+    { id: 'baseball', name: 'Baseball' },
+    { id: 'wrestling', name: 'Wrestling' },
+    { id: 'wsoc', name: 'Women\'s Soccer' }
+  ];
+
+  // Get selected sport data for mapping wsoc -> women's soccer in the UI
+  const mapSportIdToName = (sportId: string) => {
+    if (sportId === 'wsoc') return 'Women\'s Soccer';
+    return sportId.charAt(0).toUpperCase() + sportId.slice(1);
+  };
+
   return (
     <div className="py-4">
       <div className="px-4 mb-4">
@@ -65,6 +80,29 @@ const StandingsPage = () => {
             <p className="text-gray-500">No standings data available for {sportName}.</p>
           </div>
         )}
+        
+        {/* Quick Test Navigation for Development */}
+        <div className="mt-6 bg-white rounded-lg shadow-md p-4 border border-gray-200">
+          <h3 className="text-sm font-semibold text-gray-600 mb-2">Sport-Specific Implementations</h3>
+          <div className="flex flex-wrap gap-2">
+            {testSports.map(sport => (
+              <button
+                key={sport.id}
+                onClick={() => setSelectedSport(sport.id)}
+                className={`px-3 py-1 text-sm rounded-full transition-colors 
+                  ${selectedSport === sport.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              >
+                {sport.name}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-gray-500">
+            Testing sport-specific column handling: 
+            Women's Soccer (points, goals) | Wrestling (divisions)
+          </p>
+        </div>
       </div>
     </div>
   );
