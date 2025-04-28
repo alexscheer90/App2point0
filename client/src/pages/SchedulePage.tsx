@@ -69,43 +69,103 @@ const getSportName = (sportId: string): string => {
   
   if (normalizedId === 'wsoccer' || normalizedId === 'w-soccer' || 
     (normalizedId.includes('soccer') && normalizedId.includes('women'))) {
-    return "Soccer";  // Women's soccer referred to as just "Soccer"
+    return "Women's Soccer";  // Explicitly show Women's Soccer
   }
   
   // Generic soccer (assumes women's in MAC context)
   if (normalizedId === 'soccer' || normalizedId.includes('soccer')) {
-    return "Soccer";
+    return "Women's Soccer";  // Explicitly show Women's Soccer
   }
   
-  // Consolidated sports - combining men's and women's variants
-  if (normalizedId === 'golf' || 
-      normalizedId === 'mgolf' || 
-      normalizedId === 'wgolf' ||
-      normalizedId.includes('golf')) {
-    return "Golf";
+  // Tennis with gender specificity
+  if (normalizedId === 'mtennis' || normalizedId === 'm-tennis' || 
+     (normalizedId.includes('tennis') && normalizedId.includes('men'))) {
+    return "Men's Tennis";
   }
   
-  if (normalizedId === 'tennis' || 
-      normalizedId === 'mtennis' || 
-      normalizedId === 'wtennis' ||
-      normalizedId.includes('tennis')) {
+  if (normalizedId === 'wtennis' || normalizedId === 'w-tennis' || 
+     (normalizedId.includes('tennis') && normalizedId.includes('women'))) {
+    return "Women's Tennis";
+  }
+  
+  // Generic tennis (gender neutral)
+  if (normalizedId === 'tennis' || normalizedId.includes('tennis')) {
     return "Tennis";
   }
   
-  if (normalizedId === 'swimming' || 
-      normalizedId === 'mswim' || 
-      normalizedId === 'wswim' ||
-      normalizedId.includes('swimming') ||
+  // Golf with gender specificity
+  if (normalizedId === 'mgolf' || normalizedId === 'm-golf' || 
+     (normalizedId.includes('golf') && normalizedId.includes('men'))) {
+    return "Men's Golf";
+  }
+  
+  if (normalizedId === 'wgolf' || normalizedId === 'w-golf' || 
+     (normalizedId.includes('golf') && normalizedId.includes('women'))) {
+    return "Women's Golf";
+  }
+  
+  // Generic golf (gender neutral)
+  if (normalizedId === 'golf' || normalizedId.includes('golf')) {
+    return "Golf";
+  }
+  
+  // Swimming with gender specificity
+  if (normalizedId === 'mswim' || normalizedId === 'm-swimming' || 
+     (normalizedId.includes('swimming') && normalizedId.includes('men')) ||
+     (normalizedId.includes('swim') && normalizedId.includes('men'))) {
+    return "Men's Swimming & Diving";
+  }
+  
+  if (normalizedId === 'wswim' || normalizedId === 'w-swimming' || 
+     (normalizedId.includes('swimming') && normalizedId.includes('women')) ||
+     (normalizedId.includes('swim') && normalizedId.includes('women'))) {
+    return "Women's Swimming & Diving";
+  }
+  
+  // Generic swimming (gender neutral)
+  if (normalizedId === 'swimming' || normalizedId.includes('swimming') || 
       normalizedId.includes('swim')) {
     return "Swimming & Diving";
+  }
+  
+  // Track & Field with gender specificity
+  if (normalizedId === 'mtrack' || normalizedId === 'm-track' || 
+     (normalizedId.includes('track') && normalizedId.includes('men'))) {
+    return "Men's Track & Field";
+  }
+  
+  if (normalizedId === 'wtrack' || normalizedId === 'w-track' || 
+     (normalizedId.includes('track') && normalizedId.includes('women'))) {
+    return "Women's Track & Field";
+  }
+  
+  // Generic track (gender neutral)
+  if (normalizedId === 'track' || normalizedId.includes('track') || 
+      normalizedId.includes('field')) {
+    return "Track & Field";
+  }
+  
+  // Cross Country with gender specificity
+  if (normalizedId === 'mcross' || normalizedId === 'm-cross' || 
+     (normalizedId.includes('cross') && normalizedId.includes('men'))) {
+    return "Men's Cross Country";
+  }
+  
+  if (normalizedId === 'wcross' || normalizedId === 'w-cross' || 
+     (normalizedId.includes('cross') && normalizedId.includes('women'))) {
+    return "Women's Cross Country";
+  }
+  
+  // Generic cross country (gender neutral)
+  if (normalizedId === 'cross-country' || normalizedId.includes('cross') || 
+      normalizedId.includes('country')) {
+    return "Cross Country";
   }
   
   // Other sports
   if (normalizedId === 'fieldhockey' || normalizedId.includes('field-hockey')) return 'Field Hockey';
   if (normalizedId === 'wrestling' || normalizedId.includes('wrestling')) return 'Wrestling';
-  if (normalizedId === 'track' || normalizedId.includes('track')) return 'Track & Field';
-  if (normalizedId === 'crosscountry' || normalizedId.includes('cross-country')) return 'Cross Country';
-  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return 'Gymnastics';
+  if (normalizedId === 'gymnastics' || normalizedId.includes('gymnastics')) return "Women's Gymnastics";
   if (normalizedId === 'rowing' || normalizedId.includes('rowing')) return 'Rowing';
   
   // Default formatting for unknown sports
@@ -275,6 +335,9 @@ const SchedulePage = () => {
     select: (data) => data || { favoriteSchool: null }
   });
   
+  // Use MAC calendar data
+  const activeGames = macCalendarGames;
+  
   // Group games by date and sport for the new table display
   const gamesByDateAndSport = useMemo(() => {
     if (!activeGames) return {};
@@ -370,9 +433,6 @@ const SchedulePage = () => {
       </div>
     );
   }
-  
-  // Use MAC calendar data
-  const activeGames = macCalendarGames;
   
   // Helper function to detect and extract sport info from game data
   const extractSportFromGame = (game: Game): string | undefined => {
