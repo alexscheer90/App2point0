@@ -1,5 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMacSports } from "../hooks/useStandings";
+import { hasSportStandings } from "../data/availableSports";
 
 interface Sport {
   id: string;
@@ -78,7 +79,7 @@ const SportSelector = ({
   // Use provided sports if available, otherwise use API data
   let sports = providedSports || apiSports || [];
   
-  // Filter out appropriate sports based on view and hidden property
+  // Filter out appropriate sports based on view, hidden property, and availability of standings data
   sports = sports.filter(sport => {
     // Filter out schedule-only sports in standings view
     if (standingsView && sport.scheduleOnly) {
@@ -87,6 +88,11 @@ const SportSelector = ({
     
     // Filter out hidden sports (used for maintaining legacy IDs)
     if (sport.hidden) {
+      return false;
+    }
+    
+    // In standings view, only show sports that have standings data in the Google Sheet
+    if (standingsView && !hasSportStandings(sport.id)) {
       return false;
     }
     
