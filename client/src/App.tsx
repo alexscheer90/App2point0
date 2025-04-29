@@ -26,7 +26,6 @@ const LocalEatsPage = lazyLoad(() => import("./pages/LocalEatsPage"), 'page');
 const PodcastPage = lazyLoad(() => import("./pages/PodcastPage"), 'page');
 const GameStatsPage = lazyLoad(() => import("./pages/GameStatsPage"), 'page');
 const GameDetails = lazyLoad(() => import("./pages/GameDetails"), 'page');
-const TestNotificationsPage = lazyLoad(() => import("./pages/TestNotificationsPage"), 'page');
 const NotFound = lazyLoad(() => import("@/pages/not-found"), 'page');
 
 function App() {
@@ -64,7 +63,7 @@ function App() {
                 <Route path="/eats" component={LocalEatsPage} />
                 <Route path="/podcast" component={PodcastPage} />
                 <Route path="/games/:gameId" component={GameDetails} />
-                <Route path="/test-notifications" component={TestNotificationsPage} />
+
                 <Route component={NotFound} />
               </Switch>
             </main>
