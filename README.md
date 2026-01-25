@@ -1,5 +1,6 @@
 Mobile MACtion App needs	
 
+- found a potential way to pull data from the ncaa.com website using code from this github: https://github.com/henrygd/ncaa-api 
 - Live scoring not functioning/populating, could be an API issue, or perhaps HTTP web request (nsjson serialization) - to help with endpoint calls. I like how I have the scoring bubbles set, but I need to change it up somehow to get scores to populate. 
 - standings only pulling data for conference games, not overall as well 
 - Under each School page, need to work on importing stats (using Sidearm, perhaps NCAA website to get accurate stats?)
