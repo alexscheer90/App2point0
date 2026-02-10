@@ -7,6 +7,7 @@ import { useGames } from "../hooks/useScores";
 import { useMacSchools } from "../hooks/useSchool";
 import { useMacCalendar } from "../hooks/useMacCalendar";
 import { queryClient } from "../lib/queryClient";
+import { getMacSchoolsForSport } from "../utils/macSchoolFilters";
 import SportSelector from "../components/SportSelector";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1546,7 +1547,7 @@ const SchedulePage = () => {
         defaultHomeTeam.name?.includes('Illinois Chicago') || 
         defaultHomeTeam.name?.includes('UIC Flames') || 
         defaultHomeTeam.id?.includes('uic')) {
-      defaultHomeTeam.logoUrl = '/school-logos/affiliate/uic.png';
+      defaultHomeTeam.logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/UIC_Flames_wordmark.svg/512px-UIC_Flames_wordmark.svg.png';
     }
     
     if (defaultAwayTeam.name?.includes('UIC') || 
@@ -1554,7 +1555,7 @@ const SchedulePage = () => {
         defaultAwayTeam.name?.includes('Illinois Chicago') || 
         defaultAwayTeam.name?.includes('UIC Flames') || 
         defaultAwayTeam.id?.includes('uic')) {
-      defaultAwayTeam.logoUrl = '/school-logos/affiliate/uic.png';
+      defaultAwayTeam.logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/UIC_Flames_wordmark.svg/512px-UIC_Flames_wordmark.svg.png';
     }
     
     // Special handling for Robert Morris (RMU) logo
@@ -1910,8 +1911,7 @@ const SchedulePage = () => {
                 My Team
               </SelectItem>
             )}
-            {/* Filter out affiliate members */}
-            {schools.filter(school => !school.affiliate).map((school) => (
+            {getMacSchoolsForSport(selectedSport).map((school) => (
               <SelectItem key={school.id} value={school.id}>
                 {school.name}
               </SelectItem>

@@ -9,7 +9,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { generateLiveStatsUrl } from "../utils/liveStatsUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getGame } from "../lib/api";
-import espnApiService from "../services/espnApiService";
+import ncaaApiService from "../services/ncaaApiService";
 
 interface GameStats {
   boxScore?: {
@@ -90,28 +90,24 @@ const GameStatsPage = () => {
     }
     
     try {
-      // Check if we have an ESPN event ID in the game links
-      const espnGameId = gameData.links?.s_video ? 
-                          espnApiService.getESPNGameId(gameData.links.s_video) :
-                          null;
-                          
-      if (espnGameId) {
-        // If we have an ESPN game ID, fetch stats from the ESPN API
-        console.log("Fetching stats from ESPN API for game ID:", espnGameId);
-        const espnStats = await espnApiService.fetchGameStats(homeTeam, sport, espnGameId);
-        
-        if (espnStats) {
-          console.log("Successfully fetched game stats from ESPN API");
-          setStats(espnStats);
+      const ncaaGameId = gameData.links?.ncaa || (gameData.id?.startsWith("ncaa-") ? gameData.id.replace("ncaa-", "") : null);
+
+      if (ncaaGameId) {
+        console.log("Fetching stats from NCAA API for game ID:", ncaaGameId);
+        const ncaaStats = await ncaaApiService.fetchGameStats(ncaaGameId);
+
+        if (ncaaStats) {
+          console.log("Successfully fetched game stats from NCAA API");
+          setStats(ncaaStats);
           return;
         } else {
-          console.log("No data returned from ESPN API, using sample data");
+          console.log("No data returned from NCAA API, using sample data");
         }
       } else {
-        console.log("No ESPN game ID found in game links, using sample data");
+        console.log("No NCAA game ID found in game links, using sample data");
       }
     } catch (error) {
-      console.error("Error fetching game stats from ESPN API:", error);
+      console.error("Error fetching game stats from NCAA API:", error);
     }
     
     // If we couldn't get stats from ESPN or there was an error, use real sample data from Miami vs CMU game

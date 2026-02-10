@@ -16,3 +16,7 @@ Mobile MACtion App needs
 
 - Sounds: lyrics display well, can’t get songs to play, don’t have all songs yet, but need to work out the path and then drop the song files in the assets folders
 - Podcast page: Eventually want to add other Mac-focused podcasts to be sorted from, and then you can listen to your favorite MAC podcast in the app. Prioritization of the MAC Sports Connection, which plays fine, thanks to the RSS feed. 
+
+## NCAA data migration
+
+See `docs/ncaa-data-migration.md` for a step-by-step guide to replacing ESPN data with NCAA data for live scoring, standings, and stats.

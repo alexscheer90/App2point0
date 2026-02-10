@@ -11,6 +11,7 @@ import liveStatsRoutes from "./routes/livestats";
 import express from "express";
 import path from "path";
 import { gameScheduleService } from "./services/gameScheduleService";
+import { fetchNcaaBoxscore, fetchNcaaScoreboard } from "./services/ncaaService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from the public directory
@@ -24,6 +25,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register live stats routes
   app.use('/api/live-stats', liveStatsRoutes);
+
+  // NCAA API proxy endpoints
+  app.get("/api/ncaa/scoreboard", async (req, res) => {
+    try {
+      const sportId = String(req.query.sportId || "");
+      const date = typeof req.query.date === "string" ? req.query.date : undefined;
+
+      if (!sportId) {
+        return res.status(400).json({ error: "sportId is required" });
+      }
+
+      const data = await fetchNcaaScoreboard(sportId, date);
+      return res.json(data);
+    } catch (error) {
+      console.error("Error fetching NCAA scoreboard:", error);
+      return res.status(500).json({ error: "Failed to fetch NCAA scoreboard" });
+    }
+  });
+
+  app.get("/api/ncaa/game/:gameId/boxscore", async (req, res) => {
+    try {
+      const { gameId } = req.params;
+      const data = await fetchNcaaBoxscore(gameId);
+      return res.json(data);
+    } catch (error) {
+      console.error("Error fetching NCAA boxscore:", error);
+      return res.status(500).json({ error: "Failed to fetch NCAA boxscore" });
+    }
+  });
   
   // API endpoint to get a game by ID
   app.get('/api/games/:gameId', async (req, res) => {
@@ -491,7 +521,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }));
   });
 
-  // Setup polling for real ESPN data for active sports
+  const scoreProvider = process.env.SCOREBOARD_PROVIDER ?? "ncaa";
+
+  // Setup polling for real ESPN data for active sports (only when enabled)
   // For now, we're just including a few sample sports
   const activeSports = ['baseball', 'softball', 'basketball', 'football'];
   
@@ -514,20 +546,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const gameStateCache = new Map<string, any>();
   
   // Setup poll interval for each sport
-  for (const sport of activeSports) {
-    // Skip sports without ESPN paths
-    if (!SPORT_ESPN_PATHS[sport]) continue;
-    
-    // Use a shorter initial delay for immediate feedback
-    setTimeout(() => {
-      // Set up polling for the specific sport
-      pollESPNScores(sport);
-      
-      // Poll regularly every minute for live game updates
-      setInterval(() => {
+  if (scoreProvider === "espn") {
+    for (const sport of activeSports) {
+      // Skip sports without ESPN paths
+      if (!SPORT_ESPN_PATHS[sport]) continue;
+
+      // Use a shorter initial delay for immediate feedback
+      setTimeout(() => {
+        // Set up polling for the specific sport
         pollESPNScores(sport);
-      }, 60000); // Poll every minute
-    }, 10000 + activeSports.indexOf(sport) * 5000); // Stagger initial polls
+
+        // Poll regularly every minute for live game updates
+        setInterval(() => {
+          pollESPNScores(sport);
+        }, 60000); // Poll every minute
+      }, 10000 + activeSports.indexOf(sport) * 5000); // Stagger initial polls
+    }
   }
   
   async function pollESPNScores(sportId: string) {
@@ -554,6 +588,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `${ESPN_API_BASE}/${sportPath}/scoreboard?groups=${MAC_ESPN_ID}&dates=${dateToUse}`,
         // Try with different conference parameter
         `${ESPN_API_BASE}/${sportPath}/scoreboard?group=${MAC_ESPN_ID}&dates=${dateToUse}`,
+        // Try without date to let ESPN pick the default window
+        `${ESPN_API_BASE}/${sportPath}/scoreboard`,
+        // Try without date but with conference filter
+        `${ESPN_API_BASE}/${sportPath}/scoreboard?groups=${MAC_ESPN_ID}`,
         // Try different date format (year only) for testing
         `${ESPN_API_BASE}/${sportPath}/scoreboard?dates=2025`
       ];

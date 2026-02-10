@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Game, GameStatus, School, Sport } from '@shared/schema';
+import { filterMacGamesForSport, isMacSchoolForSport } from '../utils/macSchoolFilters';
 
 // Constants
 const ESPN_API_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
@@ -297,8 +298,12 @@ export const espnScoreboardService = {
       const homeTeamMACId = ESPN_ID_TO_MAC_TEAM[homeTeamESPNId];
       const awayTeamMACId = ESPN_ID_TO_MAC_TEAM[awayTeamESPNId];
 
-      // Only include games that involve at least one MAC team
-      if (!homeTeamMACId && !awayTeamMACId) return;
+      const hasMacTeam =
+        (homeTeamMACId && isMacSchoolForSport(homeTeamMACId, sportId)) ||
+        (awayTeamMACId && isMacSchoolForSport(awayTeamMACId, sportId));
+
+      // Only include games that involve at least one MAC team for the selected sport
+      if (!hasMacTeam) return;
 
       // Map ESPN status to our GameStatus
       const espnStatus = event.status.type.state;
@@ -345,7 +350,7 @@ export const espnScoreboardService = {
       macGames.push(game);
     });
 
-    return macGames;
+    return filterMacGamesForSport(macGames, sportId);
   },
 
   /**

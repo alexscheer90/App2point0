@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Game, Sport } from '@shared/schema';
-import espnScoreboardService from '../services/espnScoreboardService';
+import ncaaScoreboardService from '../services/ncaaScoreboardService';
 
 /**
- * Hook for fetching live scores from ESPN for a given sport
+ * Hook for fetching live scores from NCAA for a given sport
  */
 export function useESPNScores(sportId: string) {
   // Use React Query to fetch and cache the scores
   return useQuery({ 
-    queryKey: ['espn-scores', sportId],
+    queryKey: ['ncaa-scores', sportId],
     queryFn: async () => {
       try {
-        const scores = await espnScoreboardService.getLiveScores(sportId);
+        const scores = await ncaaScoreboardService.getLiveScores(sportId);
         return scores;
       } catch (error) {
-        console.error(`Error fetching ESPN scores for ${sportId}:`, error);
+        console.error(`Error fetching NCAA scores for ${sportId}:`, error);
         // Instead of swallowing the error, propagate it so we can handle it in the UI
         throw error;
       }
@@ -56,7 +56,7 @@ export function useLiveScores(sportId: string) {
           const data = JSON.parse(event.data);
           
           // Handle game updates from WebSocket
-          if (data.type === 'game_update' && data.payload) {
+          if (data.type === 'game_update' && data.payload && data.payload.dataSource === 'ncaa') {
             // Update the game in our local state
             setGames(prevGames => {
               const updatedGames = [...prevGames];

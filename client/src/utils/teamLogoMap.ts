@@ -160,7 +160,13 @@ export const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   
   "Bellarmine": "Bellarmine",
   "Knights": "Bellarmine",
-  
+
+  "UIC": "UIC",
+  "UIC Flames": "UIC",
+  "University of Illinois Chicago": "UIC",
+  "University Of Illinois Chicago": "UIC",
+  "Illinois Chicago": "UIC",
+
   "Miami (FL)": "Miami (FL)",
   "Hurricanes": "Miami (FL)",
   "The U": "Miami (FL)",
@@ -512,6 +518,6 @@ export function isMacSchool(name: string): boolean {
   
   // Check both the name and any possible mappings
   const standardName = SCHOOL_NAME_MAPPINGS[name];
-  return macSchoolNames.includes(name) || 
+  return macSchoolNames.includes(name) ||
          (standardName !== undefined && macSchoolNames.includes(standardName));
 }

@@ -30,10 +30,10 @@ import bloomsburgLogo from "@assets/Bloomsburg Huskies Logo-01.png";
 import robertMorrisLogo from "@assets/rmu_logo_1.png";
 import youngstownStateLogo from "@assets/Youngstown_State_Penguins_logo.svg.png";
 import detroitMercyLogo from "@assets/Detroit_Titans_logo.svg.png";
-import uicLogo from "@assets/UIC_Flames_wordmark.svg.png";
 import ncaaLogo from "@assets/IMG_0788.png"; // NCAA logo for non-MAC schools
 // Import Ohio State logo from the public directory
 const ohioStateLogo = "/school-logos/non-mac/ohiostate.png";
+const uicLogo = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/UIC_Flames_wordmark.svg/512px-UIC_Flames_wordmark.svg.png";
 
 // Export the NCAA logo for use in other components
 export const ncaaLogoUrl = ncaaLogo;
