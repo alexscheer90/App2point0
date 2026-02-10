@@ -13,6 +13,24 @@ import path from "path";
 import { gameScheduleService } from "./services/gameScheduleService";
 import { fetchNcaaBoxscore, fetchNcaaScoreboard } from "./services/ncaaService";
 
+function normalizeSchoolId(name: string): string {
+  if (name.includes("toledo")) return "toledo";
+  if (name.includes("buffalo")) return "buffalo";
+  if (name.includes("northern illinois") || name.includes("niu")) return "northernillinois";
+  if (name.includes("kent state")) return "kentstate";
+  if (name.includes("ball state")) return "ballstate";
+  if (name.includes("ohio")) return "ohio";
+  if (name.includes("akron")) return "akron";
+  if (name.includes("bowling green")) return "bowlinggreen";
+  if (name.includes("central michigan")) return "centralmichigan";
+  if (name.includes("eastern michigan")) return "easternmichigan";
+  if (name.includes("western michigan")) return "westernmichigan";
+  if (name.includes("miami")) return "miamioh";
+
+  // fallback — keeps app from crashing
+  return name.replace(/\s+/g, "");
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from the public directory
   app.use(express.static(path.join(process.cwd(), 'public')));
@@ -27,22 +45,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/live-stats', liveStatsRoutes);
 
   // NCAA API proxy endpoints
-  app.get("/api/ncaa/scoreboard", async (req, res) => {
-    try {
-      const sportId = String(req.query.sportId || "");
-      const date = typeof req.query.date === "string" ? req.query.date : undefined;
+app.get("/api/ncaa/scoreboard", async (req, res) => {
+  try {
+    const sportId = String(req.query.sportId || "");
+    const date =
+      typeof req.query.date === "string" ? req.query.date : undefined;
 
-      if (!sportId) {
-        return res.status(400).json({ error: "sportId is required" });
-      }
-
-      const data = await fetchNcaaScoreboard(sportId, date);
-      return res.json(data);
-    } catch (error) {
-      console.error("Error fetching NCAA scoreboard:", error);
-      return res.status(500).json({ error: "Failed to fetch NCAA scoreboard" });
+    if (!sportId) {
+      return res.status(400).json({ error: "sportId is required" });
     }
-  });
+
+    const rawData = await fetchNcaaScoreboard(sportId, date);
+
+    /**
+     * STEP 2.5:
+     * Normalize NCAA games into our internal Game shape
+     */
+    const games = rawData.games.map((game: any) => {
+      const homeName = game.home?.team?.shortName?.toLowerCase() || "";
+      const awayName = game.away?.team?.shortName?.toLowerCase() || "";
+
+      return {
+        id: `ncaa-${game.gameId}`,
+        sportId,
+        startTime: game.startTime,
+        status: game.status,
+        homeTeamId: normalizeSchoolId(homeName),
+        awayTeamId: normalizeSchoolId(awayName),
+        homeTeamScore: game.home?.score ?? null,
+        awayTeamScore: game.away?.score ?? null,
+        dataSource: "ncaa",
+        links: {
+          ncaa: game.gameUrl
+        }
+      };
+    });
+
+    return res.json({ games });
+  } catch (error) {
+    console.error("Error fetching NCAA scoreboard:", error);
+    return res.status(500).json({ error: "Failed to fetch NCAA scoreboard" });
+  }
+});
 
   app.get("/api/ncaa/game/:gameId/boxscore", async (req, res) => {
     try {

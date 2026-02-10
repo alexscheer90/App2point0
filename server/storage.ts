@@ -1,11 +1,18 @@
-import { users, type User, type InsertUser, userPreferences, type UserPreferences, type InsertUserPreferences } from "@shared/schema";
+import {
+  users,
+  type User,
+  type InsertUser,
+  userPreferences,
+  type UserPreferences,
+  type InsertUserPreferences,
+} from "@shared/schema";
 
 // Storage interface for user preferences
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // User preferences methods
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
   updateUserPreferences(prefs: InsertUserPreferences): Promise<UserPreferences>;
@@ -29,9 +36,7 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    return Array.from(this.users.values()).find((user) => user.username === username);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -42,25 +47,35 @@ export class MemStorage implements IStorage {
   }
 
   async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {
-    return Array.from(this.userPreferences.values()).find(
-      (pref) => pref.userId === userId,
-    );
+    return Array.from(this.userPreferences.values()).find((pref) => pref.userId === userId);
   }
 
   async updateUserPreferences(prefs: InsertUserPreferences): Promise<UserPreferences> {
     let existingPrefs = await this.getUserPreferences(prefs.userId);
-    
+
     if (existingPrefs) {
-      existingPrefs = { ...existingPrefs, ...prefs };
+      existingPrefs = {
+        ...existingPrefs,
+        ...prefs,
+        // never allow undefined to end up in UserPreferences.favoriteSchool
+        favoriteSchool: prefs.favoriteSchool ?? existingPrefs.favoriteSchool ?? null,
+      };
+
       this.userPreferences.set(existingPrefs.id, existingPrefs);
       return existingPrefs;
     } else {
       const id = this.currentPreferenceId++;
-      const newPrefs: UserPreferences = { ...prefs, id };
+      const newPrefs: UserPreferences = {
+        ...prefs,
+        id,
+        // default undefined -> null
+        favoriteSchool: prefs.favoriteSchool ?? null,
+      };
+
       this.userPreferences.set(id, newPrefs);
       return newPrefs;
     }
-  }
-}
+  } // ✅ closes updateUserPreferences
+} // ✅ closes MemStorage class
 
 export const storage = new MemStorage();
