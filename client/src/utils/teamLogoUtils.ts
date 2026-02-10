@@ -1,69 +1,88 @@
 import { School } from "@shared/schema";
 import { macSchools, ncaaLogoUrl } from "../data/macSchools";
-import { 
-  fixSouthCarolina, 
-  fixUSC, 
-  fixBulls, 
-  fixUT, 
-  fixAggies, 
-  fixUW, 
-  fixCowboys 
+import {
+  fixSouthCarolina,
+  fixUSC,
+  fixCowboys,
 } from "./teamLogoFixDuplicates";
 
-// Map of common nicknames or alternate versions of school names
 const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
-  // Import fixed duplicate entries
   ...fixSouthCarolina,
   ...fixUSC,
-  ...fixBulls,
-  ...fixUT,
-  ...fixAggies,
-  ...fixUW,
   ...fixCowboys,
-  // Common MAC school variants
+
+  // -------------------------
+  // MAC school variants
+  // -------------------------
   "NIU": "Northern Illinois",
-  "CMU": "Central Michigan", 
+  "Northern Illinois": "Northern Illinois",
+  "Northern Illinois Huskies": "Northern Illinois",
+  // Removed: "Huskies": "...", because it’s ambiguous (also Washington)
+
+  "CMU": "Central Michigan",
+  "Central Michigan": "Central Michigan",
+  "Central Michigan Chippewas": "Central Michigan",
+  "Chippewas": "Central Michigan",
+
   "EMU": "Eastern Michigan",
+  "Eastern Michigan": "Eastern Michigan",
+  "Eastern Michigan Eagles": "Eastern Michigan",
+  "Eagles": "Eastern Michigan",
+
   "WMU": "Western Michigan",
+  "Western Michigan": "Western Michigan",
+  "Western Michigan Broncos": "Western Michigan",
+  "Broncos": "Western Michigan",
+
   "BGSU": "Bowling Green",
+  "Bowling Green": "Bowling Green",
+  "Bowling Green Falcons": "Bowling Green",
+  "Falcons": "Bowling Green",
+
   "UB": "Buffalo",
+  "Buffalo": "Buffalo",
+  "Buffalo Bulls": "Buffalo",
+  // Removed: "Bulls": "...", because it’s ambiguous (also USF)
+
   "Miami (OH)": "Miami",
   "Miami Ohio": "Miami",
   "Miami (Ohio)": "Miami",
   "Miami OH": "Miami",
   "Miami University": "Miami",
   "RedHawks": "Miami",
+
   "Kent State": "Kent State",
   "Golden Flashes": "Kent State",
+
   "UMass": "Massachusetts",
+  "Massachusetts": "Massachusetts",
   "Minutemen": "Massachusetts",
-  "UT": "Toledo",
+
+  // Toledo (explicit only)
+  "Toledo": "Toledo",
   "Toledo Rockets": "Toledo",
   "Rockets": "Toledo",
+  // Removed: "UT": "Toledo" (ambiguous with Tennessee / Texas, etc.)
+
   "Ball St": "Ball State",
   "Ball St.": "Ball State",
+  "Ball State": "Ball State",
   "BSU": "Ball State",
   "Cardinals": "Ball State",
+
+  "Akron": "Akron",
+  "University of Akron": "Akron",
   "Akron Zips": "Akron",
   "Zips": "Akron",
-  "University of Akron": "Akron",
+
+  "Ohio": "Ohio",
   "Ohio Bobcats": "Ohio",
   "Bobcats": "Ohio",
   "Ohio University": "Ohio",
-  "Northern Illinois Huskies": "Northern Illinois",
-  "Huskies": "Northern Illinois",
-  "Chippewas": "Central Michigan",
-  "Central Michigan Chippewas": "Central Michigan",
-  "Eastern Michigan Eagles": "Eastern Michigan",
-  "Eagles": "Eastern Michigan",
-  "Western Michigan Broncos": "Western Michigan",
-  "Broncos": "Western Michigan",
-  "Bowling Green Falcons": "Bowling Green",
-  "Falcons": "Bowling Green",
-  "Buffalo Bulls": "Buffalo",
-  "Bulls": "Buffalo",
-  
-  // Common non-MAC opponents from official MAC schedule
+
+  // -------------------------
+  // Non-MAC opponents (explicit)
+  // -------------------------
   "Air Force": "Air Force",
   "Alabama": "Alabama",
   "Appalachian State": "Appalachian State",
@@ -136,161 +155,220 @@ const SCHOOL_NAME_MAPPINGS: Record<string, string> = {
   "Terrapins": "Maryland",
   "UMD": "Maryland",
   "Memphis": "Memphis",
+
+  // Miami FL (explicit)
   "Miami": "Miami FL",
   "Miami FL": "Miami FL",
   "Miami (FL)": "Miami FL",
   "The U": "Miami FL",
+
   "Michigan": "Michigan",
   "UM": "Michigan",
   "U-M": "Michigan",
   "Wolverines": "Michigan",
-  "Michigan State": "Michigan State", 
+
+  "Michigan State": "Michigan State",
   "MSU": "Michigan State",
   "Spartans": "Michigan State",
+
   "Middle Tennessee": "Middle Tennessee",
   "MTSU": "Middle Tennessee",
   "Minnesota": "Minnesota",
+
   "Mississippi State": "Mississippi State",
   "Miss. State": "Mississippi State",
+
   "Missouri": "Missouri",
   "Mizzou": "Missouri",
+
   "Navy": "Navy",
   "NC State": "NC State",
   "North Carolina State": "NC State",
+
   "Nebraska": "Nebraska",
   "UNL": "Nebraska",
   "Huskers": "Nebraska",
   "Cornhuskers": "Nebraska",
+
   "Nevada": "Nevada",
   "New Mexico": "New Mexico",
   "UNM": "New Mexico",
   "New Mexico State": "New Mexico State",
   "NMSU": "New Mexico State",
+
   "North Carolina": "North Carolina",
   "UNC": "North Carolina",
+
   "North Texas": "North Texas",
   "UNT": "North Texas",
   "Mean Green": "North Texas",
+
   "Northwestern": "Northwestern",
   "NW": "Northwestern",
+
   "Notre Dame": "Notre Dame",
   "ND": "Notre Dame",
   "Fighting Irish": "Notre Dame",
+
   "Ohio State": "Ohio State",
   "OSU": "Ohio State",
   "Buckeyes": "Ohio State",
+
   "Oklahoma": "Oklahoma",
   "OU": "Oklahoma",
   "Sooners": "Oklahoma",
+
   "Oklahoma State": "Oklahoma State",
-  // "OSU": "Oklahoma State", // Commented out due to conflict with Ohio State
   "OK State": "Oklahoma State",
   "OK State Cowboys": "Oklahoma State",
+
   "Ole Miss": "Ole Miss",
   "Mississippi": "Ole Miss",
+
   "Oregon": "Oregon",
   "Ducks": "Oregon",
+
   "Oregon State": "Oregon State",
   "Beavers": "Oregon State",
+
   "Penn State": "Penn State",
   "PSU": "Penn State",
   "Nittany Lions": "Penn State",
+
   "Pittsburgh": "Pittsburgh",
   "Pitt": "Pittsburgh",
   "Panthers": "Pittsburgh",
+
   "Purdue": "Purdue",
   "Boilermakers": "Purdue",
+
   "Rice": "Rice",
   "Owls": "Rice",
+
   "Rutgers": "Rutgers",
   "RU": "Rutgers",
+
   "San Diego State": "San Diego State",
   "SDSU": "San Diego State",
   "San Jose State": "San Jose State",
   "SJSU": "San Jose State",
+
   "SMU": "SMU",
   "Southern Methodist": "SMU",
+
   "South Alabama": "South Alabama",
   "South Carolina": "South Carolina",
   "Southern Miss": "Southern Miss",
   "USM": "Southern Miss",
+
   "Stanford": "Stanford",
+
   "Syracuse": "Syracuse",
   "Orange": "Syracuse",
+
   "TCU": "TCU",
   "Texas Christian": "TCU",
+
   "Temple": "Temple",
   "Temple Owls": "Temple",
+
+  // Tennessee (explicit only)
   "Tennessee": "Tennessee",
-  "UT": "Tennessee",
   "Vols": "Tennessee",
+  // Removed: "UT": "Tennessee" (ambiguous)
+
   "Texas": "Texas",
   "UT Austin": "Texas",
   "Longhorns": "Texas",
+
   "Texas A&M": "Texas A&M",
   "TAMU": "Texas A&M",
-  "Aggies": "Texas A&M",
+  // Removed: "Aggies": "Texas A&M" (ambiguous)
+
   "Texas State": "Texas State",
   "Texas Tech": "Texas Tech",
   "TTU": "Texas Tech",
   "Red Raiders": "Texas Tech",
+
   "Troy": "Troy",
   "Trojans": "Troy",
+
   "Tulane": "Tulane",
   "Green Wave": "Tulane",
+
   "Tulsa": "Tulsa",
   "Golden Hurricane": "Tulsa",
+
   "UAB": "UAB",
   "Alabama-Birmingham": "UAB",
+
   "UCF": "UCF",
   "Central Florida": "UCF",
   "Knights": "UCF",
+
   "UCLA": "UCLA",
+
   "UNLV": "UNLV",
   "Nevada-Las Vegas": "UNLV",
   "Rebels": "UNLV",
+
   "USC": "USC",
   "Southern California": "USC",
+
+  // USF (explicit only)
   "USF": "USF",
   "South Florida": "USF",
-  "Bulls": "USF",
+  // Removed: "Bulls": "USF" (ambiguous)
+
   "Utah": "Utah",
   "Utes": "Utah",
+
   "Utah State": "Utah State",
-  "Aggies": "Utah State",
+  // Removed: "Aggies": "Utah State" (ambiguous)
+
   "UTEP": "UTEP",
   "Texas-El Paso": "UTEP",
+
   "UTSA": "UTSA",
   "Texas-San Antonio": "UTSA",
   "Roadrunners": "UTSA",
+
   "Vanderbilt": "Vanderbilt",
   "Vandy": "Vanderbilt",
   "Commodores": "Vanderbilt",
+
   "Virginia": "Virginia",
   "UVA": "Virginia",
   "Cavaliers": "Virginia",
+
   "Virginia Tech": "Virginia Tech",
   "VT": "Virginia Tech",
   "Hokies": "Virginia Tech",
+
   "Wake Forest": "Wake Forest",
   "Demon Deacons": "Wake Forest",
+
+  // Washington / Wisconsin (explicit only)
   "Washington": "Washington",
-  "UW": "Washington",
-  "Huskies": "Washington",
+  // Removed: "UW": "Washington" (ambiguous)
+
+  "Wisconsin": "Wisconsin",
+  // Removed: "UW": "Wisconsin" (ambiguous)
+
   "Washington State": "Washington State",
   "WSU": "Washington State",
   "Cougars": "Washington State",
+
   "West Virginia": "West Virginia",
   "WVU": "West Virginia",
   "Mountaineers": "West Virginia",
+
   "Western Kentucky": "Western Kentucky",
   "WKU": "Western Kentucky",
   "Hilltoppers": "Western Kentucky",
-  "Wisconsin": "Wisconsin",
-  "UW": "Wisconsin",
-  "Badgers": "Wisconsin",
+
   "Wyoming": "Wyoming",
-  "Cowboys": "Wyoming"
+  "Cowboys": "Wyoming",
 };
 
 // Create a comprehensive list of non-MAC schools with their colors and logo paths
